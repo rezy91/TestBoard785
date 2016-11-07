@@ -1,0 +1,10 @@
+*.user
+build-*
+version.cpp
+
+.qmake.stash
+*.o
+moc_*
+*.moc
+Makefile
+qrc*

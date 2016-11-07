@@ -1,0 +1,13 @@
+﻿           Medical Technologies CZ a.s. private license
+                 Version 1.0, 30 June 2016
+
+
+Copyright (C) 2016 Medical Technologies CZ a.s.. All rights reserved.
+Everyone is permitted to copy and distribute verbatim copies
+of this license document, but changing it is not allowed.
+
+The license is applied for source codes, resources, documentation
+and other files placed in the folder.
+
+Without prior written permission from Medical Technologies CZ a.s., files
+must not be modified, distributed and/or otherwise used. 
