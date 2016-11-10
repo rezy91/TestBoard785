@@ -216,6 +216,28 @@ void MainWindow::FillCommandTable()
     ui->tableWidget->setItem(ui->tableWidget->rowCount() - 1, 3, pFrequencyPacketArg0); // insert item to created row to the fourth column
 
     //! and next packet definition
+    // the first column
+    ui->tableWidget->insertRow(ui->tableWidget->rowCount());                            // create new row in table
+    QTableWidgetItem *pNextPacketID = new QTableWidgetItem("31");                  // paket id
+    pNextPacketID->setData(TableRoles::ByteCount, 1);                              // paket id is 1 byte
+    pNextPacketID->setData(TableRoles::NumeralSystem, TableRoles::Hex);            // packet id is displayed as hex
+    ui->tableWidget->setItem(ui->tableWidget->rowCount() - 1, 0, pNextPacketID);   // insert item to created row to the first column
+
+    // the second column (it has no impact on data to be sent)
+    QTableWidgetItem *pNextPacketName = new QTableWidgetItem("SET_NEXT");     // readable description
+    ui->tableWidget->setItem(ui->tableWidget->rowCount() - 1, 1, pNextPacketName); // insert item to created row to the second column
+
+    // the third column
+    QTableWidgetItem *pNextPacketResponseExpected = new QTableWidgetItem();        // is response expected?
+    pNextPacketResponseExpected->setCheckState(Qt::Unchecked);                     // Qt::Unchecked or Qt::Checked
+    ui->tableWidget->setItem(ui->tableWidget->rowCount() - 1, 2, pNextPacketResponseExpected); // insert item to created row to the third column
+
+    // the fourth column
+    QTableWidgetItem *pNextPacketArg0 = new QTableWidgetItem("1000");             // the value it contains
+    pNextPacketArg0->setData(TableRoles::ByteCount, 3);                            // the value is 3 bytes
+    pNextPacketArg0->setData(TableRoles::NumeralSystem, TableRoles::Decimal);      // packet id is displayed as decimal
+    pNextPacketArg0->setData(Qt::ToolTipRole, "no help");     // a hint which is displayed when mouse hovers over
+    ui->tableWidget->setItem(ui->tableWidget->rowCount() - 1, 3, pNextPacketArg0); // insert item to created row to the fourth column
 }
 
 void MainWindow::on_clearButton_clicked()
