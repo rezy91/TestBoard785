@@ -29,7 +29,7 @@
          <number>0</number>
         </property>
         <property name="columnCount">
-         <number>4</number>
+         <number>6</number>
         </property>
         <attribute name="horizontalHeaderDefaultSectionSize">
          <number>50</number>
@@ -47,7 +47,7 @@
         </column>
         <column>
          <property name="text">
-          <string>PID name</string>
+          <string>name</string>
          </property>
         </column>
         <column>
@@ -58,6 +58,16 @@
         <column>
          <property name="text">
           <string>arg0</string>
+         </property>
+        </column>
+        <column>
+         <property name="text">
+          <string>arg1</string>
+         </property>
+        </column>
+        <column>
+         <property name="text">
+          <string>arg2</string>
          </property>
         </column>
        </widget>
