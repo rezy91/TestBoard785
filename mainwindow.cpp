@@ -131,7 +131,9 @@ void MainWindow::on_sendButton_clicked()
             }
             else if(oTableSelection.at(nItemIndex).data(TableRoles::NumeralSystem) == TableRoles::Decimal)
             {
-                QString strHexNumber = QString::number(oTableSelection.at(nItemIndex).data().toString().toInt(), 16);
+                QString strNumber = oTableSelection.at(nItemIndex).data().toString();
+                QString strHexNumber = strNumber.contains(".") ? QString::number(strNumber.toDouble(), 'f') : QString::number(strNumber.toInt(), 16);
+
                 strCmd += strHexNumber.rightJustified(nAlignment, '0');
             }
             qDebug() << strCmd;
@@ -142,9 +144,9 @@ void MainWindow::on_sendButton_clicked()
         {
             bResponseExpected = oTableSelection.at(2).data(Qt::CheckStateRole) == Qt::Checked;
         }
-
         qint32 nMsgCode = m_CommProt.data()->SendData(m_nDeviceAddress, QByteArray::fromHex(strCmd.toStdString().c_str()), bResponseExpected);
         qDebug() << "data sending result:" << nMsgCode << "response expected" << bResponseExpected;
+        AppendText(QString("Data sent: %1").arg(strCmd));
     }
     else
     {
