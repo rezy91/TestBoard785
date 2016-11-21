@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>672</width>
+    <width>1079</width>
     <height>665</height>
    </rect>
   </property>
@@ -19,6 +19,12 @@
      <layout class="QVBoxLayout" name="verticalLayout">
       <item>
        <widget class="QTableWidget" name="tableWidget">
+        <property name="minimumSize">
+         <size>
+          <width>0</width>
+          <height>350</height>
+         </size>
+        </property>
         <property name="selectionMode">
          <enum>QAbstractItemView::SingleSelection</enum>
         </property>
@@ -29,7 +35,7 @@
          <number>0</number>
         </property>
         <property name="columnCount">
-         <number>6</number>
+         <number>17</number>
         </property>
         <attribute name="horizontalHeaderDefaultSectionSize">
          <number>50</number>
@@ -68,6 +74,61 @@
         <column>
          <property name="text">
           <string>arg2</string>
+         </property>
+        </column>
+        <column>
+         <property name="text">
+          <string>arg3</string>
+         </property>
+        </column>
+        <column>
+         <property name="text">
+          <string>arg4</string>
+         </property>
+        </column>
+        <column>
+         <property name="text">
+          <string>arg5</string>
+         </property>
+        </column>
+        <column>
+         <property name="text">
+          <string>arg6</string>
+         </property>
+        </column>
+        <column>
+         <property name="text">
+          <string>arg7</string>
+         </property>
+        </column>
+        <column>
+         <property name="text">
+          <string>arg8</string>
+         </property>
+        </column>
+        <column>
+         <property name="text">
+          <string>arg9</string>
+         </property>
+        </column>
+        <column>
+         <property name="text">
+          <string>arg10</string>
+         </property>
+        </column>
+        <column>
+         <property name="text">
+          <string>arg11</string>
+         </property>
+        </column>
+        <column>
+         <property name="text">
+          <string>arg12</string>
+         </property>
+        </column>
+        <column>
+         <property name="text">
+          <string>arg13</string>
          </property>
         </column>
        </widget>

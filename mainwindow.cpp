@@ -211,25 +211,11 @@ void MainWindow::FillCommandTable()
     ui->tableWidget->setItem(ui->tableWidget->rowCount() - 1, 2, pvalue1PacketResponseExpected); // insert item to created row to the third column
 
     // the third column
-    QTableWidgetItem *pvalue1PacketArg0 = new QTableWidgetItem("1.5");             // the value it contains
+    QTableWidgetItem *pvalue1PacketArg0 = new QTableWidgetItem("15");             // the value it contains
     pvalue1PacketArg0->setData(TableRoles::ByteCount, 3);                            // the value is 3 bytes
     pvalue1PacketArg0->setData(TableRoles::NumeralSystem, TableRoles::Decimal);      // packet id is displayed as decimal
     pvalue1PacketArg0->setData(Qt::ToolTipRole, "minimal resolution is 100 Hz");     // a hint which is displayed when mouse hovers over
     ui->tableWidget->setItem(ui->tableWidget->rowCount() - 1, 3, pvalue1PacketArg0); // insert item to created row to the fourth column
-
-    // the third column
-    QTableWidgetItem *pvalue1PacketArg1 = new QTableWidgetItem("25");             // the value it contains
-    pvalue1PacketArg1->setData(TableRoles::ByteCount, 3);                            // the value is 3 bytes
-    pvalue1PacketArg1->setData(TableRoles::NumeralSystem, TableRoles::Decimal);      // packet id is displayed as decimal
-    pvalue1PacketArg1->setData(Qt::ToolTipRole, "minimal resolution is 100 Hz");     // a hint which is displayed when mouse hovers over
-    ui->tableWidget->setItem(ui->tableWidget->rowCount() - 1, 4, pvalue1PacketArg1); // insert item to created row to the fourth column
-
-    // the third column
-    QTableWidgetItem *pvalue1PacketArg2 = new QTableWidgetItem("35");             // the value it contains
-    pvalue1PacketArg2->setData(TableRoles::ByteCount, 3);                            // the value is 3 bytes
-    pvalue1PacketArg2->setData(TableRoles::NumeralSystem, TableRoles::Decimal);      // packet id is displayed as decimal
-    pvalue1PacketArg2->setData(Qt::ToolTipRole, "minimal resolution is 100 Hz");     // a hint which is displayed when mouse hovers over
-    ui->tableWidget->setItem(ui->tableWidget->rowCount() - 1, 5, pvalue1PacketArg2); // insert item to created row to the fourth column
 
 
     //! and next packet definition
@@ -391,7 +377,7 @@ void MainWindow::FillCommandTable()
     ui->tableWidget->setItem(ui->tableWidget->rowCount() - 1, 0, pvalue8PacketID);   // insert item to created row to the first column
 
     // the second column (it has no impact on data to be sent)
-    QTableWidgetItem *pvalue8PacketName = new QTableWidgetItem("ADC2_SEND_DATA");     // readable description
+    QTableWidgetItem *pvalue8PacketName = new QTableWidgetItem("ADC2_SEND_DATA [0-1]");     // readable description
     ui->tableWidget->setItem(ui->tableWidget->rowCount() - 1, 1, pvalue8PacketName); // insert item to created row to the second column
 
     // the third column
@@ -399,12 +385,23 @@ void MainWindow::FillCommandTable()
     pvalue8PacketResponseExpected->setCheckState(Qt::Unchecked);                     // Qt::Unchecked or Qt::Checked
     ui->tableWidget->setItem(ui->tableWidget->rowCount() - 1, 2, pvalue8PacketResponseExpected); // insert item to created row to the third column
 
-    // the fourth column
     QTableWidgetItem *pvalue8PacketArg0 = new QTableWidgetItem("1");             // the value it contains
-    pvalue8PacketArg0->setData(TableRoles::ByteCount, 3);                            // the value is 3 bytes
+    pvalue8PacketArg0->setData(TableRoles::ByteCount, 1);                            // the value is 3 bytes
     pvalue8PacketArg0->setData(TableRoles::NumeralSystem, TableRoles::Decimal);      // packet id is displayed as decimal
-    pvalue8PacketArg0->setData(Qt::ToolTipRole, "1 - adjusted; 2 - row average; 3 - row all");     // a hint which is displayed when mouse hovers over
+    pvalue8PacketArg0->setData(Qt::ToolTipRole, "send adjusted data");     // a hint which is displayed when mouse hovers over
     ui->tableWidget->setItem(ui->tableWidget->rowCount() - 1, 3, pvalue8PacketArg0); // insert item to created row to the fourth column
+
+    QTableWidgetItem *pvalue8PacketArg1 = new QTableWidgetItem("0");             // the value it contains
+    pvalue8PacketArg1->setData(TableRoles::ByteCount, 1);                            // the value is 3 bytes
+    pvalue8PacketArg1->setData(TableRoles::NumeralSystem, TableRoles::Decimal);      // packet id is displayed as decimal
+    pvalue8PacketArg1->setData(Qt::ToolTipRole, "send average data");     // a hint which is displayed when mouse hovers over
+    ui->tableWidget->setItem(ui->tableWidget->rowCount() - 1, 4, pvalue8PacketArg1); // insert item to created row to the fourth column
+
+    QTableWidgetItem *pvalue8PacketArg2 = new QTableWidgetItem("0");             // the value it contains
+    pvalue8PacketArg2->setData(TableRoles::ByteCount, 1);                            // the value is 3 bytes
+    pvalue8PacketArg2->setData(TableRoles::NumeralSystem, TableRoles::Decimal);      // packet id is displayed as decimal
+    pvalue8PacketArg2->setData(Qt::ToolTipRole, "send row data");     // a hint which is displayed when mouse hovers over
+    ui->tableWidget->setItem(ui->tableWidget->rowCount() - 1, 5, pvalue8PacketArg2); // insert item to created row to the fourth column
 
 
     //! and next packet definition
@@ -416,7 +413,7 @@ void MainWindow::FillCommandTable()
     ui->tableWidget->setItem(ui->tableWidget->rowCount() - 1, 0, pvalue9PacketID);   // insert item to created row to the first column
 
     // the second column (it has no impact on data to be sent)
-    QTableWidgetItem *pvalue9PacketName = new QTableWidgetItem("ADC1_SEND_DATA");     // readable description
+    QTableWidgetItem *pvalue9PacketName = new QTableWidgetItem("ADC1_SEND_DATA [0-1]");     // readable description
     ui->tableWidget->setItem(ui->tableWidget->rowCount() - 1, 1, pvalue9PacketName); // insert item to created row to the second column
 
     // the third column
@@ -424,12 +421,99 @@ void MainWindow::FillCommandTable()
     pvalue9PacketResponseExpected->setCheckState(Qt::Unchecked);                     // Qt::Unchecked or Qt::Checked
     ui->tableWidget->setItem(ui->tableWidget->rowCount() - 1, 2, pvalue9PacketResponseExpected); // insert item to created row to the third column
 
-    // the fourth column
     QTableWidgetItem *pvalue9PacketArg0 = new QTableWidgetItem("1");             // the value it contains
-    pvalue9PacketArg0->setData(TableRoles::ByteCount, 3);                            // the value is 3 bytes
+    pvalue9PacketArg0->setData(TableRoles::ByteCount, 1);                            // the value is 3 bytes
     pvalue9PacketArg0->setData(TableRoles::NumeralSystem, TableRoles::Decimal);      // packet id is displayed as decimal
-    pvalue9PacketArg0->setData(Qt::ToolTipRole, "1 - adjusted; 2 - row average; 3 - row all");     // a hint which is displayed when mouse hovers over
+    pvalue9PacketArg0->setData(Qt::ToolTipRole, "send adjusted data");     // a hint which is displayed when mouse hovers over
     ui->tableWidget->setItem(ui->tableWidget->rowCount() - 1, 3, pvalue9PacketArg0); // insert item to created row to the fourth column
+
+    QTableWidgetItem *pvalue9PacketArg1 = new QTableWidgetItem("0");             // the value it contains
+    pvalue9PacketArg1->setData(TableRoles::ByteCount, 1);                            // the value is 3 bytes
+    pvalue9PacketArg1->setData(TableRoles::NumeralSystem, TableRoles::Decimal);      // packet id is displayed as decimal
+    pvalue9PacketArg1->setData(Qt::ToolTipRole, "send average data");     // a hint which is displayed when mouse hovers over
+    ui->tableWidget->setItem(ui->tableWidget->rowCount() - 1, 4, pvalue9PacketArg1); // insert item to created row to the fourth column
+
+    QTableWidgetItem *pvalue9PacketArg2 = new QTableWidgetItem("0");             // the value it contains
+    pvalue9PacketArg2->setData(TableRoles::ByteCount, 1);                            // the value is 3 bytes
+    pvalue9PacketArg2->setData(TableRoles::NumeralSystem, TableRoles::Decimal);      // packet id is displayed as decimal
+    pvalue9PacketArg2->setData(Qt::ToolTipRole, "send row data");     // a hint which is displayed when mouse hovers over
+    ui->tableWidget->setItem(ui->tableWidget->rowCount() - 1, 5, pvalue9PacketArg2); // insert item to created row to the fourth column
+
+
+    //! and next packet definition
+    // the first column
+    ui->tableWidget->insertRow(ui->tableWidget->rowCount());                            // create new row in table
+    QTableWidgetItem *pvalue10PacketID = new QTableWidgetItem("39");                  // paket id
+    pvalue10PacketID->setData(TableRoles::ByteCount, 1);                              // paket id is 1 byte
+    pvalue10PacketID->setData(TableRoles::NumeralSystem, TableRoles::Hex);            // packet id is displayed as hex
+    ui->tableWidget->setItem(ui->tableWidget->rowCount() - 1, 0, pvalue10PacketID);   // insert item to created row to the first column
+
+    // the second column (it has no impact on data to be sent)
+    QTableWidgetItem *pvalue10PacketName = new QTableWidgetItem("ADC2_SEND_COEFFICIENT");     // readable description
+    ui->tableWidget->setItem(ui->tableWidget->rowCount() - 1, 1, pvalue10PacketName); // insert item to created row to the second column
+
+    // the third column
+    QTableWidgetItem *pvalue10PacketResponseExpected = new QTableWidgetItem();        // is response expected?
+    pvalue10PacketResponseExpected->setCheckState(Qt::Unchecked);                     // Qt::Unchecked or Qt::Checked
+    ui->tableWidget->setItem(ui->tableWidget->rowCount() - 1, 2, pvalue10PacketResponseExpected); // insert item to created row to the third column
+
+    for(qint32 loop = 0; loop < 14; loop++)
+    {
+        QTableWidgetItem *pvalue10PacketArg = new QTableWidgetItem();             // the value it contains
+
+        if(!(loop % 2))
+        {
+            pvalue10PacketArg->setText("2973");
+            pvalue10PacketArg->setData(Qt::ToolTipRole, "Divident channel[" + QString::number(loop / 2) + "]");
+        }
+        else
+        {
+            pvalue10PacketArg->setText("4096");
+            pvalue10PacketArg->setData(Qt::ToolTipRole, "Divisor channel[" + QString::number(loop / 2) + "]");
+        }
+
+        pvalue10PacketArg->setData(TableRoles::ByteCount, 2);
+        pvalue10PacketArg->setData(TableRoles::NumeralSystem, TableRoles::Decimal);
+        ui->tableWidget->setItem(ui->tableWidget->rowCount() - 1, 3 + loop, pvalue10PacketArg);
+    }
+
+    //! and next packet definition
+    // the first column
+    ui->tableWidget->insertRow(ui->tableWidget->rowCount());                            // create new row in table
+    QTableWidgetItem *pvalue11PacketID = new QTableWidgetItem("40");                  // paket id
+    pvalue11PacketID->setData(TableRoles::ByteCount, 1);                              // paket id is 1 byte
+    pvalue11PacketID->setData(TableRoles::NumeralSystem, TableRoles::Hex);            // packet id is displayed as hex
+    ui->tableWidget->setItem(ui->tableWidget->rowCount() - 1, 0, pvalue11PacketID);   // insert item to created row to the first column
+
+    // the second column (it has no impact on data to be sent)
+    QTableWidgetItem *pvalue11PacketName = new QTableWidgetItem("ADC1_SEND_COEFFICIENT");     // readable description
+    ui->tableWidget->setItem(ui->tableWidget->rowCount() - 1, 1, pvalue11PacketName); // insert item to created row to the second column
+
+    // the third column
+    QTableWidgetItem *pvalue11PacketResponseExpected = new QTableWidgetItem();        // is response expected?
+    pvalue11PacketResponseExpected->setCheckState(Qt::Unchecked);                     // Qt::Unchecked or Qt::Checked
+    ui->tableWidget->setItem(ui->tableWidget->rowCount() - 1, 2, pvalue11PacketResponseExpected); // insert item to created row to the third column
+
+    for(qint32 loop = 0; loop < 14; loop++)
+    {
+        QTableWidgetItem *pvalue11PacketArg = new QTableWidgetItem();             // the value it contains
+
+        if(!(loop % 2))
+        {
+            pvalue11PacketArg->setText("2973");
+            pvalue11PacketArg->setData(Qt::ToolTipRole, "Divident channel[" + QString::number(loop / 2) + "]");
+        }
+        else
+        {
+            pvalue11PacketArg->setText("4096");
+            pvalue11PacketArg->setData(Qt::ToolTipRole, "Divisor channel[" + QString::number(loop / 2) + "]");
+        }
+
+        pvalue11PacketArg->setData(TableRoles::ByteCount, 2);
+        pvalue11PacketArg->setData(TableRoles::NumeralSystem, TableRoles::Decimal);
+        ui->tableWidget->setItem(ui->tableWidget->rowCount() - 1, 3 + loop, pvalue11PacketArg);
+    }
+
 }
 
 void MainWindow::on_clearButton_clicked()
