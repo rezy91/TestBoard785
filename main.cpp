@@ -25,6 +25,10 @@
 int main(int argc, char *argv[])
 {
     QApplication a(argc, argv);
+
+    QCoreApplication::setOrganizationName("btl_projects");
+    QCoreApplication::setApplicationName("testboard785");
+
     MainWindow w;
 
     QFontDatabase::addApplicationFont("/usr/lib/fonts/Vera.ttf");
