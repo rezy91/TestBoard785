@@ -26,6 +26,7 @@
 #include <QtSerialPort>
 #include "../../../Applications/088/CommProtV200/commprotv200_global.h"
 #include "bytearrayparser.h"
+#include <QSettings>
 
 namespace Ui {
 class MainWindow;
@@ -66,6 +67,7 @@ private:
     Ui::MainWindow *ui;
     QSharedPointer<CommProtV200> m_CommProt;
     const quint32 m_nDeviceAddress = 20;
+    QSettings* m_pAppSettings = new QSettings(QCoreApplication::organizationName(), QCoreApplication::applicationName(), this);
 
 //    void EventsList(QByteArray arrData);
 //    void StatusRegister(QByteArray arrData);
@@ -77,6 +79,11 @@ private:
     quint32 GetFourBytes(QByteArray arrData);
 
     void FillCommandTable();
+
+    void StoreValue(const QString& strKey, const QVariant& vValue);
+    QVariant LoadValue(const QString& strKey);
+    void SetAvaiblePorts();
+    void SetLastPort();
 };
 
 #endif // MAINWINDOW_H
