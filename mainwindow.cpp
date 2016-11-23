@@ -30,6 +30,24 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
 
     SetAvaiblePorts();
     SetLastPort();
+    TmrMstr.start(1);
+
+    connect(&TmrMstr,&QTimer::timeout,[this](){
+
+        for(qint32 loop = 0; loop < NMB_ITEMS_FOR_TIMERS; loop++)
+        {
+            if(timerEnable[loop] == true)
+            {
+                CurrentTime_ms[loop]++;
+                if(CurrentTime_ms[loop] == RequirementTime_ms[loop])
+                {
+                    CurrentTime_ms[loop] = 0;
+                    qDebug() << "Timer" << loop << "tick";
+                    m_CommProt.data()->SendData(m_nDeviceAddress, assemblyMsq[loop], respExp[loop]);
+                }
+            }
+        }
+    });
 
     // vytvoříme instanci CommProt200
     m_CommProt.reset(CommProtV200_Create(this));
@@ -42,6 +60,7 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
         Q_UNUSED(nDeviceID);
 
         ui->statusBar->showMessage("Data received: " + QString(arrData.toHex()));
+        AppendText("Data received: " + QString(arrData));
 
         quint8 nReplyId = ByteArrayParser::GetOneByte(arrData.mid(0, 1));
 
@@ -138,14 +157,41 @@ void MainWindow::on_sendButton_clicked()
             qDebug() << strCmd;
 
         }
+
+
+
         bool bResponseExpected = false;
         if(oTableSelection.count() > 3)
         {
             bResponseExpected = oTableSelection.at(2).data(Qt::CheckStateRole) == Qt::Checked;
         }
-        qint32 nMsgCode = m_CommProt.data()->SendData(m_nDeviceAddress, QByteArray::fromHex(strCmd.toStdString().c_str()), bResponseExpected);
-        qDebug() << "data sending result:" << nMsgCode << "response expected" << bResponseExpected;
-        AppendText(QString("Data sent: %1").arg(strCmd));
+        m_CommProt.data()->SendData(m_nDeviceAddress, QByteArray::fromHex(strCmd.toStdString().c_str()), bResponseExpected);
+
+
+        for(qint32 row = 0; row < 2; row++)
+        {
+            if(oTableSelection.at(0).data().toInt() == (34 + row))
+            {
+                for(qint32 loop = 0; loop < 2; loop++)
+                {
+                    if(oTableSelection.at(3 + loop).data().toInt() == 1)
+                    {
+                        CurrentTime_ms[row * 2 + loop] = 0;
+                        timerEnable[row * 2 + loop] = true;
+
+                        assemblyMsq[row * 2 + loop] = QByteArray::fromHex(strCmd.toStdString().c_str());
+                        respExp[loop] = bResponseExpected;
+                    }
+                    else if(oTableSelection.at(3 + loop).data().toInt() == 0)
+                    {
+                        timerEnable[row * 2 + loop] = false;
+                    }
+                }
+            }
+        }
+
+
+        //AppendText(QString("Data sent: %1").arg(strCmd));
     }
     else
     {
@@ -332,7 +378,7 @@ void MainWindow::FillCommandTable()
 
     // the third column
     QTableWidgetItem *pvalue8PacketResponseExpected = new QTableWidgetItem();        // is response expected?
-    pvalue8PacketResponseExpected->setCheckState(Qt::Unchecked);                     // Qt::Unchecked or Qt::Checked
+    pvalue8PacketResponseExpected->setCheckState(Qt::Checked);                     // Qt::Unchecked or Qt::Checked
     ui->tableWidget->setItem(ui->tableWidget->rowCount() - 1, 2, pvalue8PacketResponseExpected); // insert item to created row to the third column
 
     QTableWidgetItem *pvalue8PacketArg0 = new QTableWidgetItem("1");             // the value it contains
@@ -368,7 +414,7 @@ void MainWindow::FillCommandTable()
 
     // the third column
     QTableWidgetItem *pvalue9PacketResponseExpected = new QTableWidgetItem();        // is response expected?
-    pvalue9PacketResponseExpected->setCheckState(Qt::Unchecked);                     // Qt::Unchecked or Qt::Checked
+    pvalue9PacketResponseExpected->setCheckState(Qt::Checked);                     // Qt::Unchecked or Qt::Checked
     ui->tableWidget->setItem(ui->tableWidget->rowCount() - 1, 2, pvalue9PacketResponseExpected); // insert item to created row to the third column
 
     QTableWidgetItem *pvalue9PacketArg0 = new QTableWidgetItem("1");             // the value it contains

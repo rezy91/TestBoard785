@@ -27,6 +27,10 @@
 #include "../../../Applications/088/CommProtV200/commprotv200_global.h"
 #include "bytearrayparser.h"
 #include <QSettings>
+#include <QTimer>
+
+
+#define NMB_ITEMS_FOR_TIMERS    4
 
 namespace Ui {
 class MainWindow;
@@ -68,8 +72,16 @@ private:
     QSharedPointer<CommProtV200> m_CommProt;
     const quint32 m_nDeviceAddress = 20;
     QSettings* m_pAppSettings = new QSettings(QCoreApplication::organizationName(), QCoreApplication::applicationName(), this);
+    QTimer TmrMstr;
 
-//    void EventsList(QByteArray arrData);
+    QByteArray assemblyMsq[NMB_ITEMS_FOR_TIMERS];
+    bool respExp[NMB_ITEMS_FOR_TIMERS];
+
+    quint32 RequirementTime_ms[NMB_ITEMS_FOR_TIMERS] = {500,1000,2000,4000};
+    quint32 CurrentTime_ms[NMB_ITEMS_FOR_TIMERS] = {0,0,0,0};
+    bool timerEnable[NMB_ITEMS_FOR_TIMERS] = {false,false,false,false};
+
+    //    void EventsList(QByteArray arrData);
 //    void StatusRegister(QByteArray arrData);
 
     void AppendText(QString strText);
