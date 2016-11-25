@@ -28,10 +28,7 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
     ui->tableWidget->setColumnWidth(1, 150);
     ui->tableWidget->setColumnWidth(2, 60);
 
-    for(auto comPort : QSerialPortInfo::availablePorts())
-    {
-        ui->comboBox->addItem(comPort.portName());
-    }
+    m_oPortsRefresh.start(500);
 
     // vytvoříme instanci CommProt200
     m_CommProt.reset(CommProtV200_Create(this));
@@ -85,6 +82,7 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
             qDebug() << "Connected";
             ui->statusBar->showMessage("Communication status: Connected");
             m_CommProt.data()->SetEnabled(true);
+            m_oSettingStrorage->StorePortName(m_CommProt.data()->GetLastSetTargetMedium());
             break;
         case CommProtInterface::Enabled:
             ui->statusBar->showMessage("Communication status: Enabled");
@@ -97,6 +95,19 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
             break;
         default:
             break;
+        }
+    });
+
+    connect(&m_oPortsRefresh, &QTimer::timeout, [this]() {
+        if(m_CommProt.data()->GetState() == 0)
+        {
+            static quint32 nLastPortCount = 0;
+            quint32 nPortsCount = QSerialPortInfo::availablePorts().size();
+            if(nLastPortCount != nPortsCount)
+            {
+                nLastPortCount = nPortsCount;
+                SetAvaiblePorts();
+            }
         }
     });
 
@@ -218,6 +229,22 @@ void MainWindow::FillCommandTable()
     //! and next packet definition
 }
 
+void MainWindow::SetAvaiblePorts()
+{
+    ui->comboBox->clear();
+
+    QString strLastPortName = m_oSettingStrorage->LoadPortName();
+
+    for(auto comPort : QSerialPortInfo::availablePorts())
+    {
+        ui->comboBox->addItem(comPort.portName());
+        if(comPort.portName() == strLastPortName)
+        {
+            ui->comboBox->setCurrentText(strLastPortName);
+        }
+    }
+}
+
 void MainWindow::on_clearButton_clicked()
 {
     ui->textBrowser->clear();
@@ -231,11 +258,4 @@ void MainWindow::on_connectButton_clicked()
 void MainWindow::on_disconnectButton_clicked()
 {
      m_CommProt.data()->SetTargetMedium("");
-
-     ui->comboBox->clear();
-
-     for(auto comPort : QSerialPortInfo::availablePorts())
-     {
-         ui->comboBox->addItem(comPort.portName());
-     }
 }

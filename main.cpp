@@ -25,12 +25,16 @@
 int main(int argc, char *argv[])
 {
     QApplication a(argc, argv);
+
+    QCoreApplication::setOrganizationName("btl_projects");
+    QCoreApplication::setApplicationName("testboard785_msgr");
+
     MainWindow w;
 
     QFontDatabase::addApplicationFont("/usr/lib/fonts/Vera.ttf");
     QGuiApplication::setFont(QFont("Vera",15));
 
-    w.setWindowTitle("Amp Direct Tester");
+    w.setWindowTitle(QString("%1 %2").arg(APP_NAME).arg(APP_VERSION));
     w.setWindowIcon(QIcon(":/icon.png"));
     w.show();
 
