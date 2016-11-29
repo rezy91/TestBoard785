@@ -24,6 +24,7 @@
 MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWindow)
 {
     ui->setupUi(this);
+    this->restoreGeometry(m_pSettingStrorage->RestoreGeometry());
     ui->sendButton->setEnabled(false);
     ui->tableWidget->setColumnWidth(1, 150);
     ui->tableWidget->setColumnWidth(2, 60);
@@ -82,7 +83,7 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
             qDebug() << "Connected";
             ui->statusBar->showMessage("Communication status: Connected");
             m_CommProt.data()->SetEnabled(true);
-            m_oSettingStrorage->StorePortName(m_CommProt.data()->GetLastSetTargetMedium());
+            m_pSettingStrorage->StorePortName(m_CommProt.data()->GetLastSetTargetMedium());
             break;
         case CommProtInterface::Enabled:
             ui->statusBar->showMessage("Communication status: Enabled");
@@ -233,7 +234,7 @@ void MainWindow::SetAvaiblePorts()
 {
     ui->comboBox->clear();
 
-    QString strLastPortName = m_oSettingStrorage->LoadPortName();
+    QString strLastPortName = m_pSettingStrorage->RestorePortName();
 
     for(auto comPort : QSerialPortInfo::availablePorts())
     {
@@ -258,4 +259,10 @@ void MainWindow::on_connectButton_clicked()
 void MainWindow::on_disconnectButton_clicked()
 {
      m_CommProt.data()->SetTargetMedium("");
+}
+
+void MainWindow::closeEvent(QCloseEvent *event)
+{
+    m_pSettingStrorage->StoreGeometry(saveGeometry());
+    QWidget::closeEvent(event);
 }

@@ -69,7 +69,7 @@ private:
     const quint32 m_nDeviceAddress = 20;
 
     QTimer m_oPortsRefresh;
-    SettingStorage* m_oSettingStrorage = new SettingStorage(this);
+    SettingStorage* m_pSettingStrorage = new SettingStorage(this);
 
 //    void EventsList(QByteArray arrData);
 //    void StatusRegister(QByteArray arrData);
@@ -83,6 +83,10 @@ private:
     void FillCommandTable();
 
     void SetAvaiblePorts();
+
+    // QWidget interface
+protected:
+    void closeEvent(QCloseEvent *event) override;
 };
 
 #endif // MAINWINDOW_H

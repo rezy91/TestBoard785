@@ -37,7 +37,7 @@ RESOURCES += \
     resources.qrc
 
 DEFINES += APP_NAME=\\\"TestAmp785Messenger\\\"
-DEFINES += APP_VERSION=\\\"0.0.0\\\"
+DEFINES += APP_VERSION=\\\"0.1.0\\\"
 
 unix {
     target.path = /opt/btl

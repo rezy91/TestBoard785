@@ -10,9 +10,9 @@ void SettingStorage::StorePortName(const QString &strPortName)
     StoreValue(QString("portname"), strPortName);
 }
 
-QString SettingStorage::LoadPortName() const
+QString SettingStorage::RestorePortName() const
 {
-    return LoadValue(QString("portname")).toString();
+    return RestoreValue(QString("portname")).toString();
 }
 
 void SettingStorage::StoreValue(const QString &strKey, const QVariant &vValue)
@@ -20,7 +20,17 @@ void SettingStorage::StoreValue(const QString &strKey, const QVariant &vValue)
     m_pAppSettings->setValue(strKey, vValue);
 }
 
-QVariant SettingStorage::LoadValue(const QString& strKey) const
+QVariant SettingStorage::RestoreValue(const QString& strKey) const
 {
     return m_pAppSettings->value(strKey);
+}
+
+void SettingStorage::StoreGeometry(const QByteArray &arrGeometry)
+{
+    StoreValue("geometry", arrGeometry);
+}
+
+QByteArray SettingStorage::RestoreGeometry() const
+{
+    return RestoreValue("geometry").toByteArray();
 }
