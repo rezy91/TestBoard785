@@ -30,7 +30,7 @@
 #include <QTimer>
 
 
-#define NMB_ITEMS_FOR_TIMERS    4
+#define NMB_ITEMS_FOR_TIMERS    6
 
 namespace Ui {
 class MainWindow;
@@ -77,9 +77,9 @@ private:
     QByteArray assemblyMsq[NMB_ITEMS_FOR_TIMERS];
     bool respExp[NMB_ITEMS_FOR_TIMERS];
 
-    quint32 RequirementTime_ms[NMB_ITEMS_FOR_TIMERS] = {500,1000,2000,4000};
-    quint32 CurrentTime_ms[NMB_ITEMS_FOR_TIMERS] = {0,0,0,0};
-    bool timerEnable[NMB_ITEMS_FOR_TIMERS] = {false,false,false,false};
+    quint32 RequirementTime_ms[NMB_ITEMS_FOR_TIMERS] = {1000,50,1000,100,1000,100};
+    quint32 CurrentTime_ms[NMB_ITEMS_FOR_TIMERS] = {0,0,0,0,0,0};
+    bool timerEnable[NMB_ITEMS_FOR_TIMERS] = {false,false,false,false,false,false};
 
     //    void EventsList(QByteArray arrData);
 //    void StatusRegister(QByteArray arrData);

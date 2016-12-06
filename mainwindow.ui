@@ -35,7 +35,7 @@
          <number>0</number>
         </property>
         <property name="columnCount">
-         <number>17</number>
+         <number>21</number>
         </property>
         <attribute name="horizontalHeaderDefaultSectionSize">
          <number>50</number>
@@ -129,6 +129,26 @@
         <column>
          <property name="text">
           <string>arg13</string>
+         </property>
+        </column>
+        <column>
+         <property name="text">
+          <string>arg14</string>
+         </property>
+        </column>
+        <column>
+         <property name="text">
+          <string>arg15</string>
+         </property>
+        </column>
+        <column>
+         <property name="text">
+          <string>arg16</string>
+         </property>
+        </column>
+        <column>
+         <property name="text">
+          <string>arg17</string>
          </property>
         </column>
        </widget>
