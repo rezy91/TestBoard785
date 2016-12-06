@@ -8,8 +8,18 @@ QT += core gui serialport
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
-TARGET = TestAmp785
 TEMPLATE = app
+
+APPNAME = TestAmp785Messenger
+VERSION = 0.1.0
+
+TARGET = "$$APPNAME $$VERSION"
+
+CONFIG += c++11
+
+DEFINES += APP_NAME=\\\"$$APPNAME\\\"
+DEFINES += APP_VERSION=\\\"$$VERSION\\\"
+
 CONFIG += c++11
 
 SOURCES += main.cpp\
@@ -25,6 +35,10 @@ FORMS    += mainwindow.ui
 INCLUDEPATH += $$PWD/../../../Applications/088
 DEPENDPATH += $$PWD/../../../Applications/088
 
+win32 {
+    RC_FILE = app.rc
+}
+
 win32:CONFIG(debug, debug|release) {
     LIBS += -L$$PWD/../../../Applications/088/build-CommProtV200-win32-Debug/debug/ -lCommProtV200
 }
@@ -35,9 +49,6 @@ win32:CONFIG(release, debug|release) {
 
 RESOURCES += \
     resources.qrc
-
-DEFINES += APP_NAME=\\\"TestAmp785Messenger\\\"
-DEFINES += APP_VERSION=\\\"0.1.0\\\"
 
 unix {
     target.path = /opt/btl

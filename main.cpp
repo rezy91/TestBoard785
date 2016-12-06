@@ -35,7 +35,7 @@ int main(int argc, char *argv[])
     QGuiApplication::setFont(QFont("Vera",15));
 
     w.setWindowTitle(QString("%1 %2").arg(APP_NAME).arg(APP_VERSION));
-    w.setWindowIcon(QIcon(":/icon.png"));
+    w.setWindowIcon(QIcon(":/appicon.ico"));
     w.show();
 
     return a.exec();
