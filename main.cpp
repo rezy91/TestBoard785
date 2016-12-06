@@ -27,7 +27,7 @@ int main(int argc, char *argv[])
     QApplication a(argc, argv);
 
     QCoreApplication::setOrganizationName("btl_projects");
-    QCoreApplication::setApplicationName("testboard785_msgr");
+    QCoreApplication::setApplicationName(APP_NAME);
 
     MainWindow w;
 
