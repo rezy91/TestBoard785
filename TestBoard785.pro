@@ -27,6 +27,10 @@ win32:CONFIG(debug, debug|release) {
     LIBS += -L$$PWD/../../../Applications/088/build-CommProtV200-win32-Debug/debug/ -lCommProtV200
 }
 
+win32:CONFIG(release, debug|release) {
+    LIBS += -L$$PWD/../../../Applications/088/build-CommProtV200-win32-Release/release/ -lCommProtV200
+}
+
 RESOURCES += \
     resources.qrc
 
