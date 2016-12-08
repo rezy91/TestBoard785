@@ -77,7 +77,7 @@ private:
     QByteArray assemblyMsq[NMB_ITEMS_FOR_TIMERS];
     bool respExp[NMB_ITEMS_FOR_TIMERS];
 
-    quint32 RequirementTime_ms[NMB_ITEMS_FOR_TIMERS] = {1000,50,1000,100,1000,100};
+    quint32 RequirementTime_ms[NMB_ITEMS_FOR_TIMERS] = {1000,50,1000,10,1000,100};
     quint32 CurrentTime_ms[NMB_ITEMS_FOR_TIMERS] = {0,0,0,0,0,0};
     bool timerEnable[NMB_ITEMS_FOR_TIMERS] = {false,false,false,false,false,false};
 

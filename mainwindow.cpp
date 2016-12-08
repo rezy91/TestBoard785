@@ -530,13 +530,13 @@ void MainWindow::FillCommandTable()
     QTableWidgetItem *pvalue14PacketArg0 = new QTableWidgetItem("0");             // the value it contains
     pvalue14PacketArg0->setData(TableRoles::ByteCount, 1);                            // the value is 3 bytes
     pvalue14PacketArg0->setData(TableRoles::NumeralSystem, TableRoles::Decimal);      // packet id is displayed as decimal
-    pvalue14PacketArg0->setData(Qt::ToolTipRole, "(2)[0-1] enable/disable");     // a hint which is displayed when mouse hovers over
+    pvalue14PacketArg0->setData(Qt::ToolTipRole, "(3)[0-1] enable/disable");     // a hint which is displayed when mouse hovers over
     ui->tableWidget->setItem(ui->tableWidget->rowCount() - 1, 3, pvalue14PacketArg0); // insert item to created row to the fourth column
 
     QTableWidgetItem *pvalue14PacketArg1 = new QTableWidgetItem("0");             // the value it contains
     pvalue14PacketArg1->setData(TableRoles::ByteCount, 1);                            // the value is 3 bytes
     pvalue14PacketArg1->setData(TableRoles::NumeralSystem, TableRoles::Decimal);      // packet id is displayed as decimal
-    pvalue14PacketArg1->setData(Qt::ToolTipRole, "(1)[0-1] enable/disable ");     // a hint which is displayed when mouse hovers over
+    pvalue14PacketArg1->setData(Qt::ToolTipRole, "(2)[0-1] enable/disable ");     // a hint which is displayed when mouse hovers over
     ui->tableWidget->setItem(ui->tableWidget->rowCount() - 1, 4, pvalue14PacketArg1); // insert item to created row to the fourth column
 
     QTableWidgetItem *pvalue14PacketArg2 = new QTableWidgetItem("0");             // the value it contains
@@ -569,7 +569,7 @@ void MainWindow::FillCommandTable()
 
         if(!(loop % 2))
         {
-            pvalue17PacketArg->setText("2973");
+            pvalue17PacketArg->setText("3300");
             pvalue17PacketArg->setData(Qt::ToolTipRole, "Divident channel[" + QString::number(loop / 2) + "]");
         }
         else
@@ -606,7 +606,7 @@ void MainWindow::FillCommandTable()
 
         if(!(loop % 2))
         {
-            pvalue15PacketArg->setText("2973");
+            pvalue15PacketArg->setText("3300");
             pvalue15PacketArg->setData(Qt::ToolTipRole, "Divident channel[" + QString::number(loop / 2) + "]");
         }
         else
@@ -643,7 +643,7 @@ void MainWindow::FillCommandTable()
 
         if(!(loop % 2))
         {
-            pvalue16PacketArg->setText("2973");
+            pvalue16PacketArg->setText("3300");
             pvalue16PacketArg->setData(Qt::ToolTipRole, "Divident channel[" + QString::number(loop / 2) + "]");
         }
         else
