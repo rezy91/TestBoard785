@@ -27,6 +27,7 @@
 #include "../../../Applications/088/CommProtV200/commprotv200_global.h"
 #include "bytearrayparser.h"
 #include "settingstorage.h"
+#include "settingstoragetestboard785.h"
 
 namespace Ui {
 class MainWindow;
@@ -69,7 +70,7 @@ private:
     const quint32 m_nDeviceAddress = 20;
 
     QTimer m_oPortsRefresh;
-    SettingStorage* m_pSettingStrorage = new SettingStorage(this);
+    SettingStorageTestBoard785* m_pSettingStrorage = new SettingStorageTestBoard785(this);
 
 //    void EventsList(QByteArray arrData);
 //    void StatusRegister(QByteArray arrData);
