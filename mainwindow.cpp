@@ -800,3 +800,7 @@ void MainWindow::on_disconnectButton_clicked()
          timerEnable[loop] = false;
      }
 }
+
+void MainWindow::on_checkBox_clicked()
+{
+}

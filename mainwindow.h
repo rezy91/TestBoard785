@@ -67,6 +67,8 @@ private slots:
 
     void on_disconnectButton_clicked();
 
+    void on_checkBox_clicked();
+
 private:
     Ui::MainWindow *ui;
     QSharedPointer<CommProtV200> m_CommProt;
@@ -80,6 +82,8 @@ private:
     quint32 RequirementTime_ms[NMB_ITEMS_FOR_TIMERS] = {1000,100,1000,100,1000,100};
     quint32 CurrentTime_ms[NMB_ITEMS_FOR_TIMERS] = {0,0,0,0,0,0};
     bool timerEnable[NMB_ITEMS_FOR_TIMERS] = {false,false,false,false,false,false};
+
+    bool SaveData = true;
 
     //    void EventsList(QByteArray arrData);
 //    void StatusRegister(QByteArray arrData);
