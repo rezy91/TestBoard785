@@ -301,33 +301,6 @@ void MainWindow::FillCommandTable()
     ui->tableWidget->setItem(ui->tableWidget->rowCount() - 1, 4, pvalue3PacketArg1); // insert item to created row to the fourth column
 
 
-
-
-    //! and next packet definition
-    // the first column
-    ui->tableWidget->insertRow(ui->tableWidget->rowCount());                            // create new row in table
-    QTableWidgetItem *pvalue5PacketID = new QTableWidgetItem("32");                  // paket id
-    pvalue5PacketID->setData(TableRoles::ByteCount, 1);                              // paket id is 1 byte
-    pvalue5PacketID->setData(TableRoles::NumeralSystem, TableRoles::Hex);            // packet id is displayed as hex
-    ui->tableWidget->setItem(ui->tableWidget->rowCount() - 1, 0, pvalue5PacketID);   // insert item to created row to the first column
-
-    // the second column (it has no impact on data to be sent)
-    QTableWidgetItem *pvalue5PacketName = new QTableWidgetItem("DO_PEAK");     // readable description
-    ui->tableWidget->setItem(ui->tableWidget->rowCount() - 1, 1, pvalue5PacketName); // insert item to created row to the second column
-
-    // the third column
-    QTableWidgetItem *pvalue5PacketResponseExpected = new QTableWidgetItem();        // is response expected?
-    pvalue5PacketResponseExpected->setCheckState(Qt::Unchecked);                     // Qt::Unchecked or Qt::Checked
-    ui->tableWidget->setItem(ui->tableWidget->rowCount() - 1, 2, pvalue5PacketResponseExpected); // insert item to created row to the third column
-
-    // the fourth column
-    QTableWidgetItem *pvalue5PacketArg0 = new QTableWidgetItem("10");             // the value it contains
-    pvalue5PacketArg0->setData(TableRoles::ByteCount, 1);                            // the value is 3 bytes
-    pvalue5PacketArg0->setData(TableRoles::NumeralSystem, TableRoles::Decimal);      // packet id is displayed as decimal
-    pvalue5PacketArg0->setData(Qt::ToolTipRole, "[1-100] in us");     // a hint which is displayed when mouse hovers over
-    ui->tableWidget->setItem(ui->tableWidget->rowCount() - 1, 3, pvalue5PacketArg0); // insert item to created row to the fourth column
-
-
     //! and next packet definition
     // the first column
     ui->tableWidget->insertRow(ui->tableWidget->rowCount());                            // create new row in table
@@ -380,7 +353,7 @@ void MainWindow::FillCommandTable()
     QTableWidgetItem *pvalue83PacketArg0 = new QTableWidgetItem("1");             // the value it contains
     pvalue83PacketArg0->setData(TableRoles::ByteCount, 1);                            // the value is 3 bytes
     pvalue83PacketArg0->setData(TableRoles::NumeralSystem, TableRoles::Decimal);      // packet id is displayed as decimal
-    pvalue83PacketArg0->setData(Qt::ToolTipRole, "[0-1]");     // a hint which is displayed when mouse hovers over
+    pvalue83PacketArg0->setData(Qt::ToolTipRole, "[0-1] disable/enable");     // a hint which is displayed when mouse hovers over
     ui->tableWidget->setItem(ui->tableWidget->rowCount() - 1, 3, pvalue83PacketArg0); // insert item to created row to the fourth column
 
 
@@ -404,7 +377,7 @@ void MainWindow::FillCommandTable()
     QTableWidgetItem *pvalue93PacketArg0 = new QTableWidgetItem("1");             // the value it contains
     pvalue93PacketArg0->setData(TableRoles::ByteCount, 1);                            // the value is 3 bytes
     pvalue93PacketArg0->setData(TableRoles::NumeralSystem, TableRoles::Decimal);      // packet id is displayed as decimal
-    pvalue93PacketArg0->setData(Qt::ToolTipRole, "[0-1]");     // a hint which is displayed when mouse hovers over
+    pvalue93PacketArg0->setData(Qt::ToolTipRole, "[0-1] disable/enable");     // a hint which is displayed when mouse hovers over
     ui->tableWidget->setItem(ui->tableWidget->rowCount() - 1, 3, pvalue93PacketArg0); // insert item to created row to the fourth column
 
 
@@ -430,7 +403,7 @@ void MainWindow::FillCommandTable()
     QTableWidgetItem *pvalue8PacketArg0 = new QTableWidgetItem("1");             // the value it contains
     pvalue8PacketArg0->setData(TableRoles::ByteCount, 1);                            // the value is 3 bytes
     pvalue8PacketArg0->setData(TableRoles::NumeralSystem, TableRoles::Decimal);      // packet id is displayed as decimal
-    pvalue8PacketArg0->setData(Qt::ToolTipRole, "[0-1]");     // a hint which is displayed when mouse hovers over
+    pvalue8PacketArg0->setData(Qt::ToolTipRole, "[0-1] disable/enable");     // a hint which is displayed when mouse hovers over
     ui->tableWidget->setItem(ui->tableWidget->rowCount() - 1, 3, pvalue8PacketArg0); // insert item to created row to the fourth column
 
 
@@ -454,7 +427,7 @@ void MainWindow::FillCommandTable()
     QTableWidgetItem *pvalue9PacketArg0 = new QTableWidgetItem("1");             // the value it contains
     pvalue9PacketArg0->setData(TableRoles::ByteCount, 1);                            // the value is 3 bytes
     pvalue9PacketArg0->setData(TableRoles::NumeralSystem, TableRoles::Decimal);      // packet id is displayed as decimal
-    pvalue9PacketArg0->setData(Qt::ToolTipRole, "[0-1]");     // a hint which is displayed when mouse hovers over
+    pvalue9PacketArg0->setData(Qt::ToolTipRole, "[0-1] disable/enable");     // a hint which is displayed when mouse hovers over
     ui->tableWidget->setItem(ui->tableWidget->rowCount() - 1, 3, pvalue9PacketArg0); // insert item to created row to the fourth column
 
 
@@ -479,7 +452,7 @@ void MainWindow::FillCommandTable()
     QTableWidgetItem *pvalue10PacketArg0 = new QTableWidgetItem("1");             // the value it contains
     pvalue10PacketArg0->setData(TableRoles::ByteCount, 1);                            // the value is 3 bytes
     pvalue10PacketArg0->setData(TableRoles::NumeralSystem, TableRoles::Decimal);      // packet id is displayed as decimal
-    pvalue10PacketArg0->setData(Qt::ToolTipRole, "[0-1]");     // a hint which is displayed when mouse hovers over
+    pvalue10PacketArg0->setData(Qt::ToolTipRole, "[0-1] disable/enable");     // a hint which is displayed when mouse hovers over
     ui->tableWidget->setItem(ui->tableWidget->rowCount() - 1, 3, pvalue10PacketArg0); // insert item to created row to the fourth column
 
 
@@ -504,7 +477,7 @@ void MainWindow::FillCommandTable()
     QTableWidgetItem *pvalue11PacketArg0 = new QTableWidgetItem("1");             // the value it contains
     pvalue11PacketArg0->setData(TableRoles::ByteCount, 1);                            // the value is 3 bytes
     pvalue11PacketArg0->setData(TableRoles::NumeralSystem, TableRoles::Decimal);      // packet id is displayed as decimal
-    pvalue11PacketArg0->setData(Qt::ToolTipRole, "[0-1]");     // a hint which is displayed when mouse hovers over
+    pvalue11PacketArg0->setData(Qt::ToolTipRole, "[0-1] disable/enable");     // a hint which is displayed when mouse hovers over
     ui->tableWidget->setItem(ui->tableWidget->rowCount() - 1, 3, pvalue11PacketArg0); // insert item to created row to the fourth column
 
 
@@ -530,19 +503,19 @@ void MainWindow::FillCommandTable()
     QTableWidgetItem *pvalue14PacketArg0 = new QTableWidgetItem("0");             // the value it contains
     pvalue14PacketArg0->setData(TableRoles::ByteCount, 1);                            // the value is 3 bytes
     pvalue14PacketArg0->setData(TableRoles::NumeralSystem, TableRoles::Decimal);      // packet id is displayed as decimal
-    pvalue14PacketArg0->setData(Qt::ToolTipRole, "(3)[0-1] enable/disable");     // a hint which is displayed when mouse hovers over
+    pvalue14PacketArg0->setData(Qt::ToolTipRole, "(3)[0-1] disable/enable");     // a hint which is displayed when mouse hovers over
     ui->tableWidget->setItem(ui->tableWidget->rowCount() - 1, 3, pvalue14PacketArg0); // insert item to created row to the fourth column
 
     QTableWidgetItem *pvalue14PacketArg1 = new QTableWidgetItem("0");             // the value it contains
     pvalue14PacketArg1->setData(TableRoles::ByteCount, 1);                            // the value is 3 bytes
     pvalue14PacketArg1->setData(TableRoles::NumeralSystem, TableRoles::Decimal);      // packet id is displayed as decimal
-    pvalue14PacketArg1->setData(Qt::ToolTipRole, "(2)[0-1] enable/disable ");     // a hint which is displayed when mouse hovers over
+    pvalue14PacketArg1->setData(Qt::ToolTipRole, "(2)[0-1] disable/enable ");     // a hint which is displayed when mouse hovers over
     ui->tableWidget->setItem(ui->tableWidget->rowCount() - 1, 4, pvalue14PacketArg1); // insert item to created row to the fourth column
 
     QTableWidgetItem *pvalue14PacketArg2 = new QTableWidgetItem("0");             // the value it contains
     pvalue14PacketArg2->setData(TableRoles::ByteCount, 1);                            // the value is 3 bytes
     pvalue14PacketArg2->setData(TableRoles::NumeralSystem, TableRoles::Decimal);      // packet id is displayed as decimal
-    pvalue14PacketArg2->setData(Qt::ToolTipRole, "(1)[0-1] enable/disable ");     // a hint which is displayed when mouse hovers over
+    pvalue14PacketArg2->setData(Qt::ToolTipRole, "(1)[0-1] disable/enable ");     // a hint which is displayed when mouse hovers over
     ui->tableWidget->setItem(ui->tableWidget->rowCount() - 1, 5, pvalue14PacketArg2); // insert item to created row to the fourth column
 
 
@@ -657,6 +630,118 @@ void MainWindow::FillCommandTable()
         ui->tableWidget->setItem(ui->tableWidget->rowCount() - 1, 3 + loop, pvalue16PacketArg);
     }
 
+
+
+    //! and next packet definition
+    // the first column
+    ui->tableWidget->insertRow(ui->tableWidget->rowCount());                            // create new row in table
+    QTableWidgetItem *pvalue18PacketID = new QTableWidgetItem("44");                  // paket id
+    pvalue18PacketID->setData(TableRoles::ByteCount, 1);                              // paket id is 1 byte
+    pvalue18PacketID->setData(TableRoles::NumeralSystem, TableRoles::Hex);            // packet id is displayed as hex
+    ui->tableWidget->setItem(ui->tableWidget->rowCount() - 1, 0, pvalue18PacketID);   // insert item to created row to the first column
+
+    // the second column (it has no impact on data to be sent)
+    QTableWidgetItem *pvalue18PacketName = new QTableWidgetItem("(RE)SET OUTPUT (X)");     // readable description
+    ui->tableWidget->setItem(ui->tableWidget->rowCount() - 1, 1, pvalue18PacketName); // insert item to created row to the second column
+
+    // the third column
+    QTableWidgetItem *pvalue18PacketResponseExpected = new QTableWidgetItem();        // is response expected?
+    pvalue18PacketResponseExpected->setCheckState(Qt::Unchecked);                     // Qt::Unchecked or Qt::Checked
+    ui->tableWidget->setItem(ui->tableWidget->rowCount() - 1, 2, pvalue18PacketResponseExpected); // insert item to created row to the third column
+
+    // the fourth column
+    QTableWidgetItem *pvalue18PacketArg0 = new QTableWidgetItem("0");             // the value it contains
+    pvalue18PacketArg0->setData(TableRoles::ByteCount, 1);                            // the value is 3 bytes
+    pvalue18PacketArg0->setData(TableRoles::NumeralSystem, TableRoles::Decimal);      // packet id is displayed as decimal
+    pvalue18PacketArg0->setData(Qt::ToolTipRole, "(REL_OUT_1) [0-1] disable/enable");     // a hint which is displayed when mouse hovers over
+    ui->tableWidget->setItem(ui->tableWidget->rowCount() - 1, 3, pvalue18PacketArg0); // insert item to created row to the fourth column
+
+    // the fourth column
+    QTableWidgetItem *pvalue18PacketArg1 = new QTableWidgetItem("0");             // the value it contains
+    pvalue18PacketArg1->setData(TableRoles::ByteCount, 1);                            // the value is 3 bytes
+    pvalue18PacketArg1->setData(TableRoles::NumeralSystem, TableRoles::Decimal);      // packet id is displayed as decimal
+    pvalue18PacketArg1->setData(Qt::ToolTipRole, "(REL_OUT_2) [0-1] disable/enable");     // a hint which is displayed when mouse hovers over
+    ui->tableWidget->setItem(ui->tableWidget->rowCount() - 1, 4, pvalue18PacketArg1); // insert item to created row to the fourth column
+
+    QTableWidgetItem *pvalue18PacketArg2 = new QTableWidgetItem("0");             // the value it contains
+    pvalue18PacketArg2->setData(TableRoles::ByteCount, 1);                            // the value is 3 bytes
+    pvalue18PacketArg2->setData(TableRoles::NumeralSystem, TableRoles::Decimal);      // packet id is displayed as decimal
+    pvalue18PacketArg2->setData(Qt::ToolTipRole, "(REL_OUT_3) [0-1] disable/enable");     // a hint which is displayed when mouse hovers over
+    ui->tableWidget->setItem(ui->tableWidget->rowCount() - 1, 5, pvalue18PacketArg2); // insert item to created row to the fourth column
+
+    QTableWidgetItem *pvalue18PacketArg4 = new QTableWidgetItem("0");             // the value it contains
+    pvalue18PacketArg4->setData(TableRoles::ByteCount, 1);                            // the value is 3 bytes
+    pvalue18PacketArg4->setData(TableRoles::NumeralSystem, TableRoles::Decimal);      // packet id is displayed as decimal
+    pvalue18PacketArg4->setData(Qt::ToolTipRole, "(REL_OUT_4) [0-1] disable/enable");     // a hint which is displayed when mouse hovers over
+    ui->tableWidget->setItem(ui->tableWidget->rowCount() - 1, 6, pvalue18PacketArg4); // insert item to created row to the fourth column
+
+    QTableWidgetItem *pvalue18PacketArg5 = new QTableWidgetItem("0");             // the value it contains
+    pvalue18PacketArg5->setData(TableRoles::ByteCount, 1);                            // the value is 3 bytes
+    pvalue18PacketArg5->setData(TableRoles::NumeralSystem, TableRoles::Decimal);      // packet id is displayed as decimal
+    pvalue18PacketArg5->setData(Qt::ToolTipRole, "(nAMP_RESET) [0-1] disable/enable");     // a hint which is displayed when mouse hovers over
+    ui->tableWidget->setItem(ui->tableWidget->rowCount() - 1, 7, pvalue18PacketArg5); // insert item to created row to the fourth column
+
+    QTableWidgetItem *pvalue18PacketArg6 = new QTableWidgetItem("0");             // the value it contains
+    pvalue18PacketArg6->setData(TableRoles::ByteCount, 1);                            // the value is 3 bytes
+    pvalue18PacketArg6->setData(TableRoles::NumeralSystem, TableRoles::Decimal);      // packet id is displayed as decimal
+    pvalue18PacketArg6->setData(Qt::ToolTipRole, "(Amp_PWR_ON) [0-1] disable/enable");     // a hint which is displayed when mouse hovers over
+    ui->tableWidget->setItem(ui->tableWidget->rowCount() - 1, 8, pvalue18PacketArg6); // insert item to created row to the fourth column
+
+    QTableWidgetItem *pvalue18PacketArg7 = new QTableWidgetItem("0");             // the value it contains
+    pvalue18PacketArg7->setData(TableRoles::ByteCount, 1);                            // the value is 3 bytes
+    pvalue18PacketArg7->setData(TableRoles::NumeralSystem, TableRoles::Decimal);      // packet id is displayed as decimal
+    pvalue18PacketArg7->setData(Qt::ToolTipRole, "(nAMPComm_OCP) [0-1] disable/enable");     // a hint which is displayed when mouse hovers over
+    ui->tableWidget->setItem(ui->tableWidget->rowCount() - 1, 9, pvalue18PacketArg7); // insert item to created row to the fourth column
+
+    QTableWidgetItem *pvalue18PacketArg8 = new QTableWidgetItem("0");             // the value it contains
+    pvalue18PacketArg8->setData(TableRoles::ByteCount, 1);                            // the value is 3 bytes
+    pvalue18PacketArg8->setData(TableRoles::NumeralSystem, TableRoles::Decimal);      // packet id is displayed as decimal
+    pvalue18PacketArg8->setData(Qt::ToolTipRole, "(nGenErr_uP) [0-1] disable/enable");     // a hint which is displayed when mouse hovers over
+    ui->tableWidget->setItem(ui->tableWidget->rowCount() - 1, 10, pvalue18PacketArg8); // insert item to created row to the fourth column
+
+    QTableWidgetItem *pvalue18PacketArg9 = new QTableWidgetItem("0");             // the value it contains
+    pvalue18PacketArg9->setData(TableRoles::ByteCount, 1);                            // the value is 3 bytes
+    pvalue18PacketArg9->setData(TableRoles::NumeralSystem, TableRoles::Decimal);      // packet id is displayed as decimal
+    pvalue18PacketArg9->setData(Qt::ToolTipRole, "(Fraction/Exilis) [0-1] disable/enable");     // a hint which is displayed when mouse hovers over
+    ui->tableWidget->setItem(ui->tableWidget->rowCount() - 1, 11, pvalue18PacketArg9); // insert item to created row to the fourth column
+
+
+    //! and next packet definition
+    // the first column
+    ui->tableWidget->insertRow(ui->tableWidget->rowCount());                            // create new row in table
+    QTableWidgetItem *pvalue19PacketID = new QTableWidgetItem("45");                  // paket id
+    pvalue19PacketID->setData(TableRoles::ByteCount, 1);                              // paket id is 1 byte
+    pvalue19PacketID->setData(TableRoles::NumeralSystem, TableRoles::Hex);            // packet id is displayed as hex
+    ui->tableWidget->setItem(ui->tableWidget->rowCount() - 1, 0, pvalue19PacketID);   // insert item to created row to the first column
+
+    // the second column (it has no impact on data to be sent)
+    QTableWidgetItem *pvalue19PacketName = new QTableWidgetItem("apl_PWR(X)");     // readable description
+    ui->tableWidget->setItem(ui->tableWidget->rowCount() - 1, 1, pvalue19PacketName); // insert item to created row to the second column
+
+    // the third column
+    QTableWidgetItem *pvalue19PacketResponseExpected = new QTableWidgetItem();        // is response expected?
+    pvalue19PacketResponseExpected->setCheckState(Qt::Unchecked);                     // Qt::Unchecked or Qt::Checked
+    ui->tableWidget->setItem(ui->tableWidget->rowCount() - 1, 2, pvalue19PacketResponseExpected); // insert item to created row to the third column
+
+    // the fourth column
+    QTableWidgetItem *pvalue19PacketArg0 = new QTableWidgetItem("10");             // the value it contains
+    pvalue19PacketArg0->setData(TableRoles::ByteCount, 1);                            // the value is 3 bytes
+    pvalue19PacketArg0->setData(TableRoles::NumeralSystem, TableRoles::Decimal);      // packet id is displayed as decimal
+    pvalue19PacketArg0->setData(Qt::ToolTipRole, "(RESET) [0-100] in us");     // a hint which is displayed when mouse hovers over
+    ui->tableWidget->setItem(ui->tableWidget->rowCount() - 1, 3, pvalue19PacketArg0); // insert item to created row to the fourth column
+
+    // the fourth column
+    QTableWidgetItem *pvalue19PacketArg1 = new QTableWidgetItem("0");             // the value it contains
+    pvalue19PacketArg1->setData(TableRoles::ByteCount, 1);                            // the value is 3 bytes
+    pvalue19PacketArg1->setData(TableRoles::NumeralSystem, TableRoles::Decimal);      // packet id is displayed as decimal
+    pvalue19PacketArg1->setData(Qt::ToolTipRole, "(ON) [0-1] disable/enable");     // a hint which is displayed when mouse hovers over
+    ui->tableWidget->setItem(ui->tableWidget->rowCount() - 1, 4, pvalue19PacketArg1); // insert item to created row to the fourth column
+
+    QTableWidgetItem *pvalue19PacketArg2 = new QTableWidgetItem("0");             // the value it contains
+    pvalue19PacketArg2->setData(TableRoles::ByteCount, 1);                            // the value is 3 bytes
+    pvalue19PacketArg2->setData(TableRoles::NumeralSystem, TableRoles::Decimal);      // packet id is displayed as decimal
+    pvalue19PacketArg2->setData(Qt::ToolTipRole, "(OCP) [0-1] disable/enable");     // a hint which is displayed when mouse hovers over
+    ui->tableWidget->setItem(ui->tableWidget->rowCount() - 1, 5, pvalue19PacketArg2); // insert item to created row to the fourth column
 
 }
 
