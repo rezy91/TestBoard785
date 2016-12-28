@@ -62,17 +62,10 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
         ui->statusBar->showMessage("Data received: " + QString(arrData.toHex()));
         AppendText(QString(arrData));
 
-        quint8 nReplyId = ByteArrayParser::GetOneByte(arrData.mid(0, 1));
-
-        switch (nReplyId)
+        if(m_bSaveData)
         {
-//        case 0x1a:
-//            // status register
-//            StatusRegister(arrData);
-//            break;
-        default:
-            qDebug() << "undefined id";
-            break;
+            m_oFile.write(arrData + "\r\n");
+            m_oFile.flush();
         }
     });
 
@@ -762,7 +755,20 @@ void MainWindow::on_clearButton_clicked()
 
 void MainWindow::on_connectButton_clicked()
 {
+    ui->checkBox->setEnabled(false);
+
      m_CommProt.data()->SetTargetMedium(ui->comboBox->currentText());
+
+     if(m_bSaveData)
+     {
+         m_oFile.setFileName(QString("SavedData_%1.txt").arg(QDateTime::currentDateTime().toTime_t()));
+         if(!m_oFile.open(QFile::WriteOnly))
+         {
+             qDebug() << "error: cannot open file";
+             return;
+         }
+     }
+
 }
 
 void MainWindow::SetAvaiblePorts()
@@ -790,6 +796,8 @@ void MainWindow::SetLastPort()
 
 void MainWindow::on_disconnectButton_clicked()
 {
+    ui->checkBox->setEnabled(true);
+
      m_CommProt.data()->SetTargetMedium("");
 
      SetAvaiblePorts();
@@ -799,8 +807,19 @@ void MainWindow::on_disconnectButton_clicked()
      {
          timerEnable[loop] = false;
      }
+
+     if(m_oFile.isOpen())
+     {
+         m_oFile.close();
+         QFileInfo oFileInfo(m_oFile);
+         AppendText(QString("Data saved to <a href=\"%1\">%1</a>, file size is %2 kB").arg(oFileInfo.absoluteFilePath()).arg(static_cast<double>(oFileInfo.size()) / 1024, 0, 'f', 2));
+
+         qDebug() << "Data saved";
+
+     }
 }
 
 void MainWindow::on_checkBox_clicked()
 {
+    m_bSaveData = ui->checkBox->isChecked();
 }

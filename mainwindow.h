@@ -83,7 +83,9 @@ private:
     quint32 CurrentTime_ms[NMB_ITEMS_FOR_TIMERS] = {0,0,0,0,0,0};
     bool timerEnable[NMB_ITEMS_FOR_TIMERS] = {false,false,false,false,false,false};
 
-    bool SaveData = true;
+    bool m_bSaveData = true;
+
+    QFile m_oFile;
 
     //    void EventsList(QByteArray arrData);
 //    void StatusRegister(QByteArray arrData);
