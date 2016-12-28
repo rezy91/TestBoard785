@@ -89,8 +89,10 @@ private:
 
     void SetAvaiblePorts();
 
-    void SetFrequencyPacket();
-    void SetPwmPacket();
+    void FillTable_SetFrequencyPacket();
+    void FillTable_SetPwmPacket();
+    void FillTable_GetFrequencyPacket();
+    void FillTable_GetPulsesWidthsPackets();
 
 protected:
     // QWidget interface

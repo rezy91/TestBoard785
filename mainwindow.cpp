@@ -136,35 +136,38 @@ void MainWindow::on_sendButton_clicked()
 
         for(qint32 nItemIndex = 0; nItemIndex < oTableSelection.count(); ++nItemIndex)
         {
-            if(nItemIndex == 1 || nItemIndex == 2) continue;
+            const QVariant& vDisplayText = oTableSelection.at(nItemIndex).data(Qt::DisplayRole);
+
+            if(nItemIndex == 1 || nItemIndex == 2 || !vDisplayText.isValid()) continue;
 
             qint32 nAlignment = oTableSelection.at(nItemIndex).data(TableRoles::ByteCount).toInt() * 2;
             switch (oTableSelection.at(nItemIndex).data(TableRoles::NumeralSystem).toInt()) {
             case TableRoles::Hex:
             {
-                strCmd += oTableSelection.at(nItemIndex).data().toString().rightJustified(nAlignment, '0');
+                strCmd += vDisplayText.toString().rightJustified(nAlignment, '0');
             }
                 break;
             case TableRoles::Decimal:
             {
-                qint32 nNumber = oTableSelection.at(nItemIndex).data(Qt::DisplayRole).toInt();
+                qint32 nNumber = vDisplayText.toInt();
                 QString strHexNumber = QString::number(nNumber, 16);
                 strCmd += strHexNumber.rightJustified(nAlignment, '0');
             }
                 break;
             case TableRoles::DecimalFloat:
             {
-                QVariant vOriginalNumber = oTableSelection.at(nItemIndex).data(Qt::DisplayRole);
-                qint32 nNumber = vOriginalNumber.toDouble() * oTableSelection.at(nItemIndex).data(TableRoles::DivisorPosition).toInt();
+                qint32 nNumber = vDisplayText.toDouble() * oTableSelection.at(nItemIndex).data(TableRoles::DivisorPosition).toInt();
                 QString strHexNumber = QString::number(nNumber, 16);
                 strCmd += strHexNumber.rightJustified(nAlignment, '0');
             }
+                break;
             default:
                 bParseError = true;
             }
-            qDebug() << strCmd;
 
         }
+        qDebug() << strCmd;
+
         bool bResponseExpected = false;
         if(oTableSelection.count() > 3)
         {
@@ -223,7 +226,7 @@ void MainWindow::AppendText(QString strText)
     ui->textBrowser->append(QString("%1\t%2").arg(QTime::currentTime().toString()).arg(strText));
 }
 
-void MainWindow::SetFrequencyPacket()
+void MainWindow::FillTable_SetFrequencyPacket()
 {
     // the first column
     ui->tableWidget->insertRow(ui->tableWidget->rowCount());                            // create new row in table
@@ -249,7 +252,7 @@ void MainWindow::SetFrequencyPacket()
     ui->tableWidget->setItem(ui->tableWidget->rowCount() - 1, 3, pFrequencyPacketArg0); // insert item to created row to the fourth column
 }
 
-void MainWindow::SetPwmPacket()
+void MainWindow::FillTable_SetPwmPacket()
 {
     // the first column
     ui->tableWidget->insertRow(ui->tableWidget->rowCount());                            // create new row in table
@@ -270,19 +273,58 @@ void MainWindow::SetPwmPacket()
     // the fourth column
 //    QDoubleSpinBox *pDoubleSpinBox = new QDoubleSpinBox();
 //    ui->tableWidget->setCellWidget(ui->tableWidget->rowCount() - 1, 3, pDoubleSpinBox);
-    QTableWidgetItem *pPacketArg0 = new QTableWidgetItem("50.00");
+    QTableWidgetItem *pPacketArg0 = new QTableWidgetItem("50.0");
     pPacketArg0->setData(TableRoles::ByteCount, 2);                                     // the value is 3 bytes
     pPacketArg0->setData(TableRoles::NumeralSystem, TableRoles::DecimalFloat);          // packet id is displayed as float in decimal
-    pPacketArg0->setData(TableRoles::DivisorPosition, 100);
-    pPacketArg0->setData(Qt::ToolTipRole, "from 0.00 to 100.00 %");                     // a hint which is displayed when mouse hovers over
+    pPacketArg0->setData(TableRoles::DivisorPosition, 10);
+    pPacketArg0->setData(Qt::ToolTipRole, "from 0.0 to 100.0 %");                     // a hint which is displayed when mouse hovers over
     ui->tableWidget->setItem(ui->tableWidget->rowCount() - 1, 3, pPacketArg0);          // insert item to created row to the third column
+}
+
+void MainWindow::FillTable_GetFrequencyPacket()
+{
+    // the first column
+    ui->tableWidget->insertRow(ui->tableWidget->rowCount());                            // create new row in table
+    QTableWidgetItem *pPacketID = new QTableWidgetItem("35");                           // paket id
+    pPacketID->setData(TableRoles::ByteCount, 1);                                       // paket id is 1 byte
+    pPacketID->setData(TableRoles::NumeralSystem, TableRoles::Hex);                     // packet id is displayed as hex
+    ui->tableWidget->setItem(ui->tableWidget->rowCount() - 1, 0, pPacketID);            // insert item to created row to the first column
+
+    // the second column (it has no impact on data to be sent)
+    QTableWidgetItem *pPacketName = new QTableWidgetItem("GET_FREQUENCY");              // readable description
+    ui->tableWidget->setItem(ui->tableWidget->rowCount() - 1, 1, pPacketName);          // insert item to created row to the second column
+
+    // the third column (is response expected?)
+    QTableWidgetItem *pPacketResponseExpected = new QTableWidgetItem();                 // is response expected?
+    pPacketResponseExpected->setCheckState(Qt::Checked);                                // Qt::Unchecked or Qt::Checked
+    ui->tableWidget->setItem(ui->tableWidget->rowCount() - 1, 2, pPacketResponseExpected); // insert item to created row to the third column
+}
+
+void MainWindow::FillTable_GetPulsesWidthsPackets()
+{
+    // the first column
+    ui->tableWidget->insertRow(ui->tableWidget->rowCount());                            // create new row in table
+    QTableWidgetItem *pPacketID = new QTableWidgetItem("36");                           // paket id
+    pPacketID->setData(TableRoles::ByteCount, 1);                                       // paket id is 1 byte
+    pPacketID->setData(TableRoles::NumeralSystem, TableRoles::Hex);                     // packet id is displayed as hex
+    ui->tableWidget->setItem(ui->tableWidget->rowCount() - 1, 0, pPacketID);            // insert item to created row to the first column
+
+    // the second column (it has no impact on data to be sent)
+    QTableWidgetItem *pPacketName = new QTableWidgetItem("GET_PULSES_WIDTHS");          // readable description
+    ui->tableWidget->setItem(ui->tableWidget->rowCount() - 1, 1, pPacketName);          // insert item to created row to the second column
+
+    // the third column (is response expected?)
+    QTableWidgetItem *pPacketResponseExpected = new QTableWidgetItem();                 // is response expected?
+    pPacketResponseExpected->setCheckState(Qt::Checked);                                // Qt::Unchecked or Qt::Checked
+    ui->tableWidget->setItem(ui->tableWidget->rowCount() - 1, 2, pPacketResponseExpected); // insert item to created row to the third column
 }
 
 void MainWindow::FillCommandTable()
 {
-    SetFrequencyPacket();
-    SetPwmPacket();
-
+    FillTable_SetFrequencyPacket();
+    FillTable_SetPwmPacket();
+//    FillTable_GetFrequencyPacket();
+//    FillTable_GetPulsesWidthsPackets();
 }
 
 void MainWindow::SetAvaiblePorts()
