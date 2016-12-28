@@ -141,6 +141,9 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
 
     ui->deviceIdLabel->setText(QString("Device Id: %1").arg(m_nDeviceAddress));
     FillCommandTable();
+
+    ui->pushButton->setStyleSheet("background-color:grey;color:white");
+    //ui->pushButton->setStyleSheet("background-color:red;color:black");
 }
 
 MainWindow::~MainWindow()

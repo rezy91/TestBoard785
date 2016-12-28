@@ -182,7 +182,7 @@
      </layout>
     </item>
     <item row="5" column="0">
-     <layout class="QHBoxLayout" name="horizontalLayout" stretch="0,0,0,0,0">
+     <layout class="QHBoxLayout" name="horizontalLayout" stretch="0,0,0,0,0,0">
       <property name="spacing">
        <number>6</number>
       </property>
@@ -192,6 +192,25 @@
       <property name="topMargin">
        <number>0</number>
       </property>
+      <item>
+       <widget class="QPushButton" name="pushButton">
+        <property name="enabled">
+         <bool>false</bool>
+        </property>
+        <property name="baseSize">
+         <size>
+          <width>0</width>
+          <height>0</height>
+         </size>
+        </property>
+        <property name="autoFillBackground">
+         <bool>false</bool>
+        </property>
+        <property name="text">
+         <string>input value</string>
+        </property>
+       </widget>
+      </item>
       <item>
        <widget class="QLabel" name="deviceIdLabel">
         <property name="text">
