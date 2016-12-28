@@ -11,7 +11,7 @@ greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 TEMPLATE = app
 
 APPNAME = TestAmp785Messenger
-VERSION = 0.1.0
+VERSION = 0.2.0
 
 TARGET = "$$APPNAME $$VERSION"
 
