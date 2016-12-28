@@ -41,6 +41,32 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
                 CurrentTime_ms[loop]++;
                 if(CurrentTime_ms[loop] == RequirementTime_ms[loop])
                 {
+                    if(loop == 0)
+                    {
+                        RequirementTime_ms[0] = ui->spinBox->value();
+                    }
+                    else if(loop == 1)
+                    {
+                        RequirementTime_ms[1] = ui->spinBox_2->value();
+                    }
+                    else if(loop == 2)
+                    {
+                        RequirementTime_ms[2] = ui->spinBox_3->value();
+                    }
+                    else if(loop == 3)
+                    {
+                        RequirementTime_ms[3] = ui->spinBox_4->value();
+                    }
+                    else if(loop == 4)
+                    {
+                        RequirementTime_ms[4] = ui->spinBox_5->value();
+                    }
+                    else if(loop == 5)
+                    {
+                        RequirementTime_ms[5] = ui->spinBox_6->value();
+                    }
+
+
                     CurrentTime_ms[loop] = 0;
                     qDebug() << "Timer" << loop << "tick";
                     m_CommProt.data()->SendData(m_nDeviceAddress, assemblyMsq[loop], respExp[loop]);
@@ -756,6 +782,14 @@ void MainWindow::on_clearButton_clicked()
 void MainWindow::on_connectButton_clicked()
 {
     ui->checkBox->setEnabled(false);
+
+
+    RequirementTime_ms[0] = ui->spinBox->value();
+    RequirementTime_ms[1] = ui->spinBox_2->value();
+    RequirementTime_ms[2] = ui->spinBox_3->value();
+    RequirementTime_ms[3] = ui->spinBox_4->value();
+    RequirementTime_ms[4] = ui->spinBox_5->value();
+    RequirementTime_ms[5] = ui->spinBox_6->value();
 
      m_CommProt.data()->SetTargetMedium(ui->comboBox->currentText());
 
