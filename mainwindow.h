@@ -28,6 +28,7 @@
 #include "bytearrayparser.h"
 #include <QSettings>
 #include <QTimer>
+#include <QDesktopServices>
 
 
 #define NMB_ITEMS_FOR_TIMERS    6
@@ -68,6 +69,8 @@ private slots:
     void on_disconnectButton_clicked();
 
     void on_checkBox_clicked();
+
+    void on_textBrowser_anchorClicked(const QUrl &arg1);
 
 private:
     Ui::MainWindow *ui;

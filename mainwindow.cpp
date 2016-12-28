@@ -823,3 +823,8 @@ void MainWindow::on_checkBox_clicked()
 {
     m_bSaveData = ui->checkBox->isChecked();
 }
+
+void MainWindow::on_textBrowser_anchorClicked(const QUrl &arg1)
+{
+    QDesktopServices::openUrl(arg1);
+}
