@@ -24,7 +24,9 @@
 #include <QMainWindow>
 #include <QComboBox>
 #include <QtSerialPort>
+
 #include "../../../Applications/088/CommProtV200/commprotv200_global.h"
+
 #include "bytearrayparser.h"
 #include "settingstorage.h"
 #include "settingstoragetestboard785.h"
@@ -40,11 +42,13 @@ public:
     {
         NumeralSystem = Qt::UserRole + 1,
         ByteCount,
+        DivisorPosition,
     };
 
     enum eNumeralSystem
     {
         Decimal,
+        DecimalFloat,
         Hex
     };
 };
@@ -85,8 +89,11 @@ private:
 
     void SetAvaiblePorts();
 
-    // QWidget interface
+    void SetFrequencyPacket();
+    void SetPwmPacket();
+
 protected:
+    // QWidget interface
     void closeEvent(QCloseEvent *event) override;
 };
 
