@@ -93,21 +93,25 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
         {
             if(arrData.at(0) == '1')
             {
-                ui->toolButton->setStyleSheet("background-color:red;color:black");
+                ui->toolButton->setStyleSheet("background-color:red;color:black;font:11px");
+                ui->radioButton->setChecked(true);
+                ui->radioButton->setStyleSheet("color:red; font: 12px");
             }
             else if(arrData.at(0) == '0')
             {
-                ui->toolButton->setStyleSheet("background-color:grey;color:white");
+                ui->toolButton->setStyleSheet("background-color:grey;color:white;font:11px");
+                ui->radioButton->setChecked(false);
+                ui->radioButton->setStyleSheet("color:green; font: 12px");
             }
             if(arrData.at(3) == '|')
             {
                 if(arrData.at(2) == '1')
                 {
-                    ui->toolButton_2->setStyleSheet("background-color:red;color:black");
+                    ui->toolButton_2->setStyleSheet("background-color:red;color:black;font:11px");
                 }
                 else if(arrData.at(2) == '0')
                 {
-                    ui->toolButton_2->setStyleSheet("background-color:grey;color:white");
+                    ui->toolButton_2->setStyleSheet("background-color:grey;color:white;font:11px");
                 }
             }
         }
