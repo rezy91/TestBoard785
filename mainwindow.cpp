@@ -311,11 +311,6 @@ void MainWindow::FillCommandTable()
     QTableWidgetItem *pvalue1PacketName = new QTableWidgetItem("SET_PWM_COOL_(X)_DUTY");     // readable description
     ui->tableWidget->setItem(ui->tableWidget->rowCount() - 1, 1, pvalue1PacketName); // insert item to created row to the second column
 
-    // the second column (it has no impact on data to be sent)
-    QTableWidgetItem *pvalue1PacketResponseExpected = new QTableWidgetItem();        // is response expected?
-    pvalue1PacketResponseExpected->setCheckState(Qt::Unchecked);                     // Qt::Unchecked or Qt::Checked
-    ui->tableWidget->setItem(ui->tableWidget->rowCount() - 1, 2, pvalue1PacketResponseExpected); // insert item to created row to the third column
-
     // the third column
     QTableWidgetItem *pvalue1PacketArg0 = new QTableWidgetItem("15");             // the value it contains
     pvalue1PacketArg0->setData(TableRoles::ByteCount, 1);                            // the value is 3 bytes
@@ -345,11 +340,6 @@ void MainWindow::FillCommandTable()
     QTableWidgetItem *pvalue3PacketName = new QTableWidgetItem("SET_DAC_(X)");     // readable description
     ui->tableWidget->setItem(ui->tableWidget->rowCount() - 1, 1, pvalue3PacketName); // insert item to created row to the second column
 
-    // the third column
-    QTableWidgetItem *pvalue3PacketResponseExpected = new QTableWidgetItem();        // is response expected?
-    pvalue3PacketResponseExpected->setCheckState(Qt::Unchecked);                     // Qt::Unchecked or Qt::Checked
-    ui->tableWidget->setItem(ui->tableWidget->rowCount() - 1, 2, pvalue3PacketResponseExpected); // insert item to created row to the third column
-
     // the fourth column
     QTableWidgetItem *pvalue3PacketArg0 = new QTableWidgetItem("200");             // the value it contains
     pvalue3PacketArg0->setData(TableRoles::ByteCount, 2);                            // the value is 3 bytes
@@ -377,11 +367,6 @@ void MainWindow::FillCommandTable()
     QTableWidgetItem *pvalue4PacketName = new QTableWidgetItem("READ INPUT");     // readable description
     ui->tableWidget->setItem(ui->tableWidget->rowCount() - 1, 1, pvalue4PacketName); // insert item to created row to the second column
 
-    // the third column
-    QTableWidgetItem *pvalue4PacketResponseExpected = new QTableWidgetItem();        // is response expected?
-    pvalue4PacketResponseExpected->setCheckState(Qt::Checked);                     // Qt::Unchecked or Qt::Checked
-    ui->tableWidget->setItem(ui->tableWidget->rowCount() - 1, 2, pvalue4PacketResponseExpected); // insert item to created row to the third column
-
     // the fourth column
     QTableWidgetItem *pvalue4PacketArg0 = new QTableWidgetItem("1");             // the value it contains
     pvalue4PacketArg0->setData(TableRoles::ByteCount, 1);                            // the value is 3 bytes
@@ -401,11 +386,6 @@ void MainWindow::FillCommandTable()
     // the second column (it has no impact on data to be sent)
     QTableWidgetItem *pvalue6PacketName = new QTableWidgetItem("SET_PWM_CQM_(X)_FREQ");     // readable description
     ui->tableWidget->setItem(ui->tableWidget->rowCount() - 1, 1, pvalue6PacketName); // insert item to created row to the second column
-
-    // the third column
-    QTableWidgetItem *pvalue6PacketResponseExpected = new QTableWidgetItem();        // is response expected?
-    pvalue6PacketResponseExpected->setCheckState(Qt::Unchecked);                     // Qt::Unchecked or Qt::Checked
-    ui->tableWidget->setItem(ui->tableWidget->rowCount() - 1, 2, pvalue6PacketResponseExpected); // insert item to created row to the third column
 
     // the fourth column
     QTableWidgetItem *pvalue6PacketArg0 = new QTableWidgetItem("10000");             // the value it contains
@@ -434,11 +414,6 @@ void MainWindow::FillCommandTable()
     QTableWidgetItem *pvalue83PacketName = new QTableWidgetItem("ADC3_SEND_ADJUSTED_DATA");     // readable description
     ui->tableWidget->setItem(ui->tableWidget->rowCount() - 1, 1, pvalue83PacketName); // insert item to created row to the second column
 
-    // the third column
-    QTableWidgetItem *pvalue83PacketResponseExpected = new QTableWidgetItem();        // is response expected?
-    pvalue83PacketResponseExpected->setCheckState(Qt::Checked);                     // Qt::Unchecked or Qt::Checked
-    ui->tableWidget->setItem(ui->tableWidget->rowCount() - 1, 2, pvalue83PacketResponseExpected); // insert item to created row to the third column
-
     QTableWidgetItem *pvalue83PacketArg0 = new QTableWidgetItem("1");             // the value it contains
     pvalue83PacketArg0->setData(TableRoles::ByteCount, 1);                            // the value is 3 bytes
     pvalue83PacketArg0->setData(TableRoles::NumeralSystem, TableRoles::Decimal);      // packet id is displayed as decimal
@@ -457,11 +432,6 @@ void MainWindow::FillCommandTable()
     // the second column (it has no impact on data to be sent)
     QTableWidgetItem *pvalue93PacketName = new QTableWidgetItem("ADC3_SEND_AVERAGE_DATA");     // readable description
     ui->tableWidget->setItem(ui->tableWidget->rowCount() - 1, 1, pvalue93PacketName); // insert item to created row to the second column
-
-    // the third column
-    QTableWidgetItem *pvalue93PacketResponseExpected = new QTableWidgetItem();        // is response expected?
-    pvalue93PacketResponseExpected->setCheckState(Qt::Checked);                     // Qt::Unchecked or Qt::Checked
-    ui->tableWidget->setItem(ui->tableWidget->rowCount() - 1, 2, pvalue93PacketResponseExpected); // insert item to created row to the third column
 
     QTableWidgetItem *pvalue93PacketArg0 = new QTableWidgetItem("1");             // the value it contains
     pvalue93PacketArg0->setData(TableRoles::ByteCount, 1);                            // the value is 3 bytes
@@ -484,11 +454,6 @@ void MainWindow::FillCommandTable()
     QTableWidgetItem *pvalue8PacketName = new QTableWidgetItem("ADC2_SEND_ADJUSTED_DATA");     // readable description
     ui->tableWidget->setItem(ui->tableWidget->rowCount() - 1, 1, pvalue8PacketName); // insert item to created row to the second column
 
-    // the third column
-    QTableWidgetItem *pvalue8PacketResponseExpected = new QTableWidgetItem();        // is response expected?
-    pvalue8PacketResponseExpected->setCheckState(Qt::Checked);                     // Qt::Unchecked or Qt::Checked
-    ui->tableWidget->setItem(ui->tableWidget->rowCount() - 1, 2, pvalue8PacketResponseExpected); // insert item to created row to the third column
-
     QTableWidgetItem *pvalue8PacketArg0 = new QTableWidgetItem("1");             // the value it contains
     pvalue8PacketArg0->setData(TableRoles::ByteCount, 1);                            // the value is 3 bytes
     pvalue8PacketArg0->setData(TableRoles::NumeralSystem, TableRoles::Decimal);      // packet id is displayed as decimal
@@ -507,11 +472,6 @@ void MainWindow::FillCommandTable()
     // the second column (it has no impact on data to be sent)
     QTableWidgetItem *pvalue9PacketName = new QTableWidgetItem("ADC2_SEND_AVERAGE_DATA");     // readable description
     ui->tableWidget->setItem(ui->tableWidget->rowCount() - 1, 1, pvalue9PacketName); // insert item to created row to the second column
-
-    // the third column
-    QTableWidgetItem *pvalue9PacketResponseExpected = new QTableWidgetItem();        // is response expected?
-    pvalue9PacketResponseExpected->setCheckState(Qt::Checked);                     // Qt::Unchecked or Qt::Checked
-    ui->tableWidget->setItem(ui->tableWidget->rowCount() - 1, 2, pvalue9PacketResponseExpected); // insert item to created row to the third column
 
     QTableWidgetItem *pvalue9PacketArg0 = new QTableWidgetItem("1");             // the value it contains
     pvalue9PacketArg0->setData(TableRoles::ByteCount, 1);                            // the value is 3 bytes
@@ -533,11 +493,6 @@ void MainWindow::FillCommandTable()
     QTableWidgetItem *pvalue10PacketName = new QTableWidgetItem("ADC1_SEND_ADJUSTED_DATA");     // readable description
     ui->tableWidget->setItem(ui->tableWidget->rowCount() - 1, 1, pvalue10PacketName); // insert item to created row to the second column
 
-    // the third column
-    QTableWidgetItem *pvalue10PacketResponseExpected = new QTableWidgetItem();        // is response expected?
-    pvalue10PacketResponseExpected->setCheckState(Qt::Checked);                     // Qt::Unchecked or Qt::Checked
-    ui->tableWidget->setItem(ui->tableWidget->rowCount() - 1, 2, pvalue10PacketResponseExpected); // insert item to created row to the third column
-
     QTableWidgetItem *pvalue10PacketArg0 = new QTableWidgetItem("1");             // the value it contains
     pvalue10PacketArg0->setData(TableRoles::ByteCount, 1);                            // the value is 3 bytes
     pvalue10PacketArg0->setData(TableRoles::NumeralSystem, TableRoles::Decimal);      // packet id is displayed as decimal
@@ -557,11 +512,6 @@ void MainWindow::FillCommandTable()
     // the second column (it has no impact on data to be sent)
     QTableWidgetItem *pvalue11PacketName = new QTableWidgetItem("ADC1_SEND_AVERAGE_DATA");     // readable description
     ui->tableWidget->setItem(ui->tableWidget->rowCount() - 1, 1, pvalue11PacketName); // insert item to created row to the second column
-
-    // the third column
-    QTableWidgetItem *pvalue11PacketResponseExpected = new QTableWidgetItem();        // is response expected?
-    pvalue11PacketResponseExpected->setCheckState(Qt::Checked);                     // Qt::Unchecked or Qt::Checked
-    ui->tableWidget->setItem(ui->tableWidget->rowCount() - 1, 2, pvalue11PacketResponseExpected); // insert item to created row to the third column
 
     QTableWidgetItem *pvalue11PacketArg0 = new QTableWidgetItem("1");             // the value it contains
     pvalue11PacketArg0->setData(TableRoles::ByteCount, 1);                            // the value is 3 bytes
@@ -583,11 +533,6 @@ void MainWindow::FillCommandTable()
     // the second column (it has no impact on data to be sent)
     QTableWidgetItem *pvalue14PacketName = new QTableWidgetItem("ADC(X)_SEND_ROW_DATA");     // readable description
     ui->tableWidget->setItem(ui->tableWidget->rowCount() - 1, 1, pvalue14PacketName); // insert item to created row to the second column
-
-    // the third column
-    QTableWidgetItem *pvalue14PacketResponseExpected = new QTableWidgetItem();        // is response expected?
-    pvalue14PacketResponseExpected->setCheckState(Qt::Unchecked);                     // Qt::Unchecked or Qt::Checked
-    ui->tableWidget->setItem(ui->tableWidget->rowCount() - 1, 2, pvalue14PacketResponseExpected); // insert item to created row to the third column
 
     QTableWidgetItem *pvalue14PacketArg0 = new QTableWidgetItem("0");             // the value it contains
     pvalue14PacketArg0->setData(TableRoles::ByteCount, 1);                            // the value is 3 bytes
@@ -619,11 +564,6 @@ void MainWindow::FillCommandTable()
     // the second column (it has no impact on data to be sent)
     QTableWidgetItem *pvalue17PacketName = new QTableWidgetItem("ADC3_SEND_COEFFICIENT");     // readable description
     ui->tableWidget->setItem(ui->tableWidget->rowCount() - 1, 1, pvalue17PacketName); // insert item to created row to the second column
-
-    // the third column
-    QTableWidgetItem *pvalue17PacketResponseExpected = new QTableWidgetItem();        // is response expected?
-    pvalue17PacketResponseExpected->setCheckState(Qt::Unchecked);                     // Qt::Unchecked or Qt::Checked
-    ui->tableWidget->setItem(ui->tableWidget->rowCount() - 1, 2, pvalue17PacketResponseExpected); // insert item to created row to the third column
 
     for(qint32 loop = 0; loop < 2 * 4; loop++)
     {
@@ -657,11 +597,6 @@ void MainWindow::FillCommandTable()
     QTableWidgetItem *pvalue15PacketName = new QTableWidgetItem("ADC2_SET_COEFFICIENTS");     // readable description
     ui->tableWidget->setItem(ui->tableWidget->rowCount() - 1, 1, pvalue15PacketName); // insert item to created row to the second column
 
-    // the third column
-    QTableWidgetItem *pvalue15PacketResponseExpected = new QTableWidgetItem();        // is response expected?
-    pvalue15PacketResponseExpected->setCheckState(Qt::Unchecked);                     // Qt::Unchecked or Qt::Checked
-    ui->tableWidget->setItem(ui->tableWidget->rowCount() - 1, 2, pvalue15PacketResponseExpected); // insert item to created row to the third column
-
     for(qint32 loop = 0; loop < 2 * 7; loop++)
     {
         QTableWidgetItem *pvalue15PacketArg = new QTableWidgetItem();             // the value it contains
@@ -693,11 +628,6 @@ void MainWindow::FillCommandTable()
     // the second column (it has no impact on data to be sent)
     QTableWidgetItem *pvalue16PacketName = new QTableWidgetItem("ADC1_SEND_COEFFICIENT");     // readable description
     ui->tableWidget->setItem(ui->tableWidget->rowCount() - 1, 1, pvalue16PacketName); // insert item to created row to the second column
-
-    // the third column
-    QTableWidgetItem *pvalue16PacketResponseExpected = new QTableWidgetItem();        // is response expected?
-    pvalue16PacketResponseExpected->setCheckState(Qt::Unchecked);                     // Qt::Unchecked or Qt::Checked
-    ui->tableWidget->setItem(ui->tableWidget->rowCount() - 1, 2, pvalue16PacketResponseExpected); // insert item to created row to the third column
 
     for(qint32 loop = 0; loop < 2 * 9; loop++)
     {
@@ -732,11 +662,6 @@ void MainWindow::FillCommandTable()
     // the second column (it has no impact on data to be sent)
     QTableWidgetItem *pvalue18PacketName = new QTableWidgetItem("(RE)SET OUTPUT (X)");     // readable description
     ui->tableWidget->setItem(ui->tableWidget->rowCount() - 1, 1, pvalue18PacketName); // insert item to created row to the second column
-
-    // the third column
-    QTableWidgetItem *pvalue18PacketResponseExpected = new QTableWidgetItem();        // is response expected?
-    pvalue18PacketResponseExpected->setCheckState(Qt::Unchecked);                     // Qt::Unchecked or Qt::Checked
-    ui->tableWidget->setItem(ui->tableWidget->rowCount() - 1, 2, pvalue18PacketResponseExpected); // insert item to created row to the third column
 
     // the fourth column
     QTableWidgetItem *pvalue18PacketArg0 = new QTableWidgetItem("0");             // the value it contains
@@ -807,19 +732,12 @@ void MainWindow::FillCommandTable()
     QTableWidgetItem *pvalue19PacketName = new QTableWidgetItem("apl_PWR(X)");     // readable description
     ui->tableWidget->setItem(ui->tableWidget->rowCount() - 1, 1, pvalue19PacketName); // insert item to created row to the second column
 
-    // the third column
-    QTableWidgetItem *pvalue19PacketResponseExpected = new QTableWidgetItem();        // is response expected?
-    pvalue19PacketResponseExpected->setCheckState(Qt::Unchecked);                     // Qt::Unchecked or Qt::Checked
-    ui->tableWidget->setItem(ui->tableWidget->rowCount() - 1, 2, pvalue19PacketResponseExpected); // insert item to created row to the third column
-
-    // the fourth column
     QTableWidgetItem *pvalue19PacketArg0 = new QTableWidgetItem("10");             // the value it contains
     pvalue19PacketArg0->setData(TableRoles::ByteCount, 1);                            // the value is 3 bytes
     pvalue19PacketArg0->setData(TableRoles::NumeralSystem, TableRoles::Decimal);      // packet id is displayed as decimal
     pvalue19PacketArg0->setData(Qt::ToolTipRole, "(RESET) [0-100] in us");     // a hint which is displayed when mouse hovers over
     ui->tableWidget->setItem(ui->tableWidget->rowCount() - 1, 3, pvalue19PacketArg0); // insert item to created row to the fourth column
 
-    // the fourth column
     QTableWidgetItem *pvalue19PacketArg1 = new QTableWidgetItem("0");             // the value it contains
     pvalue19PacketArg1->setData(TableRoles::ByteCount, 1);                            // the value is 3 bytes
     pvalue19PacketArg1->setData(TableRoles::NumeralSystem, TableRoles::Decimal);      // packet id is displayed as decimal
