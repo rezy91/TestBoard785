@@ -68,7 +68,7 @@
         </column>
         <column>
          <property name="text">
-          <string>response </string>
+          <string>response</string>
          </property>
         </column>
         <column>
@@ -182,7 +182,7 @@
      </layout>
     </item>
     <item row="5" column="0">
-     <layout class="QHBoxLayout" name="horizontalLayout" stretch="0,0,0,0,0,0">
+     <layout class="QHBoxLayout" name="horizontalLayout" stretch="0,0,0,0,0,0,0">
       <property name="spacing">
        <number>6</number>
       </property>
@@ -193,21 +193,22 @@
        <number>0</number>
       </property>
       <item>
-       <widget class="QPushButton" name="pushButton">
+       <widget class="QToolButton" name="toolButton">
         <property name="enabled">
          <bool>false</bool>
         </property>
-        <property name="baseSize">
-         <size>
-          <width>0</width>
-          <height>0</height>
-         </size>
+        <property name="text">
+         <string>input 1</string>
         </property>
-        <property name="autoFillBackground">
+       </widget>
+      </item>
+      <item>
+       <widget class="QToolButton" name="toolButton_2">
+        <property name="enabled">
          <bool>false</bool>
         </property>
         <property name="text">
-         <string>input value</string>
+         <string>input 2</string>
         </property>
        </widget>
       </item>

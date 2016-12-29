@@ -80,12 +80,12 @@ private:
     QSettings* m_pAppSettings = new QSettings(QCoreApplication::organizationName(), QCoreApplication::applicationName(), this);
     QTimer TmrMstr;
 
-    QByteArray assemblyMsq[NMB_ITEMS_FOR_TIMERS];
-    bool respExp[NMB_ITEMS_FOR_TIMERS];
+    QByteArray assemblyMsq[NMB_ITEMS_FOR_TIMERS + 1];
+    bool respExp[NMB_ITEMS_FOR_TIMERS + 1];
 
-    quint32 RequirementTime_ms[NMB_ITEMS_FOR_TIMERS];
-    quint32 CurrentTime_ms[NMB_ITEMS_FOR_TIMERS] = {0,0,0,0,0,0};
-    bool timerEnable[NMB_ITEMS_FOR_TIMERS] = {false,false,false,false,false,false};
+    quint32 RequirementTime_ms[NMB_ITEMS_FOR_TIMERS + 1];
+    quint32 CurrentTime_ms[NMB_ITEMS_FOR_TIMERS + 1] = {0,0,0,0,0,0,0};
+    bool timerEnable[NMB_ITEMS_FOR_TIMERS + 1] = {false,false,false,false,false,false,false};
 
     bool m_bSaveData = true;
 

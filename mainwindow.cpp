@@ -34,7 +34,7 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
 
     connect(&TmrMstr,&QTimer::timeout,[this](){
 
-        for(qint32 loop = 0; loop < NMB_ITEMS_FOR_TIMERS; loop++)
+        for(qint32 loop = 0; loop < NMB_ITEMS_FOR_TIMERS + 1; loop++)
         {
             if(timerEnable[loop] == true)
             {
@@ -87,6 +87,30 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
 
         ui->statusBar->showMessage("Data received: " + QString(arrData.toHex()));
         AppendText(QString(arrData));
+
+
+        if(arrData.at(1) == '|')
+        {
+            if(arrData.at(0) == '1')
+            {
+                ui->toolButton->setStyleSheet("background-color:red;color:black");
+            }
+            else if(arrData.at(0) == '0')
+            {
+                ui->toolButton->setStyleSheet("background-color:grey;color:white");
+            }
+            if(arrData.at(3) == '|')
+            {
+                if(arrData.at(2) == '1')
+                {
+                    ui->toolButton_2->setStyleSheet("background-color:red;color:black");
+                }
+                else if(arrData.at(2) == '0')
+                {
+                    ui->toolButton_2->setStyleSheet("background-color:grey;color:white");
+                }
+            }
+        }
 
         if(m_bSaveData)
         {
@@ -142,8 +166,7 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
     ui->deviceIdLabel->setText(QString("Device Id: %1").arg(m_nDeviceAddress));
     FillCommandTable();
 
-    ui->pushButton->setStyleSheet("background-color:grey;color:white");
-    //ui->pushButton->setStyleSheet("background-color:red;color:black");
+    RequirementTime_ms[6] = 500;
 }
 
 MainWindow::~MainWindow()
@@ -181,34 +204,53 @@ void MainWindow::on_sendButton_clicked()
         }
 
 
-
-        bool bResponseExpected = false;
-        if(oTableSelection.count() > 3)
-        {
-            bResponseExpected = oTableSelection.at(2).data(Qt::CheckStateRole) == Qt::Checked;
-        }
-        m_CommProt.data()->SendData(m_nDeviceAddress, QByteArray::fromHex(strCmd.toStdString().c_str()), bResponseExpected);
-
-
         for(qint32 row = 0; row < NMB_ITEMS_FOR_TIMERS; row++)
         {
             if(oTableSelection.at(0).data().toInt() == (34 + row))
             {
                 if(oTableSelection.at(3).data().toInt() == 1)
                 {
+                    m_CommProt.data()->SendData(m_nDeviceAddress, QByteArray::fromHex(strCmd.toStdString().c_str()), true);
+
                     CurrentTime_ms[row] = 0;
                     timerEnable[row] = true;
 
                     assemblyMsq[row] = QByteArray::fromHex(strCmd.toStdString().c_str());
-                    respExp[row] = bResponseExpected;
+                    respExp[row] = true;
                 }
                 else if(oTableSelection.at(3).data().toInt() == 0)
                 {
+                    m_CommProt.data()->SendData(m_nDeviceAddress, QByteArray::fromHex(strCmd.toStdString().c_str()), false);
+
                     timerEnable[row] = false;
+                    respExp[row] = false;
                 }
+                return;
             }
         }
+        if(oTableSelection.at(0).data().toInt() == 32)
+        {
+            if(oTableSelection.at(3).data().toInt() == 1)
+            {
+                m_CommProt.data()->SendData(m_nDeviceAddress, QByteArray::fromHex(strCmd.toStdString().c_str()), true);
 
+                CurrentTime_ms[6] = 0;
+                timerEnable[6] = true;
+
+                assemblyMsq[6] = QByteArray::fromHex(strCmd.toStdString().c_str());
+                respExp[6] = true;
+            }
+            else if(oTableSelection.at(3).data().toInt() == 0)
+            {
+                m_CommProt.data()->SendData(m_nDeviceAddress, QByteArray::fromHex(strCmd.toStdString().c_str()), false);
+
+                timerEnable[6] = false;
+                respExp[6] = false;
+            }
+            return;
+        }
+
+        m_CommProt.data()->SendData(m_nDeviceAddress, QByteArray::fromHex(strCmd.toStdString().c_str()), false);
 
         //AppendText(QString("Data sent: %1").arg(strCmd));
     }
@@ -321,6 +363,31 @@ void MainWindow::FillCommandTable()
     pvalue3PacketArg1->setData(TableRoles::NumeralSystem, TableRoles::Decimal);      // packet id is displayed as decimal
     pvalue3PacketArg1->setData(Qt::ToolTipRole, "(2) [0-4095]");     // a hint which is displayed when mouse hovers over
     ui->tableWidget->setItem(ui->tableWidget->rowCount() - 1, 4, pvalue3PacketArg1); // insert item to created row to the fourth column
+
+
+    //! and next packet definition
+    // the first column
+    ui->tableWidget->insertRow(ui->tableWidget->rowCount());                            // create new row in table
+    QTableWidgetItem *pvalue4PacketID = new QTableWidgetItem("32");                  // paket id
+    pvalue4PacketID->setData(TableRoles::ByteCount, 1);                              // paket id is 1 byte
+    pvalue4PacketID->setData(TableRoles::NumeralSystem, TableRoles::Hex);            // packet id is displayed as hex
+    ui->tableWidget->setItem(ui->tableWidget->rowCount() - 1, 0, pvalue4PacketID);   // insert item to created row to the first column
+
+    // the second column (it has no impact on data to be sent)
+    QTableWidgetItem *pvalue4PacketName = new QTableWidgetItem("READ INPUT");     // readable description
+    ui->tableWidget->setItem(ui->tableWidget->rowCount() - 1, 1, pvalue4PacketName); // insert item to created row to the second column
+
+    // the third column
+    QTableWidgetItem *pvalue4PacketResponseExpected = new QTableWidgetItem();        // is response expected?
+    pvalue4PacketResponseExpected->setCheckState(Qt::Checked);                     // Qt::Unchecked or Qt::Checked
+    ui->tableWidget->setItem(ui->tableWidget->rowCount() - 1, 2, pvalue4PacketResponseExpected); // insert item to created row to the third column
+
+    // the fourth column
+    QTableWidgetItem *pvalue4PacketArg0 = new QTableWidgetItem("1");             // the value it contains
+    pvalue4PacketArg0->setData(TableRoles::ByteCount, 1);                            // the value is 3 bytes
+    pvalue4PacketArg0->setData(TableRoles::NumeralSystem, TableRoles::Decimal);      // packet id is displayed as decimal
+    pvalue4PacketArg0->setData(Qt::ToolTipRole, "[0-1] disable/enable");     // a hint which is displayed when mouse hovers over
+    ui->tableWidget->setItem(ui->tableWidget->rowCount() - 1, 3, pvalue4PacketArg0); // insert item to created row to the fourth column
 
 
     //! and next packet definition
@@ -840,7 +907,7 @@ void MainWindow::on_disconnectButton_clicked()
      SetAvaiblePorts();
      SetLastPort();
 
-     for(qint32 loop = 0; loop < NMB_ITEMS_FOR_TIMERS; loop++)
+     for(qint32 loop = 0; loop < NMB_ITEMS_FOR_TIMERS + 1; loop++)
      {
          timerEnable[loop] = false;
      }
