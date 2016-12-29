@@ -785,6 +785,8 @@ void MainWindow::on_connectButton_clicked()
 
      m_CommProt.data()->SetTargetMedium(ui->comboBox->currentText());
 
+     m_pSettingStrorage->StorePortName(ui->comboBox->currentText());
+
      if(m_bSaveData)
      {
          m_oFile.setFileName(QString("SavedData_%1.txt").arg(QDateTime::currentDateTime().toTime_t()));
@@ -801,9 +803,16 @@ void MainWindow::SetAvaiblePorts()
 {
     ui->comboBox->clear();
 
+    QString strLastPortName = m_pSettingStrorage->RestorePortName();
+
     for(auto comPort : QSerialPortInfo::availablePorts())
     {
         ui->comboBox->addItem(comPort.portName());
+
+        if(comPort.portName() == strLastPortName)
+        {
+            ui->comboBox->setCurrentText(strLastPortName);
+        }
     }
 }
 

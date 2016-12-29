@@ -30,6 +30,7 @@
 #include <QTimer>
 #include <QDesktopServices>
 #include <qspinbox.h>
+#include "settings.h"
 
 
 #define NMB_ITEMS_FOR_TIMERS    6
@@ -90,6 +91,8 @@ private:
     bool m_bSaveData = true;
 
     QFile m_oFile;
+
+    settings* m_pSettingStrorage = new settings(this);
 
     //    void EventsList(QByteArray arrData);
 //    void StatusRegister(QByteArray arrData);

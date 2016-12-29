@@ -13,10 +13,12 @@ TEMPLATE = app
 CONFIG += c++11
 
 SOURCES += main.cpp\
-        mainwindow.cpp
+        mainwindow.cpp \
+    settings.cpp
 
 HEADERS  += mainwindow.h \
-    bytearrayparser.h
+    bytearrayparser.h \
+    settings.h
 
 FORMS    += mainwindow.ui
 
