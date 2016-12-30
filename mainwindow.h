@@ -109,6 +109,10 @@ private:
     QVariant LoadValue(const QString& strKey);
     void SetAvaiblePorts();
     void SetLastPort();
+
+
+protected:
+    void closeEvent(QCloseEvent *event) override;
 };
 
 #endif // MAINWINDOW_H

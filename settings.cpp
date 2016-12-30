@@ -6,26 +6,6 @@ settings::settings(QObject *parent) : QObject(parent)
 
 }
 
-void settings::StoreChannelOffSet(const quint32 &nChannel, const qreal &fOffset)
-{
-    StoreValue(QString("offset%1").arg(nChannel), fOffset);
-}
-
-qreal settings::RestoreChannelOffset(const quint32 &nChannel) const
-{
-    return RestoreValue(QString("offset%1").arg(nChannel)).toReal();
-}
-
-void settings::StoreChannelMultiplier(const quint32 &nChannel, const qreal &fMultiplier)
-{
-    StoreValue(QString("multiplier%1").arg(nChannel), fMultiplier);
-}
-
-qreal settings::RestoreChannelMultiplier(const quint32 &nChannel) const
-{
-    return RestoreValue(QString("multiplier%1").arg(nChannel), 1).toReal();
-}
-
 void settings::StorePortName(const QString &strPortName)
 {
     StoreValue(QString("portname"), strPortName);
@@ -36,34 +16,64 @@ QString settings::RestorePortName() const
     return RestoreValue(QString("portname")).toString();
 }
 
-void settings::StoreReferenceVoltage(const qreal &fVoltage_V)
+void settings::StoreRefreshFirst(const quint32 &nPeriod_ms)
 {
-    StoreValue(QString("Vref"), fVoltage_V);
+    StoreValue(QString("timer1"), nPeriod_ms);
 }
 
-qreal settings::RestoreReferenceVoltage() const
+qreal settings::RestoreRefreshFirst() const
 {
-    return RestoreValue(QString("Vref")).toReal();
+    return RestoreValue(QString("timer1")).toUInt();
 }
 
-void settings::StoreRefreshPeriod(const quint32 &nPeriod_ms)
+void settings::StoreRefreshSecond(const quint32 &nPeriod_ms)
 {
-    StoreValue(QString("refreshperiod"), nPeriod_ms);
+    StoreValue(QString("timer2"), nPeriod_ms);
 }
 
-qreal settings::RestoreRefreshPeriod() const
+qreal settings::RestoreRefreshSecond() const
 {
-    return RestoreValue(QString("refreshperiod")).toUInt();
+    return RestoreValue(QString("timer2")).toUInt();
 }
 
-void settings::StoreActiveTab(const quint32 &nTab)
+void settings::StoreRefreshThird(const quint32 &nPeriod_ms)
 {
-    StoreValue(QString("activetab"), nTab);
+    StoreValue(QString("timer3"), nPeriod_ms);
 }
 
-qreal settings::RestoreActiveTab() const
+qreal settings::RestoreRefreshThird() const
 {
-    return RestoreValue(QString("activetab")).toUInt();
+    return RestoreValue(QString("timer3")).toUInt();
+}
+
+void settings::StoreRefreshFourth(const quint32 &nPeriod_ms)
+{
+    StoreValue(QString("timer4"), nPeriod_ms);
+}
+
+qreal settings::RestoreRefreshFourth() const
+{
+    return RestoreValue(QString("timer4")).toUInt();
+}
+
+void settings::StoreRefreshFifth(const quint32 &nPeriod_ms)
+{
+    StoreValue(QString("timer5"), nPeriod_ms);
+}
+
+qreal settings::RestoreRefreshFifth() const
+{
+    return RestoreValue(QString("timer5")).toUInt();
+}
+
+void settings::StoreRefreshSixth(const quint32 &nPeriod_ms)
+{
+    StoreValue(QString("timer6"), nPeriod_ms);
+}
+
+qreal settings::RestoreRefreshSixth() const
+{
+    return RestoreValue(QString("timer6")).toUInt();
 }
 
 void settings::StoreGeometry(const QByteArray &arrGeometry)
@@ -84,6 +94,16 @@ void settings::StoreSaveDataBox(const bool &bSaveDataBox)
 bool settings::RestoreSaveDataBox() const
 {
     return RestoreValue("savedatabox").toBool();
+}
+
+void settings::StoreRowItem(const QString& strValue)
+{
+    StoreValue(QString("ItemsData"), strValue);
+}
+
+QString settings::RestoreRowItem() const
+{
+    return RestoreValue(QString("ItemsData")).toString();
 }
 
 void settings::StoreValue(const QString &strKey, const QVariant &vValue)
