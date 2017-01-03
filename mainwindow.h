@@ -76,8 +76,8 @@ private:
     QTimer m_oPortsRefresh;
     SettingStorageTestBoard785* m_pSettingStrorage = new SettingStorageTestBoard785(this);
 
-//    void EventsList(QByteArray arrData);
-//    void StatusRegister(QByteArray arrData);
+//      void EventsList(QByteArray arrData);
+//      void StatusRegister(QByteArray arrData);
 
     void AppendText(QString strText);
 
