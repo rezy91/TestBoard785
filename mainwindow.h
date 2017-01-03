@@ -32,6 +32,10 @@
 #include <qspinbox.h>
 #include "settings.h"
 
+#include <QLabel>
+
+#include "smithmain.h"
+
 
 #define NMB_ITEMS_FOR_TIMERS    6
 
@@ -63,6 +67,9 @@ public:
     explicit MainWindow(QWidget *parent = 0);
     ~MainWindow();
 
+
+    SmithMain* o_Smith = NULL;
+
 private slots:
     void on_sendButton_clicked();
     void on_clearButton_clicked();
@@ -93,6 +100,7 @@ private:
     QFile m_oFile;
 
     settings* m_pSettingStrorage = new settings(this);
+
 
     //    void EventsList(QByteArray arrData);
 //    void StatusRegister(QByteArray arrData);

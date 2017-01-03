@@ -14,11 +14,13 @@ CONFIG += c++11
 
 SOURCES += main.cpp\
         mainwindow.cpp \
-    settings.cpp
+    settings.cpp \
+    smithmain.cpp
 
 HEADERS  += mainwindow.h \
     bytearrayparser.h \
-    settings.h
+    settings.h \
+    smithmain.h
 
 FORMS    += mainwindow.ui
 

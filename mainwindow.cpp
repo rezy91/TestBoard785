@@ -22,6 +22,9 @@
 #include "ui_mainwindow.h"
 
 
+#include <QtGui>
+#include <QtCore>
+
 MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWindow)
 {
     ui->setupUi(this);
@@ -54,7 +57,7 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
                 if(CurrentTime_ms[loop] >= RequirementTime_ms[loop])
                 {
                     CurrentTime_ms[loop] = 0;
-                    qDebug() << "Timer" << loop << "tick";
+                    //qDebug() << "Timer" << loop << "tick";
                     m_CommProt.data()->SendData(m_nDeviceAddress, assemblyMsq[loop], respExp[loop]);
                 }
             }
@@ -105,7 +108,29 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
         AppendText(QString(arrData));
 
 
-        if(arrData.at(1) == '|')
+        if(arrData.at(0) == '2' && arrData.at(1) == 'c')//ADC2 adjusted data
+        {
+            QString adjString = QString(arrData);
+            QStringList myStringList = adjString.split(QRegExp("(\\s+| |=)"));
+            QList<float> flValue;
+
+            /*for(int iLoop = 0; iLoop < myStringList.count(); iLoop++)
+            {
+                qDebug() << myStringList.at(iLoop);
+            }*/
+
+
+
+            flValue.append(myStringList.at(5).toFloat());
+            flValue.append(myStringList.at(7).toFloat());
+            flValue.append(myStringList.at(9).toFloat());
+
+            o_Smith->update();
+
+            qDebug() << flValue.at(0) << " " << flValue.at(1) << " " << flValue.at(2);
+
+        }
+        else if(arrData.at(1) == '|')//Digital input readed
         {
             if(arrData.at(0) == '1')
             {
@@ -886,6 +911,7 @@ void MainWindow::on_textBrowser_anchorClicked(const QUrl &arg1)
 {
     QDesktopServices::openUrl(arg1);
 }
+
 void MainWindow::closeEvent(QCloseEvent *event)
 {
     m_pSettingStrorage->StoreGeometry(saveGeometry());
@@ -913,3 +939,4 @@ void MainWindow::closeEvent(QCloseEvent *event)
 
     QWidget::closeEvent(event);
 }
+
