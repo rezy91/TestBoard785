@@ -27,6 +27,8 @@
 
 MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWindow)
 {
+    static int mMainTimer = 0;
+
     ui->setupUi(this);
 
     this->restoreGeometry(m_pSettingStrorage->RestoreGeometry());
@@ -61,6 +63,11 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
                     m_CommProt.data()->SendData(m_nDeviceAddress, assemblyMsq[loop], respExp[loop]);
                 }
             }
+        }
+        if(++mMainTimer >= 50)
+        {
+            mMainTimer = 0;
+            o_Smith->update();
         }
     });
 
@@ -125,7 +132,6 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
             flValue.append(myStringList.at(7).toFloat());
             flValue.append(myStringList.at(9).toFloat());
 
-            o_Smith->update();
 
             qDebug() << flValue.at(0) << " " << flValue.at(1) << " " << flValue.at(2);
 

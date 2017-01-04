@@ -1,8 +1,6 @@
 #include "smithmain.h"
 #include "ui_mainwindow.h"
 
-#include <QLabel>
-
 #include <QtGui>
 #include <QtCore>
 
@@ -12,32 +10,45 @@ SmithMain::SmithMain(QWidget *parent) : QMainWindow(parent)
     setFixedWidth(900);
 
     setStyleSheet("background-image: url(smith.png)");
+
+    //setAutoFillBackground(false);
 }
 
 
 void SmithMain::paintEvent(QPaintEvent *e)
 {
-    static bool forFirst = false;
+    static int increment = 0;
+    static QList<QRectF> rects;
 
-    QPainter painter;
-    QRectF rectangle1(450.0, 450.0, 10.0, 10.0);
-    QRectF rectangle2(250.0, 250.0, 10.0, 10.0);
-    QPen pen;
+    QPainter painterMain(this);
+    //QPainter painterPict(this->image);
 
-    /*if(!forFirst)
-    {*/
-        forFirst = true;
-        painter.begin(this);
-    //}
+    int Max = 250;
+    int Min = -250;
+    int randNumberX = ((rand()%(Max-Min+1))+Min);
+    int randNumberY = ((rand()%(Max-Min+1))+Min);
+    QRectF rectangle(450.0 + randNumberX, 450.0 + randNumberY, 10.0, 10.0);
+    rects.append(rectangle);
+
+    /*painterMain.fillRect(rectangle, Qt::green);
+    painterMain.setPen(QPen(Qt::blue));
+    painterMain.drawRect(rectangle);*/
 
 
-    pen.setColor(QColor(0,0,255,255));
-    painter.fillRect(rectangle1, QColor(0,255,0,255));
-    painter.fillRect(rectangle2, QColor(0,255,100,255));
-    painter.setPen(pen);
-    painter.drawEllipse(rectangle1);
-    painter.drawEllipse(rectangle2);
+    if(rects.count() >= 100)
+    {
+        rects.clear();
+    }
+    else
+    {
+        for(int iLoop = 0; iLoop < rects.count(); iLoop++)
+        {
+            painterMain.fillRect(rects.at(iLoop), Qt::green);
+            painterMain.setPen(QPen(Qt::blue));
+            painterMain.drawRect(rects.at(iLoop));
+        }
+    }
+    //painterMain.drawImage(rectangle,*this->image);
 
-    //painter.end();
-
+    increment++;
 }

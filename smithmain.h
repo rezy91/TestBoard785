@@ -3,6 +3,9 @@
 
 #include <QMainWindow>
 #include <QLabel>
+#include <QList>
+#include <QPixmap>
+#include <QImage>
 
 class SmithMain : public QMainWindow
 {
@@ -11,7 +14,9 @@ public:
     explicit SmithMain(QWidget *parent = 0);
 
 private:
-    QLabel *wdg = new QLabel;
+
+    QImage *image = new QImage(900,900,QImage::Format_RGB888);
+
 protected:
     void paintEvent(QPaintEvent* e);
 };
