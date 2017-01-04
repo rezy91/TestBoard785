@@ -30,10 +30,9 @@ void SmithMain::paintEvent(QPaintEvent *e)
     QRectF rectangle(450.0 + randNumberX, 450.0 + randNumberY, 10.0, 10.0);
     rects.append(rectangle);
 
-    /*painterMain.fillRect(rectangle, Qt::green);
-    painterMain.setPen(QPen(Qt::blue));
-    painterMain.drawRect(rectangle);*/
 
+
+    QPointF center(450.0 + randNumberX, 450.0 + randNumberY);
 
     if(rects.count() >= 100)
     {
