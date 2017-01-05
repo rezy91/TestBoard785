@@ -1,53 +1,91 @@
 #include "smithmain.h"
-#include "ui_mainwindow.h"
 
 #include <QtGui>
 #include <QtCore>
 
 SmithMain::SmithMain(QWidget *parent) : QMainWindow(parent)
 {
-    setFixedHeight(900);
-    setFixedWidth(900);
+    showMaximized();
+    installEventFilter(this);
 
-    setStyleSheet("background-image: url(smith.png)");
-
-    //setAutoFillBackground(false);
 }
 
-
-void SmithMain::paintEvent(QPaintEvent *e)
+void SmithMain::ReceivedNewData(int magnitude, int phase)
 {
-    static int increment = 0;
-    static QList<QRectF> rects;
-
-    QPainter painterMain(this);
-    //QPainter painterPict(this->image);
-
-    int Max = 250;
-    int Min = -250;
-    int randNumberX = ((rand()%(Max-Min+1))+Min);
-    int randNumberY = ((rand()%(Max-Min+1))+Min);
-    QRectF rectangle(450.0 + randNumberX, 450.0 + randNumberY, 10.0, 10.0);
-    rects.append(rectangle);
-
-
-
-    QPointF center(450.0 + randNumberX, 450.0 + randNumberY);
-
-    if(rects.count() >= 100)
+    if(!bEnableDraw)
     {
-        rects.clear();
+        bEnableDraw = true;
+    }
+    mRatio_magnitude = qreal(magnitude) / 1000;
+    mRatio_phase = qreal(phase) / 1000;
+
+    update();
+}
+
+bool SmithMain::eventFilter(QObject *, QEvent *event)
+{
+    static int counter = 0;
+    bool state = false;
+
+    if(event->type() == QEvent::Resize)
+    {
+        qDebug() << "resize " << counter++;
+        state = true;
     }
     else
     {
-        for(int iLoop = 0; iLoop < rects.count(); iLoop++)
+        state = false;
+
+    }
+    return state;
+}
+
+void SmithMain::paintEvent(QPaintEvent*)
+{
+    static QList<QPointF> centers;
+    QPainter painterMain(this);
+
+    painterMain.drawPixmap(0, 0, QPixmap("smith.png").scaled(size()));
+
+    if(bEnableDraw)
+    {
+/*
+        int Max = 353;
+        int Min = -353;
+        int randNumberX = ((rand()%(Max-Min+1))+Min);
+        int randNumberY = ((rand()%(Max-Min+1))+Min);
+        QPointF center(450 + randNumberX, 450 + randNumberY);
+        centers.append(center);*/
+
+
+        /*if(abs(mRatio_magnitude) > 0.05)
+        {*/
+            QPointF centerLeft(mRatio_magnitude,mRatio_phase);
+            centers.append(centerLeft);
+
+/*
+            QPointF centerRight(mRatio_magnitude,mRatio_phase);
+            centers.append(centerRight);*/
+        //}
+
+        if(centers.count() >= 1000)
         {
-            painterMain.fillRect(rects.at(iLoop), Qt::green);
-            painterMain.setPen(QPen(Qt::blue));
-            painterMain.drawRect(rects.at(iLoop));
+            centers.clear();
+        }
+        else
+        {
+            for(int iLoop = 0; iLoop < centers.count(); iLoop++)
+            {
+                painterMain.setPen(QPen(Qt::blue));
+                painterMain.setBrush(QBrush(Qt::red));
+                qreal xSave = centers.at(iLoop).x();
+                qreal ySave = centers.at(iLoop).y();
+
+                //qDebug() << "values: " << xSave << " and " << ySave;
+
+                QPointF adjustSize((width() / 2) + (xSave * width() / 2), (height() / 2) + (ySave * height() / 2));
+                painterMain.drawEllipse(adjustSize,3,3);
+            }
         }
     }
-    //painterMain.drawImage(rectangle,*this->image);
-
-    increment++;
 }

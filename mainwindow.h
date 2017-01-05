@@ -32,10 +32,8 @@
 #include <qspinbox.h>
 #include "settings.h"
 
-#include <QLabel>
-
 #include "smithmain.h"
-
+#include "grapmain.h"
 
 #define NMB_ITEMS_FOR_TIMERS    6
 
@@ -68,8 +66,6 @@ public:
     ~MainWindow();
 
 
-    SmithMain* o_Smith = NULL;
-
 private slots:
     void on_sendButton_clicked();
     void on_clearButton_clicked();
@@ -100,6 +96,8 @@ private:
     QFile m_oFile;
 
     settings* m_pSettingStrorage = new settings(this);
+    SmithMain *s;
+    Grapmain *g;
 
 
     //    void EventsList(QByteArray arrData);
@@ -118,6 +116,9 @@ private:
     void SetAvaiblePorts();
     void SetLastPort();
 
+signals:
+    void SendNewData(int magnitude, int phase);
+    void SendUpdateGraph(int value);
 
 protected:
     void closeEvent(QCloseEvent *event) override;

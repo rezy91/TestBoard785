@@ -22,14 +22,35 @@
 #include "ui_mainwindow.h"
 
 
-#include <QtGui>
-#include <QtCore>
 
 MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWindow)
 {
     static int mMainTimer = 0;
 
+
+    s = new SmithMain(this);
+
+    connect(this, &MainWindow::SendNewData, s, &SmithMain::ReceivedNewData);
+
+    s->setWindowTitle("Smith diagram");
+    s->show();
+
+
+
+
+
+    g = new Grapmain(this);
+
+    connect(this, &MainWindow::SendUpdateGraph, g, &Grapmain::Refresh);
+
+    g->setWindowTitle("Graph");
+    g->show();
+
+
+
+
     ui->setupUi(this);
+
 
     this->restoreGeometry(m_pSettingStrorage->RestoreGeometry());
 
@@ -42,6 +63,7 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
     TmrMstr.start(1);
 
     ui->checkBox->setChecked(m_pSettingStrorage->RestoreSaveDataBox());
+    m_bSaveData = m_pSettingStrorage->RestoreSaveDataBox();
 
     ui->spinBox->setValue(m_pSettingStrorage->RestoreRefreshFirst());
     ui->spinBox_2->setValue(m_pSettingStrorage->RestoreRefreshSecond());
@@ -64,10 +86,11 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
                 }
             }
         }
-        if(++mMainTimer >= 50)
+        if(++mMainTimer >= 100)
         {
             mMainTimer = 0;
-            o_Smith->update();
+
+            emit SendUpdateGraph(100);
         }
     });
 
@@ -119,7 +142,7 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
         {
             QString adjString = QString(arrData);
             QStringList myStringList = adjString.split(QRegExp("(\\s+| |=)"));
-            QList<float> flValue;
+            QList<double> flValue;
 
             /*for(int iLoop = 0; iLoop < myStringList.count(); iLoop++)
             {
@@ -127,14 +150,42 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
             }*/
 
 
-
+            flValue.append(myStringList.at(3).toFloat());
             flValue.append(myStringList.at(5).toFloat());
             flValue.append(myStringList.at(7).toFloat());
             flValue.append(myStringList.at(9).toFloat());
 
 
-            qDebug() << flValue.at(0) << " " << flValue.at(1) << " " << flValue.at(2);
+            //qDebug() << flValue.at(0) << " " << flValue.at(1) << " " << flValue.at(2) << " " << flValue.at(3);
 
+
+            double averageAlgebReal = flValue.at(0) * cos(flValue.at(1));
+            double averageAlgebImag = flValue.at(0) * sin(flValue.at(1));
+
+            double recentAlgebReal = flValue.at(2) * cos(flValue.at(3));
+            double recentAlgebImag = flValue.at(2) * sin(flValue.at(3));
+
+            double dividentAlgebReal = recentAlgebReal - averageAlgebReal;
+            double dividentAlgebImag = recentAlgebImag - averageAlgebImag;
+
+            double divisorAlgebReal = recentAlgebReal + averageAlgebReal;
+            double divisorAlgebImag = recentAlgebImag + averageAlgebImag;
+
+
+            double reflRatioReal = sqrt(dividentAlgebReal * dividentAlgebReal + dividentAlgebImag * dividentAlgebImag) / sqrt(divisorAlgebReal * divisorAlgebReal + divisorAlgebImag * divisorAlgebImag);
+            double reflRatioImag;
+            if(reflRatioReal > 0.05)
+            {
+                reflRatioImag = atan(divisorAlgebImag / divisorAlgebReal) - atan(dividentAlgebImag / dividentAlgebReal);
+
+                qDebug() << reflRatioReal << " " << reflRatioImag;
+            }
+            else
+            {
+                reflRatioImag = 0;
+            }
+
+            emit SendNewData(int(reflRatioReal * 1000), int(reflRatioImag * 1000));
         }
         else if(arrData.at(1) == '|')//Digital input readed
         {
@@ -945,4 +996,3 @@ void MainWindow::closeEvent(QCloseEvent *event)
 
     QWidget::closeEvent(event);
 }
-

@@ -2,23 +2,27 @@
 #define SMITHMAIN_H
 
 #include <QMainWindow>
-#include <QLabel>
 #include <QList>
-#include <QPixmap>
-#include <QImage>
+#include <QObject>
+#include <QEvent>
 
 class SmithMain : public QMainWindow
 {
     Q_OBJECT
 public:
     explicit SmithMain(QWidget *parent = 0);
+public slots:
+    void ReceivedNewData(int magnitude, int phase);
 
 private:
+    qreal mRatio_magnitude;
+    qreal mRatio_phase;
 
-    QImage *image = new QImage(900,900,QImage::Format_RGB888);
+    bool bEnableDraw = false;
 
 protected:
-    void paintEvent(QPaintEvent* e);
+    void paintEvent(QPaintEvent*);
+    bool eventFilter(QObject *object, QEvent *event);
 };
 
 #endif // SMITHMAIN_H
