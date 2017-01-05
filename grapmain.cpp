@@ -33,11 +33,11 @@ void Grapmain::paintEvent(QPaintEvent*)
             int yValue = int(offset + sin(PaintCounter[iLoop]) * 100);
             int center = yValue;
 
-            if(PaintCounter[iLoop] >= 2 * M_PI)
-                if(centers[iLoop].count() >= 150)
-                {
-                    centers[iLoop].removeFirst();
-                }
+            if(centers[iLoop].count() >= 150)
+            {
+                centers[iLoop].removeFirst();
+            }
+
             centers[iLoop].append(center);
 
             for(int jLoop = 0; jLoop < centers[iLoop].count(); jLoop++)

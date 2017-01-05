@@ -47,6 +47,7 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
     g->show();
 
 
+    connect(this, &MainWindow::SendStateButton, s, &SmithMain::ReceivedStateButton);
 
 
     ui->setupUi(this);
@@ -142,50 +143,33 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
         {
             QString adjString = QString(arrData);
             QStringList myStringList = adjString.split(QRegExp("(\\s+| |=)"));
-            QList<double> flValue;
 
             /*for(int iLoop = 0; iLoop < myStringList.count(); iLoop++)
             {
                 qDebug() << myStringList.at(iLoop);
             }*/
 
+            //qDebug() << myStringList.at(3).toFloat() << " " << myStringList.at(5).toFloat() << " " << myStringList.at(7).toFloat() << " " << myStringList.at(9).toFloat();
 
-            flValue.append(myStringList.at(3).toFloat());
-            flValue.append(myStringList.at(5).toFloat());
-            flValue.append(myStringList.at(7).toFloat());
-            flValue.append(myStringList.at(9).toFloat());
-
-
-            //qDebug() << flValue.at(0) << " " << flValue.at(1) << " " << flValue.at(2) << " " << flValue.at(3);
-
-
-            double averageAlgebReal = flValue.at(0) * cos(flValue.at(1));
-            double averageAlgebImag = flValue.at(0) * sin(flValue.at(1));
-
-            double recentAlgebReal = flValue.at(2) * cos(flValue.at(3));
-            double recentAlgebImag = flValue.at(2) * sin(flValue.at(3));
-
-            double dividentAlgebReal = recentAlgebReal - averageAlgebReal;
-            double dividentAlgebImag = recentAlgebImag - averageAlgebImag;
-
-            double divisorAlgebReal = recentAlgebReal + averageAlgebReal;
-            double divisorAlgebImag = recentAlgebImag + averageAlgebImag;
+            COMPLEX_NUMBER_GONIO currentData;
+            COMPLEX_NUMBER_GONIO averageDataA;
+            COMPLEX_NUMBER_GONIO averageData50;
+            COMPLEX_NUMBER_GONIO reflRatioAvg;
+            COMPLEX_NUMBER_GONIO reflRatio50;
 
 
-            double reflRatioReal = sqrt(dividentAlgebReal * dividentAlgebReal + dividentAlgebImag * dividentAlgebImag) / sqrt(divisorAlgebReal * divisorAlgebReal + divisorAlgebImag * divisorAlgebImag);
-            double reflRatioImag;
-            if(reflRatioReal > 0.05)
-            {
-                reflRatioImag = atan(divisorAlgebImag / divisorAlgebReal) - atan(dividentAlgebImag / dividentAlgebReal);
+            currentData.magnitude = myStringList.at(3).toFloat();
+            currentData.phase_rad = myStringList.at(5).toFloat();
+            averageDataA.magnitude = myStringList.at(7).toFloat();
+            averageDataA.phase_rad = myStringList.at(9).toFloat();
 
-                qDebug() << reflRatioReal << " " << reflRatioImag;
-            }
-            else
-            {
-                reflRatioImag = 0;
-            }
+            reflRatioAvg = CalculateReflectionRatio(currentData, averageDataA);
 
-            emit SendNewData(int(reflRatioReal * 1000), int(reflRatioImag * 1000));
+            averageData50.magnitude = 50;
+            averageData50.phase_rad = 0;
+
+            reflRatio50 = CalculateReflectionRatio(currentData, averageData50);
+            emit SendNewData(int(reflRatioAvg.magnitude * 1000), int(reflRatioAvg.phase_rad * 1000),int(reflRatio50.magnitude * 1000), int(reflRatio50.phase_rad * 1000));
         }
         else if(arrData.at(1) == '|')//Digital input readed
         {
@@ -900,7 +884,7 @@ void MainWindow::on_connectButton_clicked()
             return;
         }
     }
-
+    emit SendStateButton(true);
 }
 
 void MainWindow::SetAvaiblePorts()
@@ -933,6 +917,38 @@ void MainWindow::SetLastPort()
     }
 }
 
+MainWindow::COMPLEX_NUMBER_GONIO MainWindow::CalculateReflectionRatio(COMPLEX_NUMBER_GONIO current, COMPLEX_NUMBER_GONIO average)
+{
+    COMPLEX_NUMBER_GONIO ReflectionRatio;
+
+    double averageAlgebReal = average.magnitude * cos(average.phase_rad);
+    double averageAlgebImag = average.magnitude * sin(average.phase_rad);
+
+    double recentAlgebReal = current.magnitude * cos(current.phase_rad);
+    double recentAlgebImag = current.magnitude * sin(current.phase_rad);
+
+    double dividentAlgebReal = recentAlgebReal - averageAlgebReal;
+    double dividentAlgebImag = recentAlgebImag - averageAlgebImag;
+
+    double divisorAlgebReal = recentAlgebReal + averageAlgebReal;
+    double divisorAlgebImag = recentAlgebImag + averageAlgebImag;
+
+
+    ReflectionRatio.magnitude = sqrt(dividentAlgebReal * dividentAlgebReal + dividentAlgebImag * dividentAlgebImag) / sqrt(divisorAlgebReal * divisorAlgebReal + divisorAlgebImag * divisorAlgebImag);
+    if(ReflectionRatio.magnitude > 0.05)
+    {
+        ReflectionRatio.phase_rad = atan(divisorAlgebImag / divisorAlgebReal) - atan(dividentAlgebImag / dividentAlgebReal);
+
+        qDebug() << ReflectionRatio.magnitude << " " << ReflectionRatio.phase_rad;
+    }
+    else
+    {
+        ReflectionRatio.phase_rad = 0;
+    }
+
+    return ReflectionRatio;
+}
+
 void MainWindow::on_disconnectButton_clicked()
 {
     ui->checkBox->setEnabled(true);
@@ -956,6 +972,8 @@ void MainWindow::on_disconnectButton_clicked()
          qDebug() << "Data saved";
 
      }
+
+     emit SendStateButton(false);
 }
 
 void MainWindow::on_checkBox_clicked()

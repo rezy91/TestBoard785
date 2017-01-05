@@ -62,6 +62,12 @@ class MainWindow : public QMainWindow
     Q_OBJECT
 
 public:
+    typedef struct
+    {
+        float magnitude;
+        float phase_rad;
+    } COMPLEX_NUMBER_GONIO;
+
     explicit MainWindow(QWidget *parent = 0);
     ~MainWindow();
 
@@ -116,9 +122,13 @@ private:
     void SetAvaiblePorts();
     void SetLastPort();
 
+    COMPLEX_NUMBER_GONIO CalculateReflectionRatio(COMPLEX_NUMBER_GONIO current, COMPLEX_NUMBER_GONIO average);
+
 signals:
-    void SendNewData(int magnitude, int phase);
+    void SendNewData(int magnitudeA, int phaseA, int magnitude50, int phase50);
     void SendUpdateGraph(int value);
+
+    void SendStateButton(bool state);
 
 protected:
     void closeEvent(QCloseEvent *event) override;

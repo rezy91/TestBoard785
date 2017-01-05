@@ -7,19 +7,33 @@ SmithMain::SmithMain(QWidget *parent) : QMainWindow(parent)
 {
     showMaximized();
     installEventFilter(this);
-
 }
 
-void SmithMain::ReceivedNewData(int magnitude, int phase)
+void SmithMain::ReceivedNewData(int magnitudeAvg, int phaseAvg, int magnitude50, int phase50)
 {
     if(!bEnableDraw)
     {
         bEnableDraw = true;
     }
-    mRatio_magnitude = qreal(magnitude) / 1000;
-    mRatio_phase = qreal(phase) / 1000;
+    mRatio_magnitudeAvg = qreal(magnitudeAvg) / 1000;
+    mRatio_phaseAvg = qreal(phaseAvg) / 1000;
+    mRatio_magnitude50 = qreal(magnitude50) / 1000;
+    mRatio_phase50 = qreal(phase50) / 1000;
 
     update();
+}
+
+void SmithMain::ReceivedStateButton(bool state)
+{
+    if(state)
+    {
+        setFixedSize(width(), height());
+    }
+    else
+    {
+        setMinimumSize(0,0);
+        setMaximumSize(10000,10000);
+    }
 }
 
 bool SmithMain::eventFilter(QObject *, QEvent *event)
@@ -49,41 +63,35 @@ void SmithMain::paintEvent(QPaintEvent*)
 
     if(bEnableDraw)
     {
-/*
-        int Max = 353;
-        int Min = -353;
-        int randNumberX = ((rand()%(Max-Min+1))+Min);
-        int randNumberY = ((rand()%(Max-Min+1))+Min);
-        QPointF center(450 + randNumberX, 450 + randNumberY);
-        centers.append(center);*/
-
-
-        /*if(abs(mRatio_magnitude) > 0.05)
-        {*/
-            QPointF centerLeft(mRatio_magnitude,mRatio_phase);
-            centers.append(centerLeft);
-
-/*
-            QPointF centerRight(mRatio_magnitude,mRatio_phase);
-            centers.append(centerRight);*/
-        //}
-
-        if(centers.count() >= 1000)
+        if(centers.count() >= 200)
         {
-            centers.clear();
+            centers.removeFirst();
+            centers.removeFirst();
         }
-        else
+
+        QPointF centerLeft(mRatio_magnitudeAvg,mRatio_phaseAvg);
+        centers.append(centerLeft);
+
+        QPointF centerRight(mRatio_magnitude50,mRatio_phase50);
+        centers.append(centerRight);
+
+        for(int iLoop = 0; iLoop < centers.count(); iLoop++)
         {
-            for(int iLoop = 0; iLoop < centers.count(); iLoop++)
+            painterMain.setPen(QPen(Qt::blue));
+            painterMain.setBrush(QBrush(Qt::red));
+            qreal xSave = centers.at(iLoop).x();
+            qreal ySave = centers.at(iLoop).y();
+
+            //qDebug() << "values: " << xSave << " and " << ySave;
+
+            if(iLoop % 2)
             {
-                painterMain.setPen(QPen(Qt::blue));
-                painterMain.setBrush(QBrush(Qt::red));
-                qreal xSave = centers.at(iLoop).x();
-                qreal ySave = centers.at(iLoop).y();
-
-                //qDebug() << "values: " << xSave << " and " << ySave;
-
-                QPointF adjustSize((width() / 2) + (xSave * width() / 2), (height() / 2) + (ySave * height() / 2));
+                QPointF adjustSize((width() / 4) - (xSave * width() * 7 / (4 * 9)), (height() / 2) - (ySave * height() * 7 / (2 * 9)));
+                painterMain.drawEllipse(adjustSize,3,3);
+            }
+            else
+            {
+                QPointF adjustSize((width() * 3 / 4) - (xSave * width() * 7 / (4 * 9)), (height() / 2) - (ySave * height() * 7 / (2 * 9)));
                 painterMain.drawEllipse(adjustSize,3,3);
             }
         }

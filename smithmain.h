@@ -12,11 +12,14 @@ class SmithMain : public QMainWindow
 public:
     explicit SmithMain(QWidget *parent = 0);
 public slots:
-    void ReceivedNewData(int magnitude, int phase);
+    void ReceivedNewData(int magnitudeAvg, int phaseAvg, int magnitude50, int phase50);
+    void ReceivedStateButton(bool state);
 
 private:
-    qreal mRatio_magnitude;
-    qreal mRatio_phase;
+    qreal mRatio_magnitudeAvg;
+    qreal mRatio_phaseAvg;
+    qreal mRatio_magnitude50;
+    qreal mRatio_phase50;
 
     bool bEnableDraw = false;
 
