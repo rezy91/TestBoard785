@@ -73,6 +73,10 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
     ui->spinBox_5->setValue(m_pSettingStrorage->RestoreRefreshFifth());
     ui->spinBox_6->setValue(m_pSettingStrorage->RestoreRefreshSixth());
 
+
+
+
+
     connect(&TmrMstr,&QTimer::timeout,[this](){
         for(qint32 loop = 0; loop < NMB_ITEMS_FOR_TIMERS + 1; loop++)
         {
@@ -90,9 +94,13 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
         if(++mMainTimer >= 100)
         {
             mMainTimer = 0;
-
-            emit SendUpdateGraph(100);
         }
+    });
+
+
+    connect(ui->verticalSlider,static_cast<void (QSlider::*)(int)>(&QSlider::valueChanged),[=](int nValue){
+
+        qDebug() << "slider: " << nValue;
     });
 
     connect(ui->spinBox,static_cast<void (QSpinBox::*)(int)>(&QSpinBox::valueChanged),[=](int nValue){
@@ -143,6 +151,9 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
         {
             QString adjString = QString(arrData);
             QStringList myStringList = adjString.split(QRegExp("(\\s+| |=)"));
+
+
+            emit SendUpdateGraph(ui->spinBox_3->value(), myStringList.at(11).toInt());
 
             /*for(int iLoop = 0; iLoop < myStringList.count(); iLoop++)
             {

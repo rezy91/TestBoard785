@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1117</width>
-    <height>676</height>
+    <width>1114</width>
+    <height>706</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -15,16 +15,6 @@
   </property>
   <widget class="QWidget" name="centralWidget">
    <layout class="QGridLayout" name="gridLayout">
-    <item row="1" column="0">
-     <widget class="QTextBrowser" name="textBrowser">
-      <property name="openExternalLinks">
-       <bool>false</bool>
-      </property>
-      <property name="openLinks">
-       <bool>false</bool>
-      </property>
-     </widget>
-    </item>
     <item row="0" column="0">
      <layout class="QVBoxLayout" name="verticalLayout">
       <item>
@@ -413,6 +403,34 @@
        <number>10</number>
       </property>
       <item>
+       <widget class="QSlider" name="verticalSlider">
+        <property name="orientation">
+         <enum>Qt::Vertical</enum>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QSlider" name="verticalSlider_2">
+        <property name="orientation">
+         <enum>Qt::Vertical</enum>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QSlider" name="verticalSlider_3">
+        <property name="orientation">
+         <enum>Qt::Vertical</enum>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QSlider" name="verticalSlider_4">
+        <property name="orientation">
+         <enum>Qt::Vertical</enum>
+        </property>
+       </widget>
+      </item>
+      <item>
        <widget class="QRadioButton" name="radioButton">
         <property name="enabled">
          <bool>false</bool>
@@ -429,6 +447,16 @@
        </widget>
       </item>
      </layout>
+    </item>
+    <item row="1" column="0">
+     <widget class="QTextBrowser" name="textBrowser">
+      <property name="openExternalLinks">
+       <bool>false</bool>
+      </property>
+      <property name="openLinks">
+       <bool>false</bool>
+      </property>
+     </widget>
     </item>
    </layout>
   </widget>

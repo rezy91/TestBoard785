@@ -3,23 +3,40 @@
 
 #include <QMainWindow>
 #include <QList>
-#include <QCheckBox>
-#include <QHBoxLayout>
+#include <QObject>
+#include <QEvent>
 
 
 class Grapmain : public QMainWindow
 {
     Q_OBJECT
 public:
-    enum{nmbCurvesInGraph = 4};
+    enum{nmbCurvesInGraph = 2};
 
     explicit Grapmain(QWidget *parent = 0);
 
 private:
+    int totalTime_ms = 0;
+    int refreshTime_ms = 1;
+    int nThSample = 1;
+    bool fromStaticToDynamic = false;
+
+    int timeExpired[50];//for my display is max value equal 18, therefore reserve
+
+
+    int printValue1;
+
     bool bEnableDraw = false;
+    QList<int> centers[nmbCurvesInGraph];
+
+
+    const int constBottomLimit = 100;
+    const int constTopLimit = 200;
+    const int constLeftLimit = 20;
+    const int constRightLimit = 20;
 
 public slots:
-    void Refresh(int someValue);
+    void Refresh(int mResolution_ms, int mSignalOne);
 
 protected:
     void paintEvent(QPaintEvent*);

@@ -126,7 +126,7 @@ private:
 
 signals:
     void SendNewData(int magnitudeA, int phaseA, int magnitude50, int phase50);
-    void SendUpdateGraph(int value);
+    void SendUpdateGraph(int value, int val1);
 
     void SendStateButton(bool state);
 
