@@ -30,10 +30,13 @@ private:
     QList<int> centers[nmbCurvesInGraph];
 
 
-    const int constBottomLimit = 100;
-    const int constTopLimit = 200;
+    const int constBottomLimit = 50;
+    const int constTopLimit = 50;
     const int constLeftLimit = 20;
     const int constRightLimit = 20;
+
+    const int constDiffBetweenTwoPoints = 10;
+    const int constVertLineXthPoints = 10;
 
 public slots:
     void Refresh(int mResolution_ms, int mSignalOne);

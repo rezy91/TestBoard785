@@ -40,31 +40,34 @@ void Grapmain::paintEvent(QPaintEvent*)
 
     QPainter painterMain(this);
 
-    int atHoundreads = width() / 100;
-    int houndr = atHoundreads * 100;
+    int widthOneVertLine = constDiffBetweenTwoPoints * constVertLineXthPoints;
+    int currentHeight = height();
+    int currentWidth = 550;
+    int nmbVerLines = currentWidth / widthOneVertLine;
+    int usedWidth = nmbVerLines * widthOneVertLine;
 
 
 
     //x-axis
-    painterMain.drawLine(QPoint(constLeftLimit, height() - constBottomLimit), QPoint(width() - constRightLimit, height() - constBottomLimit));
-    painterMain.drawLine(QPoint(width() - constRightLimit - 10, height() - constBottomLimit - 10), QPoint(width() - constRightLimit, height() - constBottomLimit));
-    painterMain.drawLine(QPoint(width() - constRightLimit - 10, height() - constBottomLimit + 10), QPoint(width() - constRightLimit, height() - constBottomLimit));
+    painterMain.drawLine(QPoint(constLeftLimit, currentHeight - constBottomLimit), QPoint(currentWidth - constRightLimit, currentHeight - constBottomLimit));
+    painterMain.drawLine(QPoint(currentWidth - constRightLimit - 10, currentHeight - constBottomLimit - 10), QPoint(currentWidth - constRightLimit, currentHeight - constBottomLimit));
+    painterMain.drawLine(QPoint(currentWidth - constRightLimit - 10, currentHeight - constBottomLimit + 10), QPoint(currentWidth - constRightLimit, currentHeight - constBottomLimit));
 
 
     //y-axis
-    painterMain.drawLine(QPoint(constLeftLimit, height() - constBottomLimit),QPoint(constLeftLimit, constTopLimit));
+    painterMain.drawLine(QPoint(constLeftLimit, currentHeight - constBottomLimit),QPoint(constLeftLimit, constTopLimit));
 
     painterMain.drawLine(QPoint(constLeftLimit, constTopLimit),QPoint(constLeftLimit - 10, constTopLimit + 10));
     painterMain.drawLine(QPoint(constLeftLimit, constTopLimit),QPoint(constLeftLimit + 10, constTopLimit + 10));
 
 
-    if(totalTime_ms >= (((houndr - 100) / 10) * refreshTime_ms))
+    if(totalTime_ms >= (((usedWidth - widthOneVertLine) / 10) * refreshTime_ms))
     {
         if(!(totalTime_ms % (refreshTime_ms * 10)))
         {
-            for(int iLoop = houndr / 100; iLoop > 0; iLoop--)
+            for(int iLoop = usedWidth / widthOneVertLine; iLoop > 0; iLoop--)
             {
-                timeExpired[houndr / 100 - iLoop] = ((totalTime_ms - refreshTime_ms * iLoop * 10) + refreshTime_ms * 10) / 1000;
+                timeExpired[usedWidth / widthOneVertLine - iLoop] = ((totalTime_ms - refreshTime_ms * iLoop * 10) + refreshTime_ms * 10) / 1000;
             }
         }
         if(!fromStaticToDynamic)
@@ -81,9 +84,9 @@ void Grapmain::paintEvent(QPaintEvent*)
     }
     else
     {
-        for(int iLoop = 0; iLoop < houndr / 100; iLoop++)
+        for(int iLoop = 0; iLoop < usedWidth / widthOneVertLine; iLoop++)
         {
-            timeExpired[iLoop] = (refreshTime_ms * iLoop) / 100;
+            timeExpired[iLoop] = (refreshTime_ms * iLoop) / widthOneVertLine;
         }
         nThSample = 0;
     }
@@ -94,8 +97,8 @@ void Grapmain::paintEvent(QPaintEvent*)
         {
             int center;
 
-            int offset = 100 + iLoop * 200;
-            int yValue = int(offset + sin(PaintCounter[iLoop]) * 100);
+            int offset = 111 + iLoop * 200;
+            int yValue = int(offset + sin(PaintCounter[iLoop]) * 111);
             center = yValue;
 
             if(iLoop == 0)
@@ -103,7 +106,7 @@ void Grapmain::paintEvent(QPaintEvent*)
                 center = printValue1;
             }
 
-            if(centers[iLoop].count() >= (houndr - 100) / 10)
+            if(centers[iLoop].count() >= (usedWidth - widthOneVertLine) / 10)
             {
                 centers[iLoop].removeFirst();
             }
@@ -123,7 +126,7 @@ void Grapmain::paintEvent(QPaintEvent*)
                     {
                         painterMain.setBrush(QBrush(Qt::red));
                     }
-                    QPoint cnt = QPoint(constLeftLimit + 10 + 10 * jLoop, height() - constBottomLimit - centers[iLoop].at(jLoop));
+                    QPoint cnt = QPoint(constLeftLimit + 10 + 10 * jLoop, currentHeight - constBottomLimit - centers[iLoop].at(jLoop));
                     painterMain.drawEllipse(cnt,3,3);
                 }
 
@@ -137,7 +140,7 @@ void Grapmain::paintEvent(QPaintEvent*)
                     }
                     else
                     {
-                        painterMain.drawLine(QPoint(xValue, height() - constBottomLimit),QPoint(xValue, constTopLimit + 20));
+                        painterMain.drawLine(QPoint(xValue, currentHeight - constBottomLimit),QPoint(xValue, constTopLimit + 20));
 
                         int minutes;
                         int seconds;
@@ -156,22 +159,22 @@ void Grapmain::paintEvent(QPaintEvent*)
                         if(minutes >= 10 && seconds >= 10)
                         {
                             QString showInMinAndSec = QString("%1:%2").arg(minutes).arg(seconds);
-                            painterMain.drawText(QPoint(xValue - 10, height() - constBottomLimit + 10), showInMinAndSec);
+                            painterMain.drawText(QPoint(xValue - 10, currentHeight - constBottomLimit + 10), showInMinAndSec);
                         }
                         else if(minutes >= 10)
                         {
                             QString showInMinAndSec = QString("%1:0%2").arg(minutes).arg(seconds);
-                            painterMain.drawText(QPoint(xValue - 10, height() - constBottomLimit + 10), showInMinAndSec);
+                            painterMain.drawText(QPoint(xValue - 10, currentHeight - constBottomLimit + 10), showInMinAndSec);
                         }
                         else if(seconds >= 10)
                         {
                             QString showInMinAndSec = QString("0%1:%2").arg(minutes).arg(seconds);
-                            painterMain.drawText(QPoint(xValue - 10, height() - constBottomLimit + 10), showInMinAndSec);
+                            painterMain.drawText(QPoint(xValue - 10, currentHeight - constBottomLimit + 10), showInMinAndSec);
                         }
                         else
                         {
                             QString showInMinAndSec = QString("0%1:0%2").arg(minutes).arg(seconds);
-                            painterMain.drawText(QPoint(xValue - 10, height() - constBottomLimit + 10), showInMinAndSec);
+                            painterMain.drawText(QPoint(xValue - 10, currentHeight - constBottomLimit + 10), showInMinAndSec);
                         }
 
                     }
