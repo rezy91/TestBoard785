@@ -43,6 +43,8 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
 
     connect(this, &MainWindow::SendUpdateGraph, g, &Grapmain::Refresh);
 
+    connect (g, &Grapmain::SendUpdateData, this, &MainWindow::UpdateDoubleSpinBox);
+
     g->setWindowTitle("Graph");
     g->show();
 
@@ -101,7 +103,32 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
     connect(ui->verticalSlider,static_cast<void (QSlider::*)(int)>(&QSlider::valueChanged),[=](int nValue){
 
         qDebug() << "slider: " << nValue;
+
+        if(nValue > 90)
+        {
+            ui->verticalSlider->setValue(50);
+        }
     });
+
+
+    connect(ui->doubleSpinBox,static_cast<void (QDoubleSpinBox::*)(double)>(&QDoubleSpinBox::valueChanged),[=](double nValue){
+
+        if(nValue >= 10)
+        {
+            ui->doubleSpinBox->setSingleStep(1.0);
+        }
+        else if(nValue >= 1)
+        {
+            ui->doubleSpinBox->setSingleStep(0.1);
+        }
+        else if(nValue >= 0.1)
+        {
+            ui->doubleSpinBox->setSingleStep(0.01);
+        }
+
+        coefInput = nValue;
+    });
+
 
     connect(ui->spinBox,static_cast<void (QSpinBox::*)(int)>(&QSpinBox::valueChanged),[=](int nValue){
         m_pSettingStrorage->StoreRefreshFirst(nValue);
@@ -153,7 +180,7 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
             QStringList myStringList = adjString.split(QRegExp("(\\s+| |=)"));
 
 
-            emit SendUpdateGraph(ui->spinBox_3->value(), myStringList.at(11).toInt());
+            emit SendUpdateGraph(ui->spinBox_3->value(), myStringList.at(11).toInt(), coefInput);
 
             /*for(int iLoop = 0; iLoop < myStringList.count(); iLoop++)
             {
@@ -269,6 +296,11 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
 MainWindow::~MainWindow()
 {
     delete ui;
+}
+
+void MainWindow::UpdateDoubleSpinBox(double newValue)
+{
+    ui->doubleSpinBox->setValue(newValue);
 }
 
 void MainWindow::on_sendButton_clicked()
@@ -950,7 +982,7 @@ MainWindow::COMPLEX_NUMBER_GONIO MainWindow::CalculateReflectionRatio(COMPLEX_NU
     {
         ReflectionRatio.phase_rad = atan(divisorAlgebImag / divisorAlgebReal) - atan(dividentAlgebImag / dividentAlgebReal);
 
-        qDebug() << ReflectionRatio.magnitude << " " << ReflectionRatio.phase_rad;
+        //qDebug() << ReflectionRatio.magnitude << " " << ReflectionRatio.phase_rad;
     }
     else
     {

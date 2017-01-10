@@ -5,13 +5,14 @@
 #include <QList>
 #include <QObject>
 #include <QEvent>
+#include <QString>
 
 
 class Grapmain : public QMainWindow
 {
     Q_OBJECT
 public:
-    enum{nmbCurvesInGraph = 2};
+    enum{nmbCurvesInGraph = 4};
 
     explicit Grapmain(QWidget *parent = 0);
 
@@ -26,23 +27,29 @@ private:
 
     int printValue1;
 
-    bool bEnableDraw = false;
+    int bEnableDraw = 0;
     QList<int> centers[nmbCurvesInGraph];
 
 
     const int constBottomLimit = 50;
     const int constTopLimit = 50;
-    const int constLeftLimit = 20;
-    const int constRightLimit = 20;
+    const int constLeftLimit = 80;
+    const int constRightLimit = 100;
 
-    const int constDiffBetweenTwoPoints = 10;
-    const int constVertLineXthPoints = 10;
+    const int constDistanceHorizontalLines_pxs = 100;
+
+    const QString legendItems[nmbCurvesInGraph] = {"Power", "sin", "cos", "log10"};
+    double maxCoefficient[nmbCurvesInGraph] = {1,1,1,1};
 
 public slots:
-    void Refresh(int mResolution_ms, int mSignalOne);
+    void Refresh(int mResolution_ms, int mSignalOne, double coefOne);
 
 protected:
     void paintEvent(QPaintEvent*);
+
+signals:
+   void SendUpdateData(double value);
+
 };
 
 #endif // GRAPMAIN_H

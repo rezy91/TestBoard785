@@ -71,6 +71,8 @@ public:
     explicit MainWindow(QWidget *parent = 0);
     ~MainWindow();
 
+public slots:
+    void UpdateDoubleSpinBox(double newValue);
 
 private slots:
     void on_sendButton_clicked();
@@ -124,9 +126,11 @@ private:
 
     COMPLEX_NUMBER_GONIO CalculateReflectionRatio(COMPLEX_NUMBER_GONIO current, COMPLEX_NUMBER_GONIO average);
 
+    double coefInput = 1.0;
+
 signals:
     void SendNewData(int magnitudeA, int phaseA, int magnitude50, int phase50);
-    void SendUpdateGraph(int value, int val1);
+    void SendUpdateGraph(int value, int val1, double cof1);
 
     void SendStateButton(bool state);
 
