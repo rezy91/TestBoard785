@@ -89,7 +89,7 @@ void Grapmain::paintEvent(QPaintEvent*)
     }
     else
     {
-        for(int iLoop = 0; iLoop < nmbVerLines; iLoop++)
+        for(int iLoop = 0; iLoop <= nmbVerLines; iLoop++)
         {
             timeExpired[iLoop] = (refreshTime_ms * iLoop * constSamples);
         }

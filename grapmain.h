@@ -31,7 +31,7 @@ private:
     QList<int> centers[nmbCurvesInGraph];
 
 
-    const int constPixels = 10;
+    const int constPixels = 30;
     const int constSamples = 5;
 
     const int constBottomLimit = 50;
