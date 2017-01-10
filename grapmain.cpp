@@ -10,25 +10,27 @@ Grapmain::Grapmain(QWidget *parent) : QMainWindow(parent)
     resize(760, 580);
 }
 
-void Grapmain::Refresh(int mResolution_ms, int mSignalOne, double coefOne)
+void Grapmain::refreshGraph(int mResolution_ms[], int signal[], double coefficient[], int source)
 {
+    Q_UNUSED(source);
+
     bEnableDraw++;
 
-    if(refreshTime_ms != mResolution_ms)
+    if(refreshTime_ms != mResolution_ms[2])
     {
-        refreshTime_ms = mResolution_ms;
+        refreshTime_ms = mResolution_ms[2];
 
         for(int iLoop = 0; iLoop < nmbCurvesInGraph; iLoop++)
         {
             centers[iLoop].clear();
         }
         totalTime_ms = 0;
-        nThSample = 0;
+        nThSample = 1;
         fromStaticToDynamic = false;
     }
-    totalTime_ms += mResolution_ms;
-    printValue1 = mSignalOne;
-    maxCoefficient[0] = coefOne;
+    totalTime_ms += mResolution_ms[2];
+    printValue1 = signal[0];
+    maxCoefficient[0] = coefficient[2];
 
     update();
 }

@@ -126,11 +126,13 @@ private:
 
     COMPLEX_NUMBER_GONIO CalculateReflectionRatio(COMPLEX_NUMBER_GONIO current, COMPLEX_NUMBER_GONIO average);
 
-    double coefInput = 1.0;
+    double coefInput[4] = {1.0, 1.0, 1.0, 1.0};
+    int refreshTime[4];
+    int recvItems[4] = {0, 0, 0, 0};
 
 signals:
     void SendNewData(int magnitudeA, int phaseA, int magnitude50, int phase50);
-    void SendUpdateGraph(int value, int val1, double cof1);
+    void SendUpdateGraph(int refrTime_ms[4], int receivedValue[4], double coefficient[4], int src);
 
     void SendStateButton(bool state);
 

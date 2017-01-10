@@ -41,7 +41,7 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
 
     g = new Grapmain(this);
 
-    connect(this, &MainWindow::SendUpdateGraph, g, &Grapmain::Refresh);
+    connect(this, &MainWindow::SendUpdateGraph, g, &Grapmain::refreshGraph);
 
     connect (g, &Grapmain::SendUpdateData, this, &MainWindow::UpdateDoubleSpinBox);
 
@@ -100,17 +100,6 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
     });
 
 
-    connect(ui->verticalSlider,static_cast<void (QSlider::*)(int)>(&QSlider::valueChanged),[=](int nValue){
-
-        qDebug() << "slider: " << nValue;
-
-        if(nValue > 90)
-        {
-            ui->verticalSlider->setValue(50);
-        }
-    });
-
-
     connect(ui->doubleSpinBox,static_cast<void (QDoubleSpinBox::*)(double)>(&QDoubleSpinBox::valueChanged),[=](double nValue){
 
         if(nValue >= 10)
@@ -126,7 +115,61 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
             ui->doubleSpinBox->setSingleStep(0.01);
         }
 
-        coefInput = nValue;
+        coefInput[0] = nValue;
+    });
+
+    connect(ui->doubleSpinBox_2,static_cast<void (QDoubleSpinBox::*)(double)>(&QDoubleSpinBox::valueChanged),[=](double nValue){
+
+        if(nValue >= 10)
+        {
+            ui->doubleSpinBox_2->setSingleStep(1.0);
+        }
+        else if(nValue >= 1)
+        {
+            ui->doubleSpinBox_2->setSingleStep(0.1);
+        }
+        else if(nValue >= 0.1)
+        {
+            ui->doubleSpinBox_2->setSingleStep(0.01);
+        }
+
+        coefInput[1] = nValue;
+    });
+
+    connect(ui->doubleSpinBox_3,static_cast<void (QDoubleSpinBox::*)(double)>(&QDoubleSpinBox::valueChanged),[=](double nValue){
+
+        if(nValue >= 10)
+        {
+            ui->doubleSpinBox_3->setSingleStep(1.0);
+        }
+        else if(nValue >= 1)
+        {
+            ui->doubleSpinBox_3->setSingleStep(0.1);
+        }
+        else if(nValue >= 0.1)
+        {
+            ui->doubleSpinBox_3->setSingleStep(0.01);
+        }
+
+        coefInput[2] = nValue;
+    });
+
+    connect(ui->doubleSpinBox_4,static_cast<void (QDoubleSpinBox::*)(double)>(&QDoubleSpinBox::valueChanged),[=](double nValue){
+
+        if(nValue >= 10)
+        {
+            ui->doubleSpinBox_4->setSingleStep(1.0);
+        }
+        else if(nValue >= 1)
+        {
+            ui->doubleSpinBox_4->setSingleStep(0.1);
+        }
+        else if(nValue >= 0.1)
+        {
+            ui->doubleSpinBox_4->setSingleStep(0.01);
+        }
+
+        coefInput[3] = nValue;
     });
 
 
@@ -174,40 +217,64 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
         AppendText(QString(arrData));
 
 
-        if(arrData.at(0) == '2' && arrData.at(1) == 'c')//ADC2 adjusted data
+        if(arrData.at(0) == 'a' && arrData.at(1) == 'd')//ADC2 adjusted data
         {
             QString adjString = QString(arrData);
-            QStringList myStringList = adjString.split(QRegExp("(\\s+| |=)"));
+            QStringList myStringList = adjString.split(QRegExp("(\\s+| |=|-)"));
 
-
-            emit SendUpdateGraph(ui->spinBox_3->value(), myStringList.at(11).toInt(), coefInput);
 
             /*for(int iLoop = 0; iLoop < myStringList.count(); iLoop++)
             {
-                qDebug() << myStringList.at(iLoop);
+                qDebug() << myStringList.at(iLoop) << "|";
             }*/
 
-            //qDebug() << myStringList.at(3).toFloat() << " " << myStringList.at(5).toFloat() << " " << myStringList.at(7).toFloat() << " " << myStringList.at(9).toFloat();
+            refreshTime[0] = ui->spinBox->value();
+            refreshTime[1] = ui->spinBox_2->value();
+            refreshTime[2] = ui->spinBox_3->value();
+            refreshTime[3] = ui->spinBox_4->value();
 
-            COMPLEX_NUMBER_GONIO currentData;
-            COMPLEX_NUMBER_GONIO averageDataA;
-            COMPLEX_NUMBER_GONIO averageData50;
-            COMPLEX_NUMBER_GONIO reflRatioAvg;
-            COMPLEX_NUMBER_GONIO reflRatio50;
+            if(arrData.at(2) == '3' && arrData.at(3) == 'c')//ADC3 adjusted data
+            {
+                recvItems[2] = myStringList.at(3).toInt();
+                emit SendUpdateGraph(refreshTime, recvItems, coefInput, 2);
+            }
+            else if(arrData.at(2) == '3' && arrData.at(3) == 's')//ADC3 average data
+            {
+                recvItems[3] = myStringList.at(3).toInt();
+                emit SendUpdateGraph(refreshTime, recvItems, coefInput, 3);
+            }
+            else if(arrData.at(2) == '2' && arrData.at(3) == 'c')//ADC2 adjusted data
+            {
+
+                recvItems[0] = myStringList.at(11).toInt();
+                emit SendUpdateGraph(refreshTime, recvItems, coefInput, 0);
+
+                COMPLEX_NUMBER_GONIO currentData;
+                COMPLEX_NUMBER_GONIO averageDataA;
+                COMPLEX_NUMBER_GONIO averageData50;
+                COMPLEX_NUMBER_GONIO reflRatioAvg;
+                COMPLEX_NUMBER_GONIO reflRatio50;
+
+                currentData.magnitude = myStringList.at(3).toFloat();
+                currentData.phase_rad = myStringList.at(5).toFloat();
+                averageDataA.magnitude = myStringList.at(7).toFloat();
+                averageDataA.phase_rad = myStringList.at(9).toFloat();
+
+                reflRatioAvg = CalculateReflectionRatio(currentData, averageDataA);
+
+                averageData50.magnitude = 50;
+                averageData50.phase_rad = 0;
+
+                reflRatio50 = CalculateReflectionRatio(currentData, averageData50);
+                emit SendNewData(int(reflRatioAvg.magnitude * 1000), int(reflRatioAvg.phase_rad * 1000),int(reflRatio50.magnitude * 1000), int(reflRatio50.phase_rad * 1000));
+            }
+            else if(arrData.at(2) == '2' && arrData.at(3) == 's')//ADC2 average data
+            {
+                recvItems[1] = myStringList.at(6).toInt();
+                emit SendUpdateGraph(refreshTime, recvItems, coefInput, 1);
+            }
 
 
-            currentData.magnitude = myStringList.at(3).toFloat();
-            currentData.phase_rad = myStringList.at(5).toFloat();
-            averageDataA.magnitude = myStringList.at(7).toFloat();
-            averageDataA.phase_rad = myStringList.at(9).toFloat();
-
-            reflRatioAvg = CalculateReflectionRatio(currentData, averageDataA);
-
-            averageData50.magnitude = 50;
-            averageData50.phase_rad = 0;
-
-            reflRatio50 = CalculateReflectionRatio(currentData, averageData50);
-            emit SendNewData(int(reflRatioAvg.magnitude * 1000), int(reflRatioAvg.phase_rad * 1000),int(reflRatio50.magnitude * 1000), int(reflRatio50.phase_rad * 1000));
         }
         else if(arrData.at(1) == '|')//Digital input readed
         {
@@ -300,7 +367,7 @@ MainWindow::~MainWindow()
 
 void MainWindow::UpdateDoubleSpinBox(double newValue)
 {
-    ui->doubleSpinBox->setValue(newValue);
+    ui->doubleSpinBox_3->setValue(newValue);
 }
 
 void MainWindow::on_sendButton_clicked()

@@ -42,7 +42,7 @@ private:
     double maxCoefficient[nmbCurvesInGraph] = {1,1,1,1};
 
 public slots:
-    void Refresh(int mResolution_ms, int mSignalOne, double coefOne);
+    void refreshGraph(int mResolution_ms[4], int signal[4], double coefficient[4], int source);
 
 protected:
     void paintEvent(QPaintEvent*);
