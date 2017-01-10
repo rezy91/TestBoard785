@@ -16,23 +16,13 @@ public:
 
     explicit Grapmain(QWidget *parent = 0);
 
+    bool WasTimeReolutionChanged(int mInputValue_ms[nmbCurvesInGraph]);
+    int GetMinimalResolution();
+
 private:
-    int totalTime_ms = 0;
-    int refreshTime_ms = 1;
-    int nThSample = 1;
-    bool fromStaticToDynamic = false;
-
-    int timeExpired[50];//for my display is max value equal 18, therefore reserve
-
-
-    int printValue1;
-
-    int bEnableDraw = 0;
-    QList<int> centers[nmbCurvesInGraph];
-
-
-    const int constPixels = 15;
-    const int constSamples = 15;
+    //common variables
+    const int constPixels = 10;
+    const int constSamples = 10;
     const int constVolumePoint = 5;
 
     const int constBottomLimit = 50;
@@ -40,19 +30,39 @@ private:
     const int constLeftLimit = 80;
     const int constRightLimit = 100;
 
-    const int constDistanceHorizontalLines_pxs = 100;
+    const int constDistanceHorizontalLines_pxs = 50;
 
-    const QString legendItems[nmbCurvesInGraph] = {"Power", "sin", "cos", "log10"};
-    double maxCoefficient[nmbCurvesInGraph] = {1,1,1,1};
+    int bEnableDraw = 0;//this is, because when start app, PaintEvent occurs
+
+    int mMinimalResolution;
+
+
+    //variables for separate signal
+    QList<int> mSignalHistory[nmbCurvesInGraph];
+    const QString mLegendItems[nmbCurvesInGraph] = {"Power", "sin", "cos", "log10"};
+    double mMaxCoefficient[nmbCurvesInGraph] = {1, 1, 1, 1};
+
+
+
+    int mRefreshTime_ms[nmbCurvesInGraph] = {1, 1, 1, 1};
+    int mTotalTime_ms = 0;
+    int mThSample = 1;
+    bool mFromStaticToDynamic = false;
+    QList<int> mTimeExpired;
+    int mSignalValue;
+
+
+
+
 
 public slots:
-    void refreshGraph(int mResolution_ms[4], int signal[4], double coefficient[4], int source);
+    void refreshGraph(int mResolution_ms[nmbCurvesInGraph], int signal[nmbCurvesInGraph], double coefficient[nmbCurvesInGraph], int source);
 
 protected:
     void paintEvent(QPaintEvent*);
 
 signals:
-   void SendUpdateData(double value);
+    void SendUpdateData(double value);
 
 };
 
