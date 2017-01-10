@@ -41,7 +41,7 @@ void Grapmain::paintEvent(QPaintEvent*)
 
     QPainter painterMain(this);
 
-    int widthOneVertLine = 100;
+    int widthOneVertLine = constPixels * constSamples;
     int currentHeight = height();
     int currentWidth = width();
     int nmbVerLines = (currentWidth - constLeftLimit - constRightLimit) / widthOneVertLine;
@@ -66,13 +66,13 @@ void Grapmain::paintEvent(QPaintEvent*)
     painterMain.drawText(QPoint(constLeftLimit - 5, constBottomLimit - 20 - 5), legendItems[0] + " [mW]");
 
 
-    if(totalTime_ms >= (((usedWidth - widthOneVertLine) / 10) * refreshTime_ms))
+    if(totalTime_ms >= (((usedWidth - widthOneVertLine) / constPixels) * refreshTime_ms))
     {
-        if(!(totalTime_ms % (refreshTime_ms * 10)))
+        if(!(totalTime_ms % (refreshTime_ms * constSamples)))
         {
             for(int iLoop = nmbVerLines; iLoop > 0; iLoop--)
             {
-                timeExpired[nmbVerLines - iLoop] = ((totalTime_ms - refreshTime_ms * iLoop * 10) + refreshTime_ms * 10) / 1000;
+                timeExpired[nmbVerLines - iLoop] = ((totalTime_ms - refreshTime_ms * iLoop * constSamples) + refreshTime_ms * constSamples);
             }
         }
         if(!fromStaticToDynamic)
@@ -81,7 +81,7 @@ void Grapmain::paintEvent(QPaintEvent*)
         }
         else
         {
-            if(++nThSample == (10 + 1))
+            if(++nThSample == (constSamples + 1))
             {
                 nThSample = 1;
             }
@@ -91,7 +91,7 @@ void Grapmain::paintEvent(QPaintEvent*)
     {
         for(int iLoop = 0; iLoop < nmbVerLines; iLoop++)
         {
-            timeExpired[iLoop] = (refreshTime_ms * iLoop) / widthOneVertLine;
+            timeExpired[iLoop] = (refreshTime_ms * iLoop * constSamples);
         }
         nThSample = 0;
     }
@@ -137,7 +137,7 @@ void Grapmain::paintEvent(QPaintEvent*)
                 center = int(200 + log10(PaintCounter[iLoop]) * 111);
             }
 
-            if(centers[iLoop].count() >= (usedWidth - widthOneVertLine) / 10)
+            if(centers[iLoop].count() >= (usedWidth - widthOneVertLine) / constPixels)
             {
                 centers[iLoop].removeFirst();
             }
@@ -167,14 +167,14 @@ void Grapmain::paintEvent(QPaintEvent*)
                     }
 
                     int drawYvalue = (int)((double)centers[iLoop].at(jLoop) / maxCoefficient[iLoop]);
-                    QPoint cnt = QPoint(constLeftLimit + 10 + 10 * jLoop, currentHeight - constBottomLimit - drawYvalue);
+                    QPoint cnt = QPoint(constLeftLimit + constPixels + constPixels * jLoop, currentHeight - constBottomLimit - drawYvalue);
 
-                    painterMain.drawEllipse(cnt,3,3);
+                    painterMain.drawEllipse(cnt,2,2);
                 }
 
-                if(!(jLoop % 10) && iLoop == 0)
+                if(!(jLoop % constSamples) && iLoop == 0)
                 {
-                    int xValue = constLeftLimit + 10 * jLoop - nThSample * 10;
+                    int xValue = constLeftLimit + constPixels * jLoop - nThSample * constPixels;
 
                     if(xValue < constLeftLimit)
                     {
@@ -182,7 +182,7 @@ void Grapmain::paintEvent(QPaintEvent*)
                     }
                     else
                     {
-                        if(xValue >= constLeftLimit + 10)
+                        if(xValue >= constLeftLimit + constPixels)
                         {
                             painterMain.drawLine(QPoint(xValue, currentHeight - constBottomLimit),QPoint(xValue, constTopLimit));
                         }
@@ -190,7 +190,7 @@ void Grapmain::paintEvent(QPaintEvent*)
                         int minutes;
                         int seconds;
 
-                        if(nThSample == 10)
+                        if(nThSample == constSamples)
                         {
                             minutes = timeExpired[(jLoop / 10) - 1] / 60;
                             seconds = timeExpired[(jLoop / 10) - 1] % 60;
@@ -202,6 +202,12 @@ void Grapmain::paintEvent(QPaintEvent*)
                         }
                         painterMain.setPen(QPen(Qt::black));
 
+
+                        painterMain.drawText(QPoint(xValue - 10, currentHeight - constBottomLimit + 10), QString("%1").arg(timeExpired[jLoop / constSamples]));
+
+                        qDebug() << "argument " << jLoop << " " << QString("%1").arg(timeExpired[jLoop / constSamples]);
+
+                        /*
                         if(minutes >= 10 && seconds >= 10)
                         {
                             QString showInMinAndSec = QString("%1:%2").arg(minutes).arg(seconds);
@@ -222,7 +228,7 @@ void Grapmain::paintEvent(QPaintEvent*)
                             QString showInMinAndSec = QString("0%1:0%2").arg(minutes).arg(seconds);
                             painterMain.drawText(QPoint(xValue - 10, currentHeight - constBottomLimit + 10), showInMinAndSec);
                         }
-
+*/
                     }
                 }
 
@@ -258,7 +264,7 @@ void Grapmain::paintEvent(QPaintEvent*)
             }
 
             //Draw legende
-            painterMain.drawEllipse(QPoint(currentWidth - constRightLimit + 30, (currentHeight / 2) + iLoop * 20 - 5),3,3);
+            painterMain.drawEllipse(QPoint(currentWidth - constRightLimit + 30, (currentHeight / 2) + iLoop * 20 - 5),2,2);
             painterMain.drawText(QPoint(currentWidth - constRightLimit + 40, (currentHeight / 2) + iLoop * 20), legendItems[iLoop]);
         }
     }
