@@ -235,18 +235,18 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
 
             if(arrData.at(2) == '3' && arrData.at(3) == 'c')//ADC3 adjusted data
             {
-                recvItems[2] = myStringList.at(3).toInt();
+                recvItems[0] = myStringList.at(3).toInt();
                 emit SendUpdateGraph(refreshTime, recvItems, coefInput, 2);
             }
             else if(arrData.at(2) == '3' && arrData.at(3) == 's')//ADC3 average data
             {
-                recvItems[3] = myStringList.at(3).toInt();
+                recvItems[1] = myStringList.at(3).toInt();
                 emit SendUpdateGraph(refreshTime, recvItems, coefInput, 3);
             }
             else if(arrData.at(2) == '2' && arrData.at(3) == 'c')//ADC2 adjusted data
             {
 
-                recvItems[0] = myStringList.at(11).toInt();
+                recvItems[2] = myStringList.at(11).toInt();
                 emit SendUpdateGraph(refreshTime, recvItems, coefInput, 0);
 
                 COMPLEX_NUMBER_GONIO currentData;
@@ -270,7 +270,7 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
             }
             else if(arrData.at(2) == '2' && arrData.at(3) == 's')//ADC2 average data
             {
-                recvItems[1] = myStringList.at(6).toInt();
+                recvItems[3] = myStringList.at(6).toInt();
                 emit SendUpdateGraph(refreshTime, recvItems, coefInput, 1);
             }
 

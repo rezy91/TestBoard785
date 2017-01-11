@@ -34,7 +34,7 @@ private:
 
     int bEnableDraw = 0;//this is, because when start app, PaintEvent occurs
 
-    int mMinimalResolution;
+    int mMinimalResolution = 1;
 
 
     //variables for separate signal

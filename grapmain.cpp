@@ -59,8 +59,8 @@ void Grapmain::refreshGraph(int mResolution_ms[], int signal[], double coefficie
         mTimeExpired.clear();
     }
     mTotalTime_ms += mResolution_ms[2];
-    mSignalValue = signal[0];
-    mMaxCoefficient[0] = coefficient[2];
+    mSignalValue = signal[2];
+    mMaxCoefficient[2] = coefficient[2];
 
     update();
 
@@ -145,6 +145,14 @@ void Grapmain::paintEvent(QPaintEvent*)
 
             if(iLoop == 0)
             {
+                center = int(200 + sin(PaintCounter[iLoop]) * 111);
+            }
+            else if(iLoop == 1)
+            {
+                center = int(200 + cos(PaintCounter[iLoop]) * 111);
+            }
+            else if(iLoop == 2)
+            {
                 if(mSignalValue < 0)
                 {
                     center = -1;
@@ -165,14 +173,6 @@ void Grapmain::paintEvent(QPaintEvent*)
                 }
 
             }
-            else if(iLoop == 1)
-            {
-                center = int(200 + sin(PaintCounter[iLoop]) * 111);
-            }
-            else if(iLoop == 2)
-            {
-                center = int(200 + cos(PaintCounter[iLoop]) * 111);
-            }
             else if(iLoop == 3)
             {
                 center = int(200 + log10(PaintCounter[iLoop]) * 111);
@@ -187,6 +187,7 @@ void Grapmain::paintEvent(QPaintEvent*)
 
             for(int jLoop = 0; jLoop <= mSignalHistory[iLoop].count(); jLoop++)
             {
+                //draw points
                 if(jLoop < mSignalHistory[iLoop].count())
                 {
                     painterMain.setPen(QPen(Qt::lightGray));
@@ -213,7 +214,8 @@ void Grapmain::paintEvent(QPaintEvent*)
                     painterMain.drawEllipse(cnt,constVolumePoint,constVolumePoint);
                 }
 
-                if(!(jLoop % constSamples) && iLoop == 0)
+                //draw vertical lines plus x-axis texts
+                if(!(jLoop % constSamples) && iLoop == 2)
                 {
                     int xValue = constLeftLimit + constPixels * jLoop - mThSample * constPixels;
 
@@ -228,19 +230,6 @@ void Grapmain::paintEvent(QPaintEvent*)
                             painterMain.drawLine(QPoint(xValue, currentHeight - constBottomLimit),QPoint(xValue, constTopLimit));
                         }
 
-                        int minutes;
-                        int seconds;
-
-                        if(mThSample == constSamples)
-                        {
-                            minutes = mTimeExpired.at((jLoop / 10) - 1) / 60;
-                            seconds = mTimeExpired.at((jLoop / 10) - 1) % 60;
-                        }
-                        else
-                        {
-                            minutes = mTimeExpired.at(jLoop / 10) / 60;
-                            seconds = mTimeExpired.at(jLoop / 10) % 60;
-                        }
                         painterMain.setPen(QPen(Qt::black));
 
 
@@ -254,6 +243,21 @@ void Grapmain::paintEvent(QPaintEvent*)
                         }
 
                         /*
+
+                        int minutes;
+                        int seconds;
+
+                        if(mThSample == constSamples)
+                        {
+                            minutes = mTimeExpired.at((jLoop / 10) - 1) / 60;
+                            seconds = mTimeExpired.at((jLoop / 10) - 1) % 60;
+                        }
+                        else
+                        {
+                            minutes = mTimeExpired.at(jLoop / 10) / 60;
+                            seconds = mTimeExpired.at(jLoop / 10) % 60;
+                        }
+
                         if(minutes >= 10 && seconds >= 10)
                         {
                             QString showInMinAndSec = QString("%1:%2").arg(minutes).arg(seconds);
@@ -286,10 +290,11 @@ void Grapmain::paintEvent(QPaintEvent*)
             }
 
 
+            //Draw y-axes
+
             painterMain.setPen(QPen(Qt::black));
 
-            //Draw y-axes
-            if(iLoop == 0)
+            if(iLoop == 2)
             {
                 double resValue = ((double)mSignalHistory[iLoop].last() / mMaxCoefficient[iLoop]);
                 if(resValue >= 1)// can not be divided by zero value
