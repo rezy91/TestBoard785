@@ -35,7 +35,7 @@ int main(int argc, char *argv[])
     QGuiApplication::setFont(QFont("Vera",15));
 
 
-    w.setWindowTitle("Amp Direct Tester");
+    w.setWindowTitle("MAster 785 simulator");
     w.setWindowIcon(QIcon(":/icon.png"));
     w.show();
 

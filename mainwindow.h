@@ -129,7 +129,16 @@ private:
     double coefInput[4] = {1.0, 1.0, 1.0, 1.0};
     int refreshTime[4];
     int recvItems[4] = {0, 0, 0, 0};
-    int recStat[6] = {0, 0, 0, 0, 0, 0};
+    int recStat[4] = {0, 0, 0, 0};
+
+    QStringList allAdxSignals[6] = {{"ad3c_1", "ad3c_2", "ad3c_3"}, \
+                                    {"ad3s_1", "ad3s_2", "ad3s_3", "ad3s_4", "ad3s_5"}, \
+                                    {"ad2c_1", "ad2c_2", "ad2c_3", "ad2c_4", "ad2c_5", "ad2c_6", "ad2c_7", "ad2c_8", "ad2c_9", "ad2c_10"}, \
+                                    {"ad2s_1", "ad2s_2", "ad2s_3", "ad2s_4", "ad2s_5", "ad2s_6", "ad2s_7", "ad2s_8"}, \
+                                    {"ad1c_1", "ad1c_2", "ad1c_3"}, \
+                                    {"ad1s_1", "ad1s_2", "ad1s_3", "ad1s_4", "ad1s_5", "ad1s_6", "ad1s_7", "ad1s_8", "ad1s_9", "ad1s_10"}};
+
+    int sourceSignal[4] = {0, 0, 0, 0};
 
 signals:
     void SendNewData(int magnitudeA, int phaseA, int magnitude50, int phase50);

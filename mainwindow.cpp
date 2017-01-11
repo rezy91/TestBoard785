@@ -78,7 +78,6 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
 
 
 
-
     connect(&TmrMstr,&QTimer::timeout,[this](){
         for(qint32 loop = 0; loop < NMB_ITEMS_FOR_TIMERS + 1; loop++)
         {
@@ -97,6 +96,19 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
         {
             mMainTimer = 0;
         }
+    });
+
+    connect(ui->comboBox_2,static_cast<void (QComboBox::*)(int)>(&QComboBox::currentIndexChanged),[=](int nValue){
+        sourceSignal[0] = nValue;
+    });
+    connect(ui->comboBox_3,static_cast<void (QComboBox::*)(int)>(&QComboBox::currentIndexChanged),[=](int nValue){
+        sourceSignal[1] = nValue;
+    });
+    connect(ui->comboBox_4,static_cast<void (QComboBox::*)(int)>(&QComboBox::currentIndexChanged),[=](int nValue){
+        sourceSignal[2] = nValue;
+    });
+    connect(ui->comboBox_5,static_cast<void (QComboBox::*)(int)>(&QComboBox::currentIndexChanged),[=](int nValue){
+        sourceSignal[3] = nValue;
     });
 
 
@@ -217,16 +229,27 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
         AppendText(QString(arrData));
 
 
-        if(arrData.at(0) == 'a' && arrData.at(1) == 'd')//ADC2 adjusted data
+        if(arrData.at(0) == 'a' && arrData.at(1) == 'd')//ADCx data
         {
             QString adjString = QString(arrData);
             QStringList myStringList = adjString.split(QRegExp("(\\s+| |=|-)"));
 
+            QStringList myStringOnlyNumbers;
 
-            /*for(int iLoop = 0; iLoop < myStringList.count(); iLoop++)
+
+            for(int iLoop = 0; iLoop < myStringList.count(); iLoop++)
             {
-                qDebug() << myStringList.at(iLoop) << "|";
-            }*/
+                //qDebug() << "all: " + myStringList.at(iLoop) << endl;
+
+                bool isNumber;
+                myStringList.at(iLoop).toFloat(&isNumber);
+
+                if(isNumber)
+                {
+                    myStringOnlyNumbers.append(myStringList.at(iLoop));
+                    //qDebug() << "number: " + myStringList.at(iLoop) << endl;
+                }
+            }
 
             refreshTime[0] = ui->spinBox->value();
             refreshTime[1] = ui->spinBox_2->value();
@@ -235,18 +258,18 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
 
             if(arrData.at(2) == '3' && arrData.at(3) == 'c')//ADC3 adjusted data
             {
-                recvItems[0] = myStringList.at(3).toInt();
+                recvItems[0] = myStringOnlyNumbers.at(1).toInt();
                 emit SendUpdateGraph(refreshTime, recvItems, coefInput, recStat, 0);
             }
             else if(arrData.at(2) == '3' && arrData.at(3) == 's')//ADC3 average data
             {
-                recvItems[1] = myStringList.at(3).toInt();
+                recvItems[1] = myStringOnlyNumbers.at(1).toInt();
                 emit SendUpdateGraph(refreshTime, recvItems, coefInput, recStat, 1);
             }
             else if(arrData.at(2) == '2' && arrData.at(3) == 'c')//ADC2 adjusted data
             {
 
-                recvItems[2] = myStringList.at(11).toInt();
+                recvItems[2] = myStringOnlyNumbers.at(5).toInt();
                 emit SendUpdateGraph(refreshTime, recvItems, coefInput, recStat, 2);
 
                 COMPLEX_NUMBER_GONIO currentData;
@@ -255,10 +278,10 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
                 COMPLEX_NUMBER_GONIO reflRatioAvg;
                 COMPLEX_NUMBER_GONIO reflRatio50;
 
-                currentData.magnitude = myStringList.at(3).toFloat();
-                currentData.phase_rad = myStringList.at(5).toFloat();
-                averageDataA.magnitude = myStringList.at(7).toFloat();
-                averageDataA.phase_rad = myStringList.at(9).toFloat();
+                currentData.magnitude = myStringOnlyNumbers.at(1).toFloat();
+                currentData.phase_rad = myStringOnlyNumbers.at(2).toFloat();
+                averageDataA.magnitude = myStringOnlyNumbers.at(3).toFloat();
+                averageDataA.phase_rad = myStringOnlyNumbers.at(4).toFloat();
 
                 reflRatioAvg = CalculateReflectionRatio(currentData, averageDataA);
 
@@ -270,7 +293,7 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
             }
             else if(arrData.at(2) == '2' && arrData.at(3) == 's')//ADC2 average data
             {
-                recvItems[3] = myStringList.at(6).toInt();
+                recvItems[3] = myStringOnlyNumbers.at(2).toInt();
                 emit SendUpdateGraph(refreshTime, recvItems, coefInput, recStat, 3);
             }
 
@@ -439,10 +462,34 @@ void MainWindow::on_sendButton_clicked()
 
                     if(row < 4)
                     {
+                        sourceSignal[row] = 0;
                         recStat[row] = 0;
                         emit SendUpdateGraph(refreshTime, recvItems, coefInput, recStat, row);
                     }
                 }
+
+
+                ui->comboBox_2->clear();
+                ui->comboBox_3->clear();
+                ui->comboBox_4->clear();
+                ui->comboBox_5->clear();
+
+                ui->comboBox_2->addItem("-");
+                ui->comboBox_3->addItem("-");
+                ui->comboBox_4->addItem("-");
+                ui->comboBox_5->addItem("-");
+
+                for(qint32 fillComboBoxSignal = 0; fillComboBoxSignal < NMB_ITEMS_FOR_TIMERS; fillComboBoxSignal++)
+                {
+                    if(timerEnable[fillComboBoxSignal])
+                    {
+                        ui->comboBox_2->addItems(allAdxSignals[fillComboBoxSignal]);
+                        ui->comboBox_3->addItems(allAdxSignals[fillComboBoxSignal]);
+                        ui->comboBox_4->addItems(allAdxSignals[fillComboBoxSignal]);
+                        ui->comboBox_5->addItems(allAdxSignals[fillComboBoxSignal]);
+                    }
+                }
+
                 return;
             }
         }
@@ -1104,6 +1151,11 @@ void MainWindow::on_disconnectButton_clicked()
          qDebug() << "Data saved";
 
      }
+
+     ui->comboBox_2->clear();
+     ui->comboBox_3->clear();
+     ui->comboBox_4->clear();
+     ui->comboBox_5->clear();
 
      emit SendStateButton(false);
 }
