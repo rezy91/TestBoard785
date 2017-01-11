@@ -72,7 +72,7 @@ public:
     ~MainWindow();
 
 public slots:
-    void UpdateDoubleSpinBox(double newValue);
+    void UpdateDoubleSpinBoxX(double newValue, int index);
 
 private slots:
     void on_sendButton_clicked();
@@ -129,10 +129,11 @@ private:
     double coefInput[4] = {1.0, 1.0, 1.0, 1.0};
     int refreshTime[4];
     int recvItems[4] = {0, 0, 0, 0};
+    int recStat[6] = {0, 0, 0, 0, 0, 0};
 
 signals:
     void SendNewData(int magnitudeA, int phaseA, int magnitude50, int phase50);
-    void SendUpdateGraph(int refrTime_ms[4], int receivedValue[4], double coefficient[4], int src);
+    void SendUpdateGraph(int refrTime_ms[4], int receivedValue[4], double coefficient[4], int recordState[6], int src);
 
     void SendStateButton(bool state);
 

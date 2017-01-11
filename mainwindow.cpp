@@ -43,7 +43,7 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
 
     connect(this, &MainWindow::SendUpdateGraph, g, &Grapmain::refreshGraph);
 
-    connect (g, &Grapmain::SendUpdateData, this, &MainWindow::UpdateDoubleSpinBox);
+    connect (g, &Grapmain::SendUpdateData, this, &MainWindow::UpdateDoubleSpinBoxX);
 
     g->setWindowTitle("Graph");
     g->show();
@@ -236,18 +236,18 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
             if(arrData.at(2) == '3' && arrData.at(3) == 'c')//ADC3 adjusted data
             {
                 recvItems[0] = myStringList.at(3).toInt();
-                emit SendUpdateGraph(refreshTime, recvItems, coefInput, 2);
+                emit SendUpdateGraph(refreshTime, recvItems, coefInput, recStat, 0);
             }
             else if(arrData.at(2) == '3' && arrData.at(3) == 's')//ADC3 average data
             {
                 recvItems[1] = myStringList.at(3).toInt();
-                emit SendUpdateGraph(refreshTime, recvItems, coefInput, 3);
+                emit SendUpdateGraph(refreshTime, recvItems, coefInput, recStat, 1);
             }
             else if(arrData.at(2) == '2' && arrData.at(3) == 'c')//ADC2 adjusted data
             {
 
                 recvItems[2] = myStringList.at(11).toInt();
-                emit SendUpdateGraph(refreshTime, recvItems, coefInput, 0);
+                emit SendUpdateGraph(refreshTime, recvItems, coefInput, recStat, 2);
 
                 COMPLEX_NUMBER_GONIO currentData;
                 COMPLEX_NUMBER_GONIO averageDataA;
@@ -271,7 +271,7 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
             else if(arrData.at(2) == '2' && arrData.at(3) == 's')//ADC2 average data
             {
                 recvItems[3] = myStringList.at(6).toInt();
-                emit SendUpdateGraph(refreshTime, recvItems, coefInput, 1);
+                emit SendUpdateGraph(refreshTime, recvItems, coefInput, recStat, 3);
             }
 
 
@@ -365,9 +365,24 @@ MainWindow::~MainWindow()
     delete ui;
 }
 
-void MainWindow::UpdateDoubleSpinBox(double newValue)
+void MainWindow::UpdateDoubleSpinBoxX(double newValue, int index)
 {
-    ui->doubleSpinBox_3->setValue(newValue);
+    if(index == 0)
+    {
+     ui->doubleSpinBox->setValue(newValue);
+    }
+    else if(index == 1)
+    {
+        ui->doubleSpinBox_2->setValue(newValue);
+    }
+    else if(index == 2)
+    {
+        ui->doubleSpinBox_3->setValue(newValue);
+    }
+    else if(index == 3)
+    {
+        ui->doubleSpinBox_4->setValue(newValue);
+    }
 }
 
 void MainWindow::on_sendButton_clicked()
@@ -410,6 +425,7 @@ void MainWindow::on_sendButton_clicked()
 
                     CurrentTime_ms[row] = 0;
                     timerEnable[row] = true;
+                    recStat[row] = 1;
 
                     assemblyMsq[row] = QByteArray::fromHex(strCmd.toStdString().c_str());
                     respExp[row] = true;
@@ -419,7 +435,10 @@ void MainWindow::on_sendButton_clicked()
                     m_CommProt.data()->SendData(m_nDeviceAddress, QByteArray::fromHex(strCmd.toStdString().c_str()), false);
 
                     timerEnable[row] = false;
+                    recStat[row] = 0;
                     respExp[row] = false;
+
+                    emit SendUpdateGraph(refreshTime, recvItems, coefInput, recStat, row);
                 }
                 return;
             }

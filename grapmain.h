@@ -6,6 +6,7 @@
 #include <QObject>
 #include <QEvent>
 #include <QString>
+#include <QTime>
 
 
 class Grapmain : public QMainWindow
@@ -17,6 +18,7 @@ public:
     explicit Grapmain(QWidget *parent = 0);
 
     bool WasTimeReolutionChanged(int mInputValue_ms[nmbCurvesInGraph]);
+    bool WasChangedStateAnySignal(int stateSignal [6]);
     int GetMinimalResolution();
 
 private:
@@ -27,42 +29,46 @@ private:
 
     const int constBottomLimit = 50;
     const int constTopLimit = 50;
-    const int constLeftLimit = 80;
-    const int constRightLimit = 100;
+    const int constLeftLimit = 150;
+    const int constRightLimit = 170;
 
     const int constDistanceHorizontalLines_pxs = 50;
 
     int bEnableDraw = 0;//this is, because when start app, PaintEvent occurs
+    int mMinimalResolution = std::numeric_limits<int>::max();
+    int mStartTime_ms = 0;
+    int mSourceEvent;
 
-    int mMinimalResolution = 1;
+    QTime mTimerOverallTime;
 
+    int mThSample = 1;
+
+    bool mFromStaticToDynamic = false;
+    QList<int> mTimeExpired;
+
+    Qt::GlobalColor colorSignal[nmbCurvesInGraph] = {Qt::blue, Qt::green, Qt::red, Qt::magenta};
 
     //variables for separate signal
     QList<int> mSignalHistory[nmbCurvesInGraph];
-    const QString mLegendItems[nmbCurvesInGraph] = {"Power", "sin", "cos", "log10"};
+    const QString mLegendItems[nmbCurvesInGraph] = {"sin", "cos", "Power", "log10"};
     double mMaxCoefficient[nmbCurvesInGraph] = {1, 1, 1, 1};
+    int mRefreshTime_ms[nmbCurvesInGraph] = {std::numeric_limits<int>::max(), std::numeric_limits<int>::max(), std::numeric_limits<int>::max(), std::numeric_limits<int>::max()};
 
 
-
-    int mRefreshTime_ms[nmbCurvesInGraph] = {1, 1, 1, 1};
-    int mTotalTime_ms = 0;
-    int mThSample = 1;
-    bool mFromStaticToDynamic = false;
-    QList<int> mTimeExpired;
-    int mSignalValue;
+    int mSignalValue[nmbCurvesInGraph];
 
 
-
+    int flagSignalRecord[6] = {0, 0, 0, 0, 0, 0};
 
 
 public slots:
-    void refreshGraph(int mResolution_ms[nmbCurvesInGraph], int signal[nmbCurvesInGraph], double coefficient[nmbCurvesInGraph], int source);
+    void refreshGraph(int mResolution_ms[nmbCurvesInGraph], int signal[nmbCurvesInGraph], double coefficient[nmbCurvesInGraph], int recStat[6], int source);
 
 protected:
     void paintEvent(QPaintEvent*);
 
 signals:
-    void SendUpdateData(double value);
+    void SendUpdateData(double value, int index);
 
 };
 
