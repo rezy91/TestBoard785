@@ -44,13 +44,13 @@ bool Grapmain::WasChangedStateAnySignal(int stateSignal[])
     return retValue;
 }
 
-int Grapmain::GetMinimalResolution()
+int Grapmain::GetMinimalResolution(int activeSource[])
 {
     int minValue = std::numeric_limits<int>::max();
 
     for(int iLoop = 0; iLoop < nmbCurvesInGraph; iLoop++)
     {
-        if(mRefreshTime_ms[iLoop] < minValue)
+        if((mRefreshTime_ms[iLoop] < minValue) && activeSource[iLoop])
         {
             minValue = mRefreshTime_ms[iLoop];
         }
@@ -71,12 +71,11 @@ void Grapmain::refreshGraph(int mResolution_ms[], int signal[], double coefficie
 
     mSourceEvent = source;
 
-    //**new
     if(WasTimeReolutionChanged(mResolution_ms) || WasChangedStateAnySignal(recStat))
     {
-        if(GetMinimalResolution() != mMinimalResolution)
+        if(GetMinimalResolution(recStat) != mMinimalResolution)
         {
-            mMinimalResolution = GetMinimalResolution();
+            mMinimalResolution = GetMinimalResolution(recStat);
             qDebug() << "new minimal value: " << mMinimalResolution;
         }
 
@@ -187,7 +186,7 @@ void Grapmain::paintEvent(QPaintEvent*)
                     if(actualCoefficient > mMaxCoefficient[iLoop])
                     {
                         mMaxCoefficient[iLoop] = actualCoefficient;
-                        qDebug() << "value with coeff:" << iLoop << " exceed at: " << maxElement << " actual mMaxCoefficient is: " << mMaxCoefficient[iLoop];
+                        //qDebug() << "value with coeff:" << iLoop << " exceed at: " << maxElement << " actual mMaxCoefficient is: " << mMaxCoefficient[iLoop];
 
                         emit SendUpdateData(mMaxCoefficient[iLoop], iLoop);
                     }

@@ -281,14 +281,10 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
             if(arrData.at(0) == '1')
             {
                 ui->toolButton->setStyleSheet("background-color:red;color:black;font:11px");
-                ui->radioButton->setChecked(true);
-                ui->radioButton->setStyleSheet("color:red; font: 12px");
             }
             else if(arrData.at(0) == '0')
             {
                 ui->toolButton->setStyleSheet("background-color:grey;color:white;font:11px");
-                ui->radioButton->setChecked(false);
-                ui->radioButton->setStyleSheet("color:green; font: 12px");
             }
             if(arrData.at(3) == '|')
             {
@@ -425,20 +421,27 @@ void MainWindow::on_sendButton_clicked()
 
                     CurrentTime_ms[row] = 0;
                     timerEnable[row] = true;
-                    recStat[row] = 1;
 
                     assemblyMsq[row] = QByteArray::fromHex(strCmd.toStdString().c_str());
                     respExp[row] = true;
+
+                    if(row < 4)
+                    {
+                        recStat[row] = 1;
+                    }
                 }
                 else if(oTableSelection.at(3).data().toInt() == 0)
                 {
                     m_CommProt.data()->SendData(m_nDeviceAddress, QByteArray::fromHex(strCmd.toStdString().c_str()), false);
 
                     timerEnable[row] = false;
-                    recStat[row] = 0;
                     respExp[row] = false;
 
-                    emit SendUpdateGraph(refreshTime, recvItems, coefInput, recStat, row);
+                    if(row < 4)
+                    {
+                        recStat[row] = 0;
+                        emit SendUpdateGraph(refreshTime, recvItems, coefInput, recStat, row);
+                    }
                 }
                 return;
             }

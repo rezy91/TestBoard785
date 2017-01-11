@@ -18,14 +18,14 @@ public:
     explicit Grapmain(QWidget *parent = 0);
 
     bool WasTimeReolutionChanged(int mInputValue_ms[nmbCurvesInGraph]);
-    bool WasChangedStateAnySignal(int stateSignal [6]);
-    int GetMinimalResolution();
+    bool WasChangedStateAnySignal(int stateSignal [nmbCurvesInGraph]);
+    int GetMinimalResolution(int activeSource[nmbCurvesInGraph]);
 
 private:
     //common variables
     const int constPixels = 10;
     const int constSamples = 10;
-    const int constVolumePoint = 5;
+    const int constVolumePoint = 3;
 
     const int constBottomLimit = 50;
     const int constTopLimit = 50;
@@ -58,11 +58,11 @@ private:
     int mSignalValue[nmbCurvesInGraph];
 
 
-    int flagSignalRecord[6] = {0, 0, 0, 0, 0, 0};
+    int flagSignalRecord[nmbCurvesInGraph] = {0, 0, 0, 0};
 
 
 public slots:
-    void refreshGraph(int mResolution_ms[nmbCurvesInGraph], int signal[nmbCurvesInGraph], double coefficient[nmbCurvesInGraph], int recStat[6], int source);
+    void refreshGraph(int mResolution_ms[nmbCurvesInGraph], int signal[nmbCurvesInGraph], double coefficient[nmbCurvesInGraph], int recStat[nmbCurvesInGraph], int source);
 
 protected:
     void paintEvent(QPaintEvent*);

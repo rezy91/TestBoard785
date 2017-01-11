@@ -133,7 +133,7 @@ private:
 
 signals:
     void SendNewData(int magnitudeA, int phaseA, int magnitude50, int phase50);
-    void SendUpdateGraph(int refrTime_ms[4], int receivedValue[4], double coefficient[4], int recordState[6], int src);
+    void SendUpdateGraph(int refrTime_ms[4], int receivedValue[4], double coefficient[4], int recordState[4], int src);
 
     void SendStateButton(bool state);
 
