@@ -44,6 +44,18 @@ public:
 
     void StoreRowItem(const QString& strValue);
     QString RestoreRowItem() const;
+
+    void StoreMultiplierSignalFirst(const qreal &multiplier);
+    qreal RestoreMultiplierSignalFirst() const;
+
+    void StoreMultiplierSignalSecond(const qreal &multiplier);
+    qreal RestoreMultiplierSignalSecond() const;
+
+    void StoreMultiplierSignalThird(const qreal &multiplier);
+    qreal RestoreMultiplierSignalThird() const;
+
+    void StoreMultiplierSignalFourth(const qreal &multiplier);
+    qreal RestoreMultiplierSignalFourth() const;
 };
 
 #endif // SETTINGS_H

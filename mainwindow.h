@@ -108,9 +108,6 @@ private:
     Grapmain *g;
 
 
-    //    void EventsList(QByteArray arrData);
-//    void StatusRegister(QByteArray arrData);
-
     void AppendText(QString strText);
 
     quint8 GetOneByte(QByteArray arrData);
@@ -123,14 +120,13 @@ private:
     QVariant LoadValue(const QString& strKey);
     void SetAvaiblePorts();
     void SetLastPort();
+    void restoreAllSettings(void);
 
     COMPLEX_NUMBER_GONIO CalculateReflectionRatio(COMPLEX_NUMBER_GONIO current, COMPLEX_NUMBER_GONIO average);
-
     void getIndexInQList(int NumberComboBox, int indexInComboBox);
-
     void recognizeIfDisplayNewData(QStringList *listOfNumbers, int adx);
 
-    double coefInput[4] = {1.0, 1.0, 1.0, 1.0};
+    double coefInput[4];
     int refreshTime[4] = {std::numeric_limits<int>::max(), std::numeric_limits<int>::max(), std::numeric_limits<int>::max(), std::numeric_limits<int>::max()};
     double recvItems[4] = {0, 0, 0, 0};
     int recStat[4] = {0, 0, 0, 0};

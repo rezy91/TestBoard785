@@ -106,6 +106,46 @@ QString settings::RestoreRowItem() const
     return RestoreValue(QString("ItemsData")).toString();
 }
 
+void settings::StoreMultiplierSignalFirst(const qreal &multiplier)
+{
+    StoreValue(QString("Multiplier1"), multiplier);
+}
+
+qreal settings::RestoreMultiplierSignalFirst() const
+{
+    return RestoreValue(QString("Multiplier1")).toDouble();
+}
+
+void settings::StoreMultiplierSignalSecond(const qreal &multiplier)
+{
+    StoreValue(QString("Multiplier2"), multiplier);
+}
+
+qreal settings::RestoreMultiplierSignalSecond() const
+{
+    return RestoreValue(QString("Multiplier2")).toDouble();
+}
+
+void settings::StoreMultiplierSignalThird(const qreal &multiplier)
+{
+    StoreValue(QString("Multiplier3"), multiplier);
+}
+
+qreal settings::RestoreMultiplierSignalThird() const
+{
+    return RestoreValue(QString("Multiplier3")).toDouble();
+}
+
+void settings::StoreMultiplierSignalFourth(const qreal &multiplier)
+{
+    StoreValue(QString("Multiplier4"), multiplier);
+}
+
+qreal settings::RestoreMultiplierSignalFourth() const
+{
+    return RestoreValue(QString("Multiplier4")).toDouble();
+}
+
 void settings::StoreValue(const QString &strKey, const QVariant &vValue)
 {
     m_pAppSettings->setValue(strKey, vValue);

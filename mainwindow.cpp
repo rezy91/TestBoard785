@@ -54,7 +54,6 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
     ui->setupUi(this);
 
 
-    this->restoreGeometry(m_pSettingStrorage->RestoreGeometry());
 
     ui->sendButton->setEnabled(false);
     ui->tableWidget->setColumnWidth(1, 150);
@@ -64,15 +63,9 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
     SetLastPort();
     TmrMstr.start(1);
 
-    ui->checkBox->setChecked(m_pSettingStrorage->RestoreSaveDataBox());
-    m_bSaveData = m_pSettingStrorage->RestoreSaveDataBox();
 
-    ui->spinBox->setValue(m_pSettingStrorage->RestoreRefreshFirst());
-    ui->spinBox_2->setValue(m_pSettingStrorage->RestoreRefreshSecond());
-    ui->spinBox_3->setValue(m_pSettingStrorage->RestoreRefreshThird());
-    ui->spinBox_4->setValue(m_pSettingStrorage->RestoreRefreshFourth());
-    ui->spinBox_5->setValue(m_pSettingStrorage->RestoreRefreshFifth());
-    ui->spinBox_6->setValue(m_pSettingStrorage->RestoreRefreshSixth());
+
+    restoreAllSettings();
 
 
     connect(&TmrMstr,&QTimer::timeout,[this](){
@@ -1079,6 +1072,30 @@ void MainWindow::SetLastPort()
     }
 }
 
+void MainWindow::restoreAllSettings()
+{
+    this->restoreGeometry(m_pSettingStrorage->RestoreGeometry());
+
+    ui->checkBox->setChecked(m_pSettingStrorage->RestoreSaveDataBox());
+    m_bSaveData = m_pSettingStrorage->RestoreSaveDataBox();
+
+    ui->spinBox->setValue(m_pSettingStrorage->RestoreRefreshFirst());
+    ui->spinBox_2->setValue(m_pSettingStrorage->RestoreRefreshSecond());
+    ui->spinBox_3->setValue(m_pSettingStrorage->RestoreRefreshThird());
+    ui->spinBox_4->setValue(m_pSettingStrorage->RestoreRefreshFourth());
+    ui->spinBox_5->setValue(m_pSettingStrorage->RestoreRefreshFifth());
+    ui->spinBox_6->setValue(m_pSettingStrorage->RestoreRefreshSixth());
+
+    coefInput[0] = m_pSettingStrorage->RestoreMultiplierSignalFirst();
+    ui->doubleSpinBox->setValue(coefInput[0]);
+    coefInput[1] = m_pSettingStrorage->RestoreMultiplierSignalSecond();
+    ui->doubleSpinBox_2->setValue(coefInput[1]);
+    coefInput[2] = m_pSettingStrorage->RestoreMultiplierSignalThird();
+    ui->doubleSpinBox_3->setValue(coefInput[2]);
+    coefInput[3] = m_pSettingStrorage->RestoreMultiplierSignalFourth();
+    ui->doubleSpinBox_4->setValue(coefInput[3]);
+}
+
 MainWindow::COMPLEX_NUMBER_GONIO MainWindow::CalculateReflectionRatio(COMPLEX_NUMBER_GONIO current, COMPLEX_NUMBER_GONIO average)
 {
     COMPLEX_NUMBER_GONIO ReflectionRatio;
@@ -1250,6 +1267,10 @@ void MainWindow::closeEvent(QCloseEvent *event)
     }
     m_pSettingStrorage->StoreRowItem(allDataItems);
 
+    m_pSettingStrorage->StoreMultiplierSignalFirst(coefInput[0]);
+    m_pSettingStrorage->StoreMultiplierSignalSecond(coefInput[1]);
+    m_pSettingStrorage->StoreMultiplierSignalThird(coefInput[2]);
+    m_pSettingStrorage->StoreMultiplierSignalFourth(coefInput[3]);
 
 
     QWidget::closeEvent(event);
