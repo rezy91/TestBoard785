@@ -40,28 +40,25 @@ private:
 
     QTime mTimerOverallTime;
 
-    int mThSample = 1;
-
     bool mFromStaticToDynamic = false;
-    QList<int> mTimeExpired;
 
     Qt::GlobalColor colorSignal[nmbCurvesInGraph] = {Qt::blue, Qt::green, Qt::red, Qt::magenta};
 
     //variables for separate signal
-    QList<int> mSignalHistory[nmbCurvesInGraph];
+    QList<double> mSignalHistory[nmbCurvesInGraph];
     QString mLegendItems[nmbCurvesInGraph] = {"sin", "cos", "Power", "log10"};
     double mMaxCoefficient[nmbCurvesInGraph] = {1, 1, 1, 1};
     int mRefreshTime_ms[nmbCurvesInGraph] = {std::numeric_limits<int>::max(), std::numeric_limits<int>::max(), std::numeric_limits<int>::max(), std::numeric_limits<int>::max()};
 
 
-    int mSignalValue[nmbCurvesInGraph];
+    double mSignalValue[nmbCurvesInGraph];
 
 
     int flagSignalRecord[nmbCurvesInGraph] = {0, 0, 0, 0};
 
 
 public slots:
-    void refreshGraph(int mResolution_ms[nmbCurvesInGraph], int signal[nmbCurvesInGraph], double coefficient[nmbCurvesInGraph], int recStat[nmbCurvesInGraph], QString signalText[], int source);
+    void refreshGraph(int mResolution_ms[nmbCurvesInGraph], double signal[nmbCurvesInGraph], double coefficient[nmbCurvesInGraph], int recStat[nmbCurvesInGraph], QString signalText[], int source);
 
 protected:
     void paintEvent(QPaintEvent*);

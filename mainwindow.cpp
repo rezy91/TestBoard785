@@ -1175,7 +1175,7 @@ void MainWindow::recognizeIfDisplayNewData(QStringList* listOfNumbers, int adx)
             {
                 refreshTime[iLoop] = ui->spinBox_6->value();
             }
-            recvItems[iLoop] = listOfNumbers->at(sourceSignal[iLoop]).toInt();
+            recvItems[iLoop] = listOfNumbers->at(sourceSignal[iLoop]).toDouble();
             emit SendUpdateGraph(refreshTime, recvItems, coefInput, recStat, sourceSignText, iLoop);
         }
     }

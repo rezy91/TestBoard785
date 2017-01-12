@@ -132,7 +132,7 @@ private:
 
     double coefInput[4] = {1.0, 1.0, 1.0, 1.0};
     int refreshTime[4] = {std::numeric_limits<int>::max(), std::numeric_limits<int>::max(), std::numeric_limits<int>::max(), std::numeric_limits<int>::max()};
-    int recvItems[4] = {0, 0, 0, 0};
+    double recvItems[4] = {0, 0, 0, 0};
     int recStat[4] = {0, 0, 0, 0};
 
     QStringList allAdxSignals[6] = {{"ad3c_1", "ad3c_2", "ad3c_3"}, \
@@ -148,7 +148,7 @@ private:
 
 signals:
     void SendNewData(int magnitudeA, int phaseA, int magnitude50, int phase50);
-    void SendUpdateGraph(int refrTime_ms[4], int receivedValue[4], double coefficient[4], int recordState[4], QString nameSignals[4], int src);
+    void SendUpdateGraph(int refrTime_ms[4], double receivedValue[4], double coefficient[4], int recordState[4], QString nameSignals[4], int src);
 
     void SendStateButton(bool state);
 

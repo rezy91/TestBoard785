@@ -62,7 +62,7 @@ int Grapmain::GetMinimalResolution(int activeSource[])
     return minValue;
 }
 
-void Grapmain::refreshGraph(int mResolution_ms[], int signal[], double coefficient[], int recStat[], QString signalText[], int source)
+void Grapmain::refreshGraph(int mResolution_ms[], double signal[], double coefficient[], int recStat[], QString signalText[], int source)
 {
     bEnableDraw++;
 
@@ -85,9 +85,7 @@ void Grapmain::refreshGraph(int mResolution_ms[], int signal[], double coefficie
         {
             mSignalHistory[iLoop].clear();
         }
-        mThSample = 1;
         mFromStaticToDynamic = false;
-        mTimeExpired.clear();
 
         mStartTime_ms = mTimerOverallTime.elapsed();
     }
@@ -118,44 +116,13 @@ void Grapmain::paintEvent(QPaintEvent*)
     int timeAppRuns_ms = ((mTimerOverallTime.elapsed() - mStartTime_ms) / mMinimalResolution) * mMinimalResolution;
 
 
-    if(timeAppRuns_ms >= (((usedWidth) / constPixels) * mRefreshTime_ms[2]))
-    {
-        if(!(timeAppRuns_ms % (mRefreshTime_ms[2] * constSamples)))
-        {
-            mTimeExpired.clear();
-            for(int iLoop = 0; iLoop <= nmbVerLines; iLoop++)
-            {
-                mTimeExpired.append(timeAppRuns_ms - (nmbVerLines - iLoop) * mRefreshTime_ms[2] * constSamples);
-            }
-        }
-        if(!mFromStaticToDynamic)
-        {
-            mFromStaticToDynamic = true;
-        }
-        else
-        {
-            if(++mThSample == (constSamples + 1))
-            {
-                mThSample = 1;
-            }
-        }
-    }
-    else
-    {
-        for(int iLoop = 0; iLoop <= nmbVerLines; iLoop++)
-        {
-            mTimeExpired.append(mRefreshTime_ms[2] * iLoop * constSamples);
-        }
-        mThSample = 0;
-    }
-
     if(bEnableDraw > 1)
     {
         //x-axis
-        painterMain.drawLine(QPoint(constLeftLimit, currentHeight - constBottomLimit), QPoint(currentWidth - constRightLimit, currentHeight - constBottomLimit));
-        painterMain.drawLine(QPoint(currentWidth - constRightLimit - 10, currentHeight - constBottomLimit - 10), QPoint(currentWidth - constRightLimit, currentHeight - constBottomLimit));
-        painterMain.drawLine(QPoint(currentWidth - constRightLimit - 10, currentHeight - constBottomLimit + 10), QPoint(currentWidth - constRightLimit, currentHeight - constBottomLimit));
-        painterMain.drawText(QPoint(currentWidth - constRightLimit + 5, currentHeight - constBottomLimit + 5), "t[ms]");
+        painterMain.drawLine(QPoint(constLeftLimit, currentHeight - constBottomLimit), QPoint(currentWidth - constRightLimit + 20, currentHeight - constBottomLimit));
+        painterMain.drawLine(QPoint(currentWidth - constRightLimit - 10 + 20, currentHeight - constBottomLimit - 10), QPoint(currentWidth - constRightLimit + 20, currentHeight - constBottomLimit));
+        painterMain.drawLine(QPoint(currentWidth - constRightLimit - 10 + 20, currentHeight - constBottomLimit + 10), QPoint(currentWidth - constRightLimit + 20, currentHeight - constBottomLimit));
+        painterMain.drawText(QPoint(currentWidth - constRightLimit + 5 + 20, currentHeight - constBottomLimit), "t[ms]");
 
         //y-axis
         painterMain.drawLine(QPoint(constLeftLimit, currentHeight - constBottomLimit),QPoint(constLeftLimit, constTopLimit - 20));
@@ -163,11 +130,11 @@ void Grapmain::paintEvent(QPaintEvent*)
         painterMain.drawLine(QPoint(constLeftLimit, constTopLimit - 20),QPoint(constLeftLimit + 10, constTopLimit - 20 + 10));
 
 
-        painterMain.drawText(QPoint(constLeftLimit - 10, currentHeight - constBottomLimit + 10), QString("%1").arg(timeAppRuns_ms));
+        //painterMain.drawText(QPoint(currentWidth - constRightLimit, currentHeight - constBottomLimit + 10), QString("%1").arg(timeAppRuns_ms));
 
         for(int iLoop = 0; iLoop < nmbCurvesInGraph; iLoop++)
         {
-            int center;
+            double center;
             double dRatio = ((double)mMinimalResolution / (double)mRefreshTime_ms[iLoop]);
 
             if(iLoop == mSourceEvent)
@@ -183,12 +150,12 @@ void Grapmain::paintEvent(QPaintEvent*)
 
                 if(mSignalHistory[iLoop].count())
                 {
-                    int maxElement = *std::max_element(mSignalHistory[iLoop].begin(), mSignalHistory[iLoop].end());
-                    double actualCoefficient = (double)maxElement / (double)(usedHeight);
+                    double maxElement = *std::max_element(mSignalHistory[iLoop].begin(), mSignalHistory[iLoop].end());
+                    double actualCoefficient = maxElement / (double)(usedHeight);
                     if(actualCoefficient > mMaxCoefficient[iLoop])
                     {
                         mMaxCoefficient[iLoop] = actualCoefficient;
-                        //qDebug() << "value with coeff:" << iLoop << " exceed at: " << maxElement << " actual mMaxCoefficient is: " << mMaxCoefficient[iLoop];
+                        qDebug() << "value with coeff:" << iLoop << " exceed at: " << maxElement << " actual mMaxCoefficient is: " << mMaxCoefficient[iLoop];
 
                         emit SendUpdateData(mMaxCoefficient[iLoop], iLoop);
                     }
@@ -214,13 +181,13 @@ void Grapmain::paintEvent(QPaintEvent*)
             }
 
             //draw points
+            int drawXvalue;
+
             for(int jLoop = 0; jLoop <= mSignalHistory[iLoop].count(); jLoop++)
             {
                 if(jLoop < mSignalHistory[iLoop].count())
                 {
-
-                    int drawYvalue = (int)((double)mSignalHistory[iLoop].at(jLoop) / mMaxCoefficient[iLoop]);
-                    int drawXvalue;
+                    int drawYvalue = (int)(mSignalHistory[iLoop].at(jLoop) / mMaxCoefficient[iLoop]);
 
                     if(constPixels * jLoop)
                     {
@@ -238,38 +205,14 @@ void Grapmain::paintEvent(QPaintEvent*)
                     painterMain.drawEllipse(cnt,constVolumePoint,constVolumePoint);
                 }
 
+            }
 
-                /*//draw vertical lines plus x-axis texts
-                if(!(jLoop % constSamples) && iLoop == 2)
-                {
-
-                    int xValue = constLeftLimit + constPixels * jLoop - mThSample * constPixels;
-
-                    if(xValue < constLeftLimit)
-                    {
-                        continue;
-                    }
-                    else
-                    {
-                        if(xValue >= constLeftLimit + constPixels)
-                        {
-                            painterMain.drawLine(QPoint(xValue, currentHeight - constBottomLimit),QPoint(xValue, constTopLimit));
-                        }
-
-                        painterMain.setPen(QPen(Qt::black));
-
-
-                        if(mThSample == constSamples)
-                        {
-                            painterMain.drawText(QPoint(xValue - 10, currentHeight - constBottomLimit + 10), QString("%1").arg(mTimeExpired.at((jLoop / constSamples) - 1)));
-                        }
-                        else
-                        {
-                            painterMain.drawText(QPoint(xValue - 10, currentHeight - constBottomLimit + 10), QString("%1").arg(mTimeExpired.at(jLoop / constSamples)));
-                        }
-                    }
-                }*/
-
+            if(dRatio == 1)
+            {
+                painterMain.setPen(QPen(Qt::lightGray));
+                painterMain.drawLine(QPoint(constLeftLimit + constPixels + drawXvalue, currentHeight - constBottomLimit),QPoint(constLeftLimit + constPixels + drawXvalue, constTopLimit));
+                painterMain.setPen(QPen(Qt::black));
+                painterMain.drawText(QPoint(constLeftLimit + constPixels + drawXvalue, currentHeight - constBottomLimit + 10), QString("%1").arg(timeAppRuns_ms));
             }
 
             //Draw y-axes
