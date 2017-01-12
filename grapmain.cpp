@@ -9,9 +9,6 @@
 
 Grapmain::Grapmain(QWidget *parent) : QMainWindow(parent)
 {
-    //showMaximized();
-    resize(760, 580);
-
     mTimerOverallTime.start();
 }
 

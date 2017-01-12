@@ -104,8 +104,8 @@ private:
     QFile m_oFile;
 
     settings* m_pSettingStrorage = new settings(this);
-    SmithMain *s;
-    Grapmain *g;
+    SmithMain* o_smith = new SmithMain(this);
+    Grapmain* o_graph = new Grapmain(this);
 
 
     void AppendText(QString strText);

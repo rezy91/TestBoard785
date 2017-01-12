@@ -5,7 +5,6 @@
 
 SmithMain::SmithMain(QWidget *parent) : QMainWindow(parent)
 {
-    showMaximized();
     installEventFilter(this);
 }
 

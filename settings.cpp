@@ -76,14 +76,34 @@ qreal settings::RestoreRefreshSixth() const
     return RestoreValue(QString("timer6")).toUInt();
 }
 
-void settings::StoreGeometry(const QByteArray &arrGeometry)
+void settings::StoreGeometryMain(const QByteArray &arrGeometry)
 {
-    StoreValue("geometry", arrGeometry);
+    StoreValue("GeometryMain", arrGeometry);
 }
 
-QByteArray settings::RestoreGeometry() const
+QByteArray settings::RestoreGeometryMain() const
 {
-    return RestoreValue("geometry").toByteArray();
+    return RestoreValue("GeometryMain").toByteArray();
+}
+
+void settings::StoreGeometrySmith(const QByteArray &arrGeometry)
+{
+    StoreValue("GeometrySmith", arrGeometry);
+}
+
+QByteArray settings::RestoreGeometrySmith() const
+{
+    return RestoreValue("GeometrySmith").toByteArray();
+}
+
+void settings::StoreGeometryGraph(const QByteArray &arrGeometry)
+{
+    StoreValue("GeometryGraph", arrGeometry);
+}
+
+QByteArray settings::RestoreGeometryGraph() const
+{
+    return RestoreValue("GeometryGraph").toByteArray();
 }
 
 void settings::StoreSaveDataBox(const bool &bSaveDataBox)

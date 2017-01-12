@@ -36,8 +36,14 @@ public:
     void StoreRefreshSixth(const quint32& nPeriod_ms);
     qreal RestoreRefreshSixth() const;
 
-    void StoreGeometry(const QByteArray& arrGeometry);
-    QByteArray RestoreGeometry() const;
+    void StoreGeometryMain(const QByteArray& arrGeometry);
+    QByteArray RestoreGeometryMain() const;
+
+    void StoreGeometrySmith(const QByteArray& arrGeometry);
+    QByteArray RestoreGeometrySmith() const;
+
+    void StoreGeometryGraph(const QByteArray& arrGeometry);
+    QByteArray RestoreGeometryGraph() const;
 
     void StoreSaveDataBox(const bool& bSaveDataBox);
     bool RestoreSaveDataBox() const;

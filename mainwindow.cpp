@@ -27,32 +27,23 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
     static int mMainTimer = 0;
 
 
-    s = new SmithMain(this);
+    o_smith->setWindowIcon(QIcon(":/iconSmith.png"));
+    o_smith->setWindowTitle("Smith diagram");
+    o_smith->show();
 
-    connect(this, &MainWindow::SendNewData, s, &SmithMain::ReceivedNewData);
-
-    s->setWindowTitle("Smith diagram");
-    s->show();
-
-
+    connect(this, &MainWindow::SendNewData, o_smith, &SmithMain::ReceivedNewData);
+    connect(this, &MainWindow::SendStateButton, o_smith, &SmithMain::ReceivedStateButton);
 
 
+    o_graph->setWindowIcon(QIcon(":/iconGraph.jpg"));
+    o_graph->setWindowTitle("Graph");
+    o_graph->show();
 
-    g = new Grapmain(this);
-
-    connect(this, &MainWindow::SendUpdateGraph, g, &Grapmain::refreshGraph);
-
-    connect (g, &Grapmain::SendUpdateData, this, &MainWindow::UpdateDoubleSpinBoxX);
-
-    g->setWindowTitle("Graph");
-    g->show();
-
-
-    connect(this, &MainWindow::SendStateButton, s, &SmithMain::ReceivedStateButton);
+    connect(this, &MainWindow::SendUpdateGraph, o_graph, &Grapmain::refreshGraph);
+    connect (o_graph, &Grapmain::SendUpdateData, this, &MainWindow::UpdateDoubleSpinBoxX);
 
 
     ui->setupUi(this);
-
 
 
     ui->sendButton->setEnabled(false);
@@ -1074,7 +1065,9 @@ void MainWindow::SetLastPort()
 
 void MainWindow::restoreAllSettings()
 {
-    this->restoreGeometry(m_pSettingStrorage->RestoreGeometry());
+    this->restoreGeometry(m_pSettingStrorage->RestoreGeometryMain());
+    o_smith->restoreGeometry(m_pSettingStrorage->RestoreGeometrySmith());
+    o_graph->restoreGeometry(m_pSettingStrorage->RestoreGeometryGraph());
 
     ui->checkBox->setChecked(m_pSettingStrorage->RestoreSaveDataBox());
     m_bSaveData = m_pSettingStrorage->RestoreSaveDataBox();
@@ -1246,7 +1239,9 @@ void MainWindow::on_textBrowser_anchorClicked(const QUrl &arg1)
 
 void MainWindow::closeEvent(QCloseEvent *event)
 {
-    m_pSettingStrorage->StoreGeometry(saveGeometry());
+    m_pSettingStrorage->StoreGeometryMain(saveGeometry());
+    m_pSettingStrorage->StoreGeometrySmith(o_smith->saveGeometry());
+    m_pSettingStrorage->StoreGeometryGraph(o_graph->saveGeometry());
 
 
     int iColumns = ui->tableWidget->columnCount();
