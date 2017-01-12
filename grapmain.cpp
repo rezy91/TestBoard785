@@ -256,16 +256,14 @@ void Grapmain::paintEvent(QPaintEvent*)
                             painterMain.drawLine(QPoint(constLeftLimit, currentHeight - constBottomLimit - constDistanceHorizontalLines_pxs * kLoop), QPoint(constLeftLimit + constPixels + drawXvalue, currentHeight - constBottomLimit - constDistanceHorizontalLines_pxs * kLoop));
                         }
                 }
+
+                //Draw legend
+                painterMain.setPen(QPen(Qt::black));
+                painterMain.setBrush(colorSignal[iLoop]);;
+                painterMain.drawEllipse(QPoint(currentWidth - 50, (currentHeight / 2) + iLoop * 20 - 5),constVolumePoint,constVolumePoint);
+                painterMain.drawText(QPoint(currentWidth - 40, (currentHeight / 2) + iLoop * 20), mLegendItems[iLoop]);
             }
-
-
-            //Draw legend
-            painterMain.setPen(QPen(Qt::black));
-            painterMain.setBrush(colorSignal[iLoop]);;
-            painterMain.drawEllipse(QPoint(currentWidth - 50, (currentHeight / 2) + iLoop * 20 - 5),constVolumePoint,constVolumePoint);
-            painterMain.drawText(QPoint(currentWidth - 40, (currentHeight / 2) + iLoop * 20), mLegendItems[iLoop]);
         }
-
 
         if(maxXValue)
         {
