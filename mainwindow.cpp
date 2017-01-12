@@ -229,7 +229,7 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
         if(arrData.at(0) == 'a' && arrData.at(1) == 'd')//ADCx data
         {
             QString adjString = QString(arrData);
-            QStringList myStringList = adjString.split(QRegExp("(\\s+| |=|-)"));
+            QStringList myStringList = adjString.split(QRegExp("(\\s+| |=)"));
 
             QStringList myStringOnlyNumbers;
 
@@ -1113,6 +1113,8 @@ MainWindow::COMPLEX_NUMBER_GONIO MainWindow::CalculateReflectionRatio(COMPLEX_NU
 
 void MainWindow::getIndexInQList(int NumberComboBox, int indexInComboBox)
 {
+    //qDebug() << "getIndexInQList: " << indexInComboBox;
+
     if(indexInComboBox >= 1)
     {
         recStat[NumberComboBox] = 1;
@@ -1124,7 +1126,7 @@ void MainWindow::getIndexInQList(int NumberComboBox, int indexInComboBox)
             {
                 if((absoluteIndex - allAdxSignals[iLoop].count()) < 0)
                 {
-                    qDebug() << "has been found signal: " << allAdxSignals[iLoop].at(absoluteIndex) << endl;
+                    //qDebug() << "has been found signal: " << allAdxSignals[iLoop].at(absoluteIndex) << endl;
 
                     sourceAd[NumberComboBox] = iLoop;
                     sourceSignal[NumberComboBox] = absoluteIndex;
@@ -1139,6 +1141,7 @@ void MainWindow::getIndexInQList(int NumberComboBox, int indexInComboBox)
     }
     else
     {
+        sourceSignText[NumberComboBox] = "\0";
         sourceSignal[NumberComboBox] = -1;
         recStat[NumberComboBox] = 0;
         emit SendUpdateGraph(refreshTime, recvItems, coefInput, recStat, sourceSignText, NumberComboBox);

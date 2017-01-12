@@ -46,13 +46,12 @@ private:
 
     //variables for separate signal
     QList<double> mSignalHistory[nmbCurvesInGraph];
-    QString mLegendItems[nmbCurvesInGraph] = {"sin", "cos", "Power", "log10"};
+    QString mLegendItems[nmbCurvesInGraph];
     double mMaxCoefficient[nmbCurvesInGraph] = {1, 1, 1, 1};
     int mRefreshTime_ms[nmbCurvesInGraph] = {std::numeric_limits<int>::max(), std::numeric_limits<int>::max(), std::numeric_limits<int>::max(), std::numeric_limits<int>::max()};
 
 
     double mSignalValue[nmbCurvesInGraph];
-
 
     int flagSignalRecord[nmbCurvesInGraph] = {0, 0, 0, 0};
 
