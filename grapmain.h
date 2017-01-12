@@ -14,7 +14,6 @@ class Grapmain : public QMainWindow
     Q_OBJECT
 public:
     enum{nmbCurvesInGraph = 4};
-
     explicit Grapmain(QWidget *parent = 0);
 
     bool WasTimeReolutionChanged(int mInputValue_ms[nmbCurvesInGraph]);
@@ -50,7 +49,7 @@ private:
 
     //variables for separate signal
     QList<int> mSignalHistory[nmbCurvesInGraph];
-    const QString mLegendItems[nmbCurvesInGraph] = {"sin", "cos", "Power", "log10"};
+    QString mLegendItems[nmbCurvesInGraph] = {"sin", "cos", "Power", "log10"};
     double mMaxCoefficient[nmbCurvesInGraph] = {1, 1, 1, 1};
     int mRefreshTime_ms[nmbCurvesInGraph] = {std::numeric_limits<int>::max(), std::numeric_limits<int>::max(), std::numeric_limits<int>::max(), std::numeric_limits<int>::max()};
 
@@ -62,7 +61,7 @@ private:
 
 
 public slots:
-    void refreshGraph(int mResolution_ms[nmbCurvesInGraph], int signal[nmbCurvesInGraph], double coefficient[nmbCurvesInGraph], int recStat[nmbCurvesInGraph], int source);
+    void refreshGraph(int mResolution_ms[nmbCurvesInGraph], int signal[nmbCurvesInGraph], double coefficient[nmbCurvesInGraph], int recStat[nmbCurvesInGraph], QString signalText[], int source);
 
 protected:
     void paintEvent(QPaintEvent*);

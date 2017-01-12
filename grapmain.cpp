@@ -4,6 +4,9 @@
 #include <QtGui>
 #include <QtCore>
 
+
+#include <QApplication>
+
 Grapmain::Grapmain(QWidget *parent) : QMainWindow(parent)
 {
     //showMaximized();
@@ -59,10 +62,9 @@ int Grapmain::GetMinimalResolution(int activeSource[])
     return minValue;
 }
 
-void Grapmain::refreshGraph(int mResolution_ms[], int signal[], double coefficient[], int recStat[], int source)
+void Grapmain::refreshGraph(int mResolution_ms[], int signal[], double coefficient[], int recStat[], QString signalText[], int source)
 {
     bEnableDraw++;
-
 
     if(recStat[source] == 0)
     {
@@ -92,9 +94,9 @@ void Grapmain::refreshGraph(int mResolution_ms[], int signal[], double coefficie
     mSignalValue[source] = signal[source];
     mMaxCoefficient[source] = coefficient[source];
     flagSignalRecord[source] = recStat[source];
+    mLegendItems[source] = signalText[source];
 
-
-    update();
+    repaint();
 }
 
 void Grapmain::paintEvent(QPaintEvent*)
@@ -325,11 +327,11 @@ void Grapmain::paintEvent(QPaintEvent*)
             }
 
 
-            //Draw legende
+            //Draw legend
             painterMain.setPen(QPen(Qt::black));
             painterMain.setBrush(colorSignal[iLoop]);;
-            painterMain.drawEllipse(QPoint(currentWidth - 40, (currentHeight / 2) + iLoop * 20 - 5),constVolumePoint,constVolumePoint);
-            painterMain.drawText(QPoint(currentWidth - 30, (currentHeight / 2) + iLoop * 20), mLegendItems[iLoop]);
+            painterMain.drawEllipse(QPoint(currentWidth - 50, (currentHeight / 2) + iLoop * 20 - 5),constVolumePoint,constVolumePoint);
+            painterMain.drawText(QPoint(currentWidth - 40, (currentHeight / 2) + iLoop * 20), mLegendItems[iLoop]);
         }
     }
 }

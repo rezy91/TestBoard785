@@ -126,8 +126,12 @@ private:
 
     COMPLEX_NUMBER_GONIO CalculateReflectionRatio(COMPLEX_NUMBER_GONIO current, COMPLEX_NUMBER_GONIO average);
 
+    void getIndexInQList(int NumberComboBox, int indexInComboBox);
+
+    void recognizeIfDisplayNewData(QStringList *listOfNumbers, int adx);
+
     double coefInput[4] = {1.0, 1.0, 1.0, 1.0};
-    int refreshTime[4];
+    int refreshTime[4] = {std::numeric_limits<int>::max(), std::numeric_limits<int>::max(), std::numeric_limits<int>::max(), std::numeric_limits<int>::max()};
     int recvItems[4] = {0, 0, 0, 0};
     int recStat[4] = {0, 0, 0, 0};
 
@@ -139,10 +143,12 @@ private:
                                     {"ad1s_1", "ad1s_2", "ad1s_3", "ad1s_4", "ad1s_5", "ad1s_6", "ad1s_7", "ad1s_8", "ad1s_9", "ad1s_10"}};
 
     int sourceSignal[4] = {0, 0, 0, 0};
+    int sourceAd[4] = {0, 0, 0, 0};
+    QString sourceSignText[4] = {"\0", "\0", "\0", "\0"};
 
 signals:
     void SendNewData(int magnitudeA, int phaseA, int magnitude50, int phase50);
-    void SendUpdateGraph(int refrTime_ms[4], int receivedValue[4], double coefficient[4], int recordState[4], int src);
+    void SendUpdateGraph(int refrTime_ms[4], int receivedValue[4], double coefficient[4], int recordState[4], QString nameSignals[4], int src);
 
     void SendStateButton(bool state);
 

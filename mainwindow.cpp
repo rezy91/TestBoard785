@@ -22,7 +22,6 @@
 #include "ui_mainwindow.h"
 
 
-
 MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWindow)
 {
     static int mMainTimer = 0;
@@ -76,8 +75,6 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
     ui->spinBox_6->setValue(m_pSettingStrorage->RestoreRefreshSixth());
 
 
-
-
     connect(&TmrMstr,&QTimer::timeout,[this](){
         for(qint32 loop = 0; loop < NMB_ITEMS_FOR_TIMERS + 1; loop++)
         {
@@ -99,16 +96,16 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
     });
 
     connect(ui->comboBox_2,static_cast<void (QComboBox::*)(int)>(&QComboBox::currentIndexChanged),[=](int nValue){
-        sourceSignal[0] = nValue;
+        getIndexInQList(0, nValue);
     });
     connect(ui->comboBox_3,static_cast<void (QComboBox::*)(int)>(&QComboBox::currentIndexChanged),[=](int nValue){
-        sourceSignal[1] = nValue;
+        getIndexInQList(1, nValue);
     });
     connect(ui->comboBox_4,static_cast<void (QComboBox::*)(int)>(&QComboBox::currentIndexChanged),[=](int nValue){
-        sourceSignal[2] = nValue;
+        getIndexInQList(2, nValue);
     });
     connect(ui->comboBox_5,static_cast<void (QComboBox::*)(int)>(&QComboBox::currentIndexChanged),[=](int nValue){
-        sourceSignal[3] = nValue;
+        getIndexInQList(3, nValue);
     });
 
 
@@ -251,26 +248,18 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
                 }
             }
 
-            refreshTime[0] = ui->spinBox->value();
-            refreshTime[1] = ui->spinBox_2->value();
-            refreshTime[2] = ui->spinBox_3->value();
-            refreshTime[3] = ui->spinBox_4->value();
-
             if(arrData.at(2) == '3' && arrData.at(3) == 'c')//ADC3 adjusted data
             {
-                recvItems[0] = myStringOnlyNumbers.at(1).toInt();
-                emit SendUpdateGraph(refreshTime, recvItems, coefInput, recStat, 0);
+                recognizeIfDisplayNewData(&myStringOnlyNumbers, 0);
             }
             else if(arrData.at(2) == '3' && arrData.at(3) == 's')//ADC3 average data
             {
-                recvItems[1] = myStringOnlyNumbers.at(1).toInt();
-                emit SendUpdateGraph(refreshTime, recvItems, coefInput, recStat, 1);
+                recognizeIfDisplayNewData(&myStringOnlyNumbers, 1);
             }
             else if(arrData.at(2) == '2' && arrData.at(3) == 'c')//ADC2 adjusted data
             {
 
-                recvItems[2] = myStringOnlyNumbers.at(5).toInt();
-                emit SendUpdateGraph(refreshTime, recvItems, coefInput, recStat, 2);
+                recognizeIfDisplayNewData(&myStringOnlyNumbers, 2);
 
                 COMPLEX_NUMBER_GONIO currentData;
                 COMPLEX_NUMBER_GONIO averageDataA;
@@ -293,8 +282,15 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
             }
             else if(arrData.at(2) == '2' && arrData.at(3) == 's')//ADC2 average data
             {
-                recvItems[3] = myStringOnlyNumbers.at(2).toInt();
-                emit SendUpdateGraph(refreshTime, recvItems, coefInput, recStat, 3);
+                recognizeIfDisplayNewData(&myStringOnlyNumbers, 3);
+            }
+            else if(arrData.at(2) == '1' && arrData.at(3) == 'c')//ADC1 adjusted data
+            {
+                recognizeIfDisplayNewData(&myStringOnlyNumbers, 4);
+            }
+            else if(arrData.at(2) == '1' && arrData.at(3) == 's')//ADC1 average data
+            {
+                recognizeIfDisplayNewData(&myStringOnlyNumbers, 5);
             }
 
 
@@ -447,11 +443,6 @@ void MainWindow::on_sendButton_clicked()
 
                     assemblyMsq[row] = QByteArray::fromHex(strCmd.toStdString().c_str());
                     respExp[row] = true;
-
-                    if(row < 4)
-                    {
-                        recStat[row] = 1;
-                    }
                 }
                 else if(oTableSelection.at(3).data().toInt() == 0)
                 {
@@ -460,15 +451,7 @@ void MainWindow::on_sendButton_clicked()
                     timerEnable[row] = false;
                     respExp[row] = false;
 
-                    if(row < 4)
-                    {
-                        sourceSignal[row] = 0;
-                        recStat[row] = 0;
-                        emit SendUpdateGraph(refreshTime, recvItems, coefInput, recStat, row);
-                    }
                 }
-
-
                 ui->comboBox_2->clear();
                 ui->comboBox_3->clear();
                 ui->comboBox_4->clear();
@@ -1126,6 +1109,76 @@ MainWindow::COMPLEX_NUMBER_GONIO MainWindow::CalculateReflectionRatio(COMPLEX_NU
     }
 
     return ReflectionRatio;
+}
+
+void MainWindow::getIndexInQList(int NumberComboBox, int indexInComboBox)
+{
+    if(indexInComboBox >= 1)
+    {
+        recStat[NumberComboBox] = 1;
+        int absoluteIndex = indexInComboBox - 1;
+
+        for(qint32 iLoop = 0; iLoop < NMB_ITEMS_FOR_TIMERS; iLoop++)
+        {
+            if(timerEnable[iLoop])
+            {
+                if((absoluteIndex - allAdxSignals[iLoop].count()) < 0)
+                {
+                    qDebug() << "has been found signal: " << allAdxSignals[iLoop].at(absoluteIndex) << endl;
+
+                    sourceAd[NumberComboBox] = iLoop;
+                    sourceSignal[NumberComboBox] = absoluteIndex;
+                    sourceSignText[NumberComboBox] = allAdxSignals[iLoop].at(absoluteIndex);
+
+                    return;
+                }
+
+                absoluteIndex -= allAdxSignals[iLoop].count();
+            }
+        }
+    }
+    else
+    {
+        sourceSignal[NumberComboBox] = -1;
+        recStat[NumberComboBox] = 0;
+        emit SendUpdateGraph(refreshTime, recvItems, coefInput, recStat, sourceSignText, NumberComboBox);
+    }
+}
+
+void MainWindow::recognizeIfDisplayNewData(QStringList* listOfNumbers, int adx)
+{
+    for(int iLoop = 0; iLoop < 4; iLoop++)
+    {
+        if((sourceAd[iLoop] == adx) && (sourceSignal[iLoop] >= 0))
+        {
+            if(adx == 0)
+            {
+                refreshTime[iLoop] = ui->spinBox->value();
+            }
+            else if(adx == 1)
+            {
+                refreshTime[iLoop] = ui->spinBox_2->value();
+            }
+            else if(adx == 2)
+            {
+                refreshTime[iLoop] = ui->spinBox_3->value();
+            }
+            else if(adx == 3)
+            {
+                refreshTime[iLoop] = ui->spinBox_4->value();
+            }
+            else if(adx == 4)
+            {
+                refreshTime[iLoop] = ui->spinBox_5->value();
+            }
+            else if(adx == 5)
+            {
+                refreshTime[iLoop] = ui->spinBox_6->value();
+            }
+            recvItems[iLoop] = listOfNumbers->at(sourceSignal[iLoop]).toInt();
+            emit SendUpdateGraph(refreshTime, recvItems, coefInput, recStat, sourceSignText, iLoop);
+        }
+    }
 }
 
 void MainWindow::on_disconnectButton_clicked()
