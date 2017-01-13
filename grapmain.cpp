@@ -64,10 +64,6 @@ int Grapmain::GetMinimalResolution(int activeSource[])
 
 void Grapmain::refreshGraph(int mResolution_ms[], double signal[], double coefficient[], int recStat[], QString signalText[], int source)
 {
-    bEnableDraw++;
-
-    //qDebug() << "refresh:" << bEnableDraw;
-
     mSourceEvent = source;
 
     if(WasTimeReolutionChanged(mResolution_ms) || WasChangedStateAnySignal(recStat))
