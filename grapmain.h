@@ -60,6 +60,7 @@ private:
     double mMaxCoefficient[nmbCurvesInGraph] = {1, 1, 1, 1};
     int mRefreshTime_ms[nmbCurvesInGraph] = {std::numeric_limits<int>::max(), std::numeric_limits<int>::max(), std::numeric_limits<int>::max(), std::numeric_limits<int>::max()};
 
+    double mHistoryMaxValue[nmbCurvesInGraph] = {0, 0, 0, 0};
 
     int mHistoryPointStart[nmbCurvesInGraph] = {0, 0, 0, 0};
     int mHistoryPointStop[nmbCurvesInGraph] = {0, 0, 0, 0};

@@ -142,20 +142,6 @@ void Grapmain::paintEvent(QPaintEvent*)
 
         if(iLoop == mSourceEvent)
         {
-            //adjust Y-axis according window height
-            if(mSignalHistory[iLoop].count())
-            {
-                double maxElement = *std::max_element(mSignalHistory[iLoop].begin(), mSignalHistory[iLoop].end());
-                double actualCoefficient = maxElement / (double)(usedHeight);
-                if(actualCoefficient > mMaxCoefficient[iLoop])
-                {
-                    mMaxCoefficient[iLoop] = actualCoefficient;
-                    //qDebug() << "value with coeff:" << iLoop << " exceed at: " << maxElement << " actual mMaxCoefficient is: " << mMaxCoefficient[iLoop];
-
-                    emit SendUpdateData(mMaxCoefficient[iLoop], iLoop);
-                }
-            }
-
             //actualize buffer of samples
             if(flagSignalRecord[iLoop])
             {
@@ -181,6 +167,30 @@ void Grapmain::paintEvent(QPaintEvent*)
 
                 mSignalHistory[iLoop].append(mSignalValue[iLoop]);
                 mHistoryPointStop[iLoop] = mSignalHistory[iLoop].count();
+            }
+
+            //adjust Y-axis according window height
+            if(mSignalHistory[iLoop].count())
+            {
+                //find max value
+                mHistoryMaxValue[iLoop] = 0.001;
+                for(int kLoop = mHistoryPointStart[iLoop]; kLoop < mSignalHistory[iLoop].count(); kLoop++)
+                {
+                    if(mSignalHistory[iLoop].at(kLoop) > mHistoryMaxValue[iLoop])
+                    {
+                        mHistoryMaxValue[iLoop] = mSignalHistory[iLoop].at(kLoop);
+                    }
+                }
+
+                //actualize coefficient
+                double actualCoefficient = mHistoryMaxValue[iLoop] / (double)(usedHeight);
+                if(actualCoefficient > mMaxCoefficient[iLoop])
+                {
+                    mMaxCoefficient[iLoop] = actualCoefficient;
+                    //qDebug() << "value with coeff:" << iLoop << " exceed at: " << maxElement << " actual mMaxCoefficient is: " << mMaxCoefficient[iLoop];
+
+                    emit SendUpdateData(mMaxCoefficient[iLoop], iLoop);
+                }
             }
         }
 
