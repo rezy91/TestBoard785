@@ -8,6 +8,8 @@
 #include <QString>
 #include <QTime>
 
+#include <QElapsedTimer>
+
 
 class Grapmain : public QMainWindow
 {
@@ -34,14 +36,15 @@ private:
     const int constDistanceHorizontalLines_pxs = 50;
 
     int mMinimalResolution = std::numeric_limits<int>::max();
-    int mStartTime_ms = 0;
+    int mMinimalResSource = std::numeric_limits<int>::max();
     int mSourceEvent;
-
-    QTime mTimerOverallTime;
+    int timeAppRuns_ms;
+    int mThMoving;
 
     bool mFromStaticToDynamic = false;
-
     Qt::GlobalColor colorSignal[nmbCurvesInGraph] = {Qt::blue, Qt::green, Qt::red, Qt::magenta};
+
+    QList<int> mTimeHistory;
 
     //variables for separate signal
     QList<double> mSignalHistory[nmbCurvesInGraph];

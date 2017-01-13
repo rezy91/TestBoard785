@@ -7,7 +7,7 @@
 
 Grapmain::Grapmain(QWidget *parent) : QMainWindow(parent)
 {
-    mTimerOverallTime.start();
+
 }
 
 bool Grapmain::WasTimeReolutionChanged(int mInputValue_ms[])
@@ -35,11 +35,15 @@ bool Grapmain::WasChangedStateAnySignal(int stateSignal[])
         if(flagSignalRecord[iLoop] != stateSignal[iLoop])
         {
             flagSignalRecord[iLoop] = stateSignal[iLoop];
-            retValue = true;
 
             if(stateSignal[iLoop] == 0)
             {
                 mSignalHistory[iLoop].clear();
+            }
+
+            if(stateSignal[iLoop] == 1)
+            {
+                retValue = true;
             }
         }
     }
@@ -71,6 +75,7 @@ void Grapmain::refreshGraph(int mResolution_ms[], double signal[], double coeffi
         if(GetMinimalResolution(recStat) != mMinimalResolution)
         {
             mMinimalResolution = GetMinimalResolution(recStat);
+            mMinimalResSource = source;
             qDebug() << "new minimal value: " << mMinimalResolution;
         }
 
@@ -78,9 +83,10 @@ void Grapmain::refreshGraph(int mResolution_ms[], double signal[], double coeffi
         {
             mSignalHistory[iLoop].clear();
         }
+        mTimeHistory.clear();
         mFromStaticToDynamic = false;
-
-        mStartTime_ms = mTimerOverallTime.elapsed();
+        timeAppRuns_ms = 0;
+        mThMoving = 0;
     }
     mSignalValue[source] = signal[source];
     mMaxCoefficient[source] = coefficient[source];
@@ -103,9 +109,6 @@ void Grapmain::paintEvent(QPaintEvent*)
 
     int nmbHorizLines = (currentHeight - constBottomLimit - constTopLimit) / constDistanceHorizontalLines_pxs;
     int usedHeight = nmbHorizLines * constDistanceHorizontalLines_pxs;
-
-
-    int timeAppRuns_ms = ((mTimerOverallTime.elapsed() - mStartTime_ms) / mMinimalResolution) * mMinimalResolution;
 
 
 
@@ -256,11 +259,57 @@ void Grapmain::paintEvent(QPaintEvent*)
     painterMain.drawLine(QPoint(constLeftLimit, constTopLimit - 20),QPoint(constLeftLimit - 10, constTopLimit - 20 + 10));
     painterMain.drawLine(QPoint(constLeftLimit, constTopLimit - 20),QPoint(constLeftLimit + 10, constTopLimit - 20 + 10));
 
-    if(maxXValue)
+    if(mMinimalResSource == mSourceEvent)
     {
-        painterMain.setPen(QPen(Qt::lightGray));
-        painterMain.drawLine(QPoint(constLeftLimit + constPixels + maxXValue, currentHeight - constBottomLimit),QPoint(constLeftLimit + constPixels + maxXValue, constTopLimit));
+        timeAppRuns_ms += mMinimalResolution;
+
+        if(maxXValue)
+        {
+            if(!(timeAppRuns_ms % (mMinimalResolution * constSamples)) && (mMinimalResSource == mSourceEvent))
+            {
+                if(maxXValue == usedWidth)
+                {
+                    mTimeHistory.removeFirst();
+                }
+                else
+                {
+                }
+                mTimeHistory.append(timeAppRuns_ms);
+            }
+
+            if(mFromStaticToDynamic)
+            {
+                if(++mThMoving == constSamples)
+                {
+                    mThMoving = 0;
+                }
+            }
+
+        }
+    }
+
+    for(int kLoop = 0; kLoop < mTimeHistory.count(); kLoop++)
+    {
         painterMain.setPen(QPen(Qt::black));
-        painterMain.drawText(QPoint(constLeftLimit + constPixels + maxXValue - 20, currentHeight - constBottomLimit + 10), QString("%1").arg(timeAppRuns_ms));
+
+        if(mThMoving == constSamples - 1)
+        {
+            if(kLoop)
+            {
+                painterMain.drawText(QPoint(constLeftLimit + widthOneVertLine - mThMoving * constSamples + widthOneVertLine * kLoop - 20, currentHeight - constBottomLimit + 10), QString("%1").arg(mTimeHistory.at(kLoop - 1)));
+            }
+            timeAppRuns_ms += 200;
+            timeAppRuns_ms -= 200;
+        }
+        else
+        {
+            painterMain.drawText(QPoint(constLeftLimit + widthOneVertLine - mThMoving * constSamples + widthOneVertLine * kLoop - 20, currentHeight - constBottomLimit + 10), QString("%1").arg(mTimeHistory.at(kLoop)));
+        }
+
+
+
+        painterMain.setPen(QPen(Qt::lightGray));
+        painterMain.drawLine(QPoint(constLeftLimit + widthOneVertLine - mThMoving * constSamples + widthOneVertLine * kLoop, currentHeight - constBottomLimit),QPoint(constLeftLimit + widthOneVertLine - mThMoving * constSamples + widthOneVertLine * kLoop, constTopLimit));
+
     }
 }
