@@ -40,6 +40,14 @@ bool Grapmain::WasChangedStateAnySignal(int stateSignal[])
             {
                 mSignalHistory[iLoop].clear();
                 mHistoryPointStart[iLoop] = 0;
+
+                if(iLoop == mMinimalResSource)
+                {
+                    mMinimalResolution = std::numeric_limits<int>::max();
+
+                    qDebug() << "source with minimal resolution was off";
+                    retValue = true;
+                }
             }
 
             if(stateSignal[iLoop] == 1)
@@ -172,6 +180,7 @@ void Grapmain::paintEvent(QPaintEvent*)
                 }
 
                 mSignalHistory[iLoop].append(mSignalValue[iLoop]);
+                mHistoryPointStop[iLoop] = mSignalHistory[iLoop].count();
             }
         }
 
@@ -296,6 +305,7 @@ void Grapmain::paintEvent(QPaintEvent*)
             if(!(timeAppRuns_ms % (mMinimalResolution * constSamples)) && (mMinimalResSource == mSourceEvent))
             {
                 mTimeHistory.append(timeAppRuns_ms);
+                mHistoryTimeStop = mTimeHistory.count();
             }
 
             if(mFromStaticToDynamic)
