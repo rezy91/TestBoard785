@@ -39,6 +39,7 @@ bool Grapmain::WasChangedStateAnySignal(int stateSignal[])
             if(stateSignal[iLoop] == 0)
             {
                 mSignalHistory[iLoop].clear();
+                mHistoryPointStart[iLoop] = 0;
             }
 
             if(stateSignal[iLoop] == 1)
@@ -76,12 +77,13 @@ void Grapmain::startShowGraph()
     for(int iLoop = 0; iLoop < nmbCurvesInGraph; iLoop++)
     {
         mSignalHistory[iLoop].clear();
-        mHistoryStart[iLoop] = 0;
+        mHistoryPointStart[iLoop] = 0;
     }
     mTimeHistory.clear();
     mFromStaticToDynamic = false;
     timeAppRuns_ms = 0;
     mThMoving = 0;
+    mHistoryTimeStart = 0;
 
     scBar->setHidden(true);
 }
@@ -99,6 +101,8 @@ void Grapmain::refreshGraph(int mResolution_ms[], double signal[], double coeffi
             qDebug() << "new minimal value: " << mMinimalResolution;
         }
 
+        qDebug() << "start showing graph";
+
         startShowGraph();
     }
     mSignalValue[source] = signal[source];
@@ -107,8 +111,6 @@ void Grapmain::refreshGraph(int mResolution_ms[], double signal[], double coeffi
     mLegendItems[source] = signalText[source];
 
     repaint();
-
-    qDebug() << scBar->value();
 }
 
 void Grapmain::paintEvent(QPaintEvent*)
@@ -148,7 +150,7 @@ void Grapmain::paintEvent(QPaintEvent*)
 
             if(mFromStaticToDynamic)
             {
-                mHistoryStart[iLoop]++;
+                mHistoryPointStart[iLoop]++;
             }
 
             //actualize buffer of samples
@@ -176,7 +178,7 @@ void Grapmain::paintEvent(QPaintEvent*)
         //draw points
         int drawXvalue;
 
-        for(int jLoop = mHistoryStart[iLoop]; jLoop <= mSignalHistory[iLoop].count(); jLoop++)
+        for(int jLoop = mHistoryPointStart[iLoop]; jLoop <= mSignalHistory[iLoop].count(); jLoop++)
         {
             if(jLoop < mSignalHistory[iLoop].count())
             {
@@ -195,8 +197,8 @@ void Grapmain::paintEvent(QPaintEvent*)
 
                 if(constPixels * jLoop)
                 {
-                    drawXvalue = (int)((double)(constPixels * (jLoop - mHistoryStart[iLoop])) / dRatio);
-                    drawXvalue = (int)(((double)constPixels / dRatio) * (double)(jLoop - mHistoryStart[iLoop]));
+                    drawXvalue = (int)((double)(constPixels * (jLoop - mHistoryPointStart[iLoop])) / dRatio);
+                    drawXvalue = (int)(((double)constPixels / dRatio) * (double)(jLoop - mHistoryPointStart[iLoop]));
                     if(drawXvalue > maxXValue)
                     {
                         maxXValue = drawXvalue;
@@ -299,7 +301,7 @@ void Grapmain::paintEvent(QPaintEvent*)
             {
                 if(maxXValue == usedWidth)
                 {
-                    mTimeHistory.removeFirst();
+                    //mTimeHistory.removeFirst();
                 }
                 mTimeHistory.append(timeAppRuns_ms);
             }
@@ -309,6 +311,7 @@ void Grapmain::paintEvent(QPaintEvent*)
                 if(++mThMoving == constSamples)
                 {
                     mThMoving = 0;
+                    mHistoryTimeStart++;
                 }
 
                 scBar->setMaximum(timeAppRuns_ms);
@@ -319,38 +322,22 @@ void Grapmain::paintEvent(QPaintEvent*)
 
 
     //draw hozironzal lines & x(time) axis
-    for(int kLoop = 0; kLoop < mTimeHistory.count(); kLoop++)
+    for(int kLoop = mHistoryTimeStart; kLoop < mTimeHistory.count(); kLoop++)
     {
         painterMain.setPen(QPen(Qt::black));
-
-        int minutes;
-        int seconds;
-        int milisec;
 
         if(((mTimeHistory.at(kLoop) / 1000) / 60) > 60)//time more than a hour
         {
             startShowGraph();
         }
 
-        if(mThMoving == constSamples - 1)
-        {
-            if(kLoop)
-            {
-                minutes = (mTimeHistory.at(kLoop - 1) / 1000) / 60;
-                seconds = (mTimeHistory.at(kLoop - 1) / 1000) % 60;
-                milisec = (mTimeHistory.at(kLoop - 1) % 1000) / 100;
-                painterMain.drawText(QPoint(constLeftLimit + widthOneVertLine - mThMoving * constSamples + widthOneVertLine * kLoop - 20, currentHeight - constBottomLimit + 10), QString("%1:%2,%3").arg(minutes, 2, 10, QChar('0')).arg(seconds, 2, 10, QChar('0')).arg(milisec));
-            }
-        }
-        else
-        {
-            minutes = (mTimeHistory.at(kLoop) / 1000) / 60;
-            seconds = (mTimeHistory.at(kLoop) / 1000) % 60;
-            milisec = (mTimeHistory.at(kLoop) % 1000) / 100;
-            painterMain.drawText(QPoint(constLeftLimit + widthOneVertLine - mThMoving * constSamples + widthOneVertLine * kLoop - 20, currentHeight - constBottomLimit + 10), QString("%1:%2,%3").arg(minutes, 2, 10, QChar('0')).arg(seconds, 2, 10, QChar('0')).arg(milisec));
-        }
+        int minutes = (mTimeHistory.at(kLoop) / 1000) / 60;
+        int seconds = (mTimeHistory.at(kLoop) / 1000) % 60;
+        int milisec = (mTimeHistory.at(kLoop) % 1000) / 100;
+        painterMain.drawText(QPoint(constLeftLimit + widthOneVertLine - mThMoving * constSamples + widthOneVertLine * (kLoop - mHistoryTimeStart) - 20, currentHeight - constBottomLimit + 10), QString("%1:%2,%3").arg(minutes, 2, 10, QChar('0')).arg(seconds, 2, 10, QChar('0')).arg(milisec));
+
 
         painterMain.setPen(QPen(Qt::lightGray));
-        painterMain.drawLine(QPoint(constLeftLimit + widthOneVertLine - mThMoving * constSamples + widthOneVertLine * kLoop, currentHeight - constBottomLimit),QPoint(constLeftLimit + widthOneVertLine - mThMoving * constSamples + widthOneVertLine * kLoop, constTopLimit));
+        painterMain.drawLine(QPoint(constLeftLimit + widthOneVertLine - mThMoving * constSamples + widthOneVertLine * (kLoop - mHistoryTimeStart), currentHeight - constBottomLimit),QPoint(constLeftLimit + widthOneVertLine - mThMoving * constSamples + widthOneVertLine * (kLoop - mHistoryTimeStart), constTopLimit));
     }
 }
