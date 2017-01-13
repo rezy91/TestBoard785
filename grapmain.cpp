@@ -148,11 +148,6 @@ void Grapmain::paintEvent(QPaintEvent*)
                 }
             }
 
-            if(mFromStaticToDynamic)
-            {
-                mHistoryPointStart[iLoop]++;
-            }
-
             //actualize buffer of samples
             if(flagSignalRecord[iLoop])
             {
@@ -169,6 +164,11 @@ void Grapmain::paintEvent(QPaintEvent*)
                         scBar->setMinimum(0);
                         scBar->setMaximum(usedWidth);
                     }
+                }
+
+                if(mFromStaticToDynamic)
+                {
+                    mHistoryPointStart[iLoop]++;
                 }
 
                 mSignalHistory[iLoop].append(mSignalValue[iLoop]);
