@@ -178,43 +178,39 @@ void Grapmain::paintEvent(QPaintEvent*)
         //draw points
         int drawXvalue;
 
-        for(int jLoop = mHistoryPointStart[iLoop]; jLoop <= mSignalHistory[iLoop].count(); jLoop++)
+        for(int jLoop = mHistoryPointStart[iLoop]; jLoop < mSignalHistory[iLoop].count(); jLoop++)
         {
-            if(jLoop < mSignalHistory[iLoop].count())
+            int drawYvalue;
+
+            if(mSignalHistory[iLoop].at(jLoop) < 0)
             {
-                int drawYvalue;
-
-                if(mSignalHistory[iLoop].at(jLoop) < 0)
-                {
-                    drawYvalue = -1;
-                    painterMain.setBrush(Qt::black);;
-                }
-                else
-                {
-                    painterMain.setBrush(colorSignal[iLoop]);;
-                    drawYvalue = (int)(mSignalHistory[iLoop].at(jLoop) / mMaxCoefficient[iLoop]);
-                }
-
-                if(constPixels * jLoop)
-                {
-                    drawXvalue = (int)((double)(constPixels * (jLoop - mHistoryPointStart[iLoop])) / dRatio);
-                    drawXvalue = (int)(((double)constPixels / dRatio) * (double)(jLoop - mHistoryPointStart[iLoop]));
-                    if(drawXvalue > maxXValue)
-                    {
-                        maxXValue = drawXvalue;
-                    }
-                }
-                else
-                {
-                    drawXvalue = 0;
-                }
-                QPoint cnt = QPoint(constLeftLimit + constPixels + drawXvalue, currentHeight - constBottomLimit - drawYvalue);
-
-                painterMain.setPen(QPen(Qt::black));
-
-                painterMain.drawEllipse(cnt,constVolumePoint,constVolumePoint);
+                drawYvalue = -1;
+                painterMain.setBrush(Qt::black);;
+            }
+            else
+            {
+                painterMain.setBrush(colorSignal[iLoop]);;
+                drawYvalue = (int)(mSignalHistory[iLoop].at(jLoop) / mMaxCoefficient[iLoop]);
             }
 
+            if(constPixels * jLoop)
+            {
+                drawXvalue = (int)((double)(constPixels * (jLoop - mHistoryPointStart[iLoop])) / dRatio);
+                drawXvalue = (int)(((double)constPixels / dRatio) * (double)(jLoop - mHistoryPointStart[iLoop]));
+                if(drawXvalue > maxXValue)
+                {
+                    maxXValue = drawXvalue;
+                }
+            }
+            else
+            {
+                drawXvalue = 0;
+            }
+            QPoint cnt = QPoint(constLeftLimit + constPixels + drawXvalue, currentHeight - constBottomLimit - drawYvalue);
+
+            painterMain.setPen(QPen(Qt::black));
+
+            painterMain.drawEllipse(cnt,constVolumePoint,constVolumePoint);
         }
 
         //Draw y-axes
@@ -299,10 +295,6 @@ void Grapmain::paintEvent(QPaintEvent*)
         {
             if(!(timeAppRuns_ms % (mMinimalResolution * constSamples)) && (mMinimalResSource == mSourceEvent))
             {
-                if(maxXValue == usedWidth)
-                {
-                    //mTimeHistory.removeFirst();
-                }
                 mTimeHistory.append(timeAppRuns_ms);
             }
 

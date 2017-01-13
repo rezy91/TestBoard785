@@ -51,6 +51,7 @@ private:
     QScrollBar* scBar = new QScrollBar(Qt::Horizontal, this);
 
     int mHistoryTimeStart = 0;
+    int mHistoryTimeStop = 0;
 
 
     //variables for separate signal
@@ -61,6 +62,7 @@ private:
 
 
     int mHistoryPointStart[nmbCurvesInGraph] = {0, 0, 0, 0};
+    int mHistoryPointStop[nmbCurvesInGraph] = {0, 0, 0, 0};
 
     double mSignalValue[nmbCurvesInGraph];
 
