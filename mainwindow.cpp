@@ -47,8 +47,7 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
 
 
     ui->sendButton->setEnabled(false);
-    ui->tableWidget->setColumnWidth(1, 150);
-    ui->tableWidget->setColumnWidth(2, 60);
+    ui->tableWidget->setColumnWidth(1, 200);
 
     SetAvaiblePorts();
     SetLastPort();
@@ -492,38 +491,6 @@ void MainWindow::on_sendButton_clicked()
     }
 }
 
-//void MainWindow::StatusRegister(QByteArray arrData)
-//{
-//    QByteArray arrStatusReg(arrData.mid(1, 4));
-
-//    quint32 nStatusReg = ByteArrayParser::GetFourBytes(arrStatusReg);
-
-//    if(nStatusReg & 0x20)
-//    {
-//        AppendText("selftest finished");
-//    }
-//    if(nStatusReg & 0x40)
-//    {
-//        AppendText("the device has been restarted");
-//    }
-//    if(nStatusReg & 0x80)
-//    {
-//        AppendText("error occured");
-//    }
-//    if(nStatusReg & 0x8000)
-//    {
-//        AppendText("new log");
-//    }
-//    if(nStatusReg & 0x10000)
-//    {
-//        AppendText("new event");
-//    }
-//    if(nStatusReg & 0xE7F1F)
-//    {
-//        AppendText("undefined event");
-//    }
-//}
-
 void MainWindow::AppendText(QString strText)
 {
     ui->textBrowser->append(QString("%1\t%2").arg(QTime::currentTime().toString()).arg(strText));
@@ -531,9 +498,7 @@ void MainWindow::AppendText(QString strText)
 
 void MainWindow::FillCommandTable()
 {
-
     QString StoredItems = m_pSettingStrorage->RestoreRowItem();
-
     QStringList list;
     list = StoredItems.split(QRegExp("\\s+"));
     int indexInList = 0;

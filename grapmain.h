@@ -33,7 +33,6 @@ private:
 
     const int constDistanceHorizontalLines_pxs = 50;
 
-    int bEnableDraw = 0;//this is, because when start app, PaintEvent occurs
     int mMinimalResolution = std::numeric_limits<int>::max();
     int mStartTime_ms = 0;
     int mSourceEvent;
