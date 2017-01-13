@@ -22,6 +22,7 @@
 #include "ui_mainwindow.h"
 
 
+
 MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWindow)
 {
     static int mMainTimer = 0;
@@ -38,6 +39,9 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
     o_graph->setWindowIcon(QIcon(":/iconGraph.jpg"));
     o_graph->setWindowTitle("Graph");
     o_graph->show();
+
+
+
 
     connect(this, &MainWindow::SendUpdateGraph, o_graph, &Grapmain::refreshGraph);
     connect (o_graph, &Grapmain::SendUpdateData, this, &MainWindow::UpdateDoubleSpinBoxX);

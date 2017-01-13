@@ -7,7 +7,7 @@
 
 Grapmain::Grapmain(QWidget *parent) : QMainWindow(parent)
 {
-
+    scBar->setHidden(true);
 }
 
 bool Grapmain::WasTimeReolutionChanged(int mInputValue_ms[])
@@ -48,6 +48,11 @@ bool Grapmain::WasChangedStateAnySignal(int stateSignal[])
         }
     }
 
+    if((!flagSignalRecord[0]) && (!flagSignalRecord[1]) && (!flagSignalRecord[2]) && (!flagSignalRecord[3]))
+    {
+        startShowGraph();
+    }
+
     return retValue;
 }
 
@@ -76,6 +81,8 @@ void Grapmain::startShowGraph()
     mFromStaticToDynamic = false;
     timeAppRuns_ms = 0;
     mThMoving = 0;
+
+    scBar->setHidden(true);
 }
 
 void Grapmain::refreshGraph(int mResolution_ms[], double signal[], double coefficient[], int recStat[], QString signalText[], int source)
@@ -99,6 +106,8 @@ void Grapmain::refreshGraph(int mResolution_ms[], double signal[], double coeffi
     mLegendItems[source] = signalText[source];
 
     repaint();
+
+    qDebug() << scBar->value();
 }
 
 void Grapmain::paintEvent(QPaintEvent*)
@@ -114,7 +123,6 @@ void Grapmain::paintEvent(QPaintEvent*)
 
     int nmbHorizLines = (currentHeight - constBottomLimit - constTopLimit) / constDistanceHorizontalLines_pxs;
     int usedHeight = nmbHorizLines * constDistanceHorizontalLines_pxs;
-
 
 
     for(int iLoop = 0; iLoop < nmbCurvesInGraph; iLoop++)
@@ -143,7 +151,16 @@ void Grapmain::paintEvent(QPaintEvent*)
                 if(mSignalHistory[iLoop].count() > (int)((double)(usedWidth / constPixels) * dRatio))
                 {
                     mSignalHistory[iLoop].removeFirst();
-                    mFromStaticToDynamic = true;
+
+                    if(!mFromStaticToDynamic)
+                    {
+                        mFromStaticToDynamic = true;
+
+                        //scBar->setHidden(false);
+                        scBar->setGeometry(constLeftLimit - 20, currentHeight - 30, usedWidth + 40, 20);
+                        scBar->setMinimum(0);
+                        scBar->setMaximum(usedWidth);
+                    }
                 }
 
                 mSignalHistory[iLoop].append(mSignalValue[iLoop]);
@@ -287,9 +304,13 @@ void Grapmain::paintEvent(QPaintEvent*)
                 {
                     mThMoving = 0;
                 }
+
+                scBar->setMaximum(timeAppRuns_ms);
+                scBar->setValue(scBar->maximum());
             }
         }
     }
+
 
     //draw hozironzal lines & x(time) axis
     for(int kLoop = 0; kLoop < mTimeHistory.count(); kLoop++)

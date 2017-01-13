@@ -35,6 +35,7 @@
 #include "smithmain.h"
 #include "grapmain.h"
 
+
 #define NMB_ITEMS_FOR_TIMERS    6
 
 namespace Ui {
@@ -106,6 +107,7 @@ private:
     settings* m_pSettingStrorage = new settings(this);
     SmithMain* o_smith = new SmithMain(this);
     Grapmain* o_graph = new Grapmain(this);
+
 
 
     void AppendText(QString strText);

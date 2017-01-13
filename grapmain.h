@@ -6,8 +6,10 @@
 #include <QObject>
 #include <QEvent>
 #include <QString>
-#include <QTime>
 
+
+#include <QScrollArea>
+#include <QScrollBar>
 
 class Grapmain : public QMainWindow
 {
@@ -44,6 +46,9 @@ private:
     Qt::GlobalColor colorSignal[nmbCurvesInGraph] = {Qt::blue, Qt::cyan, Qt::red, Qt::magenta};
 
     QList<int> mTimeHistory;
+
+
+    QScrollBar* scBar = new QScrollBar(Qt::Horizontal, this);
 
     //variables for separate signal
     QList<double> mSignalHistory[nmbCurvesInGraph];
