@@ -20,7 +20,7 @@ public:
 
     bool WasTimeReolutionChanged(int mInputValue_ms[nmbCurvesInGraph]);
     bool WasChangedStateAnySignal(int stateSignal [nmbCurvesInGraph]);
-    int GetMinimalResolution(int activeSource[nmbCurvesInGraph]);
+    int GetMinimalResolution(int activeSource[nmbCurvesInGraph], int *sourceResol);
     void startShowGraph(void);
 
 private:

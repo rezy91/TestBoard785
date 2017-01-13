@@ -65,7 +65,7 @@ bool Grapmain::WasChangedStateAnySignal(int stateSignal[])
     return retValue;
 }
 
-int Grapmain::GetMinimalResolution(int activeSource[])
+int Grapmain::GetMinimalResolution(int activeSource[], int* sourceResol)
 {
     int minValue = std::numeric_limits<int>::max();
 
@@ -74,6 +74,7 @@ int Grapmain::GetMinimalResolution(int activeSource[])
         if((mRefreshTime_ms[iLoop] < minValue) && activeSource[iLoop])
         {
             minValue = mRefreshTime_ms[iLoop];
+            *sourceResol = iLoop;
         }
     }
 
@@ -102,10 +103,9 @@ void Grapmain::refreshGraph(int mResolution_ms[], double signal[], double coeffi
 
     if(WasTimeReolutionChanged(mResolution_ms) || WasChangedStateAnySignal(recStat))
     {
-        if(GetMinimalResolution(recStat) != mMinimalResolution)
+        if(GetMinimalResolution(recStat, &mMinimalResSource) != mMinimalResolution)
         {
-            mMinimalResolution = GetMinimalResolution(recStat);
-            mMinimalResSource = source;
+            mMinimalResolution = GetMinimalResolution(recStat, &mMinimalResSource);
             qDebug() << "new minimal value: " << mMinimalResolution;
         }
 
