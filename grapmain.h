@@ -8,8 +8,6 @@
 #include <QString>
 #include <QTime>
 
-#include <QElapsedTimer>
-
 
 class Grapmain : public QMainWindow
 {
@@ -21,6 +19,7 @@ public:
     bool WasTimeReolutionChanged(int mInputValue_ms[nmbCurvesInGraph]);
     bool WasChangedStateAnySignal(int stateSignal [nmbCurvesInGraph]);
     int GetMinimalResolution(int activeSource[nmbCurvesInGraph]);
+    void startShowGraph(void);
 
 private:
     //common variables
@@ -42,7 +41,7 @@ private:
     int mThMoving;
 
     bool mFromStaticToDynamic = false;
-    Qt::GlobalColor colorSignal[nmbCurvesInGraph] = {Qt::blue, Qt::green, Qt::red, Qt::magenta};
+    Qt::GlobalColor colorSignal[nmbCurvesInGraph] = {Qt::blue, Qt::cyan, Qt::red, Qt::magenta};
 
     QList<int> mTimeHistory;
 
