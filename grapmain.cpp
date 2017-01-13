@@ -76,6 +76,7 @@ void Grapmain::startShowGraph()
     for(int iLoop = 0; iLoop < nmbCurvesInGraph; iLoop++)
     {
         mSignalHistory[iLoop].clear();
+        mHistoryStart[iLoop] = 0;
     }
     mTimeHistory.clear();
     mFromStaticToDynamic = false;
@@ -145,12 +146,17 @@ void Grapmain::paintEvent(QPaintEvent*)
                 }
             }
 
+            if(mFromStaticToDynamic)
+            {
+                mHistoryStart[iLoop]++;
+            }
+
             //actualize buffer of samples
             if(flagSignalRecord[iLoop])
             {
                 if(mSignalHistory[iLoop].count() > (int)((double)(usedWidth / constPixels) * dRatio))
                 {
-                    mSignalHistory[iLoop].removeFirst();
+                    //mSignalHistory[iLoop].removeFirst();
 
                     if(!mFromStaticToDynamic)
                     {
@@ -170,7 +176,7 @@ void Grapmain::paintEvent(QPaintEvent*)
         //draw points
         int drawXvalue;
 
-        for(int jLoop = 0; jLoop <= mSignalHistory[iLoop].count(); jLoop++)
+        for(int jLoop = mHistoryStart[iLoop]; jLoop <= mSignalHistory[iLoop].count(); jLoop++)
         {
             if(jLoop < mSignalHistory[iLoop].count())
             {
@@ -189,8 +195,8 @@ void Grapmain::paintEvent(QPaintEvent*)
 
                 if(constPixels * jLoop)
                 {
-                    drawXvalue = (int)((double)(constPixels * jLoop) / dRatio);
-                    drawXvalue = (int)(((double)constPixels / dRatio) * (double)jLoop);
+                    drawXvalue = (int)((double)(constPixels * (jLoop - mHistoryStart[iLoop])) / dRatio);
+                    drawXvalue = (int)(((double)constPixels / dRatio) * (double)(jLoop - mHistoryStart[iLoop]));
                     if(drawXvalue > maxXValue)
                     {
                         maxXValue = drawXvalue;

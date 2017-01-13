@@ -57,6 +57,8 @@ private:
     int mRefreshTime_ms[nmbCurvesInGraph] = {std::numeric_limits<int>::max(), std::numeric_limits<int>::max(), std::numeric_limits<int>::max(), std::numeric_limits<int>::max()};
 
 
+    int mHistoryStart[nmbCurvesInGraph];
+
     double mSignalValue[nmbCurvesInGraph];
 
     int flagSignalRecord[nmbCurvesInGraph] = {0, 0, 0, 0};
