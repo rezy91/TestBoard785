@@ -61,6 +61,11 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
 
     restoreAllSettings();
 
+    timeCurrent->start();
+
+    qDebug()<< timeCurrent->toString();
+
+
 
     connect(&TmrMstr,&QTimer::timeout,[this](){
         for(qint32 loop = 0; loop < NMB_ITEMS_FOR_TIMERS + 1; loop++)
@@ -307,9 +312,14 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
 
         if(m_bSaveData)
         {
-            m_oFile.write(arrData + "\r\n");
+            QString saveText = QString("%1:%2:%3,%4").arg(timeCurrent->hour(), 2, 10, QChar('0')).arg(timeCurrent->minute(), 2, 10, QChar('0')).arg(timeCurrent->second(), 2, 10, QChar('0')).arg(timeCurrent->msec(), 3, 10, QChar('0'));
+            m_oFile.write(saveText.toUtf8() + "\t" + arrData + "\r\n");
             m_oFile.flush();
         }
+
+        timeCurrent->elapsed();
+        timeCurrent->start();
+
     });
 
     connect(m_CommProt.data(), &CommProtV200::Log, [this](QString strClassName, QTime oTime, QString strMessage) {
@@ -497,7 +507,8 @@ void MainWindow::on_sendButton_clicked()
 
 void MainWindow::AppendText(QString strText)
 {
-    ui->textBrowser->append(QString("%1\t%2").arg(QTime::currentTime().toString()).arg(strText));
+    //ui->textBrowser->append(QString("%1\t%2").arg(QTime::currentTime().toString()).arg(strText));
+    ui->textBrowser->append(QString("%1:%2:%3,%4\t%5").arg(timeCurrent->hour(), 2, 10, QChar('0')).arg(timeCurrent->minute(), 2, 10, QChar('0')).arg(timeCurrent->second(), 2, 10, QChar('0')).arg(timeCurrent->msec(), 3, 10, QChar('0')).arg(strText));
 }
 
 void MainWindow::FillCommandTable()

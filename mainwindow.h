@@ -144,6 +144,9 @@ private:
     int sourceAd[4] = {0, 0, 0, 0};
     QString sourceSignText[4] = {"\0", "\0", "\0", "\0"};
 
+
+    QTime* timeCurrent = new QTime;
+
 signals:
     void SendNewData(int magnitudeA, int phaseA, int magnitude50, int phase50);
     void SendUpdateGraph(int refrTime_ms[4], double receivedValue[4], double coefficient[4], int recordState[4], QString nameSignals[4], int src);
