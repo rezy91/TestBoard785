@@ -61,7 +61,7 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
 
     restoreAllSettings();
 
-    timeCurrent->start();
+    timeCurrent.start();
 
 
 
@@ -212,114 +212,7 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
         Q_UNUSED(nTransactionID);
         Q_UNUSED(nDeviceID);
 
-
-        //actualize time
-        timeCurrent->elapsed();
-        timeCurrent->start();
-
-        ui->statusBar->showMessage("Data received: " + QString(arrData.toHex()));
-        AppendText(QString(arrData));
-
-
-        if(arrData.at(0) == 'a' && arrData.at(1) == 'd')//ADCx data
-        {
-            QString adjString = QString(arrData);
-            QStringList myStringList = adjString.split(QRegExp("(\\s+| |=)"));
-
-            QStringList myStringOnlyNumbers;
-
-
-            for(int iLoop = 0; iLoop < myStringList.count(); iLoop++)
-            {
-                //qDebug() << "all: " + myStringList.at(iLoop) << endl;
-
-                bool isNumber;
-                myStringList.at(iLoop).toFloat(&isNumber);
-
-                if(isNumber)
-                {
-                    myStringOnlyNumbers.append(myStringList.at(iLoop));
-                    //qDebug() << "number: " + myStringList.at(iLoop) << endl;
-                }
-            }
-
-            if(arrData.at(2) == '3' && arrData.at(3) == 'c')//ADC3 adjusted data
-            {
-                recognizeIfDisplayNewData(&myStringOnlyNumbers, 0);
-            }
-            else if(arrData.at(2) == '3' && arrData.at(3) == 's')//ADC3 average data
-            {
-                recognizeIfDisplayNewData(&myStringOnlyNumbers, 1);
-            }
-            else if(arrData.at(2) == '2' && arrData.at(3) == 'c')//ADC2 adjusted data
-            {
-
-                recognizeIfDisplayNewData(&myStringOnlyNumbers, 2);
-
-                COMPLEX_NUMBER_GONIO currentData;
-                COMPLEX_NUMBER_GONIO averageDataA;
-                COMPLEX_NUMBER_GONIO averageData50;
-                COMPLEX_NUMBER_GONIO reflRatioAvg;
-                COMPLEX_NUMBER_GONIO reflRatio50;
-
-                currentData.magnitude = myStringOnlyNumbers.at(1).toFloat();
-                currentData.phase_rad = myStringOnlyNumbers.at(2).toFloat();
-                averageDataA.magnitude = myStringOnlyNumbers.at(3).toFloat();
-                averageDataA.phase_rad = myStringOnlyNumbers.at(4).toFloat();
-
-                reflRatioAvg = CalculateReflectionRatio(currentData, averageDataA);
-
-                averageData50.magnitude = 50;
-                averageData50.phase_rad = 0;
-
-                reflRatio50 = CalculateReflectionRatio(currentData, averageData50);
-                emit SendNewData(int(reflRatioAvg.magnitude * 1000), int(reflRatioAvg.phase_rad * 1000),int(reflRatio50.magnitude * 1000), int(reflRatio50.phase_rad * 1000));
-            }
-            else if(arrData.at(2) == '2' && arrData.at(3) == 's')//ADC2 average data
-            {
-                recognizeIfDisplayNewData(&myStringOnlyNumbers, 3);
-            }
-            else if(arrData.at(2) == '1' && arrData.at(3) == 'c')//ADC1 adjusted data
-            {
-                recognizeIfDisplayNewData(&myStringOnlyNumbers, 4);
-            }
-            else if(arrData.at(2) == '1' && arrData.at(3) == 's')//ADC1 average data
-            {
-                recognizeIfDisplayNewData(&myStringOnlyNumbers, 5);
-            }
-
-
-        }
-        else if(arrData.at(1) == '|')//Digital input readed
-        {
-            if(arrData.at(0) == '1')
-            {
-                ui->toolButton->setStyleSheet("background-color:red;color:black;font:11px");
-            }
-            else if(arrData.at(0) == '0')
-            {
-                ui->toolButton->setStyleSheet("background-color:grey;color:white;font:11px");
-            }
-            if(arrData.at(3) == '|')
-            {
-                if(arrData.at(2) == '1')
-                {
-                    ui->toolButton_2->setStyleSheet("background-color:red;color:black;font:11px");
-                }
-                else if(arrData.at(2) == '0')
-                {
-                    ui->toolButton_2->setStyleSheet("background-color:grey;color:white;font:11px");
-                }
-            }
-        }
-
-        if(m_bSaveData)
-        {
-            m_oFile.write(myTimeStamp().toUtf8() + "\t" + arrData + "\r\n");
-
-            m_oFile.flush();
-        }
-
+        newDataV200(arrData);
     });
 
     connect(m_CommProt.data(), &CommProtV200::Log, [this](QString strClassName, QTime oTime, QString strMessage) {
@@ -505,10 +398,10 @@ void MainWindow::on_sendButton_clicked()
     }
 }
 
-void MainWindow::AppendText(QString strText)
+void MainWindow::AppendText(QTime timestamp, QString strText)
 {
     //ui->textBrowser->append(QString("%1\t%2").arg(QTime::currentTime().toString()).arg(strText));
-    ui->textBrowser->append(myTimeStamp() + "\t" + strText);
+    ui->textBrowser->append(myTimeStamp(timestamp) + "\t" + strText);
 }
 
 void MainWindow::FillCommandTable()
@@ -1069,6 +962,119 @@ void MainWindow::restoreAllSettings()
     ui->doubleSpinBox_4->setValue(coefInput[3]);
 }
 
+void MainWindow::newDataV200(QByteArray aData)
+{
+    //actualize time
+    timeCurrent.elapsed();
+    timeCurrent.start();
+
+    QTime timeShot(timeCurrent);
+
+    ui->statusBar->showMessage("Data received: " + QString(aData.toHex()));
+    AppendText(timeShot, QString(aData));
+
+
+    if(aData.at(0) == 'a' && aData.at(1) == 'd')//ADCx data
+    {
+        QString adjString = QString(aData);
+        QStringList myStringList = adjString.split(QRegExp("(\\s+| |=)"));
+
+        QStringList myStringOnlyNumbers;
+
+
+        for(int iLoop = 0; iLoop < myStringList.count(); iLoop++)
+        {
+            //qDebug() << "all: " + myStringList.at(iLoop) << endl;
+
+            bool isNumber;
+            myStringList.at(iLoop).toFloat(&isNumber);
+
+            if(isNumber)
+            {
+                myStringOnlyNumbers.append(myStringList.at(iLoop));
+                //qDebug() << "number: " + myStringList.at(iLoop) << endl;
+            }
+        }
+
+        if(aData.at(2) == '3' && aData.at(3) == 'c')//ADC3 adjusted data
+        {
+            recognizeIfDisplayNewData(timeShot, &myStringOnlyNumbers, 0);
+        }
+        else if(aData.at(2) == '3' && aData.at(3) == 's')//ADC3 average data
+        {
+            recognizeIfDisplayNewData(timeShot, &myStringOnlyNumbers, 1);
+        }
+        else if(aData.at(2) == '2' && aData.at(3) == 'c')//ADC2 adjusted data
+        {
+
+            recognizeIfDisplayNewData(timeShot, &myStringOnlyNumbers, 2);
+
+            COMPLEX_NUMBER_GONIO currentData;
+            COMPLEX_NUMBER_GONIO averageDataA;
+            COMPLEX_NUMBER_GONIO averageData50;
+            COMPLEX_NUMBER_GONIO reflRatioAvg;
+            COMPLEX_NUMBER_GONIO reflRatio50;
+
+            currentData.magnitude = myStringOnlyNumbers.at(1).toFloat();
+            currentData.phase_rad = myStringOnlyNumbers.at(2).toFloat();
+            averageDataA.magnitude = myStringOnlyNumbers.at(3).toFloat();
+            averageDataA.phase_rad = myStringOnlyNumbers.at(4).toFloat();
+
+            reflRatioAvg = CalculateReflectionRatio(currentData, averageDataA);
+
+            averageData50.magnitude = 50;
+            averageData50.phase_rad = 0;
+
+            reflRatio50 = CalculateReflectionRatio(currentData, averageData50);
+            emit SendNewData(int(reflRatioAvg.magnitude * 1000), int(reflRatioAvg.phase_rad * 1000),int(reflRatio50.magnitude * 1000), int(reflRatio50.phase_rad * 1000));
+        }
+        else if(aData.at(2) == '2' && aData.at(3) == 's')//ADC2 average data
+        {
+            recognizeIfDisplayNewData(timeShot, &myStringOnlyNumbers, 3);
+        }
+        else if(aData.at(2) == '1' && aData.at(3) == 'c')//ADC1 adjusted data
+        {
+            recognizeIfDisplayNewData(timeShot, &myStringOnlyNumbers, 4);
+        }
+        else if(aData.at(2) == '1' && aData.at(3) == 's')//ADC1 average data
+        {
+            recognizeIfDisplayNewData(timeShot, &myStringOnlyNumbers, 5);
+        }
+
+
+    }
+    else if(aData.at(1) == '|')//Digital input readed
+    {
+        if(aData.at(0) == '1')
+        {
+            ui->toolButton->setStyleSheet("background-color:red;color:black;font:11px");
+        }
+        else if(aData.at(0) == '0')
+        {
+            ui->toolButton->setStyleSheet("background-color:grey;color:white;font:11px");
+        }
+        if(aData.at(3) == '|')
+        {
+            if(aData.at(2) == '1')
+            {
+                ui->toolButton_2->setStyleSheet("background-color:red;color:black;font:11px");
+            }
+            else if(aData.at(2) == '0')
+            {
+                ui->toolButton_2->setStyleSheet("background-color:grey;color:white;font:11px");
+            }
+        }
+    }
+
+    if(m_bSaveData)
+    {
+        m_oFile.write(myTimeStamp(timeShot).toUtf8() + "\t" + aData + "\r\n");
+
+        m_oFile.flush();
+    }
+
+}
+
 MainWindow::COMPLEX_NUMBER_GONIO MainWindow::CalculateReflectionRatio(COMPLEX_NUMBER_GONIO current, COMPLEX_NUMBER_GONIO average)
 {
     COMPLEX_NUMBER_GONIO ReflectionRatio;
@@ -1134,11 +1140,11 @@ void MainWindow::getIndexInQList(int NumberComboBox, int indexInComboBox)
         sourceSignText[NumberComboBox] = "\0";
         sourceSignal[NumberComboBox] = -1;
         recStat[NumberComboBox] = 0;
-        emit SendUpdateGraph(refreshTime, recvItems, coefInput, recStat, sourceSignText, NumberComboBox);
+        emit SendUpdateGraph(timeCurrent, refreshTime, recvItems, coefInput, recStat, sourceSignText, NumberComboBox);
     }
 }
 
-void MainWindow::recognizeIfDisplayNewData(QStringList* listOfNumbers, int adx)
+void MainWindow::recognizeIfDisplayNewData(QTime timestamp, QStringList* listOfNumbers, int adx)
 {
     for(int iLoop = 0; iLoop < 4; iLoop++)
     {
@@ -1169,14 +1175,14 @@ void MainWindow::recognizeIfDisplayNewData(QStringList* listOfNumbers, int adx)
                 refreshTime[iLoop] = ui->spinBox_6->value();
             }
             recvItems[iLoop] = listOfNumbers->at(sourceSignal[iLoop]).toDouble();
-            emit SendUpdateGraph(refreshTime, recvItems, coefInput, recStat, sourceSignText, iLoop);
+            emit SendUpdateGraph(timestamp, refreshTime, recvItems, coefInput, recStat, sourceSignText, iLoop);
         }
     }
 }
 
-QString MainWindow::myTimeStamp()
+QString MainWindow::myTimeStamp(QTime time)
 {
-    return QString("%1:%2:%3,%4").arg(timeCurrent->hour(), 2, 10, QChar('0')).arg(timeCurrent->minute(), 2, 10, QChar('0')).arg(timeCurrent->second(), 2, 10, QChar('0')).arg(timeCurrent->msec(), 3, 10, QChar('0'));
+    return QString("%1:%2:%3,%4").arg(time.hour(), 2, 10, QChar('0')).arg(time.minute(), 2, 10, QChar('0')).arg(time.second(), 2, 10, QChar('0')).arg(time.msec(), 3, 10, QChar('0'));
 }
 
 void MainWindow::on_disconnectButton_clicked()
@@ -1197,7 +1203,7 @@ void MainWindow::on_disconnectButton_clicked()
      {
          m_oFile.close();
          QFileInfo oFileInfo(m_oFile);
-         AppendText(QString("Data saved to <a href=\"%1\">%1</a>, file size is %2 kB").arg(oFileInfo.absoluteFilePath()).arg(static_cast<double>(oFileInfo.size()) / 1024, 0, 'f', 2));
+         AppendText(timeCurrent, QString("Data saved to <a href=\"%1\">%1</a>, file size is %2 kB").arg(oFileInfo.absoluteFilePath()).arg(static_cast<double>(oFileInfo.size()) / 1024, 0, 'f', 2));
 
          qDebug() << "Data saved";
 

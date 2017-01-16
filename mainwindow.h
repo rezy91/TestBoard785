@@ -110,7 +110,7 @@ private:
 
 
 
-    void AppendText(QString strText);
+    void AppendText(QTime timestamp, QString strText);
 
     quint8 GetOneByte(QByteArray arrData);
     quint16 GetTwoBytes(QByteArray arrData);
@@ -124,10 +124,11 @@ private:
     void SetLastPort();
     void restoreAllSettings(void);
 
+    void newDataV200(QByteArray aData);
     COMPLEX_NUMBER_GONIO CalculateReflectionRatio(COMPLEX_NUMBER_GONIO current, COMPLEX_NUMBER_GONIO average);
     void getIndexInQList(int NumberComboBox, int indexInComboBox);
-    void recognizeIfDisplayNewData(QStringList *listOfNumbers, int adx);
-    QString myTimeStamp(void);
+    void recognizeIfDisplayNewData(QTime timestamp, QStringList *listOfNumbers, int adx);
+    QString myTimeStamp(QTime time);
 
     double coefInput[4];
     int refreshTime[4] = {std::numeric_limits<int>::max(), std::numeric_limits<int>::max(), std::numeric_limits<int>::max(), std::numeric_limits<int>::max()};
@@ -146,11 +147,11 @@ private:
     QString sourceSignText[4] = {"\0", "\0", "\0", "\0"};
 
 
-    QTime* timeCurrent = new QTime;
+    QTime timeCurrent;
 
 signals:
     void SendNewData(int magnitudeA, int phaseA, int magnitude50, int phase50);
-    void SendUpdateGraph(int refrTime_ms[4], double receivedValue[4], double coefficient[4], int recordState[4], QString nameSignals[4], int src);
+    void SendUpdateGraph(QTime timestamp, int refrTime_ms[4], double receivedValue[4], double coefficient[4], int recordState[4], QString nameSignals[4], int src);
 
     void SendStateButton(bool state);
 

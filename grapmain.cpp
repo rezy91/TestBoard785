@@ -38,7 +38,8 @@ bool Grapmain::WasChangedStateAnySignal(int stateSignal[])
 
             if(stateSignal[iLoop] == 0)
             {
-                mSignalHistory[iLoop].clear();
+                mSignalHistory[iLoop].value.clear();
+                mSignalHistory[iLoop].time.clear();
                 mHistoryPointStart[iLoop] = 0;
 
                 if(iLoop == mMinimalResSource)
@@ -59,7 +60,7 @@ bool Grapmain::WasChangedStateAnySignal(int stateSignal[])
 
     if((!flagSignalRecord[0]) && (!flagSignalRecord[1]) && (!flagSignalRecord[2]) && (!flagSignalRecord[3]))
     {
-        startShowGraph();
+        startShowGraph(QTime::currentTime());
     }
 
     return retValue;
@@ -81,11 +82,12 @@ int Grapmain::GetMinimalResolution(int activeSource[], int* sourceResol)
     return minValue;
 }
 
-void Grapmain::startShowGraph()
+void Grapmain::startShowGraph(QTime time)
 {
     for(int iLoop = 0; iLoop < nmbCurvesInGraph; iLoop++)
     {
-        mSignalHistory[iLoop].clear();
+        mSignalHistory[iLoop].value.clear();
+        mSignalHistory[iLoop].time.clear();
         mHistoryPointStart[iLoop] = 0;
     }
     mTimeHistory.clear();
@@ -93,13 +95,15 @@ void Grapmain::startShowGraph()
     timeAppRuns_ms = 0;
     mThMoving = 0;
     mHistoryTimeStart = 0;
+    timeStartLog = time;
 
     scBar->setHidden(true);
 }
 
-void Grapmain::refreshGraph(int mResolution_ms[], double signal[], double coefficient[], int recStat[], QString signalText[], int source)
+void Grapmain::refreshGraph(QTime currTime, int mResolution_ms[], double signal[], double coefficient[], int recStat[], QString signalText[], int source)
 {
     mSourceEvent = source;
+    qDebug() << "actual:" << currTime.toString() << "  and ms:" << currTime.msec();
 
     if(WasTimeReolutionChanged(mResolution_ms) || WasChangedStateAnySignal(recStat))
     {
@@ -111,13 +115,14 @@ void Grapmain::refreshGraph(int mResolution_ms[], double signal[], double coeffi
 
         qDebug() << "start showing graph";
 
-        startShowGraph();
+        startShowGraph(currTime);
     }
 
     if(mSourceEvent == source && flagSignalRecord[source])
     {
-        mSignalHistory[source].append(signal[source]);
-        mHistoryPointStop[source] = mSignalHistory[source].count();
+        mSignalHistory[source].value.append(signal[source]);
+        mSignalHistory[source].time.append(currTime);
+        mHistoryPointStop[source] = mSignalHistory[source].value.count();
     }
 
     mMaxCoefficient[source] = coefficient[source];
@@ -151,7 +156,7 @@ void Grapmain::paintEvent(QPaintEvent*)
             if(flagSignalRecord[iLoop])
             {
                 //Width higher than range and it´s for first one
-                if((mSignalHistory[iLoop].count() > (int)((double)(usedWidth / constPixels) * dRatio)) && !mFromStaticToDynamic)
+                if((mSignalHistory[iLoop].value.count() > (int)((double)(usedWidth / constPixels) * dRatio)) && !mFromStaticToDynamic)
                 {
                     mFromStaticToDynamic = true;
 
@@ -168,15 +173,15 @@ void Grapmain::paintEvent(QPaintEvent*)
             }
 
             //adjust Y-axis according window height
-            if(mSignalHistory[iLoop].count())
+            if(mSignalHistory[iLoop].value.count())
             {
                 //find max value
                 mHistoryMaxValue[iLoop] = 0.001;
-                for(int kLoop = mHistoryPointStart[iLoop]; kLoop < mSignalHistory[iLoop].count(); kLoop++)
+                for(int kLoop = mHistoryPointStart[iLoop]; kLoop < mSignalHistory[iLoop].value.count(); kLoop++)
                 {
-                    if(mSignalHistory[iLoop].at(kLoop) > mHistoryMaxValue[iLoop])
+                    if(mSignalHistory[iLoop].value.at(kLoop) > mHistoryMaxValue[iLoop])
                     {
-                        mHistoryMaxValue[iLoop] = mSignalHistory[iLoop].at(kLoop);
+                        mHistoryMaxValue[iLoop] = mSignalHistory[iLoop].value.at(kLoop);
                     }
                 }
 
@@ -195,11 +200,11 @@ void Grapmain::paintEvent(QPaintEvent*)
         //draw points
         int drawXvalue;
 
-        for(int jLoop = mHistoryPointStart[iLoop]; jLoop < mSignalHistory[iLoop].count(); jLoop++)
+        for(int jLoop = mHistoryPointStart[iLoop]; jLoop < mSignalHistory[iLoop].value.count(); jLoop++)
         {
             int drawYvalue;
 
-            if(mSignalHistory[iLoop].at(jLoop) < 0)
+            if(mSignalHistory[iLoop].value.at(jLoop) < 0)
             {
                 drawYvalue = -1;
                 painterMain.setBrush(Qt::black);;
@@ -207,7 +212,7 @@ void Grapmain::paintEvent(QPaintEvent*)
             else
             {
                 painterMain.setBrush(colorSignal[iLoop]);;
-                drawYvalue = (int)(mSignalHistory[iLoop].at(jLoop) / mMaxCoefficient[iLoop]);
+                drawYvalue = (int)(mSignalHistory[iLoop].value.at(jLoop) / mMaxCoefficient[iLoop]);
             }
 
             if(constPixels * jLoop)
@@ -231,10 +236,10 @@ void Grapmain::paintEvent(QPaintEvent*)
         }
 
         //Draw y-axes
-        if(mSignalHistory[iLoop].count())
+        if(mSignalHistory[iLoop].value.count())
         {
             int offsetAxis;
-            double resValue = ((double)mSignalHistory[iLoop].last() / mMaxCoefficient[iLoop]);
+            double resValue = ((double)mSignalHistory[iLoop].value.last() / mMaxCoefficient[iLoop]);
 
             if(resValue >= 1)// can not be divided by zero value
             {
@@ -265,7 +270,7 @@ void Grapmain::paintEvent(QPaintEvent*)
 
 
                 double multiplier = (double)(usedHeight) / (resValue);
-                double maxValue = multiplier * (double)mSignalHistory[iLoop].last();
+                double maxValue = multiplier * (double)mSignalHistory[iLoop].value.last();
 
                 for(int kLoop = 1; kLoop < (nmbHorizLines + 1); kLoop++)
                 {
@@ -338,7 +343,7 @@ void Grapmain::paintEvent(QPaintEvent*)
 
         if(((mTimeHistory.at(kLoop) / 1000) / 60) > 60)//time more than a hour
         {
-            startShowGraph();
+            startShowGraph(QTime::currentTime());
         }
 
         int minutes = (mTimeHistory.at(kLoop) / 1000) / 60;

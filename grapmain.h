@@ -7,7 +7,7 @@
 #include <QEvent>
 #include <QString>
 
-
+#include <QTime>
 #include <QScrollArea>
 #include <QScrollBar>
 
@@ -15,13 +15,20 @@ class Grapmain : public QMainWindow
 {
     Q_OBJECT
 public:
+
+    struct struct_history
+    {
+        QList<double> value;
+        QList<QTime> time;
+    };
+
     enum{nmbCurvesInGraph = 4};
     explicit Grapmain(QWidget *parent = 0);
 
     bool WasTimeReolutionChanged(int mInputValue_ms[nmbCurvesInGraph]);
     bool WasChangedStateAnySignal(int stateSignal [nmbCurvesInGraph]);
     int GetMinimalResolution(int activeSource[nmbCurvesInGraph], int *sourceResol);
-    void startShowGraph(void);
+    void startShowGraph(QTime time);
 
 private:
     //common variables
@@ -35,6 +42,8 @@ private:
     const int constRightLimit = 170;
 
     const int constDistanceHorizontalLines_pxs = 50;
+
+    const int constMillisecondsperPixel = 10;
 
     int mMinimalResolution = std::numeric_limits<int>::max();
     int mMinimalResSource = std::numeric_limits<int>::max();
@@ -53,9 +62,12 @@ private:
     int mHistoryTimeStart = 0;
     int mHistoryTimeStop = 0;
 
+    QTime timeStartLog;
+
 
     //variables for separate signal
-    QList<double> mSignalHistory[nmbCurvesInGraph];
+    struct_history mSignalHistory[4];
+
     QString mLegendItems[nmbCurvesInGraph];
     double mMaxCoefficient[nmbCurvesInGraph] = {1, 1, 1, 1};
     int mRefreshTime_ms[nmbCurvesInGraph] = {std::numeric_limits<int>::max(), std::numeric_limits<int>::max(), std::numeric_limits<int>::max(), std::numeric_limits<int>::max()};
@@ -65,13 +77,11 @@ private:
     int mHistoryPointStart[nmbCurvesInGraph] = {0, 0, 0, 0};
     int mHistoryPointStop[nmbCurvesInGraph] = {0, 0, 0, 0};
 
-    double mSignalValue[nmbCurvesInGraph];
-
     int flagSignalRecord[nmbCurvesInGraph] = {0, 0, 0, 0};
 
 
 public slots:
-    void refreshGraph(int mResolution_ms[nmbCurvesInGraph], double signal[nmbCurvesInGraph], double coefficient[nmbCurvesInGraph], int recStat[nmbCurvesInGraph], QString signalText[], int source);
+    void refreshGraph(QTime currTime, int mResolution_ms[nmbCurvesInGraph], double signal[nmbCurvesInGraph], double coefficient[nmbCurvesInGraph], int recStat[nmbCurvesInGraph], QString signalText[], int source);
 
 protected:
     void paintEvent(QPaintEvent*);
