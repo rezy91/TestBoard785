@@ -127,6 +127,7 @@ private:
     COMPLEX_NUMBER_GONIO CalculateReflectionRatio(COMPLEX_NUMBER_GONIO current, COMPLEX_NUMBER_GONIO average);
     void getIndexInQList(int NumberComboBox, int indexInComboBox);
     void recognizeIfDisplayNewData(QStringList *listOfNumbers, int adx);
+    QString myTimeStamp(void);
 
     double coefInput[4];
     int refreshTime[4] = {std::numeric_limits<int>::max(), std::numeric_limits<int>::max(), std::numeric_limits<int>::max(), std::numeric_limits<int>::max()};

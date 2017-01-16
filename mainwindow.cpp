@@ -63,8 +63,6 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
 
     timeCurrent->start();
 
-    qDebug()<< timeCurrent->toString();
-
 
 
     connect(&TmrMstr,&QTimer::timeout,[this](){
@@ -214,6 +212,11 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
         Q_UNUSED(nTransactionID);
         Q_UNUSED(nDeviceID);
 
+
+        //actualize time
+        timeCurrent->elapsed();
+        timeCurrent->start();
+
         ui->statusBar->showMessage("Data received: " + QString(arrData.toHex()));
         AppendText(QString(arrData));
 
@@ -312,13 +315,10 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
 
         if(m_bSaveData)
         {
-            QString saveText = QString("%1:%2:%3,%4").arg(timeCurrent->hour(), 2, 10, QChar('0')).arg(timeCurrent->minute(), 2, 10, QChar('0')).arg(timeCurrent->second(), 2, 10, QChar('0')).arg(timeCurrent->msec(), 3, 10, QChar('0'));
-            m_oFile.write(saveText.toUtf8() + "\t" + arrData + "\r\n");
+            m_oFile.write(myTimeStamp().toUtf8() + "\t" + arrData + "\r\n");
+
             m_oFile.flush();
         }
-
-        timeCurrent->elapsed();
-        timeCurrent->start();
 
     });
 
@@ -508,7 +508,7 @@ void MainWindow::on_sendButton_clicked()
 void MainWindow::AppendText(QString strText)
 {
     //ui->textBrowser->append(QString("%1\t%2").arg(QTime::currentTime().toString()).arg(strText));
-    ui->textBrowser->append(QString("%1:%2:%3,%4\t%5").arg(timeCurrent->hour(), 2, 10, QChar('0')).arg(timeCurrent->minute(), 2, 10, QChar('0')).arg(timeCurrent->second(), 2, 10, QChar('0')).arg(timeCurrent->msec(), 3, 10, QChar('0')).arg(strText));
+    ui->textBrowser->append(myTimeStamp() + "\t" + strText);
 }
 
 void MainWindow::FillCommandTable()
@@ -1172,6 +1172,11 @@ void MainWindow::recognizeIfDisplayNewData(QStringList* listOfNumbers, int adx)
             emit SendUpdateGraph(refreshTime, recvItems, coefInput, recStat, sourceSignText, iLoop);
         }
     }
+}
+
+QString MainWindow::myTimeStamp()
+{
+    return QString("%1:%2:%3,%4").arg(timeCurrent->hour(), 2, 10, QChar('0')).arg(timeCurrent->minute(), 2, 10, QChar('0')).arg(timeCurrent->second(), 2, 10, QChar('0')).arg(timeCurrent->msec(), 3, 10, QChar('0'));
 }
 
 void MainWindow::on_disconnectButton_clicked()

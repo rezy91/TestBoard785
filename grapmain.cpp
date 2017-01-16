@@ -113,7 +113,13 @@ void Grapmain::refreshGraph(int mResolution_ms[], double signal[], double coeffi
 
         startShowGraph();
     }
-    mSignalValue[source] = signal[source];
+
+    if(mSourceEvent == source && flagSignalRecord[source])
+    {
+        mSignalHistory[source].append(signal[source]);
+        mHistoryPointStop[source] = mSignalHistory[source].count();
+    }
+
     mMaxCoefficient[source] = coefficient[source];
     flagSignalRecord[source] = recStat[source];
     mLegendItems[source] = signalText[source];
@@ -142,31 +148,23 @@ void Grapmain::paintEvent(QPaintEvent*)
 
         if(iLoop == mSourceEvent)
         {
-            //actualize buffer of samples
             if(flagSignalRecord[iLoop])
             {
-                if(mSignalHistory[iLoop].count() > (int)((double)(usedWidth / constPixels) * dRatio))
+                //Width higher than range and it´s for first one
+                if((mSignalHistory[iLoop].count() > (int)((double)(usedWidth / constPixels) * dRatio)) && !mFromStaticToDynamic)
                 {
-                    //mSignalHistory[iLoop].removeFirst();
+                    mFromStaticToDynamic = true;
 
-                    if(!mFromStaticToDynamic)
-                    {
-                        mFromStaticToDynamic = true;
-
-                        //scBar->setHidden(false);
-                        scBar->setGeometry(constLeftLimit - 20, currentHeight - 30, usedWidth + 40, 20);
-                        scBar->setMinimum(0);
-                        scBar->setMaximum(usedWidth);
-                    }
+                    //scBar->setHidden(false);
+                    scBar->setGeometry(constLeftLimit - 20, currentHeight - 30, usedWidth + 40, 20);
+                    scBar->setMinimum(0);
+                    scBar->setMaximum(usedWidth);
                 }
 
                 if(mFromStaticToDynamic)
                 {
                     mHistoryPointStart[iLoop]++;
                 }
-
-                mSignalHistory[iLoop].append(mSignalValue[iLoop]);
-                mHistoryPointStop[iLoop] = mSignalHistory[iLoop].count();
             }
 
             //adjust Y-axis according window height
@@ -182,7 +180,7 @@ void Grapmain::paintEvent(QPaintEvent*)
                     }
                 }
 
-                //actualize coefficient
+                //actualize coefficient according max value
                 double actualCoefficient = mHistoryMaxValue[iLoop] / (double)(usedHeight);
                 if(actualCoefficient > mMaxCoefficient[iLoop])
                 {
