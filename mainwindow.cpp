@@ -43,8 +43,8 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
 
 
 
+    connect(this, &MainWindow::SendCoefficientSignals, o_graph, &Grapmain::refreshCoeffSignal);
     connect(this, &MainWindow::SendUpdateGraph, o_graph, &Grapmain::refreshGraph);
-    connect (o_graph, &Grapmain::SendUpdateData, this, &MainWindow::UpdateDoubleSpinBoxX);
 
 
     ui->setupUi(this);
@@ -115,6 +115,8 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
         }
 
         coefInput[0] = nValue;
+
+        emit SendCoefficientSignals(nValue, 0);
     });
 
     connect(ui->doubleSpinBox_2,static_cast<void (QDoubleSpinBox::*)(double)>(&QDoubleSpinBox::valueChanged),[=](double nValue){
@@ -133,6 +135,8 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
         }
 
         coefInput[1] = nValue;
+
+        emit SendCoefficientSignals(nValue, 1);
     });
 
     connect(ui->doubleSpinBox_3,static_cast<void (QDoubleSpinBox::*)(double)>(&QDoubleSpinBox::valueChanged),[=](double nValue){
@@ -151,6 +155,8 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
         }
 
         coefInput[2] = nValue;
+
+        emit SendCoefficientSignals(nValue, 2);
     });
 
     connect(ui->doubleSpinBox_4,static_cast<void (QDoubleSpinBox::*)(double)>(&QDoubleSpinBox::valueChanged),[=](double nValue){
@@ -169,6 +175,8 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
         }
 
         coefInput[3] = nValue;
+
+        emit SendCoefficientSignals(nValue, 3);
     });
 
 
@@ -270,26 +278,6 @@ MainWindow::~MainWindow()
     delete ui;
 }
 
-void MainWindow::UpdateDoubleSpinBoxX(double newValue, int index)
-{
-    if(index == 0)
-    {
-     ui->doubleSpinBox->setValue(newValue);
-    }
-    else if(index == 1)
-    {
-        ui->doubleSpinBox_2->setValue(newValue);
-    }
-    else if(index == 2)
-    {
-        ui->doubleSpinBox_3->setValue(newValue);
-    }
-    else if(index == 3)
-    {
-        ui->doubleSpinBox_4->setValue(newValue);
-    }
-}
-
 void MainWindow::on_sendButton_clicked()
 {
     QModelIndexList oTableSelection = ui->tableWidget->selectionModel()->selectedIndexes();
@@ -330,6 +318,8 @@ void MainWindow::on_sendButton_clicked()
 
                     CurrentTime_ms[row] = 0;
                     timerEnable[row] = true;
+
+                    emit SendCoefficientSignals(coefInput[row], row);
 
                     assemblyMsq[row] = QByteArray::fromHex(strCmd.toStdString().c_str());
                     respExp[row] = true;
@@ -1140,7 +1130,7 @@ void MainWindow::getIndexInQList(int NumberComboBox, int indexInComboBox)
         sourceSignText[NumberComboBox] = "\0";
         sourceSignal[NumberComboBox] = -1;
         recStat[NumberComboBox] = 0;
-        emit SendUpdateGraph(timeCurrent, recvItems[NumberComboBox], coefInput[NumberComboBox], recStat[NumberComboBox], sourceSignText[NumberComboBox], NumberComboBox);
+        emit SendUpdateGraph(timeCurrent, recvItems[NumberComboBox], recStat[NumberComboBox], sourceSignText[NumberComboBox], NumberComboBox);
     }
 }
 
@@ -1151,7 +1141,7 @@ void MainWindow::recognizeIfDisplayNewData(QTime timestamp, QStringList* listOfN
         if((sourceAd[iLoop] == adx) && (sourceSignal[iLoop] >= 0))
         {
             recvItems[iLoop] = listOfNumbers->at(sourceSignal[iLoop]).toDouble();
-            emit SendUpdateGraph(timestamp, recvItems[iLoop], coefInput[iLoop], recStat[iLoop], sourceSignText[iLoop], iLoop);
+            emit SendUpdateGraph(timestamp, recvItems[iLoop], recStat[iLoop], sourceSignText[iLoop], iLoop);
         }
     }
 }

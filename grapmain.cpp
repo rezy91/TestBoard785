@@ -158,6 +158,8 @@ bool Grapmain::WasChangedStateSignal(int source, int stateSignal)
         {
             mSignalHistory[source].value.clear();
             mSignalHistory[source].time.clear();
+            indexToDisplay[source].indexStart = 0;
+            indexToDisplay[source].indexStop = 0;
         }
 
         if(stateSignal == 1)
@@ -206,6 +208,7 @@ void Grapmain::startShowGraph(QTime time)
     timeStartLog = time;
 
     startStopDisplay->setHidden(true);
+    startStopDisplay->setChecked(false);
     scBar->setHidden(true);
 }
 
@@ -261,7 +264,7 @@ void Grapmain::setOptimalResolution()
     }
 }
 
-void Grapmain::refreshGraph(QTime currTime, double ssignal, double coefficient, int recStat, QString signalText, int source)
+void Grapmain::refreshGraph(QTime currTime, double ssignal, int recStat, QString signalText, int source)
 {
     currentHeight = height();
     currentWidth = width();
@@ -271,17 +274,15 @@ void Grapmain::refreshGraph(QTime currTime, double ssignal, double coefficient, 
     usedHeight = nmbHorizLines * constDistanceHorizontalLines_pxs;
 
 
-    mMaxCoefficient[source] = coefficient;
+
+    if(WasChangedStateSignal(source, recStat))
+    {
+        qDebug() << "start showing graph";
+        startShowGraph(currTime);
+    }
 
     if(!startStopDisplay->isChecked())
     {
-        if(WasChangedStateSignal(source, recStat))
-        {
-            qDebug() << "start showing graph";
-            startShowGraph(currTime);
-        }
-
-
         if(flagSignalRecord[source])
         {
             mSignalHistory[source].value.append(ssignal);
@@ -327,6 +328,13 @@ void Grapmain::refreshGraph(QTime currTime, double ssignal, double coefficient, 
     repaint();
 }
 
+void Grapmain::refreshCoeffSignal(double coefficient, int source)
+{
+    mMaxCoefficient[source] = coefficient;
+
+    repaint();
+}
+
 void Grapmain::paintEvent(QPaintEvent*)
 {
     QPainter painterMain(this);
@@ -366,8 +374,6 @@ void Grapmain::paintEvent(QPaintEvent*)
             {
                 mMaxCoefficient[iLoop] = actualCoefficient;
                 //qDebug() << "value with coeff:" << iLoop << " exceed at: " << maxElement << " actual mMaxCoefficient is: " << mMaxCoefficient[iLoop];
-
-                emit SendUpdateData(mMaxCoefficient[iLoop], iLoop);
             }
 
 

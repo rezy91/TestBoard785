@@ -101,13 +101,11 @@ private:
 
 
 public slots:
-    void refreshGraph(QTime currTime, double ssignal, double coefficient, int recStat, QString signalText, int source);
+    void refreshGraph(QTime currTime, double ssignal, int recStat, QString signalText, int source);
+    void refreshCoeffSignal(double coefficient, int source);
 
 protected:
     void paintEvent(QPaintEvent*);
-
-signals:
-    void SendUpdateData(double value, int index);
 
 };
 

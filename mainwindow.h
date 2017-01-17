@@ -72,9 +72,6 @@ public:
     explicit MainWindow(QWidget *parent = 0);
     ~MainWindow();
 
-public slots:
-    void UpdateDoubleSpinBoxX(double newValue, int index);
-
 private slots:
     void on_sendButton_clicked();
     void on_clearButton_clicked();
@@ -150,7 +147,8 @@ private:
 
 signals:
     void SendNewData(int magnitudeA, int phaseA, int magnitude50, int phase50);
-    void SendUpdateGraph(QTime timestamp, double receivedValue, double coefficient, int recordState, QString nameSignals, int src);
+    void SendUpdateGraph(QTime timestamp, double receivedValue, int recordState, QString nameSignals, int src);
+    void SendCoefficientSignals(double coef, int src);
 
     void SendStateButton(bool state);
 
