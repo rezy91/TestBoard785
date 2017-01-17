@@ -33,6 +33,9 @@ Grapmain::Grapmain(QWidget *parent) : QMainWindow(parent)
         {
             qDebug() << "off displaying";
             startStopDisplay->setText(buttonOff);
+
+            scBar->setHidden(false);
+            scBar->setGeometry(constLeftLimit - 20, currentHeight - 30, usedWidth + 40, 20);
         }
         else
         {
@@ -228,12 +231,6 @@ void Grapmain::refreshGraph(QTime currTime, double ssignal, double coefficient, 
             mLegendItems[source] = signalText;
             timeCurrent = currTime;
         }
-        /*
-        if(mFromStaticToDynamic)
-        {
-            scBar->setMaximum(findMaxTime());
-            scBar->setValue(scBar->maximum());
-        }*/
 
         for(int iLoop = 0; iLoop < nmbCurvesInGraph; iLoop++)
         {
@@ -280,9 +277,6 @@ void Grapmain::paintEvent(QPaintEvent*)
         if((QTime(timeStartLog).msecsTo(timeCurrent) > (usedWidth * constMillisecondsperPixel)) && !mFromStaticToDynamic)
         {
             mFromStaticToDynamic = true;
-
-            scBar->setHidden(false);
-            scBar->setGeometry(constLeftLimit - 20, currentHeight - 30, usedWidth + 40, 20);
 
             startStopDisplay->setGeometry(20, currentHeight - 30, 60, 20);
             startStopDisplay->setHidden(false);
@@ -404,17 +398,22 @@ void Grapmain::paintEvent(QPaintEvent*)
         }
     }
 
-    //x-axis
-    painterMain.drawLine(QPoint(constLeftLimit, currentHeight - constBottomLimit), QPoint(currentWidth - 40, currentHeight - constBottomLimit));
-    painterMain.drawLine(QPoint(currentWidth - 10 - 40, currentHeight - constBottomLimit - 10), QPoint(currentWidth - 40, currentHeight - constBottomLimit));
-    painterMain.drawLine(QPoint(currentWidth - 10 - 40, currentHeight - constBottomLimit + 10), QPoint(currentWidth - 40, currentHeight - constBottomLimit));
-    painterMain.drawText(QPoint(currentWidth + 5 - 40, currentHeight - constBottomLimit), "t[ms]");
+    if(flagSignalRecord[0] || flagSignalRecord[1] || flagSignalRecord[2] || flagSignalRecord[3])
+    {
 
-    //y-axis
-    painterMain.drawLine(QPoint(constLeftLimit, currentHeight - constBottomLimit),QPoint(constLeftLimit, constTopLimit - 20));
-    painterMain.drawLine(QPoint(constLeftLimit, constTopLimit - 20),QPoint(constLeftLimit - 10, constTopLimit - 20 + 10));
-    painterMain.drawLine(QPoint(constLeftLimit, constTopLimit - 20),QPoint(constLeftLimit + 10, constTopLimit - 20 + 10));
 
+
+        //x-axis
+        painterMain.drawLine(QPoint(constLeftLimit, currentHeight - constBottomLimit), QPoint(currentWidth - 40, currentHeight - constBottomLimit));
+        painterMain.drawLine(QPoint(currentWidth - 10 - 40, currentHeight - constBottomLimit - 10), QPoint(currentWidth - 40, currentHeight - constBottomLimit));
+        painterMain.drawLine(QPoint(currentWidth - 10 - 40, currentHeight - constBottomLimit + 10), QPoint(currentWidth - 40, currentHeight - constBottomLimit));
+        painterMain.drawText(QPoint(currentWidth + 5 - 40, currentHeight - constBottomLimit), "t[ms]");
+
+        //y-axis
+        painterMain.drawLine(QPoint(constLeftLimit, currentHeight - constBottomLimit),QPoint(constLeftLimit, constTopLimit - 20));
+        painterMain.drawLine(QPoint(constLeftLimit, constTopLimit - 20),QPoint(constLeftLimit - 10, constTopLimit - 20 + 10));
+        painterMain.drawLine(QPoint(constLeftLimit, constTopLimit - 20),QPoint(constLeftLimit + 10, constTopLimit - 20 + 10));
+    }
 
     /*//time axis computing
     if(mMinimalResSource == mSourceEvent)
