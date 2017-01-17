@@ -24,8 +24,8 @@ public:
     };
     struct strRangeToDisplay
     {
-        int indexStart;
-        int indexStop;
+        int indexStart = 0;
+        int indexStop = 0;
     };
 
     enum{nmbCurvesInGraph = 4};
