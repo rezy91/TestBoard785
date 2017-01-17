@@ -11,6 +11,8 @@
 #include <QScrollArea>
 #include <QScrollBar>
 #include <QPushButton>
+#include <QLabel>
+
 
 class Grapmain : public QMainWindow
 {
@@ -39,6 +41,8 @@ public:
     QTime findMinTime(void);
     QTime findMaxTime(void);
 
+    void setOptimalResolution(void);
+
 private:
     //common variables
     const int constPixels = 10;
@@ -52,10 +56,12 @@ private:
 
     const int constDistanceHorizontalLines_pxs = 50;
 
-    const int constMillisecondsperPixel = 10;
-
     const QString buttonOn = "Stop";
     const QString buttonOff = "Start";
+
+
+    int msPerPixelValue = 20;
+    int msPerPixelIncrement = 10;
 
     int timeAppRuns_ms;
     int mThMoving;
@@ -68,6 +74,9 @@ private:
 
     QScrollBar* scBar = new QScrollBar(Qt::Horizontal, this);
     QPushButton* startStopDisplay = new QPushButton(this);
+    QPushButton* changeResolutionUp = new QPushButton(this);
+    QPushButton* changeResolutionDown = new QPushButton(this);
+    QLabel* resolutionValue = new QLabel(this);
 
     QTime timeStartLog;
     QTime timeCurrent;//the newest

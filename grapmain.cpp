@@ -16,6 +16,10 @@ Grapmain::Grapmain(QWidget *parent) : QMainWindow(parent)
     startStopDisplay->setChecked(false);
     startStopDisplay->setText(buttonOn);
 
+    changeResolutionUp->setText("Up");
+    changeResolutionDown->setText("Down");
+    resolutionValue->setText(QString::number(msPerPixelValue));
+
     connect(scBar, &QScrollBar::valueChanged, [this](){
 
         //qDebug() << "value:" << scBar->value();
@@ -31,7 +35,6 @@ Grapmain::Grapmain(QWidget *parent) : QMainWindow(parent)
 
         if(startStopDisplay->isChecked())
         {
-            qDebug() << "off displaying";
             startStopDisplay->setText(buttonOff);
 
             scBar->setHidden(false);
@@ -39,10 +42,48 @@ Grapmain::Grapmain(QWidget *parent) : QMainWindow(parent)
         }
         else
         {
-            qDebug() << "on displaying";
             startStopDisplay->setText(buttonOn);
 
             startShowGraph(QTime::currentTime());
+        }
+
+    });
+
+    connect(changeResolutionUp, &QPushButton::clicked, [this](){
+
+
+        if(QTime(timeStartLog).msecsTo(timeCurrent) > (usedWidth * (msPerPixelValue + msPerPixelIncrement)))
+        {
+            setOptimalResolution();
+
+            msPerPixelValue += msPerPixelIncrement;
+
+            resolutionValue->setText(QString::number(msPerPixelValue));
+
+            if(startStopDisplay->isChecked())
+            {
+                findRangesInLog();
+            }
+        }
+
+    });
+
+    connect(changeResolutionDown, &QPushButton::clicked, [this](){
+
+        setOptimalResolution();
+
+        msPerPixelValue -= msPerPixelIncrement;
+
+        if(msPerPixelValue == 0)
+        {
+            msPerPixelValue += msPerPixelIncrement;
+        }
+
+        resolutionValue->setText(QString::number(msPerPixelValue));
+
+        if(startStopDisplay->isChecked())
+        {
+            findRangesInLog();
         }
 
     });
@@ -71,7 +112,7 @@ void Grapmain::findRangesInLog()
             {
                 int diffTime = QTime(mSignalHistory[iLoop].time.at(jLoop)).msecsTo(mSignalHistory[iLoop].time.at(indexToDisplay[iLoop].indexStop));
 
-                if(diffTime >= usedWidth * constMillisecondsperPixel)
+                if(diffTime >= usedWidth * msPerPixelValue)
                 {
                     break;
                 }
@@ -86,7 +127,7 @@ void Grapmain::findRangesInLog()
             {
                 int diffTime = QTime(mSignalHistory[iLoop].time.at(indexToDisplay[iLoop].indexStart)).msecsTo(mSignalHistory[iLoop].time.at(jLoop));
 
-                if(diffTime >= usedWidth * constMillisecondsperPixel)
+                if(diffTime >= usedWidth * msPerPixelValue)
                 {
                     break;
                 }
@@ -164,6 +205,7 @@ void Grapmain::startShowGraph(QTime time)
     mThMoving = 0;
     timeStartLog = time;
 
+    startStopDisplay->setHidden(true);
     scBar->setHidden(true);
 }
 
@@ -203,6 +245,22 @@ QTime Grapmain::findMaxTime()
     return maxTime;
 }
 
+void Grapmain::setOptimalResolution()
+{
+    if(msPerPixelValue >= 1000)
+    {
+        msPerPixelIncrement = 100;
+    }
+    else if(msPerPixelValue >= 100)
+    {
+        msPerPixelIncrement = 10;
+    }
+    else
+    {
+        msPerPixelIncrement = 1;
+    }
+}
+
 void Grapmain::refreshGraph(QTime currTime, double ssignal, double coefficient, int recStat, QString signalText, int source)
 {
     currentHeight = height();
@@ -212,6 +270,8 @@ void Grapmain::refreshGraph(QTime currTime, double ssignal, double coefficient, 
     nmbHorizLines = (currentHeight - constBottomLimit - constTopLimit) / constDistanceHorizontalLines_pxs;
     usedHeight = nmbHorizLines * constDistanceHorizontalLines_pxs;
 
+
+    mMaxCoefficient[source] = coefficient;
 
     if(!startStopDisplay->isChecked())
     {
@@ -226,7 +286,6 @@ void Grapmain::refreshGraph(QTime currTime, double ssignal, double coefficient, 
         {
             mSignalHistory[source].value.append(ssignal);
             mSignalHistory[source].time.append(currTime);
-            mMaxCoefficient[source] = coefficient;
             flagSignalRecord[source] = recStat;
             mLegendItems[source] = signalText;
             timeCurrent = currTime;
@@ -242,7 +301,7 @@ void Grapmain::refreshGraph(QTime currTime, double ssignal, double coefficient, 
                 {
                     int diffTime = QTime(mSignalHistory[iLoop].time.at(jLoop)).msecsTo(mSignalHistory[iLoop].time.last());
 
-                    if(diffTime >= usedWidth * constMillisecondsperPixel)
+                    if(diffTime >= usedWidth * msPerPixelValue)
                     {
                         break;
                     }
@@ -263,18 +322,23 @@ void Grapmain::refreshGraph(QTime currTime, double ssignal, double coefficient, 
         scBar->setValue(scBar->maximum());
 
 
-        repaint();
     }
+
+    repaint();
 }
 
 void Grapmain::paintEvent(QPaintEvent*)
 {
     QPainter painterMain(this);
 
+    changeResolutionUp->setGeometry(currentWidth - 40, currentHeight - constBottomLimit - 50 - 50, 40, 20);
+    resolutionValue->setGeometry(currentWidth - 40, currentHeight - constBottomLimit - 50 - 25, 40, 20);
+    changeResolutionDown->setGeometry(currentWidth - 40, currentHeight - constBottomLimit - 50, 40, 20);
+
     for(int iLoop = 0; iLoop < nmbCurvesInGraph; iLoop++)
     {
         //Width higher than range and it´s for first one
-        if((QTime(timeStartLog).msecsTo(timeCurrent) > (usedWidth * constMillisecondsperPixel)) && !mFromStaticToDynamic)
+        if((QTime(timeStartLog).msecsTo(timeCurrent) > (usedWidth * msPerPixelValue)) && !mFromStaticToDynamic)
         {
             mFromStaticToDynamic = true;
 
@@ -328,7 +392,7 @@ void Grapmain::paintEvent(QPaintEvent*)
                 if(jLoop)
                 {
                     drawXvalue = QTime(mSignalHistory[iLoop].time.at(indexToDisplay[iLoop].indexStart)).msecsTo(mSignalHistory[iLoop].time.at(jLoop));
-                    drawXvalue /= constMillisecondsperPixel;
+                    drawXvalue /= msPerPixelValue;
                 }
                 else
                 {
