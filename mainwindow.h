@@ -131,7 +131,6 @@ private:
     QString myTimeStamp(QTime time);
 
     double coefInput[4];
-    int refreshTime[4] = {std::numeric_limits<int>::max(), std::numeric_limits<int>::max(), std::numeric_limits<int>::max(), std::numeric_limits<int>::max()};
     double recvItems[4] = {0, 0, 0, 0};
     int recStat[4] = {0, 0, 0, 0};
 
@@ -151,7 +150,7 @@ private:
 
 signals:
     void SendNewData(int magnitudeA, int phaseA, int magnitude50, int phase50);
-    void SendUpdateGraph(QTime timestamp, int refrTime_ms[4], double receivedValue[4], double coefficient[4], int recordState[4], QString nameSignals[4], int src);
+    void SendUpdateGraph(QTime timestamp, double receivedValue, double coefficient, int recordState, QString nameSignals, int src);
 
     void SendStateButton(bool state);
 

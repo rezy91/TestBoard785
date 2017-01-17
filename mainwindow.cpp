@@ -1140,7 +1140,7 @@ void MainWindow::getIndexInQList(int NumberComboBox, int indexInComboBox)
         sourceSignText[NumberComboBox] = "\0";
         sourceSignal[NumberComboBox] = -1;
         recStat[NumberComboBox] = 0;
-        emit SendUpdateGraph(timeCurrent, refreshTime, recvItems, coefInput, recStat, sourceSignText, NumberComboBox);
+        emit SendUpdateGraph(timeCurrent, recvItems[NumberComboBox], coefInput[NumberComboBox], recStat[NumberComboBox], sourceSignText[NumberComboBox], NumberComboBox);
     }
 }
 
@@ -1150,32 +1150,8 @@ void MainWindow::recognizeIfDisplayNewData(QTime timestamp, QStringList* listOfN
     {
         if((sourceAd[iLoop] == adx) && (sourceSignal[iLoop] >= 0))
         {
-            if(adx == 0)
-            {
-                refreshTime[iLoop] = ui->spinBox->value();
-            }
-            else if(adx == 1)
-            {
-                refreshTime[iLoop] = ui->spinBox_2->value();
-            }
-            else if(adx == 2)
-            {
-                refreshTime[iLoop] = ui->spinBox_3->value();
-            }
-            else if(adx == 3)
-            {
-                refreshTime[iLoop] = ui->spinBox_4->value();
-            }
-            else if(adx == 4)
-            {
-                refreshTime[iLoop] = ui->spinBox_5->value();
-            }
-            else if(adx == 5)
-            {
-                refreshTime[iLoop] = ui->spinBox_6->value();
-            }
             recvItems[iLoop] = listOfNumbers->at(sourceSignal[iLoop]).toDouble();
-            emit SendUpdateGraph(timestamp, refreshTime, recvItems, coefInput, recStat, sourceSignText, iLoop);
+            emit SendUpdateGraph(timestamp, recvItems[iLoop], coefInput[iLoop], recStat[iLoop], sourceSignText[iLoop], iLoop);
         }
     }
 }

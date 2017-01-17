@@ -8,53 +8,50 @@
 Grapmain::Grapmain(QWidget *parent) : QMainWindow(parent)
 {
     scBar->setHidden(true);
-}
+    startStopDisplay->setHidden(true);
+    startStopDisplay->setCheckable(true);
+    startStopDisplay->setChecked(false);
+    startStopDisplay->setText(buttonOn);
 
-bool Grapmain::WasTimeReolutionChanged(int mInputValue_ms[])
-{
-    bool retValue = false;
+    connect(scBar, &QScrollBar::valueChanged, [this](){
 
-    for(int iLoop = 0; iLoop < nmbCurvesInGraph; iLoop++)
-    {
-        if(mRefreshTime_ms[iLoop] != mInputValue_ms[iLoop])
+        qDebug() << "value:" << scBar->value();
+
+    });
+
+    connect(startStopDisplay, &QPushButton::toggled, [this](){
+
+        if(startStopDisplay->isChecked())
         {
-            mRefreshTime_ms[iLoop] = mInputValue_ms[iLoop];
-            retValue = true;
+            qDebug() << "on";
+            startStopDisplay->setText(buttonOff);
         }
-    }
+        else
+        {
+            qDebug() << "off";
+            startStopDisplay->setText(buttonOn);
+        }
 
-    return retValue;
+    });
 }
 
-bool Grapmain::WasChangedStateAnySignal(int stateSignal[])
+bool Grapmain::WasChangedStateSignal(int source, int stateSignal)
 {
     bool retValue = false;
 
-    for(int iLoop = 0; iLoop < nmbCurvesInGraph; iLoop++)
+    if(flagSignalRecord[source] != stateSignal)
     {
-        if(flagSignalRecord[iLoop] != stateSignal[iLoop])
+        flagSignalRecord[source] = stateSignal;
+
+        if(stateSignal == 0)
         {
-            flagSignalRecord[iLoop] = stateSignal[iLoop];
+            mSignalHistory[source].value.clear();
+            mSignalHistory[source].time.clear();
+        }
 
-            if(stateSignal[iLoop] == 0)
-            {
-                mSignalHistory[iLoop].value.clear();
-                mSignalHistory[iLoop].time.clear();
-                mHistoryPointStart[iLoop] = 0;
-
-                if(iLoop == mMinimalResSource)
-                {
-                    mMinimalResolution = std::numeric_limits<int>::max();
-
-                    qDebug() << "source with minimal resolution was off";
-                    retValue = true;
-                }
-            }
-
-            if(stateSignal[iLoop] == 1)
-            {
-                retValue = true;
-            }
+        if(stateSignal == 1)
+        {
+            retValue = true;
         }
     }
 
@@ -88,150 +85,155 @@ void Grapmain::startShowGraph(QTime time)
     {
         mSignalHistory[iLoop].value.clear();
         mSignalHistory[iLoop].time.clear();
-        mHistoryPointStart[iLoop] = 0;
     }
     mTimeHistory.clear();
     mFromStaticToDynamic = false;
     timeAppRuns_ms = 0;
     mThMoving = 0;
-    mHistoryTimeStart = 0;
     timeStartLog = time;
 
     scBar->setHidden(true);
 }
-
-void Grapmain::refreshGraph(QTime currTime, int mResolution_ms[], double signal[], double coefficient[], int recStat[], QString signalText[], int source)
+/*
+int Grapmain::findMaxTime()
 {
-    mSourceEvent = source;
-    qDebug() << "actual:" << currTime.toString() << "  and ms:" << currTime.msec();
+}*/
 
-    if(WasTimeReolutionChanged(mResolution_ms) || WasChangedStateAnySignal(recStat))
+void Grapmain::refreshGraph(QTime currTime, double ssignal, double coefficient, int recStat, QString signalText, int source)
+{
+    currentHeight = height();
+    currentWidth = width();
+
+    usedWidth = currentWidth - constLeftLimit - constRightLimit;
+    nmbHorizLines = (currentHeight - constBottomLimit - constTopLimit) / constDistanceHorizontalLines_pxs;
+    usedHeight = nmbHorizLines * constDistanceHorizontalLines_pxs;
+
+
+    if(WasChangedStateSignal(source, recStat))
     {
-        if(GetMinimalResolution(recStat, &mMinimalResSource) != mMinimalResolution)
-        {
-            mMinimalResolution = GetMinimalResolution(recStat, &mMinimalResSource);
-            qDebug() << "new minimal value: " << mMinimalResolution;
-        }
-
         qDebug() << "start showing graph";
-
         startShowGraph(currTime);
     }
 
-    if(mSourceEvent == source && flagSignalRecord[source])
+
+    if(flagSignalRecord[source])
     {
-        mSignalHistory[source].value.append(signal[source]);
+        mSignalHistory[source].value.append(ssignal);
         mSignalHistory[source].time.append(currTime);
-        mHistoryPointStop[source] = mSignalHistory[source].value.count();
+        mMaxCoefficient[source] = coefficient;
+        flagSignalRecord[source] = recStat;
+        mLegendItems[source] = signalText;
+        timeCurrent = currTime;
     }
+/*
+    if(mFromStaticToDynamic)
+    {
+        scBar->setMaximum(findMaxTime());
+        scBar->setValue(scBar->maximum());
+    }*/
 
-    mMaxCoefficient[source] = coefficient[source];
-    flagSignalRecord[source] = recStat[source];
-    mLegendItems[source] = signalText[source];
-
-    repaint();
+    if(!startStopDisplay->isChecked())
+    {
+        repaint();
+    }
 }
 
 void Grapmain::paintEvent(QPaintEvent*)
 {
     QPainter painterMain(this);
-    int maxXValue = 0;
-
-    int widthOneVertLine = constPixels * constSamples;
-    int currentHeight = height();
-    int currentWidth = width();
-    int nmbVerLines = (currentWidth - constLeftLimit - constRightLimit) / widthOneVertLine;
-    int usedWidth = nmbVerLines * widthOneVertLine;
-
-    int nmbHorizLines = (currentHeight - constBottomLimit - constTopLimit) / constDistanceHorizontalLines_pxs;
-    int usedHeight = nmbHorizLines * constDistanceHorizontalLines_pxs;
-
 
     for(int iLoop = 0; iLoop < nmbCurvesInGraph; iLoop++)
     {
-        double dRatio = ((double)mMinimalResolution / (double)mRefreshTime_ms[iLoop]);
+        //find start index
+        int startIndex = 0;
 
-        if(iLoop == mSourceEvent)
+        if(mSignalHistory[iLoop].time.count())
         {
-            if(flagSignalRecord[iLoop])
+            for(int jLoop = (mSignalHistory[iLoop].time.count() - 1); jLoop >= 0; jLoop--)
             {
-                //Width higher than range and it´s for first one
-                if((mSignalHistory[iLoop].value.count() > (int)((double)(usedWidth / constPixels) * dRatio)) && !mFromStaticToDynamic)
-                {
-                    mFromStaticToDynamic = true;
+                int diffTime = QTime(mSignalHistory[iLoop].time.at(jLoop)).msecsTo(mSignalHistory[iLoop].time.last());
 
-                    //scBar->setHidden(false);
-                    scBar->setGeometry(constLeftLimit - 20, currentHeight - 30, usedWidth + 40, 20);
-                    scBar->setMinimum(0);
-                    scBar->setMaximum(usedWidth);
+                if(diffTime >= usedWidth * constMillisecondsperPixel)
+                {
+                    break;
+                }
+                else
+                {
+                    startIndex = jLoop;
                 }
 
-                if(mFromStaticToDynamic)
+            }
+        }
+
+        //Width higher than range and it´s for first one
+        if((QTime(timeStartLog).msecsTo(timeCurrent) > (usedWidth * constMillisecondsperPixel)) && !mFromStaticToDynamic)
+        {
+            mFromStaticToDynamic = true;
+
+            scBar->setHidden(false);
+            scBar->setGeometry(constLeftLimit - 20, currentHeight - 30, usedWidth + 40, 20);
+            scBar->setMinimum(0);
+            scBar->setMaximum(usedWidth);
+            scBar->setValue(scBar->maximum());
+
+            startStopDisplay->setGeometry(20, currentHeight - 30, 60, 20);
+            startStopDisplay->setHidden(false);
+        }
+
+        //adjust Y-axis according window height
+        if(mSignalHistory[iLoop].value.count())
+        {
+            //find max value
+            double mHistoryMaxValue = 0.001;
+            for(int kLoop = startIndex; kLoop < mSignalHistory[iLoop].value.count(); kLoop++)
+            {
+                if(mSignalHistory[iLoop].value.at(kLoop) > mHistoryMaxValue)
                 {
-                    mHistoryPointStart[iLoop]++;
+                    mHistoryMaxValue = mSignalHistory[iLoop].value.at(kLoop);
                 }
             }
 
-            //adjust Y-axis according window height
-            if(mSignalHistory[iLoop].value.count())
+            //actualize coefficient according max value
+            double actualCoefficient = mHistoryMaxValue / (double)(usedHeight);
+            if(actualCoefficient > mMaxCoefficient[iLoop])
             {
-                //find max value
-                mHistoryMaxValue[iLoop] = 0.001;
-                for(int kLoop = mHistoryPointStart[iLoop]; kLoop < mSignalHistory[iLoop].value.count(); kLoop++)
-                {
-                    if(mSignalHistory[iLoop].value.at(kLoop) > mHistoryMaxValue[iLoop])
-                    {
-                        mHistoryMaxValue[iLoop] = mSignalHistory[iLoop].value.at(kLoop);
-                    }
-                }
+                mMaxCoefficient[iLoop] = actualCoefficient;
+                //qDebug() << "value with coeff:" << iLoop << " exceed at: " << maxElement << " actual mMaxCoefficient is: " << mMaxCoefficient[iLoop];
 
-                //actualize coefficient according max value
-                double actualCoefficient = mHistoryMaxValue[iLoop] / (double)(usedHeight);
-                if(actualCoefficient > mMaxCoefficient[iLoop])
-                {
-                    mMaxCoefficient[iLoop] = actualCoefficient;
-                    //qDebug() << "value with coeff:" << iLoop << " exceed at: " << maxElement << " actual mMaxCoefficient is: " << mMaxCoefficient[iLoop];
-
-                    emit SendUpdateData(mMaxCoefficient[iLoop], iLoop);
-                }
+                emit SendUpdateData(mMaxCoefficient[iLoop], iLoop);
             }
         }
 
         //draw points
         int drawXvalue;
 
-        for(int jLoop = mHistoryPointStart[iLoop]; jLoop < mSignalHistory[iLoop].value.count(); jLoop++)
+        for(int jLoop = startIndex; jLoop < mSignalHistory[iLoop].value.count(); jLoop++)
         {
             int drawYvalue;
 
             if(mSignalHistory[iLoop].value.at(jLoop) < 0)
             {
                 drawYvalue = -1;
-                painterMain.setBrush(Qt::black);;
+                painterMain.setBrush(Qt::black);
             }
             else
             {
-                painterMain.setBrush(colorSignal[iLoop]);;
+                painterMain.setBrush(colorSignal[iLoop]);
                 drawYvalue = (int)(mSignalHistory[iLoop].value.at(jLoop) / mMaxCoefficient[iLoop]);
             }
 
-            if(constPixels * jLoop)
+            if(jLoop)
             {
-                drawXvalue = (int)((double)(constPixels * (jLoop - mHistoryPointStart[iLoop])) / dRatio);
-                drawXvalue = (int)(((double)constPixels / dRatio) * (double)(jLoop - mHistoryPointStart[iLoop]));
-                if(drawXvalue > maxXValue)
-                {
-                    maxXValue = drawXvalue;
-                }
+                drawXvalue = QTime(mSignalHistory[iLoop].time.at(startIndex)).msecsTo(mSignalHistory[iLoop].time.at(jLoop));
+                drawXvalue /= constMillisecondsperPixel;
             }
             else
             {
                 drawXvalue = 0;
             }
-            QPoint cnt = QPoint(constLeftLimit + constPixels + drawXvalue, currentHeight - constBottomLimit - drawYvalue);
+            QPoint cnt = QPoint(constLeftLimit + drawXvalue, currentHeight - constBottomLimit - drawYvalue);
 
             painterMain.setPen(QPen(Qt::black));
-
             painterMain.drawEllipse(cnt,constVolumePoint,constVolumePoint);
         }
 
@@ -261,13 +263,11 @@ void Grapmain::paintEvent(QPaintEvent*)
                 }
 
 
-
                 painterMain.setPen(colorSignal[iLoop]);
                 painterMain.drawLine(QPoint(offsetAxis, currentHeight - constBottomLimit),QPoint(offsetAxis, constTopLimit - 20));
                 painterMain.drawLine(QPoint(offsetAxis, constTopLimit - 20),QPoint( - 10 + offsetAxis, constTopLimit - 20 + 10));
                 painterMain.drawLine(QPoint(offsetAxis, constTopLimit - 20),QPoint(10 + offsetAxis, constTopLimit - 20 + 10));
                 painterMain.drawText(QPoint( - 5 + offsetAxis, constBottomLimit - 20 - 5), mLegendItems[iLoop]);
-
 
                 double multiplier = (double)(usedHeight) / (resValue);
                 double maxValue = multiplier * (double)mSignalHistory[iLoop].value.last();
@@ -284,7 +284,7 @@ void Grapmain::paintEvent(QPaintEvent*)
                         painterMain.drawText(QPoint(offsetAxis + 5, currentHeight - constBottomLimit - constDistanceHorizontalLines_pxs * kLoop), QString("%1").arg((maxValue /  nmbHorizLines) * kLoop));
                     }
                     painterMain.setPen(QPen(Qt::lightGray));
-                    painterMain.drawLine(QPoint(constLeftLimit, currentHeight - constBottomLimit - constDistanceHorizontalLines_pxs * kLoop), QPoint(constLeftLimit + constPixels + drawXvalue, currentHeight - constBottomLimit - constDistanceHorizontalLines_pxs * kLoop));
+                    painterMain.drawLine(QPoint(constLeftLimit, currentHeight - constBottomLimit - constDistanceHorizontalLines_pxs * kLoop), QPoint(constLeftLimit + drawXvalue, currentHeight - constBottomLimit - constDistanceHorizontalLines_pxs * kLoop));
                 }
             }
 
@@ -308,7 +308,7 @@ void Grapmain::paintEvent(QPaintEvent*)
     painterMain.drawLine(QPoint(constLeftLimit, constTopLimit - 20),QPoint(constLeftLimit + 10, constTopLimit - 20 + 10));
 
 
-    //time axis computing
+    /*//time axis computing
     if(mMinimalResSource == mSourceEvent)
     {
         timeAppRuns_ms += mMinimalResolution;
@@ -333,9 +333,9 @@ void Grapmain::paintEvent(QPaintEvent*)
                 scBar->setValue(scBar->maximum());
             }
         }
-    }
+    }*/
 
-
+/*
     //draw hozironzal lines & x(time) axis
     for(int kLoop = mHistoryTimeStart; kLoop < mTimeHistory.count(); kLoop++)
     {
@@ -354,5 +354,5 @@ void Grapmain::paintEvent(QPaintEvent*)
 
         painterMain.setPen(QPen(Qt::lightGray));
         painterMain.drawLine(QPoint(constLeftLimit + widthOneVertLine - mThMoving * constSamples + widthOneVertLine * (kLoop - mHistoryTimeStart), currentHeight - constBottomLimit),QPoint(constLeftLimit + widthOneVertLine - mThMoving * constSamples + widthOneVertLine * (kLoop - mHistoryTimeStart), constTopLimit));
-    }
+    }*/
 }
