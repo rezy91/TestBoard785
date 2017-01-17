@@ -18,12 +18,11 @@ Grapmain::Grapmain(QWidget *parent) : QMainWindow(parent)
 
     connect(scBar, &QScrollBar::valueChanged, [this](){
 
-        qDebug() << "value:" << scBar->value();
+        //qDebug() << "value:" << scBar->value();
 
         if(startStopDisplay->isChecked())
         {
-           qDebug() << "rotate...";
-
+            findRangesInLog();
         }
 
     });
@@ -39,9 +38,68 @@ Grapmain::Grapmain(QWidget *parent) : QMainWindow(parent)
         {
             qDebug() << "on displaying";
             startStopDisplay->setText(buttonOn);
+
+            startShowGraph(QTime::currentTime());
         }
 
     });
+}
+
+void Grapmain::findRangesInLog()
+{
+    for(int iLoop = 0; iLoop < nmbCurvesInGraph; iLoop++)
+    {
+        if(flagSignalRecord[iLoop])
+        {
+            double ratioLast = float(scBar->value()) / float(scBar->maximum());
+            int indexLast = mSignalHistory[iLoop].time.count() * ratioLast;
+
+            if(indexLast < 1)
+            {
+                indexLast = 1;
+            }
+
+            indexToDisplay[iLoop].indexStop = indexLast - 1;
+            indexToDisplay[iLoop].indexStart = 0;
+
+
+            //find first index
+            for(int jLoop = indexToDisplay[iLoop].indexStop; jLoop >= 0; jLoop--)
+            {
+                int diffTime = QTime(mSignalHistory[iLoop].time.at(jLoop)).msecsTo(mSignalHistory[iLoop].time.at(indexToDisplay[iLoop].indexStop));
+
+                if(diffTime >= usedWidth * constMillisecondsperPixel)
+                {
+                    break;
+                }
+                else
+                {
+                    indexToDisplay[iLoop].indexStart = jLoop;
+                }
+            }
+
+            //find last index
+            for(int jLoop = indexToDisplay[iLoop].indexStart; jLoop < (mSignalHistory[iLoop].time.count() - 1); jLoop++)
+            {
+                int diffTime = QTime(mSignalHistory[iLoop].time.at(indexToDisplay[iLoop].indexStart)).msecsTo(mSignalHistory[iLoop].time.at(jLoop));
+
+                if(diffTime >= usedWidth * constMillisecondsperPixel)
+                {
+                    break;
+                }
+                else
+                {
+                    indexToDisplay[iLoop].indexStop = jLoop;
+                }
+            }
+
+            //qDebug("signal: %d, ratio: %f, count: %d, indexFirst: %d, indexLast: %d", iLoop, ratioLast, mSignalHistory[iLoop].time.count(), indexToDisplay[iLoop].indexStart, indexToDisplay[iLoop].indexStop);
+        }
+    }
+
+
+    repaint();
+
 }
 
 bool Grapmain::WasChangedStateSignal(int source, int stateSignal)
@@ -94,6 +152,8 @@ void Grapmain::startShowGraph(QTime time)
     {
         mSignalHistory[iLoop].value.clear();
         mSignalHistory[iLoop].time.clear();
+        indexToDisplay[iLoop].indexStart = 0;
+        indexToDisplay[iLoop].indexStop = 0;
     }
     mTimeHistory.clear();
     mFromStaticToDynamic = false;
@@ -201,10 +261,6 @@ void Grapmain::refreshGraph(QTime currTime, double ssignal, double coefficient, 
         QTime maxTimestamp = findMaxTime();
 
         int diffTimeInMsec = QTime(minTimestamp).msecsTo(maxTimestamp);
-        /*QTime diffTimestamp(0,0,0,0);
-        QTime baseTimestamp;
-        baseTimestamp = diffTimestamp.addMSecs(diffTimeInMsec);
-        qDebug() << "diff time:" << baseTimestamp;*/
 
         scBar->setMaximum(diffTimeInMsec);
         scBar->setValue(scBar->maximum());

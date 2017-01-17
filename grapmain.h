@@ -24,8 +24,8 @@ public:
     };
     struct strRangeToDisplay
     {
-        int indexStart = 0;
-        int indexStop = 0;
+        int indexStart;
+        int indexStop;
     };
 
     enum{nmbCurvesInGraph = 4};
@@ -34,6 +34,7 @@ public:
     bool WasChangedStateSignal(int source, int stateSignal);
     int GetMinimalResolution(int activeSource[nmbCurvesInGraph], int *sourceResol);
     void startShowGraph(QTime time);
+    void findRangesInLog(void);
 
     QTime findMinTime(void);
     QTime findMaxTime(void);
