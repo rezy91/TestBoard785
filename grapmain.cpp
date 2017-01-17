@@ -7,7 +7,10 @@
 
 Grapmain::Grapmain(QWidget *parent) : QMainWindow(parent)
 {
+
+    scBar->setMinimum(0);
     scBar->setHidden(true);
+
     startStopDisplay->setHidden(true);
     startStopDisplay->setCheckable(true);
     startStopDisplay->setChecked(false);
@@ -17,18 +20,24 @@ Grapmain::Grapmain(QWidget *parent) : QMainWindow(parent)
 
         qDebug() << "value:" << scBar->value();
 
+        if(startStopDisplay->isChecked())
+        {
+           qDebug() << "rotate...";
+
+        }
+
     });
 
     connect(startStopDisplay, &QPushButton::toggled, [this](){
 
         if(startStopDisplay->isChecked())
         {
-            qDebug() << "on";
+            qDebug() << "off displaying";
             startStopDisplay->setText(buttonOff);
         }
         else
         {
-            qDebug() << "off";
+            qDebug() << "on displaying";
             startStopDisplay->setText(buttonOn);
         }
 
@@ -94,10 +103,42 @@ void Grapmain::startShowGraph(QTime time)
 
     scBar->setHidden(true);
 }
-/*
-int Grapmain::findMaxTime()
+
+QTime Grapmain::findMinTime()
 {
-}*/
+    QList<QTime> firstTimestamp;
+
+    for(int iLoop = 0; iLoop < nmbCurvesInGraph; iLoop++)
+    {
+        if(flagSignalRecord[iLoop])
+        {
+            firstTimestamp.append(*std::min_element(mSignalHistory[iLoop].time.begin(), mSignalHistory[iLoop].time.end()));
+        }
+    }
+
+    QTime minTime = *std::min_element(firstTimestamp.begin(), firstTimestamp.end());
+    //qDebug() << "minimal time:" << minTime;
+
+    return minTime;
+}
+
+QTime Grapmain::findMaxTime()
+{
+    QList<QTime> lastTimestamp;
+
+    for(int iLoop = 0; iLoop < nmbCurvesInGraph; iLoop++)
+    {
+        if(flagSignalRecord[iLoop])
+        {
+            lastTimestamp.append(*std::max_element(mSignalHistory[iLoop].time.begin(), mSignalHistory[iLoop].time.end()));
+        }
+    }
+
+    QTime maxTime = *std::max_element(lastTimestamp.begin(), lastTimestamp.end());
+    //qDebug() << "maximal time:" << maxTime;
+
+    return maxTime;
+}
 
 void Grapmain::refreshGraph(QTime currTime, double ssignal, double coefficient, int recStat, QString signalText, int source)
 {
@@ -109,31 +150,66 @@ void Grapmain::refreshGraph(QTime currTime, double ssignal, double coefficient, 
     usedHeight = nmbHorizLines * constDistanceHorizontalLines_pxs;
 
 
-    if(WasChangedStateSignal(source, recStat))
-    {
-        qDebug() << "start showing graph";
-        startShowGraph(currTime);
-    }
-
-
-    if(flagSignalRecord[source])
-    {
-        mSignalHistory[source].value.append(ssignal);
-        mSignalHistory[source].time.append(currTime);
-        mMaxCoefficient[source] = coefficient;
-        flagSignalRecord[source] = recStat;
-        mLegendItems[source] = signalText;
-        timeCurrent = currTime;
-    }
-/*
-    if(mFromStaticToDynamic)
-    {
-        scBar->setMaximum(findMaxTime());
-        scBar->setValue(scBar->maximum());
-    }*/
-
     if(!startStopDisplay->isChecked())
     {
+        if(WasChangedStateSignal(source, recStat))
+        {
+            qDebug() << "start showing graph";
+            startShowGraph(currTime);
+        }
+
+
+        if(flagSignalRecord[source])
+        {
+            mSignalHistory[source].value.append(ssignal);
+            mSignalHistory[source].time.append(currTime);
+            mMaxCoefficient[source] = coefficient;
+            flagSignalRecord[source] = recStat;
+            mLegendItems[source] = signalText;
+            timeCurrent = currTime;
+        }
+        /*
+        if(mFromStaticToDynamic)
+        {
+            scBar->setMaximum(findMaxTime());
+            scBar->setValue(scBar->maximum());
+        }*/
+
+        for(int iLoop = 0; iLoop < nmbCurvesInGraph; iLoop++)
+        {
+            indexToDisplay[iLoop].indexStop = mSignalHistory[iLoop].time.count();
+
+            if(indexToDisplay[iLoop].indexStop)
+            {
+                for(int jLoop = (indexToDisplay[iLoop].indexStop - 1); jLoop >= 0; jLoop--)
+                {
+                    int diffTime = QTime(mSignalHistory[iLoop].time.at(jLoop)).msecsTo(mSignalHistory[iLoop].time.last());
+
+                    if(diffTime >= usedWidth * constMillisecondsperPixel)
+                    {
+                        break;
+                    }
+                    else
+                    {
+                        indexToDisplay[iLoop].indexStart = jLoop;
+                    }
+                }
+            }
+        }
+
+        QTime minTimestamp = findMinTime();
+        QTime maxTimestamp = findMaxTime();
+
+        int diffTimeInMsec = QTime(minTimestamp).msecsTo(maxTimestamp);
+        /*QTime diffTimestamp(0,0,0,0);
+        QTime baseTimestamp;
+        baseTimestamp = diffTimestamp.addMSecs(diffTimeInMsec);
+        qDebug() << "diff time:" << baseTimestamp;*/
+
+        scBar->setMaximum(diffTimeInMsec);
+        scBar->setValue(scBar->maximum());
+
+
         repaint();
     }
 }
@@ -144,27 +220,6 @@ void Grapmain::paintEvent(QPaintEvent*)
 
     for(int iLoop = 0; iLoop < nmbCurvesInGraph; iLoop++)
     {
-        //find start index
-        int startIndex = 0;
-
-        if(mSignalHistory[iLoop].time.count())
-        {
-            for(int jLoop = (mSignalHistory[iLoop].time.count() - 1); jLoop >= 0; jLoop--)
-            {
-                int diffTime = QTime(mSignalHistory[iLoop].time.at(jLoop)).msecsTo(mSignalHistory[iLoop].time.last());
-
-                if(diffTime >= usedWidth * constMillisecondsperPixel)
-                {
-                    break;
-                }
-                else
-                {
-                    startIndex = jLoop;
-                }
-
-            }
-        }
-
         //Width higher than range and it´s for first one
         if((QTime(timeStartLog).msecsTo(timeCurrent) > (usedWidth * constMillisecondsperPixel)) && !mFromStaticToDynamic)
         {
@@ -172,20 +227,18 @@ void Grapmain::paintEvent(QPaintEvent*)
 
             scBar->setHidden(false);
             scBar->setGeometry(constLeftLimit - 20, currentHeight - 30, usedWidth + 40, 20);
-            scBar->setMinimum(0);
-            scBar->setMaximum(usedWidth);
-            scBar->setValue(scBar->maximum());
 
             startStopDisplay->setGeometry(20, currentHeight - 30, 60, 20);
             startStopDisplay->setHidden(false);
         }
 
-        //adjust Y-axis according window height
-        if(mSignalHistory[iLoop].value.count())
+        //if there is something to dipslay
+        if(indexToDisplay[iLoop].indexStop)
         {
+            //adjust Y-axis according window height
             //find max value
             double mHistoryMaxValue = 0.001;
-            for(int kLoop = startIndex; kLoop < mSignalHistory[iLoop].value.count(); kLoop++)
+            for(int kLoop = indexToDisplay[iLoop].indexStart; kLoop < indexToDisplay[iLoop].indexStop; kLoop++)
             {
                 if(mSignalHistory[iLoop].value.at(kLoop) > mHistoryMaxValue)
                 {
@@ -202,44 +255,43 @@ void Grapmain::paintEvent(QPaintEvent*)
 
                 emit SendUpdateData(mMaxCoefficient[iLoop], iLoop);
             }
-        }
 
-        //draw points
-        int drawXvalue;
 
-        for(int jLoop = startIndex; jLoop < mSignalHistory[iLoop].value.count(); jLoop++)
-        {
-            int drawYvalue;
+            //draw points
+            int drawXvalue;
 
-            if(mSignalHistory[iLoop].value.at(jLoop) < 0)
+            for(int jLoop = indexToDisplay[iLoop].indexStart; jLoop < indexToDisplay[iLoop].indexStop; jLoop++)
             {
-                drawYvalue = -1;
-                painterMain.setBrush(Qt::black);
-            }
-            else
-            {
-                painterMain.setBrush(colorSignal[iLoop]);
-                drawYvalue = (int)(mSignalHistory[iLoop].value.at(jLoop) / mMaxCoefficient[iLoop]);
+                int drawYvalue;
+
+                if(mSignalHistory[iLoop].value.at(jLoop) < 0)
+                {
+                    drawYvalue = -1;
+                    painterMain.setBrush(Qt::black);
+                }
+                else
+                {
+                    painterMain.setBrush(colorSignal[iLoop]);
+                    drawYvalue = (int)(mSignalHistory[iLoop].value.at(jLoop) / mMaxCoefficient[iLoop]);
+                }
+
+                if(jLoop)
+                {
+                    drawXvalue = QTime(mSignalHistory[iLoop].time.at(indexToDisplay[iLoop].indexStart)).msecsTo(mSignalHistory[iLoop].time.at(jLoop));
+                    drawXvalue /= constMillisecondsperPixel;
+                }
+                else
+                {
+                    drawXvalue = 0;
+                }
+                QPoint cnt = QPoint(constLeftLimit + drawXvalue, currentHeight - constBottomLimit - drawYvalue);
+
+                painterMain.setPen(QPen(Qt::black));
+                painterMain.drawEllipse(cnt,constVolumePoint,constVolumePoint);
             }
 
-            if(jLoop)
-            {
-                drawXvalue = QTime(mSignalHistory[iLoop].time.at(startIndex)).msecsTo(mSignalHistory[iLoop].time.at(jLoop));
-                drawXvalue /= constMillisecondsperPixel;
-            }
-            else
-            {
-                drawXvalue = 0;
-            }
-            QPoint cnt = QPoint(constLeftLimit + drawXvalue, currentHeight - constBottomLimit - drawYvalue);
 
-            painterMain.setPen(QPen(Qt::black));
-            painterMain.drawEllipse(cnt,constVolumePoint,constVolumePoint);
-        }
-
-        //Draw y-axes
-        if(mSignalHistory[iLoop].value.count())
-        {
+            //Draw y-axes
             int offsetAxis;
             double resValue = ((double)mSignalHistory[iLoop].value.last() / mMaxCoefficient[iLoop]);
 

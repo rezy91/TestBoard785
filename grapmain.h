@@ -17,10 +17,15 @@ class Grapmain : public QMainWindow
     Q_OBJECT
 public:
 
-    struct struct_history
+    struct strHistory
     {
         QList<double> value;
         QList<QTime> time;
+    };
+    struct strRangeToDisplay
+    {
+        int indexStart = 0;
+        int indexStop = 0;
     };
 
     enum{nmbCurvesInGraph = 4};
@@ -30,7 +35,8 @@ public:
     int GetMinimalResolution(int activeSource[nmbCurvesInGraph], int *sourceResol);
     void startShowGraph(QTime time);
 
-    int findMaxTime(void);
+    QTime findMinTime(void);
+    QTime findMaxTime(void);
 
 private:
     //common variables
@@ -74,7 +80,8 @@ private:
 
 
     //variables for separate signal
-    struct_history mSignalHistory[nmbCurvesInGraph];
+    strHistory mSignalHistory[nmbCurvesInGraph];
+    strRangeToDisplay indexToDisplay[nmbCurvesInGraph];
 
     QString mLegendItems[nmbCurvesInGraph];
     double mMaxCoefficient[nmbCurvesInGraph] = {1, 1, 1, 1};
