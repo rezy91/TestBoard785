@@ -24,7 +24,14 @@ Grapmain::Grapmain(QWidget *parent) : QMainWindow(parent)
 
         //qDebug() << "value:" << scBar->value();
 
-        if(startStopDisplay->isChecked())
+        if(srcDataStream == RECEIVE_STREAM)
+        {
+            if(startStopDisplay->isChecked())
+            {
+                findRangesInLog();
+            }
+        }
+        else if(srcDataStream == LOG_STREAM)
         {
             findRangesInLog();
         }
@@ -51,16 +58,20 @@ Grapmain::Grapmain(QWidget *parent) : QMainWindow(parent)
 
     connect(changeResolutionUp, &QPushButton::clicked, [this](){
 
-
-        if(QTime(timeStartLog).msecsTo(timeCurrent) > (usedWidth * (msPerPixelValue + msPerPixelIncrement)))
+        if(QTime(timeStartLog).msecsTo(timeCurrent) > (usedWidth * msPerPixelValue))
         {
-            setOptimalResolution();
-
-            msPerPixelValue += msPerPixelIncrement;
+            msPerPixelValue *= 1.5;
 
             resolutionValue->setText(QString::number(msPerPixelValue));
 
-            if(startStopDisplay->isChecked())
+            if(srcDataStream == RECEIVE_STREAM)
+            {
+                if(startStopDisplay->isChecked())
+                {
+                    findRangesInLog();
+                }
+            }
+            else if(srcDataStream == LOG_STREAM)
             {
                 findRangesInLog();
             }
@@ -70,20 +81,25 @@ Grapmain::Grapmain(QWidget *parent) : QMainWindow(parent)
 
     connect(changeResolutionDown, &QPushButton::clicked, [this](){
 
-        setOptimalResolution();
-
-        msPerPixelValue -= msPerPixelIncrement;
-
-        if(msPerPixelValue == 0)
+        if(msPerPixelValue > 2)
         {
-            msPerPixelValue += msPerPixelIncrement;
+            msPerPixelValue /= 1.5;
         }
 
         resolutionValue->setText(QString::number(msPerPixelValue));
 
-        if(startStopDisplay->isChecked())
+
+
+        if(srcDataStream == RECEIVE_STREAM)
         {
-            findRangesInLog();
+            if(startStopDisplay->isChecked())
+            {
+                findRangesInLog();
+            }
+        }
+        else if(srcDataStream == LOG_STREAM)
+        {
+           findRangesInLog();
         }
 
     });
@@ -248,88 +264,131 @@ QTime Grapmain::findMaxTime()
     return maxTime;
 }
 
-void Grapmain::setOptimalResolution()
-{
-    if(msPerPixelValue > 1000)
-    {
-        msPerPixelIncrement = 1000;
-    }
-    else if(msPerPixelValue > 100)
-    {
-        msPerPixelIncrement = 100;
-    }
-    else if(msPerPixelValue > 10)
-    {
-        msPerPixelIncrement = 10;
-    }
-    else
-    {
-        msPerPixelIncrement = 1;
-    }
-}
-
-void Grapmain::refreshGraph(QTime currTime, double ssignal, int recStat, QString signalText, int source)
+void Grapmain::refreshGraph(QTime currTime, double ssignal, int recStat, QString signalText, int sourceSig, int sourceStream, int flags)
 {
     currentHeight = height();
     currentWidth = width();
+
 
     usedWidth = currentWidth - constLeftLimit - constRightLimit;
     nmbHorizLines = (currentHeight - constBottomLimit - constTopLimit) / constDistanceHorizontalLines_pxs;
     usedHeight = nmbHorizLines * constDistanceHorizontalLines_pxs;
 
+    srcDataStream = sourceStream;
 
-
-    if(WasChangedStateSignal(source, recStat))
+    if(srcDataStream == RECEIVE_STREAM)
     {
-        qDebug() << "start showing graph";
-        startShowGraph(currTime);
-    }
-
-    if(!startStopDisplay->isChecked())
-    {
-        if(flagSignalRecord[source])
+        if(WasChangedStateSignal(sourceSig, recStat))
         {
-            mSignalHistory[source].value.append(ssignal);
-            mSignalHistory[source].time.append(currTime);
-            flagSignalRecord[source] = recStat;
-            mLegendItems[source] = signalText;
-            timeCurrent = currTime;
+            qDebug() << "start showing graph";
+            startShowGraph(currTime);
         }
 
-        for(int iLoop = 0; iLoop < nmbCurvesInGraph; iLoop++)
+        if(!startStopDisplay->isChecked())
         {
-            indexToDisplay[iLoop].indexStop = mSignalHistory[iLoop].time.count();
-
-            if(indexToDisplay[iLoop].indexStop)
+            if(flagSignalRecord[sourceSig])
             {
-                for(int jLoop = (indexToDisplay[iLoop].indexStop - 1); jLoop >= 0; jLoop--)
-                {
-                    int diffTime = QTime(mSignalHistory[iLoop].time.at(jLoop)).msecsTo(mSignalHistory[iLoop].time.last());
+                mSignalHistory[sourceSig].value.append(ssignal);
+                mSignalHistory[sourceSig].time.append(currTime);
+                flagSignalRecord[sourceSig] = recStat;
+                mLegendItems[sourceSig] = signalText;
+                timeCurrent = currTime;
+            }
 
-                    if(diffTime >= usedWidth * msPerPixelValue)
+            for(int iLoop = 0; iLoop < nmbCurvesInGraph; iLoop++)
+            {
+                indexToDisplay[iLoop].indexStop = mSignalHistory[iLoop].time.count();
+
+                if(indexToDisplay[iLoop].indexStop)
+                {
+                    for(int jLoop = (indexToDisplay[iLoop].indexStop - 1); jLoop >= 0; jLoop--)
                     {
-                        break;
+                        int diffTime = QTime(mSignalHistory[iLoop].time.at(jLoop)).msecsTo(mSignalHistory[iLoop].time.last());
+
+                        if(diffTime >= usedWidth * msPerPixelValue)
+                        {
+                            break;
+                        }
+                        else
+                        {
+                            indexToDisplay[iLoop].indexStart = jLoop;
+                        }
                     }
-                    else
+                }
+            }
+
+            QTime minTimestamp = findMinTime();
+            QTime maxTimestamp = findMaxTime();
+
+            int diffTimeInMsec = QTime(minTimestamp).msecsTo(maxTimestamp);
+
+            scBar->setMaximum(diffTimeInMsec);
+            scBar->setValue(scBar->maximum());
+
+
+        }
+
+        repaint();
+    }
+    else if(srcDataStream == LOG_STREAM)
+    {
+        if(flags == 2)
+        {
+            scBar->setHidden(false);
+            scBar->setGeometry(constLeftLimit - 20, currentHeight - 30, usedWidth + 40, 20);
+
+
+
+            QTime minTimestamp = findMinTime();
+            QTime maxTimestamp = findMaxTime();
+
+
+            int diffTimeInMsec = QTime(minTimestamp).msecsTo(maxTimestamp);
+
+            scBar->setMaximum(diffTimeInMsec);
+            scBar->setValue(scBar->maximum());
+
+            repaint();
+        }
+        else if(flags == 1)
+        {
+            timeStartLog = currTime;
+        }
+        else
+        {
+            if(recStat)
+            {
+                mSignalHistory[sourceSig].value.append(ssignal);
+                mSignalHistory[sourceSig].time.append(currTime);
+                flagSignalRecord[sourceSig] = recStat;
+                mLegendItems[sourceSig] = signalText;
+                timeCurrent = currTime;
+
+
+                for(int iLoop = 0; iLoop < nmbCurvesInGraph; iLoop++)
+                {
+                    indexToDisplay[iLoop].indexStop = mSignalHistory[iLoop].time.count();
+
+                    if(indexToDisplay[iLoop].indexStop)
                     {
-                        indexToDisplay[iLoop].indexStart = jLoop;
+                        for(int jLoop = (indexToDisplay[iLoop].indexStop - 1); jLoop >= 0; jLoop--)
+                        {
+                            int diffTime = QTime(mSignalHistory[iLoop].time.at(jLoop)).msecsTo(mSignalHistory[iLoop].time.last());
+
+                            if(diffTime >= usedWidth * msPerPixelValue)
+                            {
+                                break;
+                            }
+                            else
+                            {
+                                indexToDisplay[iLoop].indexStart = jLoop;
+                            }
+                        }
                     }
                 }
             }
         }
-
-        QTime minTimestamp = findMinTime();
-        QTime maxTimestamp = findMaxTime();
-
-        int diffTimeInMsec = QTime(minTimestamp).msecsTo(maxTimestamp);
-
-        scBar->setMaximum(diffTimeInMsec);
-        scBar->setValue(scBar->maximum());
-
-
     }
-
-    repaint();
 }
 
 void Grapmain::refreshCoeffSignal(double coefficient, int source)
@@ -474,9 +533,6 @@ void Grapmain::paintEvent(QPaintEvent*)
 
     if(flagSignalRecord[0] || flagSignalRecord[1] || flagSignalRecord[2] || flagSignalRecord[3])
     {
-
-
-
         //x-axis
         painterMain.drawLine(QPoint(constLeftLimit, currentHeight - constBottomLimit), QPoint(currentWidth - 40, currentHeight - constBottomLimit));
         painterMain.drawLine(QPoint(currentWidth - 10 - 40, currentHeight - constBottomLimit - 10), QPoint(currentWidth - 40, currentHeight - constBottomLimit));

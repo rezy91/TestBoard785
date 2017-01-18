@@ -32,6 +32,7 @@
 #include <qspinbox.h>
 #include "settings.h"
 
+#include "common.h"
 #include "smithmain.h"
 #include "grapmain.h"
 
@@ -69,12 +70,6 @@ public:
         float phase_rad;
     } COMPLEX_NUMBER_GONIO;
 
-    typedef enum
-    {
-      NO_STREAM,
-      RECEIVE_STREAM,
-      LOG_STREAM
-    } SOURCE_STREAM;
 
     explicit MainWindow(QWidget *parent = 0);
     ~MainWindow();
@@ -134,15 +129,15 @@ private:
     void newDataV200(QByteArray aData);
     COMPLEX_NUMBER_GONIO CalculateReflectionRatio(COMPLEX_NUMBER_GONIO current, COMPLEX_NUMBER_GONIO average);
     void getIndexInQList(int NumberComboBox, int indexInComboBox);
-    void recognizeIfDisplayNewData(QTime timestamp, QStringList *listOfNumbers, int adx);
+    void recognizeIfDisplayNewData(QTime timestamp, QStringList *listOfNumbers, int adx, int flg);
     QString myTimeStamp(QTime time);
 
     QStringList adjustRowDataIntoOnlyNumber(QString rowData);
     void fillComboBoxesWithSignals(bool* flags);
 
-    double coefInput[4];
-    double recvItems[4] = {0, 0, 0, 0};
-    int recStat[4] = {0, 0, 0, 0};
+    double coefInput[nmbCurvesInGraph];
+    double recvItems[nmbCurvesInGraph] = {0, 0, 0, 0};
+    int recStat[nmbCurvesInGraph] = {0, 0, 0, 0};
 
     QString allSignalsBaseOnly[6] = {"ad3c", "ad3s", "ad2c", "ad2s", "ad1c", "ad1s"};
     QStringList allAdxSignals[6] = {{"ad3c_1", "ad3c_2", "ad3c_3"}, \
@@ -153,16 +148,16 @@ private:
                                     {"ad1s_1", "ad1s_2", "ad1s_3", "ad1s_4", "ad1s_5", "ad1s_6", "ad1s_7", "ad1s_8", "ad1s_9", "ad1s_10"}};
     bool flagIfSourceIsLogged[6];
 
-    int sourceSignal[4] = {0, 0, 0, 0};
-    int sourceAd[4] = {0, 0, 0, 0};
-    QString sourceSignText[4] = {"\0", "\0", "\0", "\0"};
+    int sourceSignal[nmbCurvesInGraph] = {0, 0, 0, 0};
+    int sourceAd[nmbCurvesInGraph] = {0, 0, 0, 0};
+    QString sourceSignText[nmbCurvesInGraph] = {"\0", "\0", "\0", "\0"};
 
 
     QTime timeCurrent;
 
 signals:
     void SendNewData(int magnitudeA, int phaseA, int magnitude50, int phase50);
-    void SendUpdateGraph(QTime timestamp, double receivedValue, int recordState, QString nameSignals, int src);
+    void SendUpdateGraph(QTime timestamp, double receivedValue, int recordState, QString nameSignals, int src, int srStr, int flgs);
     void SendCoefficientSignals(double coef, int src);
 
     void SendStateButton(bool state);

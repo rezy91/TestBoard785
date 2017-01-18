@@ -13,6 +13,7 @@
 #include <QPushButton>
 #include <QLabel>
 
+#include "common.h"
 
 class Grapmain : public QMainWindow
 {
@@ -30,7 +31,6 @@ public:
         int indexStop = 0;
     };
 
-    enum{nmbCurvesInGraph = 4};
     explicit Grapmain(QWidget *parent = 0);
 
     bool WasChangedStateSignal(int source, int stateSignal);
@@ -40,8 +40,6 @@ public:
 
     QTime findMinTime(void);
     QTime findMaxTime(void);
-
-    void setOptimalResolution(void);
 
 private:
     //common variables
@@ -61,7 +59,6 @@ private:
 
 
     int msPerPixelValue = 20;
-    int msPerPixelIncrement = 10;
 
     int timeAppRuns_ms;
     int mThMoving;
@@ -80,6 +77,8 @@ private:
 
     QTime timeStartLog;
     QTime timeCurrent;//the newest
+
+    int srcDataStream;
 
 
     int usedWidth;
@@ -101,7 +100,7 @@ private:
 
 
 public slots:
-    void refreshGraph(QTime currTime, double ssignal, int recStat, QString signalText, int source);
+    void refreshGraph(QTime currTime, double ssignal, int recStat, QString signalText, int sourceSig, int sourceStream, int flags);
     void refreshCoeffSignal(double coefficient, int source);
 
 protected:

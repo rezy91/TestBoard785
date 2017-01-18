@@ -982,16 +982,16 @@ void MainWindow::newDataV200(QByteArray aData)
 
         if(aData.at(2) == '3' && aData.at(3) == 'c')//ADC3 adjusted data
         {
-            recognizeIfDisplayNewData(timeShot, &myStringOnlyNumbers, 0);
+            recognizeIfDisplayNewData(timeShot, &myStringOnlyNumbers, 0, 0);
         }
         else if(aData.at(2) == '3' && aData.at(3) == 's')//ADC3 average data
         {
-            recognizeIfDisplayNewData(timeShot, &myStringOnlyNumbers, 1);
+            recognizeIfDisplayNewData(timeShot, &myStringOnlyNumbers, 1, 0);
         }
         else if(aData.at(2) == '2' && aData.at(3) == 'c')//ADC2 adjusted data
         {
 
-            recognizeIfDisplayNewData(timeShot, &myStringOnlyNumbers, 2);
+            recognizeIfDisplayNewData(timeShot, &myStringOnlyNumbers, 2, 0);
 
             COMPLEX_NUMBER_GONIO currentData;
             COMPLEX_NUMBER_GONIO averageDataA;
@@ -1014,15 +1014,15 @@ void MainWindow::newDataV200(QByteArray aData)
         }
         else if(aData.at(2) == '2' && aData.at(3) == 's')//ADC2 average data
         {
-            recognizeIfDisplayNewData(timeShot, &myStringOnlyNumbers, 3);
+            recognizeIfDisplayNewData(timeShot, &myStringOnlyNumbers, 3, 0);
         }
         else if(aData.at(2) == '1' && aData.at(3) == 'c')//ADC1 adjusted data
         {
-            recognizeIfDisplayNewData(timeShot, &myStringOnlyNumbers, 4);
+            recognizeIfDisplayNewData(timeShot, &myStringOnlyNumbers, 4, 0);
         }
         else if(aData.at(2) == '1' && aData.at(3) == 's')//ADC1 average data
         {
-            recognizeIfDisplayNewData(timeShot, &myStringOnlyNumbers, 5);
+            recognizeIfDisplayNewData(timeShot, &myStringOnlyNumbers, 5, 0);
         }
 
 
@@ -1126,6 +1126,18 @@ void MainWindow::getIndexInQList(int NumberComboBox, int indexInComboBox)
 
                             QTextStream fileStream(&m_logFile);
 
+                            int indexInArrayFour = 0;
+
+                            for(int kLoop = 0; kLoop < nmbCurvesInGraph; kLoop++)
+                            {
+                                if((sourceAd[kLoop] == iLoop) && (sourceSignal[kLoop] >= 0))
+                                {
+                                    indexInArrayFour = kLoop;
+                                }
+                            }
+
+                            bool bFlagFirstLog = false;
+
                             while (!fileStream.atEnd())
                             {
                                 QString newLinereaded = fileStream.readLine();
@@ -1138,12 +1150,25 @@ void MainWindow::getIndexInQList(int NumberComboBox, int indexInComboBox)
                                 {
                                     QTime timeLog = QTime::fromString(stringsSplitted[0], "hh:mm:ss,zzz");
                                     QStringList myStringOnlyNumbers = adjustRowDataIntoOnlyNumber(newLinereaded);
-                                    recognizeIfDisplayNewData(timeLog, &myStringOnlyNumbers, iLoop);
+
+                                    //send flag, that this is first one
+                                    if(!bFlagFirstLog)
+                                    {
+                                        bFlagFirstLog = true;
+                                        emit SendUpdateGraph(timeLog, 0, 0, " ", indexInArrayFour, sourceDataStream, 1);
+                                    }
+
+                                    recognizeIfDisplayNewData(timeLog, &myStringOnlyNumbers, iLoop, 0);
                                 }
 
                             }
-                            m_logFile.close();
+
+                            //send flag, that has been sending last one
+                            recStat[indexInArrayFour] = 0;
+                            emit SendUpdateGraph(QTime(0, 0, 0), 0, 0, " ", indexInArrayFour, sourceDataStream, 2);
                         }
+
+                        m_logFile.close();
                     }
 
                     return;
@@ -1158,18 +1183,18 @@ void MainWindow::getIndexInQList(int NumberComboBox, int indexInComboBox)
         sourceSignText[NumberComboBox] = "\0";
         sourceSignal[NumberComboBox] = -1;
         recStat[NumberComboBox] = 0;
-        emit SendUpdateGraph(timeCurrent, recvItems[NumberComboBox], recStat[NumberComboBox], sourceSignText[NumberComboBox], NumberComboBox);
+        emit SendUpdateGraph(timeCurrent, recvItems[NumberComboBox], recStat[NumberComboBox], sourceSignText[NumberComboBox], NumberComboBox, sourceDataStream, 0);
     }
 }
 
-void MainWindow::recognizeIfDisplayNewData(QTime timestamp, QStringList* listOfNumbers, int adx)
+void MainWindow::recognizeIfDisplayNewData(QTime timestamp, QStringList* listOfNumbers, int adx, int flg)
 {
-    for(int iLoop = 0; iLoop < 4; iLoop++)
+    for(int iLoop = 0; iLoop < nmbCurvesInGraph; iLoop++)
     {
         if((sourceAd[iLoop] == adx) && (sourceSignal[iLoop] >= 0))
         {
             recvItems[iLoop] = listOfNumbers->at(sourceSignal[iLoop]).toDouble();
-            emit SendUpdateGraph(timestamp, recvItems[iLoop], recStat[iLoop], sourceSignText[iLoop], iLoop);
+            emit SendUpdateGraph(timestamp, recvItems[iLoop], recStat[iLoop], sourceSignText[iLoop], iLoop, sourceDataStream, flg);
         }
     }
 }

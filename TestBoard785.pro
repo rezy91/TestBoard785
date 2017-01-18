@@ -22,7 +22,8 @@ HEADERS  += mainwindow.h \
     bytearrayparser.h \
     settings.h \
     smithmain.h \
-    grapmain.h
+    grapmain.h \
+    common.h
 
 FORMS    += mainwindow.ui
 
