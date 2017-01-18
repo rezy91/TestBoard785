@@ -69,6 +69,13 @@ public:
         float phase_rad;
     } COMPLEX_NUMBER_GONIO;
 
+    typedef enum
+    {
+      NO_STREAM,
+      RECEIVE_STREAM,
+      LOG_STREAM
+    } SOURCE_STREAM;
+
     explicit MainWindow(QWidget *parent = 0);
     ~MainWindow();
 
@@ -98,7 +105,11 @@ private:
 
     bool m_bSaveData = true;
 
+    int sourceDataStream = NO_STREAM;
+
     QFile m_oFile;
+    //QFile m_logFile;
+    QString logPath;
 
     settings* m_pSettingStrorage = new settings(this);
     SmithMain* o_smith = new SmithMain(this);
@@ -126,16 +137,21 @@ private:
     void recognizeIfDisplayNewData(QTime timestamp, QStringList *listOfNumbers, int adx);
     QString myTimeStamp(QTime time);
 
+    QStringList adjustRowDataIntoOnlyNumber(QString rowData);
+    void fillComboBoxesWithSignals(bool* flags);
+
     double coefInput[4];
     double recvItems[4] = {0, 0, 0, 0};
     int recStat[4] = {0, 0, 0, 0};
 
+    QString allSignalsBaseOnly[6] = {"ad3c", "ad3s", "ad2c", "ad2s", "ad1c", "ad1s"};
     QStringList allAdxSignals[6] = {{"ad3c_1", "ad3c_2", "ad3c_3"}, \
                                     {"ad3s_1", "ad3s_2", "ad3s_3", "ad3s_4", "ad3s_5"}, \
                                     {"ad2c_1", "ad2c_2", "ad2c_3", "ad2c_4", "ad2c_5", "ad2c_6", "ad2c_7", "ad2c_8", "ad2c_9", "ad2c_10"}, \
                                     {"ad2s_1", "ad2s_2", "ad2s_3", "ad2s_4", "ad2s_5", "ad2s_6", "ad2s_7", "ad2s_8"}, \
                                     {"ad1c_1", "ad1c_2", "ad1c_3"}, \
                                     {"ad1s_1", "ad1s_2", "ad1s_3", "ad1s_4", "ad1s_5", "ad1s_6", "ad1s_7", "ad1s_8", "ad1s_9", "ad1s_10"}};
+    bool flagIfSourceIsLogged[6];
 
     int sourceSignal[4] = {0, 0, 0, 0};
     int sourceAd[4] = {0, 0, 0, 0};

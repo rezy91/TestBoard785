@@ -22,6 +22,9 @@
 #include "ui_mainwindow.h"
 
 #include <QFileDialog>
+#include <QTextStream>
+
+#include <windows.h>
 
 MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWindow)
 {
@@ -332,26 +335,9 @@ void MainWindow::on_sendButton_clicked()
                     respExp[row] = false;
 
                 }
-                ui->comboBox_2->clear();
-                ui->comboBox_3->clear();
-                ui->comboBox_4->clear();
-                ui->comboBox_5->clear();
 
-                ui->comboBox_2->addItem("-");
-                ui->comboBox_3->addItem("-");
-                ui->comboBox_4->addItem("-");
-                ui->comboBox_5->addItem("-");
+                fillComboBoxesWithSignals(timerEnable);
 
-                for(qint32 fillComboBoxSignal = 0; fillComboBoxSignal < NMB_ITEMS_FOR_TIMERS; fillComboBoxSignal++)
-                {
-                    if(timerEnable[fillComboBoxSignal])
-                    {
-                        ui->comboBox_2->addItems(allAdxSignals[fillComboBoxSignal]);
-                        ui->comboBox_3->addItems(allAdxSignals[fillComboBoxSignal]);
-                        ui->comboBox_4->addItems(allAdxSignals[fillComboBoxSignal]);
-                        ui->comboBox_5->addItems(allAdxSignals[fillComboBoxSignal]);
-                    }
-                }
 
                 return;
             }
@@ -385,6 +371,30 @@ void MainWindow::on_sendButton_clicked()
     else
     {
         ui->statusBar->showMessage("Empty selection, select row to send.");
+    }
+}
+
+void MainWindow::fillComboBoxesWithSignals(bool* flags)
+{
+    ui->comboBox_2->clear();
+    ui->comboBox_3->clear();
+    ui->comboBox_4->clear();
+    ui->comboBox_5->clear();
+
+    ui->comboBox_2->addItem("-");
+    ui->comboBox_3->addItem("-");
+    ui->comboBox_4->addItem("-");
+    ui->comboBox_5->addItem("-");
+
+    for(qint32 fillComboBoxSignal = 0; fillComboBoxSignal < NMB_ITEMS_FOR_TIMERS; fillComboBoxSignal++)
+    {
+        if(flags[fillComboBoxSignal])
+        {
+            ui->comboBox_2->addItems(allAdxSignals[fillComboBoxSignal]);
+            ui->comboBox_3->addItems(allAdxSignals[fillComboBoxSignal]);
+            ui->comboBox_4->addItems(allAdxSignals[fillComboBoxSignal]);
+            ui->comboBox_5->addItems(allAdxSignals[fillComboBoxSignal]);
+        }
     }
 }
 
@@ -872,6 +882,8 @@ void MainWindow::on_connectButton_clicked()
 {
     ui->checkBox->setEnabled(false);
 
+    sourceDataStream = RECEIVE_STREAM;
+
 
     RequirementTime_ms[0] = ui->spinBox->value();
     RequirementTime_ms[1] = ui->spinBox_2->value();
@@ -966,25 +978,7 @@ void MainWindow::newDataV200(QByteArray aData)
 
     if(aData.at(0) == 'a' && aData.at(1) == 'd')//ADCx data
     {
-        QString adjString = QString(aData);
-        QStringList myStringList = adjString.split(QRegExp("(\\s+| |=)"));
-
-        QStringList myStringOnlyNumbers;
-
-
-        for(int iLoop = 0; iLoop < myStringList.count(); iLoop++)
-        {
-            //qDebug() << "all: " + myStringList.at(iLoop) << endl;
-
-            bool isNumber;
-            myStringList.at(iLoop).toFloat(&isNumber);
-
-            if(isNumber)
-            {
-                myStringOnlyNumbers.append(myStringList.at(iLoop));
-                //qDebug() << "number: " + myStringList.at(iLoop) << endl;
-            }
-        }
+        QStringList myStringOnlyNumbers = adjustRowDataIntoOnlyNumber(aData);
 
         if(aData.at(2) == '3' && aData.at(3) == 'c')//ADC3 adjusted data
         {
@@ -1058,8 +1052,7 @@ void MainWindow::newDataV200(QByteArray aData)
 
     if(m_bSaveData)
     {
-        m_oFile.write(myTimeStamp(timeShot).toUtf8() + "\t" + aData + "\r\n");
-
+        m_oFile.write(myTimeStamp(timeShot).toUtf8() + "\t" + QString(aData).simplified().toUtf8() + "\r\n");
         m_oFile.flush();
     }
 
@@ -1108,15 +1101,50 @@ void MainWindow::getIndexInQList(int NumberComboBox, int indexInComboBox)
 
         for(qint32 iLoop = 0; iLoop < NMB_ITEMS_FOR_TIMERS; iLoop++)
         {
-            if(timerEnable[iLoop])
+            if((sourceDataStream == RECEIVE_STREAM && timerEnable[iLoop]) || (sourceDataStream == LOG_STREAM && flagIfSourceIsLogged[iLoop]))
             {
                 if((absoluteIndex - allAdxSignals[iLoop].count()) < 0)
                 {
-                    //qDebug() << "has been found signal: " << allAdxSignals[iLoop].at(absoluteIndex) << endl;
-
                     sourceAd[NumberComboBox] = iLoop;
                     sourceSignal[NumberComboBox] = absoluteIndex;
                     sourceSignText[NumberComboBox] = allAdxSignals[iLoop].at(absoluteIndex);
+
+                    if(sourceDataStream == LOG_STREAM)
+                    {
+                        //qDebug() << "has been found signal: " << allAdxSignals[iLoop].at(absoluteIndex) << endl;
+                        qDebug() << sourceSignText[NumberComboBox];
+
+                        QFile m_logFile(logPath);
+
+                        if(!m_logFile.open(QFile::ReadOnly))
+                        {
+                            qDebug() << "error: cannot open file";
+                        }
+                        else
+                        {
+                            qDebug() << "file opened, size:" << m_logFile.size();
+
+                            QTextStream fileStream(&m_logFile);
+
+                            while (!fileStream.atEnd())
+                            {
+                                QString newLinereaded = fileStream.readLine();
+                                QStringList stringsSplitted = newLinereaded.split(QRegExp("\\s+"));
+
+                                //qDebug() << newLinereaded;
+
+
+                                if(stringsSplitted[1] == sourceSignText[NumberComboBox].mid(0, 4))//founded row appeared
+                                {
+                                    QTime timeLog = QTime::fromString(stringsSplitted[0], "hh:mm:ss,zzz");
+                                    QStringList myStringOnlyNumbers = adjustRowDataIntoOnlyNumber(newLinereaded);
+                                    recognizeIfDisplayNewData(timeLog, &myStringOnlyNumbers, iLoop);
+                                }
+
+                            }
+                            m_logFile.close();
+                        }
+                    }
 
                     return;
                 }
@@ -1151,36 +1179,61 @@ QString MainWindow::myTimeStamp(QTime time)
     return QString("%1:%2:%3,%4").arg(time.hour(), 2, 10, QChar('0')).arg(time.minute(), 2, 10, QChar('0')).arg(time.second(), 2, 10, QChar('0')).arg(time.msec(), 3, 10, QChar('0'));
 }
 
+QStringList MainWindow::adjustRowDataIntoOnlyNumber(QString rowData)
+{
+    QStringList stringsSplitted = rowData.split(QRegExp("(\\s+| |=)"));
+    QStringList stringsNumbers;
+
+
+    for(int iLoop = 0; iLoop < stringsSplitted.count(); iLoop++)
+    {
+        //qDebug() << "all: " + stringsSplitted.at(iLoop) << endl;
+
+        bool isNumber;
+        stringsSplitted.at(iLoop).toFloat(&isNumber);
+
+        if(isNumber)
+        {
+            stringsNumbers.append(stringsSplitted.at(iLoop));
+            //qDebug() << "number: " + stringsSplitted.at(iLoop) << endl;
+        }
+    }
+
+    return stringsNumbers;
+}
+
 void MainWindow::on_disconnectButton_clicked()
 {
     ui->checkBox->setEnabled(true);
 
-     m_CommProt.data()->SetTargetMedium("");
+    m_CommProt.data()->SetTargetMedium("");
 
-     SetAvaiblePorts();
-     SetLastPort();
+    SetAvaiblePorts();
+    SetLastPort();
 
-     for(qint32 loop = 0; loop < NMB_ITEMS_FOR_TIMERS + 1; loop++)
-     {
-         timerEnable[loop] = false;
-     }
+    for(qint32 loop = 0; loop < NMB_ITEMS_FOR_TIMERS + 1; loop++)
+    {
+        timerEnable[loop] = false;
+    }
 
-     if(m_oFile.isOpen())
-     {
-         m_oFile.close();
-         QFileInfo oFileInfo(m_oFile);
-         AppendText(timeCurrent, QString("Data saved to <a href=\"%1\">%1</a>, file size is %2 kB").arg(oFileInfo.absoluteFilePath()).arg(static_cast<double>(oFileInfo.size()) / 1024, 0, 'f', 2));
+    if(m_oFile.isOpen())
+    {
+        m_oFile.close();
+        QFileInfo oFileInfo(m_oFile);
+        AppendText(timeCurrent, QString("Data saved to <a href=\"%1\">%1</a>, file size is %2 kB").arg(oFileInfo.absoluteFilePath()).arg(static_cast<double>(oFileInfo.size()) / 1024, 0, 'f', 2));
 
-         qDebug() << "Data saved";
+        qDebug() << "Data saved";
 
-     }
+    }
 
-     ui->comboBox_2->clear();
-     ui->comboBox_3->clear();
-     ui->comboBox_4->clear();
-     ui->comboBox_5->clear();
+    ui->comboBox_2->clear();
+    ui->comboBox_3->clear();
+    ui->comboBox_4->clear();
+    ui->comboBox_5->clear();
 
-     emit SendStateButton(false);
+    sourceDataStream = NO_STREAM;
+
+    emit SendStateButton(false);
 }
 
 void MainWindow::on_checkBox_clicked()
@@ -1191,11 +1244,47 @@ void MainWindow::on_checkBox_clicked()
 
 void MainWindow::on_openlogButton_clicked()
 {
-    QString logFile = QFileDialog::getOpenFileName(this, "Open log file", "C://", "Text File (*.txt)");
+    sourceDataStream = LOG_STREAM;
 
+    for(int iLoop = 0; iLoop < 6; iLoop++)
+    {
+        flagIfSourceIsLogged[iLoop] = false;
+    }
 
-    qDebug() << logFile.size();
+    logPath = QFileDialog::getOpenFileName(this, "Open log file", "C://Users//rezacr//Documents//Repositories//Utilities//Qt//build-TestBoard785-Desktop_Qt_5_5_1_MinGW_32bit-Debug", "Text File (*.txt)");
+    QFile m_logFile(logPath);
 
+    if(!m_logFile.open(QFile::ReadOnly))
+    {
+        qDebug() << "error: cannot open file";
+    }
+    else
+    {
+        qDebug() << "file opened, size:" << m_logFile.size();
+
+        QTextStream fileStream(&m_logFile);
+
+        while (!fileStream.atEnd())
+        {
+            QString newLinereaded = fileStream.readLine();
+            QStringList stringsSplitted = newLinereaded.split(QRegExp("\\s+"));
+
+            for(int iLoop = 0; iLoop < 6; iLoop++)
+            {
+                if(stringsSplitted[1] == allSignalsBaseOnly[iLoop])
+                {
+                    flagIfSourceIsLogged[iLoop] = true;
+                }
+            }
+
+        }
+
+        qDebug("sources: %d, %d, %d, %d, %d, %d", flagIfSourceIsLogged[0], flagIfSourceIsLogged[1], flagIfSourceIsLogged[2], flagIfSourceIsLogged[3], flagIfSourceIsLogged[4], flagIfSourceIsLogged[5]);
+
+        fillComboBoxesWithSignals(flagIfSourceIsLogged);
+
+        m_logFile.close();
+    }
 
 }
 

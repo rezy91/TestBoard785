@@ -250,11 +250,15 @@ QTime Grapmain::findMaxTime()
 
 void Grapmain::setOptimalResolution()
 {
-    if(msPerPixelValue >= 1000)
+    if(msPerPixelValue > 1000)
+    {
+        msPerPixelIncrement = 1000;
+    }
+    else if(msPerPixelValue > 100)
     {
         msPerPixelIncrement = 100;
     }
-    else if(msPerPixelValue >= 100)
+    else if(msPerPixelValue > 10)
     {
         msPerPixelIncrement = 10;
     }
