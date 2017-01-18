@@ -76,10 +76,9 @@ private slots:
     void on_sendButton_clicked();
     void on_clearButton_clicked();
     void on_connectButton_clicked();
-
     void on_disconnectButton_clicked();
-
     void on_checkBox_clicked();
+    void on_openlogButton_clicked();
 
     void on_textBrowser_anchorClicked(const QUrl &arg1);
 

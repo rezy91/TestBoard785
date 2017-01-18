@@ -21,7 +21,7 @@
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
 
-
+#include <QFileDialog>
 
 MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWindow)
 {
@@ -1187,6 +1187,16 @@ void MainWindow::on_checkBox_clicked()
 {
     m_bSaveData = ui->checkBox->isChecked();
     m_pSettingStrorage->StoreSaveDataBox(m_bSaveData);
+}
+
+void MainWindow::on_openlogButton_clicked()
+{
+    QString logFile = QFileDialog::getOpenFileName(this, "Open log file", "C://", "Text File (*.txt)");
+
+
+    qDebug() << logFile.size();
+
+
 }
 
 void MainWindow::on_textBrowser_anchorClicked(const QUrl &arg1)
