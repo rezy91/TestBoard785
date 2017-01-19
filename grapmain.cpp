@@ -9,9 +9,7 @@ Grapmain::Grapmain(QWidget *parent) : QMainWindow(parent)
 {
 
     scBar->setMinimum(0);
-    scBar->setHidden(true);
 
-    startStopDisplay->setHidden(true);
     startStopDisplay->setCheckable(true);
     startStopDisplay->setChecked(false);
     startStopDisplay->setText(buttonOn);
@@ -45,15 +43,13 @@ Grapmain::Grapmain(QWidget *parent) : QMainWindow(parent)
         if(startStopDisplay->isChecked())
         {
             startStopDisplay->setText(buttonOff);
-
-            scBar->setHidden(false);
             scBar->setGeometry(constLeftLimit - 20, currentHeight - 30, usedWidth + 40, 20);
         }
         else
         {
             startStopDisplay->setText(buttonOn);
 
-            startShowGraph(QTime::currentTime());
+            clearAllVariables(QTime::currentTime());
         }
 
     });
@@ -183,6 +179,19 @@ void Grapmain::saveNewSampleToBuffer(int index, QTime time, double signal, QStri
     timeCurrent = time;
 }
 
+bool Grapmain::isNoSignalDisplayed()
+{
+    bool retValue = false;
+
+    if((!flagSignalRecord[0]) && (!flagSignalRecord[1]) && (!flagSignalRecord[2]) && (!flagSignalRecord[3]))
+    {
+        retValue = true;
+        qDebug() << "no signal displayed";
+    }
+
+    return retValue;
+}
+
 bool Grapmain::WasChangedStateSignal(int source, int stateSignal)
 {
     bool retValue = false;
@@ -202,9 +211,9 @@ bool Grapmain::WasChangedStateSignal(int source, int stateSignal)
         }
     }
 
-    if((!flagSignalRecord[0]) && (!flagSignalRecord[1]) && (!flagSignalRecord[2]) && (!flagSignalRecord[3]))
+    if(isNoSignalDisplayed())
     {
-        startShowGraph(QTime::currentTime());
+       clearAllVariables(QTime::currentTime());;
     }
 
     return retValue;
@@ -226,7 +235,7 @@ int Grapmain::GetMinimalResolution(int activeSource[], int* sourceResol)
     return minValue;
 }
 
-void Grapmain::startShowGraph(QTime time)
+void Grapmain::clearAllVariables(QTime time)
 {
     clearAllSignalsHistory();
     mTimeHistory.clear();
@@ -235,9 +244,7 @@ void Grapmain::startShowGraph(QTime time)
     mThMoving = 0;
     timeStartLog = time;
 
-    startStopDisplay->setHidden(true);
     startStopDisplay->setChecked(false);
-    scBar->setHidden(true);
 }
 
 void Grapmain::clearSignalHistory(int indexSignal)
@@ -309,7 +316,7 @@ void Grapmain::refreshGraph(QTime currTime, double ssignal, int recStat, QString
         if(WasChangedStateSignal(sourceSig, recStat))
         {
             qDebug() << "start showing graph";
-            startShowGraph(currTime);
+            clearAllVariables(currTime);
         }
 
         if(!startStopDisplay->isChecked())
@@ -350,9 +357,10 @@ void Grapmain::refreshGraph(QTime currTime, double ssignal, int recStat, QString
     }
     else if(srcDataStream == LOG_STREAM)
     {
+        qDebug() << flags;
+
         if(flags == 2)//all history loaded
         {
-            scBar->setHidden(false);
             scBar->setGeometry(constLeftLimit - 20, currentHeight - 30, usedWidth + 40, 20);
 
             findDiffTimeInLog();
@@ -373,8 +381,15 @@ void Grapmain::refreshGraph(QTime currTime, double ssignal, int recStat, QString
             }
             else
             {
-               clearSignalHistory(sourceSig);
-               repaint();
+                if(isNoSignalDisplayed())
+                {
+                    clearAllVariables(QTime::currentTime());;
+                }
+                else
+                {
+                    clearSignalHistory(sourceSig);
+                }
+                repaint();
             }
         }
     }
@@ -391,9 +406,10 @@ void Grapmain::paintEvent(QPaintEvent*)
 {
     QPainter painterMain(this);
 
-    changeResolutionUp->setGeometry(currentWidth - 40, currentHeight - constBottomLimit - 50 - 50, 40, 20);
-    resolutionValue->setGeometry(currentWidth - 40, currentHeight - constBottomLimit - 50 - 25, 40, 20);
-    changeResolutionDown->setGeometry(currentWidth - 40, currentHeight - constBottomLimit - 50, 40, 20);
+    changeResolutionUp->setGeometry(currentWidth - 40, constTopLimit + 25, 40, 20);
+    resolutionValue->setGeometry(currentWidth - 40 + 10, constTopLimit + 50, 40, 20);
+    changeResolutionDown->setGeometry(currentWidth - 40, constTopLimit + 50 + 25, 40, 20);
+    startStopDisplay->setGeometry(currentWidth - 40, constTopLimit + 50 + 50, 40, 20);
 
     for(int iLoop = 0; iLoop < nmbCurvesInGraph; iLoop++)
     {
@@ -402,8 +418,7 @@ void Grapmain::paintEvent(QPaintEvent*)
         {
             mFromStaticToDynamic = true;
 
-            startStopDisplay->setGeometry(20, currentHeight - 30, 60, 20);
-            startStopDisplay->setHidden(false);
+
         }
 
         //if there is something to dipslay
@@ -569,7 +584,7 @@ void Grapmain::paintEvent(QPaintEvent*)
 
         if(((mTimeHistory.at(kLoop) / 1000) / 60) > 60)//time more than a hour
         {
-            startShowGraph(QTime::currentTime());
+            clearAllVariables(QTime::currentTime());
         }
 
         int minutes = (mTimeHistory.at(kLoop) / 1000) / 60;
