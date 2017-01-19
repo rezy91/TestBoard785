@@ -14,6 +14,7 @@ Grapmain::Grapmain(QWidget *parent) : QMainWindow(parent)
     startStopDisplay->setChecked(false);
     startStopDisplay->setText(buttonOn);
 
+    setmaxResolution->setText("Max");
     changeResolutionUp->setText("Up");
     changeResolutionDown->setText("Down");
     resolutionValue->setText(QString::number(msPerPixelValue));
@@ -38,18 +39,17 @@ Grapmain::Grapmain(QWidget *parent) : QMainWindow(parent)
 
     });
 
-    connect(startStopDisplay, &QPushButton::toggled, [this](){
+    connect(setmaxResolution, &QPushButton::clicked, [this](){
 
-        if(startStopDisplay->isChecked())
-        {
-            startStopDisplay->setText(buttonOff);
-            scBar->setGeometry(constLeftLimit - 20, currentHeight - 30, usedWidth + 40, 20);
-        }
-        else
-        {
-            startStopDisplay->setText(buttonOn);
+        int resultValue = findDiffTimeInLog() / usedWidth;
 
-            clearAllVariables(QTime::currentTime());
+        if(resultValue > constMinimalReolution * constLowLevelResolution)
+        {
+            msPerPixelValue = findDiffTimeInLog() / usedWidth;
+            resolutionValue->setText(QString::number(msPerPixelValue));
+
+            findMinAndMaxTimeInLog();
+            repaint();
         }
 
     });
@@ -58,8 +58,7 @@ Grapmain::Grapmain(QWidget *parent) : QMainWindow(parent)
 
         if(QTime(timeStartLog).msecsTo(timeCurrent) > (usedWidth * msPerPixelValue))
         {
-            msPerPixelValue *= 1.5;
-
+            msPerPixelValue *= constMinimalReolution;
             resolutionValue->setText(QString::number(msPerPixelValue));
 
             if(srcDataStream == RECEIVE_STREAM)
@@ -81,14 +80,12 @@ Grapmain::Grapmain(QWidget *parent) : QMainWindow(parent)
 
     connect(changeResolutionDown, &QPushButton::clicked, [this](){
 
-        if(msPerPixelValue > 2)
+        if(msPerPixelValue > constMinimalReolution * constLowLevelResolution)
         {
-            msPerPixelValue /= 1.5;
+            msPerPixelValue /= constMinimalReolution;
         }
 
         resolutionValue->setText(QString::number(msPerPixelValue));
-
-
 
         if(srcDataStream == RECEIVE_STREAM)
         {
@@ -102,6 +99,23 @@ Grapmain::Grapmain(QWidget *parent) : QMainWindow(parent)
         {
            findMinAndMaxTimeInLog();
            repaint();
+        }
+
+    });
+
+    connect(startStopDisplay, &QPushButton::toggled, [this](){
+
+        if(srcDataStream == RECEIVE_STREAM)
+        {
+            if(startStopDisplay->isChecked())
+            {
+                startStopDisplay->setText(buttonOff);
+            }
+            else
+            {
+                startStopDisplay->setText(buttonOn);
+                clearAllVariables(QTime::currentTime());
+            }
         }
 
     });
@@ -160,7 +174,7 @@ void Grapmain::findMinAndMaxTimeInLog()
     }
 }
 
-void Grapmain::findDiffTimeInLog()
+int Grapmain::findDiffTimeInLog()
 {
     QTime minTimestamp = findMinTime();
     QTime maxTimestamp = findMaxTime();
@@ -169,6 +183,8 @@ void Grapmain::findDiffTimeInLog()
 
     scBar->setMaximum(diffTimeInMsec);
     scBar->setValue(scBar->maximum());
+
+    return diffTimeInMsec;
 }
 
 void Grapmain::saveNewSampleToBuffer(int index, QTime time, double signal, QString text)
@@ -186,7 +202,6 @@ bool Grapmain::isNoSignalDisplayed()
     if((!flagSignalRecord[0]) && (!flagSignalRecord[1]) && (!flagSignalRecord[2]) && (!flagSignalRecord[3]))
     {
         retValue = true;
-        qDebug() << "no signal displayed";
     }
 
     return retValue;
@@ -261,6 +276,7 @@ void Grapmain::clearAllSignalsHistory()
     {
         clearSignalHistory(iLoop);
     }
+    msPerPixelValue = constMinimalReolution * constLowLevelResolution;
 }
 
 QTime Grapmain::findMinTime()
@@ -357,12 +373,8 @@ void Grapmain::refreshGraph(QTime currTime, double ssignal, int recStat, QString
     }
     else if(srcDataStream == LOG_STREAM)
     {
-        qDebug() << flags;
-
         if(flags == 2)//all history loaded
         {
-            scBar->setGeometry(constLeftLimit - 20, currentHeight - 30, usedWidth + 40, 20);
-
             findDiffTimeInLog();
             findMinAndMaxTimeInLog();
             repaint();
@@ -406,10 +418,12 @@ void Grapmain::paintEvent(QPaintEvent*)
 {
     QPainter painterMain(this);
 
+    setmaxResolution->setGeometry(currentWidth - 40, constTopLimit, 40, 20);
     changeResolutionUp->setGeometry(currentWidth - 40, constTopLimit + 25, 40, 20);
     resolutionValue->setGeometry(currentWidth - 40 + 10, constTopLimit + 50, 40, 20);
     changeResolutionDown->setGeometry(currentWidth - 40, constTopLimit + 50 + 25, 40, 20);
     startStopDisplay->setGeometry(currentWidth - 40, constTopLimit + 50 + 50, 40, 20);
+    scBar->setGeometry(constLeftLimit - 20, currentHeight - 30, usedWidth + 40, 20);
 
     for(int iLoop = 0; iLoop < nmbCurvesInGraph; iLoop++)
     {
@@ -417,8 +431,6 @@ void Grapmain::paintEvent(QPaintEvent*)
         if((QTime(timeStartLog).msecsTo(timeCurrent) > (usedWidth * msPerPixelValue)) && !mFromStaticToDynamic)
         {
             mFromStaticToDynamic = true;
-
-
         }
 
         //if there is something to dipslay
@@ -473,7 +485,7 @@ void Grapmain::paintEvent(QPaintEvent*)
                 }
                 QPoint cnt = QPoint(constLeftLimit + drawXvalue, currentHeight - constBottomLimit - drawYvalue);
 
-                painterMain.setPen(QPen(Qt::black));
+                painterMain.setPen(QPen(colorSignal[iLoop]));
                 painterMain.drawEllipse(cnt,constVolumePoint,constVolumePoint);
             }
 

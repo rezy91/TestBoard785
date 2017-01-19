@@ -39,7 +39,7 @@ public:
     void clearSignalHistory(int indexSignal);
     void clearAllSignalsHistory(void);
     void findMinAndMaxTimeInLog(void);
-    void findDiffTimeInLog(void);
+    int findDiffTimeInLog(void);
     void saveNewSampleToBuffer(int index, QTime time, double signal, QString text);
     bool isNoSignalDisplayed(void);
 
@@ -58,12 +58,14 @@ private:
     const int constRightLimit = 170;
 
     const int constDistanceHorizontalLines_pxs = 50;
+    const double constMinimalReolution = 1.1;
+    const int constLowLevelResolution = 10;
 
     const QString buttonOn = "Stop";
     const QString buttonOff = "Start";
 
 
-    int msPerPixelValue = 20;
+    int msPerPixelValue = constMinimalReolution * constLowLevelResolution;
 
     int timeAppRuns_ms;
     int mThMoving;
@@ -75,9 +77,10 @@ private:
 
 
     QScrollBar* scBar = new QScrollBar(Qt::Horizontal, this);
-    QPushButton* startStopDisplay = new QPushButton(this);
+    QPushButton* setmaxResolution = new QPushButton(this);
     QPushButton* changeResolutionUp = new QPushButton(this);
     QPushButton* changeResolutionDown = new QPushButton(this);
+    QPushButton* startStopDisplay = new QPushButton(this);
     QLabel* resolutionValue = new QLabel(this);
 
     QTime timeStartLog;
