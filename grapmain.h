@@ -80,6 +80,7 @@ private:
     QPushButton* setmaxResolution = new QPushButton(this);
     QPushButton* changeResolutionUp = new QPushButton(this);
     QPushButton* changeResolutionDown = new QPushButton(this);
+    QPushButton* setminResolution = new QPushButton(this);
     QPushButton* startStopDisplay = new QPushButton(this);
     QLabel* resolutionValue = new QLabel(this);
 

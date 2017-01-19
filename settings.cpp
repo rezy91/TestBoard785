@@ -166,6 +166,16 @@ qreal settings::RestoreMultiplierSignalFourth() const
     return RestoreValue(QString("Multiplier4")).toDouble();
 }
 
+void settings::StorePathLog(const QString &strPath)
+{
+    StoreValue(QString("pathlog"), strPath);
+}
+
+QString settings::RestorePathLog() const
+{
+    return RestoreValue(QString("pathlog")).toString();
+}
+
 void settings::StoreValue(const QString &strKey, const QVariant &vValue)
 {
     m_pAppSettings->setValue(strKey, vValue);

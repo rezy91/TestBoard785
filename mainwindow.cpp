@@ -421,7 +421,6 @@ void MainWindow::fillComboBoxesWithSignals(bool* flags)
 
 void MainWindow::AppendText(QTime timestamp, QString strText)
 {
-    //ui->textBrowser->append(QString("%1\t%2").arg(QTime::currentTime().toString()).arg(strText));
     ui->textBrowser->append(myTimeStamp(timestamp) + "\t" + strText);
 }
 
@@ -1113,7 +1112,7 @@ MainWindow::COMPLEX_NUMBER_GONIO MainWindow::CalculateReflectionRatio(COMPLEX_NU
 
 void MainWindow::getIndexInQList(int NumberComboBox, int indexInComboBox)
 {
-    qDebug() << "NumberComboBox" << NumberComboBox << "getIndexInQList: " << indexInComboBox;
+    //qDebug() << "NumberComboBox_i" << NumberComboBox << "getIndexInQList_i: " << indexInComboBox;
 
     if(indexInComboBox >= 1)
     {
@@ -1289,7 +1288,10 @@ void MainWindow::on_openlogButton_clicked()
         flagIfSourceIsLogged[iLoop] = false;
     }
 
-    logPath = QFileDialog::getOpenFileName(this, "Open log file", "C://Users//rezacr//Documents//Repositories//Utilities//Qt//build-TestBoard785-Desktop_Qt_5_5_1_MinGW_32bit-Debug", "Text File (*.txt)");
+    QString savedPath = m_pSettingStrorage->RestorePathLog();
+    logPath = QFileDialog::getOpenFileName(this, "Open log file", savedPath, "Text File (*.txt)");
+    m_pSettingStrorage->StorePathLog(logPath);
+
     QFile m_logFile(logPath);
 
     if(!m_logFile.open(QFile::ReadOnly))

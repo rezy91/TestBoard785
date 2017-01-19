@@ -17,6 +17,7 @@ Grapmain::Grapmain(QWidget *parent) : QMainWindow(parent)
     setmaxResolution->setText("Max");
     changeResolutionUp->setText("Up");
     changeResolutionDown->setText("Down");
+    setminResolution->setText("Min");
     resolutionValue->setText(QString::number(msPerPixelValue));
 
     connect(scBar, &QScrollBar::valueChanged, [this](){
@@ -55,7 +56,6 @@ Grapmain::Grapmain(QWidget *parent) : QMainWindow(parent)
     });
 
     connect(changeResolutionUp, &QPushButton::clicked, [this](){
-
 
         if(QTime(timeStartLog).msecsTo(timeCurrent) > (usedWidth * msPerPixelValue))
         {
@@ -106,6 +106,16 @@ Grapmain::Grapmain(QWidget *parent) : QMainWindow(parent)
            findMinAndMaxTimeInLog();
            repaint();
         }
+
+    });
+
+    connect(setminResolution, &QPushButton::clicked, [this](){
+
+        msPerPixelValue = constMinimalReolution * constLowLevelResolution;
+        resolutionValue->setText(QString::number(msPerPixelValue));
+
+        findMinAndMaxTimeInLog();
+        repaint();
 
     });
 
@@ -427,7 +437,8 @@ void Grapmain::paintEvent(QPaintEvent*)
     changeResolutionUp->setGeometry(currentWidth - 40, constTopLimit + 25, 40, 20);
     resolutionValue->setGeometry(currentWidth - 40 + 10, constTopLimit + 50, 40, 20);
     changeResolutionDown->setGeometry(currentWidth - 40, constTopLimit + 50 + 25, 40, 20);
-    startStopDisplay->setGeometry(currentWidth - 40, constTopLimit + 50 + 50, 40, 20);
+    setminResolution->setGeometry(currentWidth - 40, constTopLimit + 50 + 50, 40, 20);
+    startStopDisplay->setGeometry(currentWidth - 40, constTopLimit + 50 + 50 + 25, 40, 20);
     scBar->setGeometry(constLeftLimit - 20, currentHeight - 30, usedWidth + 40, 20);
 
     for(int iLoop = 0; iLoop < nmbCurvesInGraph; iLoop++)

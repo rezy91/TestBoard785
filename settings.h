@@ -62,6 +62,9 @@ public:
 
     void StoreMultiplierSignalFourth(const qreal &multiplier);
     qreal RestoreMultiplierSignalFourth() const;
+
+    void StorePathLog(const QString& strPath);
+    QString RestorePathLog() const;
 };
 
 #endif // SETTINGS_H
