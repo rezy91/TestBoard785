@@ -25,7 +25,6 @@
 #include <QComboBox>
 #include <QtSerialPort>
 #include "../../../Applications/088/CommProtV200/commprotv200_global.h"
-#include "bytearrayparser.h"
 #include <QSettings>
 #include <QTimer>
 #include <QDesktopServices>
@@ -99,40 +98,28 @@ private:
     bool timerEnable[NMB_ITEMS_FOR_TIMERS + 1] = {false,false,false,false,false,false,false};
 
     bool m_bSaveData = true;
-
     int sourceDataStream = NO_STREAM;
 
     QFile m_oFile;
-    //QFile m_logFile;
     QString logPath;
 
     settings* m_pSettingStrorage = new settings(this);
     SmithMain* o_smith = new SmithMain(this);
     Grapmain* o_graph = new Grapmain(this);
 
-
-
     void AppendText(QTime timestamp, QString strText);
-
-    quint8 GetOneByte(QByteArray arrData);
-    quint16 GetTwoBytes(QByteArray arrData);
-    quint32 GetFourBytes(QByteArray arrData);
-
     void FillCommandTable();
-
     void StoreValue(const QString& strKey, const QVariant& vValue);
     QVariant LoadValue(const QString& strKey);
     void SetAvaiblePorts();
     void SetLastPort();
     void restoreAllSettings(void);
-
     void newDataV200(QByteArray aData);
     COMPLEX_NUMBER_GONIO CalculateReflectionRatio(COMPLEX_NUMBER_GONIO current, COMPLEX_NUMBER_GONIO average);
     void getIndexInQList(int NumberComboBox, int indexInComboBox);
     void recognizeIfDisplayNewDataAllSignals(QTime timestamp, QStringList *listOfNumbers, int adx, int flg);
     void recognizeIfDisplayNewDataInSignal(QTime timestamp, QStringList *listOfNumbers, int indexInSignal, int flg);
     QString myTimeStamp(QTime time);
-
     QStringList adjustRowDataIntoOnlyNumber(QString rowData);
     void fillComboBoxesWithSignals(bool* flags);
 

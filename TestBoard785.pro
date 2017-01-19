@@ -19,7 +19,6 @@ SOURCES += main.cpp\
     grapmain.cpp
 
 HEADERS  += mainwindow.h \
-    bytearrayparser.h \
     settings.h \
     smithmain.h \
     grapmain.h \
