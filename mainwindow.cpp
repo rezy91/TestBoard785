@@ -89,15 +89,31 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
     });
 
     connect(ui->comboBox_2,static_cast<void (QComboBox::*)(int)>(&QComboBox::currentIndexChanged),[=](int nValue){
+        if(sourceDataStream == LOG_STREAM && nValue >= 0)
+        {
+            getIndexInQList(0, 0);//send fake in order to clear history signal
+        }
         getIndexInQList(0, nValue);
     });
     connect(ui->comboBox_3,static_cast<void (QComboBox::*)(int)>(&QComboBox::currentIndexChanged),[=](int nValue){
+        if(sourceDataStream == LOG_STREAM && nValue >= 0)
+        {
+            getIndexInQList(1, 0);//send fake in order to clear history signal
+        }
         getIndexInQList(1, nValue);
     });
     connect(ui->comboBox_4,static_cast<void (QComboBox::*)(int)>(&QComboBox::currentIndexChanged),[=](int nValue){
+        if(sourceDataStream == LOG_STREAM && nValue >= 0)
+        {
+            getIndexInQList(2, 0);//send fake in order to clear history signal
+        }
         getIndexInQList(2, nValue);
     });
     connect(ui->comboBox_5,static_cast<void (QComboBox::*)(int)>(&QComboBox::currentIndexChanged),[=](int nValue){
+        if(sourceDataStream == LOG_STREAM && nValue >= 0)
+        {
+            getIndexInQList(3, 0);//send fake in order to clear history signal
+        }
         getIndexInQList(3, nValue);
     });
 
@@ -982,16 +998,16 @@ void MainWindow::newDataV200(QByteArray aData)
 
         if(aData.at(2) == '3' && aData.at(3) == 'c')//ADC3 adjusted data
         {
-            recognizeIfDisplayNewData(timeShot, &myStringOnlyNumbers, 0, 0);
+            recognizeIfDisplayNewDataAllSignals(timeShot, &myStringOnlyNumbers, 0, 0);
         }
         else if(aData.at(2) == '3' && aData.at(3) == 's')//ADC3 average data
         {
-            recognizeIfDisplayNewData(timeShot, &myStringOnlyNumbers, 1, 0);
+            recognizeIfDisplayNewDataAllSignals(timeShot, &myStringOnlyNumbers, 1, 0);
         }
         else if(aData.at(2) == '2' && aData.at(3) == 'c')//ADC2 adjusted data
         {
 
-            recognizeIfDisplayNewData(timeShot, &myStringOnlyNumbers, 2, 0);
+            recognizeIfDisplayNewDataAllSignals(timeShot, &myStringOnlyNumbers, 2, 0);
 
             COMPLEX_NUMBER_GONIO currentData;
             COMPLEX_NUMBER_GONIO averageDataA;
@@ -1014,15 +1030,15 @@ void MainWindow::newDataV200(QByteArray aData)
         }
         else if(aData.at(2) == '2' && aData.at(3) == 's')//ADC2 average data
         {
-            recognizeIfDisplayNewData(timeShot, &myStringOnlyNumbers, 3, 0);
+            recognizeIfDisplayNewDataAllSignals(timeShot, &myStringOnlyNumbers, 3, 0);
         }
         else if(aData.at(2) == '1' && aData.at(3) == 'c')//ADC1 adjusted data
         {
-            recognizeIfDisplayNewData(timeShot, &myStringOnlyNumbers, 4, 0);
+            recognizeIfDisplayNewDataAllSignals(timeShot, &myStringOnlyNumbers, 4, 0);
         }
         else if(aData.at(2) == '1' && aData.at(3) == 's')//ADC1 average data
         {
-            recognizeIfDisplayNewData(timeShot, &myStringOnlyNumbers, 5, 0);
+            recognizeIfDisplayNewDataAllSignals(timeShot, &myStringOnlyNumbers, 5, 0);
         }
 
 
@@ -1092,7 +1108,7 @@ MainWindow::COMPLEX_NUMBER_GONIO MainWindow::CalculateReflectionRatio(COMPLEX_NU
 
 void MainWindow::getIndexInQList(int NumberComboBox, int indexInComboBox)
 {
-    //qDebug() << "getIndexInQList: " << indexInComboBox;
+    qDebug() << "NumberComboBox" << NumberComboBox << "getIndexInQList: " << indexInComboBox;
 
     if(indexInComboBox >= 1)
     {
@@ -1112,7 +1128,7 @@ void MainWindow::getIndexInQList(int NumberComboBox, int indexInComboBox)
                     if(sourceDataStream == LOG_STREAM)
                     {
                         //qDebug() << "has been found signal: " << allAdxSignals[iLoop].at(absoluteIndex) << endl;
-                        qDebug() << sourceSignText[NumberComboBox];
+                        //qDebug() << sourceSignText[NumberComboBox];
 
                         QFile m_logFile(logPath);
 
@@ -1122,19 +1138,7 @@ void MainWindow::getIndexInQList(int NumberComboBox, int indexInComboBox)
                         }
                         else
                         {
-                            qDebug() << "file opened, size:" << m_logFile.size();
-
                             QTextStream fileStream(&m_logFile);
-
-                            int indexInArrayFour = 0;
-
-                            for(int kLoop = 0; kLoop < nmbCurvesInGraph; kLoop++)
-                            {
-                                if((sourceAd[kLoop] == iLoop) && (sourceSignal[kLoop] >= 0))
-                                {
-                                    indexInArrayFour = kLoop;
-                                }
-                            }
 
                             bool bFlagFirstLog = false;
 
@@ -1155,17 +1159,16 @@ void MainWindow::getIndexInQList(int NumberComboBox, int indexInComboBox)
                                     if(!bFlagFirstLog)
                                     {
                                         bFlagFirstLog = true;
-                                        emit SendUpdateGraph(timeLog, 0, 0, " ", indexInArrayFour, sourceDataStream, 1);
+                                        emit SendUpdateGraph(timeLog, 0, 0, " ", indexInComboBox, sourceDataStream, 1);
                                     }
 
-                                    recognizeIfDisplayNewData(timeLog, &myStringOnlyNumbers, iLoop, 0);
+                                    recognizeIfDisplayNewDataInSignal(timeLog, &myStringOnlyNumbers, NumberComboBox, 0);
                                 }
 
                             }
 
                             //send flag, that has been sending last one
-                            recStat[indexInArrayFour] = 0;
-                            emit SendUpdateGraph(QTime(0, 0, 0), 0, 0, " ", indexInArrayFour, sourceDataStream, 2);
+                            emit SendUpdateGraph(QTime(0,0,0), 0, 0, " ", indexInComboBox, sourceDataStream, 2);
                         }
 
                         m_logFile.close();
@@ -1187,16 +1190,21 @@ void MainWindow::getIndexInQList(int NumberComboBox, int indexInComboBox)
     }
 }
 
-void MainWindow::recognizeIfDisplayNewData(QTime timestamp, QStringList* listOfNumbers, int adx, int flg)
+void MainWindow::recognizeIfDisplayNewDataAllSignals(QTime timestamp, QStringList* listOfNumbers, int adx, int flg)
 {
     for(int iLoop = 0; iLoop < nmbCurvesInGraph; iLoop++)
     {
         if((sourceAd[iLoop] == adx) && (sourceSignal[iLoop] >= 0))
         {
-            recvItems[iLoop] = listOfNumbers->at(sourceSignal[iLoop]).toDouble();
-            emit SendUpdateGraph(timestamp, recvItems[iLoop], recStat[iLoop], sourceSignText[iLoop], iLoop, sourceDataStream, flg);
+            recognizeIfDisplayNewDataInSignal(timestamp, listOfNumbers, iLoop, flg);
         }
     }
+}
+
+void MainWindow::recognizeIfDisplayNewDataInSignal(QTime timestamp, QStringList *listOfNumbers, int indexInSignal, int flg)
+{
+    recvItems[indexInSignal] = listOfNumbers->at(sourceSignal[indexInSignal]).toDouble();
+    emit SendUpdateGraph(timestamp, recvItems[indexInSignal], recStat[indexInSignal], sourceSignText[indexInSignal], indexInSignal, sourceDataStream, flg);
 }
 
 QString MainWindow::myTimeStamp(QTime time)
@@ -1285,8 +1293,6 @@ void MainWindow::on_openlogButton_clicked()
     }
     else
     {
-        qDebug() << "file opened, size:" << m_logFile.size();
-
         QTextStream fileStream(&m_logFile);
 
         while (!fileStream.atEnd())

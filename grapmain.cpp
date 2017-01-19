@@ -28,12 +28,14 @@ Grapmain::Grapmain(QWidget *parent) : QMainWindow(parent)
         {
             if(startStopDisplay->isChecked())
             {
-                findRangesInLog();
+                findMinAndMaxTimeInLog();
+                repaint();
             }
         }
         else if(srcDataStream == LOG_STREAM)
         {
-            findRangesInLog();
+            findMinAndMaxTimeInLog();
+            repaint();
         }
 
     });
@@ -68,12 +70,14 @@ Grapmain::Grapmain(QWidget *parent) : QMainWindow(parent)
             {
                 if(startStopDisplay->isChecked())
                 {
-                    findRangesInLog();
+                    findMinAndMaxTimeInLog();
+                    repaint();
                 }
             }
             else if(srcDataStream == LOG_STREAM)
             {
-                findRangesInLog();
+                findMinAndMaxTimeInLog();
+                repaint();
             }
         }
 
@@ -94,18 +98,20 @@ Grapmain::Grapmain(QWidget *parent) : QMainWindow(parent)
         {
             if(startStopDisplay->isChecked())
             {
-                findRangesInLog();
+                findMinAndMaxTimeInLog();
+                repaint();
             }
         }
         else if(srcDataStream == LOG_STREAM)
         {
-           findRangesInLog();
+           findMinAndMaxTimeInLog();
+           repaint();
         }
 
     });
 }
 
-void Grapmain::findRangesInLog()
+void Grapmain::findMinAndMaxTimeInLog()
 {
     for(int iLoop = 0; iLoop < nmbCurvesInGraph; iLoop++)
     {
@@ -156,10 +162,25 @@ void Grapmain::findRangesInLog()
             //qDebug("signal: %d, ratio: %f, count: %d, indexFirst: %d, indexLast: %d", iLoop, ratioLast, mSignalHistory[iLoop].time.count(), indexToDisplay[iLoop].indexStart, indexToDisplay[iLoop].indexStop);
         }
     }
+}
 
+void Grapmain::findDiffTimeInLog()
+{
+    QTime minTimestamp = findMinTime();
+    QTime maxTimestamp = findMaxTime();
 
-    repaint();
+    int diffTimeInMsec = QTime(minTimestamp).msecsTo(maxTimestamp);
 
+    scBar->setMaximum(diffTimeInMsec);
+    scBar->setValue(scBar->maximum());
+}
+
+void Grapmain::saveNewSampleToBuffer(int index, QTime time, double signal, QString text)
+{
+    mSignalHistory[index].value.append(signal);
+    mSignalHistory[index].time.append(time);
+    mLegendItems[index] = text;
+    timeCurrent = time;
 }
 
 bool Grapmain::WasChangedStateSignal(int source, int stateSignal)
@@ -172,10 +193,7 @@ bool Grapmain::WasChangedStateSignal(int source, int stateSignal)
 
         if(stateSignal == 0)
         {
-            mSignalHistory[source].value.clear();
-            mSignalHistory[source].time.clear();
-            indexToDisplay[source].indexStart = 0;
-            indexToDisplay[source].indexStop = 0;
+            clearSignalHistory(source);
         }
 
         if(stateSignal == 1)
@@ -210,13 +228,7 @@ int Grapmain::GetMinimalResolution(int activeSource[], int* sourceResol)
 
 void Grapmain::startShowGraph(QTime time)
 {
-    for(int iLoop = 0; iLoop < nmbCurvesInGraph; iLoop++)
-    {
-        mSignalHistory[iLoop].value.clear();
-        mSignalHistory[iLoop].time.clear();
-        indexToDisplay[iLoop].indexStart = 0;
-        indexToDisplay[iLoop].indexStop = 0;
-    }
+    clearAllSignalsHistory();
     mTimeHistory.clear();
     mFromStaticToDynamic = false;
     timeAppRuns_ms = 0;
@@ -226,6 +238,22 @@ void Grapmain::startShowGraph(QTime time)
     startStopDisplay->setHidden(true);
     startStopDisplay->setChecked(false);
     scBar->setHidden(true);
+}
+
+void Grapmain::clearSignalHistory(int indexSignal)
+{
+    mSignalHistory[indexSignal].value.clear();
+    mSignalHistory[indexSignal].time.clear();
+    indexToDisplay[indexSignal].indexStart = 0;
+    indexToDisplay[indexSignal].indexStop = 0;
+}
+
+void Grapmain::clearAllSignalsHistory()
+{
+    for(int iLoop = 0; iLoop < nmbCurvesInGraph; iLoop++)
+    {
+        clearSignalHistory(iLoop);
+    }
 }
 
 QTime Grapmain::findMinTime()
@@ -288,11 +316,9 @@ void Grapmain::refreshGraph(QTime currTime, double ssignal, int recStat, QString
         {
             if(flagSignalRecord[sourceSig])
             {
-                mSignalHistory[sourceSig].value.append(ssignal);
-                mSignalHistory[sourceSig].time.append(currTime);
+                saveNewSampleToBuffer(sourceSig, currTime, ssignal, signalText);
+
                 flagSignalRecord[sourceSig] = recStat;
-                mLegendItems[sourceSig] = signalText;
-                timeCurrent = currTime;
             }
 
             for(int iLoop = 0; iLoop < nmbCurvesInGraph; iLoop++)
@@ -317,75 +343,38 @@ void Grapmain::refreshGraph(QTime currTime, double ssignal, int recStat, QString
                 }
             }
 
-            QTime minTimestamp = findMinTime();
-            QTime maxTimestamp = findMaxTime();
-
-            int diffTimeInMsec = QTime(minTimestamp).msecsTo(maxTimestamp);
-
-            scBar->setMaximum(diffTimeInMsec);
-            scBar->setValue(scBar->maximum());
-
-
+            findDiffTimeInLog();
         }
 
         repaint();
     }
     else if(srcDataStream == LOG_STREAM)
     {
-        if(flags == 2)
+        if(flags == 2)//all history loaded
         {
             scBar->setHidden(false);
             scBar->setGeometry(constLeftLimit - 20, currentHeight - 30, usedWidth + 40, 20);
 
-
-
-            QTime minTimestamp = findMinTime();
-            QTime maxTimestamp = findMaxTime();
-
-
-            int diffTimeInMsec = QTime(minTimestamp).msecsTo(maxTimestamp);
-
-            scBar->setMaximum(diffTimeInMsec);
-            scBar->setValue(scBar->maximum());
-
+            findDiffTimeInLog();
+            findMinAndMaxTimeInLog();
             repaint();
         }
-        else if(flags == 1)
+        else if(flags == 1)//prepare for loading history
         {
             timeStartLog = currTime;
         }
-        else
+        else//loading
         {
-            if(recStat)
+            flagSignalRecord[sourceSig] = recStat;
+
+            if(flagSignalRecord[sourceSig])
             {
-                mSignalHistory[sourceSig].value.append(ssignal);
-                mSignalHistory[sourceSig].time.append(currTime);
-                flagSignalRecord[sourceSig] = recStat;
-                mLegendItems[sourceSig] = signalText;
-                timeCurrent = currTime;
-
-
-                for(int iLoop = 0; iLoop < nmbCurvesInGraph; iLoop++)
-                {
-                    indexToDisplay[iLoop].indexStop = mSignalHistory[iLoop].time.count();
-
-                    if(indexToDisplay[iLoop].indexStop)
-                    {
-                        for(int jLoop = (indexToDisplay[iLoop].indexStop - 1); jLoop >= 0; jLoop--)
-                        {
-                            int diffTime = QTime(mSignalHistory[iLoop].time.at(jLoop)).msecsTo(mSignalHistory[iLoop].time.last());
-
-                            if(diffTime >= usedWidth * msPerPixelValue)
-                            {
-                                break;
-                            }
-                            else
-                            {
-                                indexToDisplay[iLoop].indexStart = jLoop;
-                            }
-                        }
-                    }
-                }
+                saveNewSampleToBuffer(sourceSig, currTime, ssignal, signalText);
+            }
+            else
+            {
+               clearSignalHistory(sourceSig);
+               repaint();
             }
         }
     }

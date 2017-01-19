@@ -36,7 +36,11 @@ public:
     bool WasChangedStateSignal(int source, int stateSignal);
     int GetMinimalResolution(int activeSource[nmbCurvesInGraph], int *sourceResol);
     void startShowGraph(QTime time);
-    void findRangesInLog(void);
+    void clearSignalHistory(int indexSignal);
+    void clearAllSignalsHistory(void);
+    void findMinAndMaxTimeInLog(void);
+    void findDiffTimeInLog(void);
+    void saveNewSampleToBuffer(int index, QTime time, double signal, QString text);
 
     QTime findMinTime(void);
     QTime findMaxTime(void);
