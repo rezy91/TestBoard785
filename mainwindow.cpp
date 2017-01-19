@@ -94,6 +94,7 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
             getIndexInQList(0, 0);//send fake in order to clear history signal
         }
         getIndexInQList(0, nValue);
+        emit SendCoefficientSignals(ui->doubleSpinBox->value(), 0);
     });
     connect(ui->comboBox_3,static_cast<void (QComboBox::*)(int)>(&QComboBox::currentIndexChanged),[=](int nValue){
         if(sourceDataStream == LOG_STREAM && nValue >= 0)
@@ -101,6 +102,7 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
             getIndexInQList(1, 0);//send fake in order to clear history signal
         }
         getIndexInQList(1, nValue);
+        emit SendCoefficientSignals(ui->doubleSpinBox_2->value(), 1);
     });
     connect(ui->comboBox_4,static_cast<void (QComboBox::*)(int)>(&QComboBox::currentIndexChanged),[=](int nValue){
         if(sourceDataStream == LOG_STREAM && nValue >= 0)
@@ -108,6 +110,7 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
             getIndexInQList(2, 0);//send fake in order to clear history signal
         }
         getIndexInQList(2, nValue);
+        emit SendCoefficientSignals(ui->doubleSpinBox_3->value(), 2);
     });
     connect(ui->comboBox_5,static_cast<void (QComboBox::*)(int)>(&QComboBox::currentIndexChanged),[=](int nValue){
         if(sourceDataStream == LOG_STREAM && nValue >= 0)
@@ -115,6 +118,8 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
             getIndexInQList(3, 0);//send fake in order to clear history signal
         }
         getIndexInQList(3, nValue);
+        emit SendCoefficientSignals(ui->doubleSpinBox_4->value(), 3);
+
     });
 
 

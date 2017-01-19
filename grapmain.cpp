@@ -45,7 +45,7 @@ Grapmain::Grapmain(QWidget *parent) : QMainWindow(parent)
 
         if(resultValue > constMinimalReolution * constLowLevelResolution)
         {
-            msPerPixelValue = findDiffTimeInLog() / usedWidth;
+            msPerPixelValue = resultValue;
             resolutionValue->setText(QString::number(msPerPixelValue));
 
             findMinAndMaxTimeInLog();
@@ -56,23 +56,29 @@ Grapmain::Grapmain(QWidget *parent) : QMainWindow(parent)
 
     connect(changeResolutionUp, &QPushButton::clicked, [this](){
 
+
         if(QTime(timeStartLog).msecsTo(timeCurrent) > (usedWidth * msPerPixelValue))
         {
-            msPerPixelValue *= constMinimalReolution;
-            resolutionValue->setText(QString::number(msPerPixelValue));
+            int potentialNewresolution = msPerPixelValue * constMinimalReolution;
 
-            if(srcDataStream == RECEIVE_STREAM)
+            if(QTime(timeStartLog).msecsTo(timeCurrent) > (usedWidth * potentialNewresolution))
             {
-                if(startStopDisplay->isChecked())
+                msPerPixelValue = potentialNewresolution;
+                resolutionValue->setText(QString::number(msPerPixelValue));
+
+                if(srcDataStream == RECEIVE_STREAM)
+                {
+                    if(startStopDisplay->isChecked())
+                    {
+                        findMinAndMaxTimeInLog();
+                        repaint();
+                    }
+                }
+                else if(srcDataStream == LOG_STREAM)
                 {
                     findMinAndMaxTimeInLog();
                     repaint();
                 }
-            }
-            else if(srcDataStream == LOG_STREAM)
-            {
-                findMinAndMaxTimeInLog();
-                repaint();
             }
         }
 
@@ -410,7 +416,6 @@ void Grapmain::refreshGraph(QTime currTime, double ssignal, int recStat, QString
 void Grapmain::refreshCoeffSignal(double coefficient, int source)
 {
     mMaxCoefficient[source] = coefficient;
-
     repaint();
 }
 
