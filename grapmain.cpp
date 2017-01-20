@@ -28,12 +28,14 @@ Grapmain::Grapmain(QWidget *parent) : QMainWindow(parent)
         {
             if(startStopDisplay->isChecked())
             {
+                findPreciousTime();
                 findMinAndMaxTimeInLog();
                 repaint();
             }
         }
         else if(srcDataStream == LOG_STREAM)
         {
+            findPreciousTime();
             findMinAndMaxTimeInLog();
             repaint();
         }
@@ -49,6 +51,8 @@ Grapmain::Grapmain(QWidget *parent) : QMainWindow(parent)
             msPerPixelValue = resultValue;
             resolutionValue->setText(QString::number(msPerPixelValue));
 
+
+            findPreciousTime();
             findMinAndMaxTimeInLog();
             repaint();
         }
@@ -70,12 +74,14 @@ Grapmain::Grapmain(QWidget *parent) : QMainWindow(parent)
                 {
                     if(startStopDisplay->isChecked())
                     {
+                        findPreciousTime();
                         findMinAndMaxTimeInLog();
                         repaint();
                     }
                 }
                 else if(srcDataStream == LOG_STREAM)
                 {
+                    findPreciousTime();
                     findMinAndMaxTimeInLog();
                     repaint();
                 }
@@ -97,12 +103,14 @@ Grapmain::Grapmain(QWidget *parent) : QMainWindow(parent)
         {
             if(startStopDisplay->isChecked())
             {
+                findPreciousTime();
                 findMinAndMaxTimeInLog();
                 repaint();
             }
         }
         else if(srcDataStream == LOG_STREAM)
         {
+            findPreciousTime();
            findMinAndMaxTimeInLog();
            repaint();
         }
@@ -114,6 +122,7 @@ Grapmain::Grapmain(QWidget *parent) : QMainWindow(parent)
         msPerPixelValue = constMinimalReolution * constLowLevelResolution;
         resolutionValue->setText(QString::number(msPerPixelValue));
 
+        findPreciousTime();
         findMinAndMaxTimeInLog();
         repaint();
 
@@ -221,6 +230,48 @@ bool Grapmain::isNoSignalDisplayed()
     }
 
     return retValue;
+}
+
+void Grapmain::findPreciousTime()
+{
+
+    int showedWidth = (width() - constLeftLimit - constRightLimit) * msPerPixelValue;
+    int showedHalfWidth = showedWidth / 2;
+    int msFromLeft = 0;
+    int msFromRight = 0;
+
+    if(((scBar->value() - showedHalfWidth) >= 0) && ((scBar->value() + showedHalfWidth) <= scBar->maximum()))
+    {
+        msFromLeft = scBar->value() - showedHalfWidth;
+        msFromRight = scBar->value() + showedHalfWidth;
+
+        lowLevel = timeStartLog.addMSecs(msFromLeft);
+        highLevel = timeStartLog.addMSecs(msFromRight);
+    }
+    else if((scBar->value() - showedHalfWidth) < 0)
+    {
+        msFromLeft = 0;
+        msFromRight = showedWidth;
+
+        lowLevel = timeStartLog;
+        highLevel = timeStartLog.addMSecs(showedWidth);
+    }
+    else if((scBar->value() + showedHalfWidth) > scBar->maximum())
+    {
+        msFromLeft = scBar->maximum() - showedWidth;
+        msFromRight = scBar->maximum();
+
+        lowLevel = timeStartLog.addMSecs(msFromLeft);
+        highLevel = timeCurrent;
+    }
+    else
+    {
+        qDebug() << "!!!!!error in computing ranges for displaying signals!!!!!";
+    }
+
+    qDebug() << timeStartLog << timeCurrent;
+    qDebug() << lowLevel << highLevel;
+    qDebug() << msFromLeft << msFromRight;
 }
 
 bool Grapmain::WasChangedStateSignal(int source, int stateSignal)
@@ -440,6 +491,7 @@ void Grapmain::paintEvent(QPaintEvent*)
     setminResolution->setGeometry(currentWidth - 40, constTopLimit + 50 + 50, 40, 20);
     startStopDisplay->setGeometry(currentWidth - 40, constTopLimit + 50 + 50 + 25, 40, 20);
     scBar->setGeometry(constLeftLimit - 20, currentHeight - 30, usedWidth + 40, 20);
+
 
     for(int iLoop = 0; iLoop < nmbCurvesInGraph; iLoop++)
     {

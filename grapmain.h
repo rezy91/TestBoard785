@@ -42,6 +42,7 @@ public:
     int findDiffTimeInLog(void);
     void saveNewSampleToBuffer(int index, QTime time, double signal, QString text);
     bool isNoSignalDisplayed(void);
+    void findPreciousTime(void);
 
     QTime findMinTime(void);
     QTime findMaxTime(void);
@@ -86,6 +87,8 @@ private:
 
     QTime timeStartLog;
     QTime timeCurrent;//the newest
+    QTime lowLevel;
+    QTime highLevel;
 
     int srcDataStream;
 
