@@ -29,14 +29,12 @@ Grapmain::Grapmain(QWidget *parent) : QMainWindow(parent)
             if(startStopDisplay->isChecked())
             {
                 findPreciousTime();
-                findMinAndMaxTimeInLog();
                 repaint();
             }
         }
         else if(srcDataStream == LOG_STREAM)
         {
             findPreciousTime();
-            findMinAndMaxTimeInLog();
             repaint();
         }
 
@@ -53,7 +51,6 @@ Grapmain::Grapmain(QWidget *parent) : QMainWindow(parent)
 
 
             findPreciousTime();
-            findMinAndMaxTimeInLog();
             repaint();
         }
 
@@ -61,11 +58,11 @@ Grapmain::Grapmain(QWidget *parent) : QMainWindow(parent)
 
     connect(changeResolutionUp, &QPushButton::clicked, [this](){
 
-        if(QTime(timeStartLog).msecsTo(timeCurrent) > (usedWidth * msPerPixelValue))
+        if(QTime(lowAbsolute).msecsTo(highAbsolute) > (usedWidth * msPerPixelValue))
         {
             int potentialNewresolution = msPerPixelValue * constMinimalReolution;
 
-            if(QTime(timeStartLog).msecsTo(timeCurrent) > (usedWidth * potentialNewresolution))
+            if(QTime(lowAbsolute).msecsTo(highAbsolute) > (usedWidth * potentialNewresolution))
             {
                 msPerPixelValue = potentialNewresolution;
                 resolutionValue->setText(QString::number(msPerPixelValue));
@@ -75,14 +72,12 @@ Grapmain::Grapmain(QWidget *parent) : QMainWindow(parent)
                     if(startStopDisplay->isChecked())
                     {
                         findPreciousTime();
-                        findMinAndMaxTimeInLog();
                         repaint();
                     }
                 }
                 else if(srcDataStream == LOG_STREAM)
                 {
                     findPreciousTime();
-                    findMinAndMaxTimeInLog();
                     repaint();
                 }
             }
@@ -104,14 +99,12 @@ Grapmain::Grapmain(QWidget *parent) : QMainWindow(parent)
             if(startStopDisplay->isChecked())
             {
                 findPreciousTime();
-                findMinAndMaxTimeInLog();
                 repaint();
             }
         }
         else if(srcDataStream == LOG_STREAM)
         {
             findPreciousTime();
-           findMinAndMaxTimeInLog();
            repaint();
         }
 
@@ -123,7 +116,6 @@ Grapmain::Grapmain(QWidget *parent) : QMainWindow(parent)
         resolutionValue->setText(QString::number(msPerPixelValue));
 
         findPreciousTime();
-        findMinAndMaxTimeInLog();
         repaint();
 
     });
@@ -139,72 +131,19 @@ Grapmain::Grapmain(QWidget *parent) : QMainWindow(parent)
             else
             {
                 startStopDisplay->setText(buttonOn);
-                clearAllVariables(QTime::currentTime());
+                clearAllVariables();
             }
         }
 
     });
 }
 
-void Grapmain::findMinAndMaxTimeInLog()
-{
-    for(int iLoop = 0; iLoop < nmbCurvesInGraph; iLoop++)
-    {
-        if(flagSignalRecord[iLoop])
-        {
-            double ratioLast = float(scBar->value()) / float(scBar->maximum());
-            int indexLast = mSignalHistory[iLoop].time.count() * ratioLast;
-
-            if(indexLast < 1)
-            {
-                indexLast = 1;
-            }
-
-            indexToDisplay[iLoop].indexStop = indexLast - 1;
-            indexToDisplay[iLoop].indexStart = 0;
-
-
-            //find first index
-            for(int jLoop = indexToDisplay[iLoop].indexStop; jLoop >= 0; jLoop--)
-            {
-                int diffTime = QTime(mSignalHistory[iLoop].time.at(jLoop)).msecsTo(mSignalHistory[iLoop].time.at(indexToDisplay[iLoop].indexStop));
-
-                if(diffTime >= usedWidth * msPerPixelValue)
-                {
-                    break;
-                }
-                else
-                {
-                    indexToDisplay[iLoop].indexStart = jLoop;
-                }
-            }
-
-            //find last index
-            for(int jLoop = indexToDisplay[iLoop].indexStart; jLoop < (mSignalHistory[iLoop].time.count() - 1); jLoop++)
-            {
-                int diffTime = QTime(mSignalHistory[iLoop].time.at(indexToDisplay[iLoop].indexStart)).msecsTo(mSignalHistory[iLoop].time.at(jLoop));
-
-                if(diffTime >= usedWidth * msPerPixelValue)
-                {
-                    break;
-                }
-                else
-                {
-                    indexToDisplay[iLoop].indexStop = jLoop;
-                }
-            }
-
-            //qDebug("signal: %d, ratio: %f, count: %d, indexFirst: %d, indexLast: %d", iLoop, ratioLast, mSignalHistory[iLoop].time.count(), indexToDisplay[iLoop].indexStart, indexToDisplay[iLoop].indexStop);
-        }
-    }
-}
-
 int Grapmain::findDiffTimeInLog()
 {
-    QTime minTimestamp = findMinTime();
-    QTime maxTimestamp = findMaxTime();
+    lowAbsolute = findMinTime();
+    highAbsolute = findMaxTime();
 
-    int diffTimeInMsec = QTime(minTimestamp).msecsTo(maxTimestamp);
+    int diffTimeInMsec = QTime(lowAbsolute).msecsTo(highAbsolute);
 
     scBar->setMaximum(diffTimeInMsec);
     scBar->setValue(scBar->maximum());
@@ -217,7 +156,6 @@ void Grapmain::saveNewSampleToBuffer(int index, QTime time, double signal, QStri
     mSignalHistory[index].value.append(signal);
     mSignalHistory[index].time.append(time);
     mLegendItems[index] = text;
-    timeCurrent = time;
 }
 
 bool Grapmain::isNoSignalDisplayed()
@@ -245,32 +183,32 @@ void Grapmain::findPreciousTime()
         msFromLeft = scBar->value() - showedHalfWidth;
         msFromRight = scBar->value() + showedHalfWidth;
 
-        lowLevel = timeStartLog.addMSecs(msFromLeft);
-        highLevel = timeStartLog.addMSecs(msFromRight);
+        lowLevel = lowAbsolute.addMSecs(msFromLeft);
+        highLevel = lowAbsolute.addMSecs(msFromRight);
     }
     else if((scBar->value() - showedHalfWidth) < 0)
     {
         msFromLeft = 0;
         msFromRight = showedWidth;
 
-        lowLevel = timeStartLog;
-        highLevel = timeStartLog.addMSecs(showedWidth);
+        lowLevel = lowAbsolute;
+        highLevel = lowAbsolute.addMSecs(showedWidth);
     }
     else if((scBar->value() + showedHalfWidth) > scBar->maximum())
     {
         msFromLeft = scBar->maximum() - showedWidth;
         msFromRight = scBar->maximum();
 
-        lowLevel = timeStartLog.addMSecs(msFromLeft);
-        highLevel = timeCurrent;
+        lowLevel = lowAbsolute.addMSecs(msFromLeft);
+        highLevel = highAbsolute;
     }
     else
     {
         qDebug() << "!!!!!error in computing ranges for displaying signals!!!!!";
     }
 
-    //qDebug() << timeStartLog << timeCurrent;
-    //qDebug() << "from:" << lowLevel << "to:" << highLevel;
+    /*qDebug() << lowAbsolute << highAbsolute;
+    qDebug() << "from:" << lowLevel << "to:" << highLevel;*/
 }
 
 bool Grapmain::WasChangedStateSignal(int source, int stateSignal)
@@ -294,7 +232,7 @@ bool Grapmain::WasChangedStateSignal(int source, int stateSignal)
 
     if(isNoSignalDisplayed())
     {
-       clearAllVariables(QTime::currentTime());;
+       clearAllVariables();
     }
 
     return retValue;
@@ -316,15 +254,10 @@ int Grapmain::GetMinimalResolution(int activeSource[], int* sourceResol)
     return minValue;
 }
 
-void Grapmain::clearAllVariables(QTime time)
+void Grapmain::clearAllVariables(void)
 {
     clearAllSignalsHistory();
     mTimeHistory.clear();
-    mFromStaticToDynamic = false;
-    timeAppRuns_ms = 0;
-    mThMoving = 0;
-    timeStartLog = time;
-
     startStopDisplay->setChecked(false);
 }
 
@@ -332,8 +265,6 @@ void Grapmain::clearSignalHistory(int indexSignal)
 {
     mSignalHistory[indexSignal].value.clear();
     mSignalHistory[indexSignal].time.clear();
-    indexToDisplay[indexSignal].indexStart = 0;
-    indexToDisplay[indexSignal].indexStop = 0;
 }
 
 void Grapmain::clearAllSignalsHistory()
@@ -398,7 +329,7 @@ void Grapmain::refreshGraph(QTime currTime, double ssignal, int recStat, QString
         if(WasChangedStateSignal(sourceSig, recStat))
         {
             qDebug() << "start showing graph";
-            clearAllVariables(currTime);
+            clearAllVariables();
         }
 
         if(!startStopDisplay->isChecked())
@@ -410,28 +341,6 @@ void Grapmain::refreshGraph(QTime currTime, double ssignal, int recStat, QString
                 flagSignalRecord[sourceSig] = recStat;
             }
 
-            for(int iLoop = 0; iLoop < nmbCurvesInGraph; iLoop++)
-            {
-                indexToDisplay[iLoop].indexStop = mSignalHistory[iLoop].time.count();
-
-                if(indexToDisplay[iLoop].indexStop)
-                {
-                    for(int jLoop = (indexToDisplay[iLoop].indexStop - 1); jLoop >= 0; jLoop--)
-                    {
-                        int diffTime = QTime(mSignalHistory[iLoop].time.at(jLoop)).msecsTo(mSignalHistory[iLoop].time.last());
-
-                        if(diffTime >= usedWidth * msPerPixelValue)
-                        {
-                            break;
-                        }
-                        else
-                        {
-                            indexToDisplay[iLoop].indexStart = jLoop;
-                        }
-                    }
-                }
-            }
-
             findDiffTimeInLog();
         }
 
@@ -440,16 +349,11 @@ void Grapmain::refreshGraph(QTime currTime, double ssignal, int recStat, QString
     }
     else if(srcDataStream == LOG_STREAM)
     {
-        if(flags == 2)//all history loaded
+        if(flags == 1)//all history loaded
         {
             findPreciousTime();
             findDiffTimeInLog();
-            findMinAndMaxTimeInLog();
             repaint();
-        }
-        else if(flags == 1)//prepare for loading history
-        {
-            timeStartLog = currTime;
         }
         else//loading
         {
@@ -463,7 +367,7 @@ void Grapmain::refreshGraph(QTime currTime, double ssignal, int recStat, QString
             {
                 if(isNoSignalDisplayed())
                 {
-                    clearAllVariables(QTime::currentTime());;
+                    clearAllVariables();
                 }
                 else
                 {
@@ -497,12 +401,6 @@ void Grapmain::paintEvent(QPaintEvent*)
 
     for(int iLoop = 0; iLoop < nmbCurvesInGraph; iLoop++)
     {
-        //Width higher than range and it´s for first one
-        if((QTime(timeStartLog).msecsTo(timeCurrent) > (usedWidth * msPerPixelValue)) && !mFromStaticToDynamic)
-        {
-            mFromStaticToDynamic = true;
-        }
-
         //if there is something to dipslay
         if(mSignalHistory[iLoop].time.count())
         {
@@ -533,6 +431,7 @@ void Grapmain::paintEvent(QPaintEvent*)
 
             //draw points
             int drawXvalue;
+            int tempVar;
 
             for(int jLoop = 0; jLoop < mSignalHistory[iLoop].time.count(); jLoop++)
             {
@@ -551,15 +450,10 @@ void Grapmain::paintEvent(QPaintEvent*)
                         drawYvalue = (int)(mSignalHistory[iLoop].value.at(jLoop) / mMaxCoefficient[iLoop]);
                     }
 
-                    if(jLoop)
-                    {
-                        drawXvalue = QTime(lowLevel).msecsTo(mSignalHistory[iLoop].time.at(jLoop));
-                        drawXvalue /= msPerPixelValue;
-                    }
-                    else
-                    {
-                        drawXvalue = 0;
-                    }
+                    tempVar = QTime(lowLevel).msecsTo(mSignalHistory[iLoop].time.at(jLoop));
+                    drawXvalue = tempVar / msPerPixelValue;
+
+                    //qDebug() << tempVar << drawXvalue;
                     QPoint cnt = QPoint(constLeftLimit + drawXvalue, currentHeight - constBottomLimit - drawYvalue);
 
                     painterMain.setPen(QPen(colorSignal[iLoop]));

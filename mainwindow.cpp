@@ -1144,8 +1144,6 @@ void MainWindow::getIndexInQList(int NumberComboBox, int indexInComboBox)
                         {
                             QTextStream fileStream(&m_logFile);
 
-                            bool bFlagFirstLog = false;
-
                             while (!fileStream.atEnd())
                             {
                                 QString newLinereaded = fileStream.readLine();
@@ -1159,20 +1157,13 @@ void MainWindow::getIndexInQList(int NumberComboBox, int indexInComboBox)
                                     QTime timeLog = QTime::fromString(stringsSplitted[0], "hh:mm:ss,zzz");
                                     QStringList myStringOnlyNumbers = adjustRowDataIntoOnlyNumber(newLinereaded);
 
-                                    //send flag, that this is first one
-                                    if(!bFlagFirstLog)
-                                    {
-                                        bFlagFirstLog = true;
-                                        emit SendUpdateGraph(timeLog, 0, 0, " ", indexInComboBox, sourceDataStream, 1);
-                                    }
-
                                     recognizeIfDisplayNewDataInSignal(timeLog, &myStringOnlyNumbers, NumberComboBox, 0);
                                 }
 
                             }
 
                             //send flag, that has been sending last one
-                            emit SendUpdateGraph(QTime(0,0,0), 0, 0, " ", indexInComboBox, sourceDataStream, 2);
+                            emit SendUpdateGraph(QTime(0,0,0), 0, 0, " ", indexInComboBox, sourceDataStream, 1);
                         }
 
                         m_logFile.close();

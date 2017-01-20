@@ -25,20 +25,14 @@ public:
         QList<double> value;
         QList<QTime> time;
     };
-    struct strRangeToDisplay
-    {
-        int indexStart = 0;
-        int indexStop = 0;
-    };
 
     explicit Grapmain(QWidget *parent = 0);
 
     bool WasChangedStateSignal(int source, int stateSignal);
     int GetMinimalResolution(int activeSource[nmbCurvesInGraph], int *sourceResol);
-    void clearAllVariables(QTime time);
+    void clearAllVariables(void);
     void clearSignalHistory(int indexSignal);
     void clearAllSignalsHistory(void);
-    void findMinAndMaxTimeInLog(void);
     int findDiffTimeInLog(void);
     void saveNewSampleToBuffer(int index, QTime time, double signal, QString text);
     bool isNoSignalDisplayed(void);
@@ -68,10 +62,7 @@ private:
 
     int msPerPixelValue = constMinimalReolution * constLowLevelResolution;
 
-    int timeAppRuns_ms;
-    int mThMoving;
 
-    bool mFromStaticToDynamic = false;
     Qt::GlobalColor colorSignal[nmbCurvesInGraph] = {Qt::blue, Qt::cyan, Qt::red, Qt::magenta};
 
     QList<int> mTimeHistory;
@@ -85,8 +76,15 @@ private:
     QPushButton* startStopDisplay = new QPushButton(this);
     QLabel* resolutionValue = new QLabel(this);
 
+    //saved time for all signals
     QTime timeStartLog;
-    QTime timeCurrent;//the newest
+    QTime timeCurrent;
+
+    //min & max time of all signals
+    QTime lowAbsolute;
+    QTime highAbsolute;
+
+    //range for displaying
     QTime lowLevel;
     QTime highLevel;
 
@@ -102,7 +100,6 @@ private:
 
     //variables for separate signal
     strHistory mSignalHistory[nmbCurvesInGraph];
-    strRangeToDisplay indexToDisplay[nmbCurvesInGraph];
 
     QString mLegendItems[nmbCurvesInGraph];
     double mMaxCoefficient[nmbCurvesInGraph] = {1, 1, 1, 1};
