@@ -28,15 +28,15 @@ public:
 
     explicit Grapmain(QWidget *parent = 0);
 
-    bool WasChangedStateSignal(int source, int stateSignal);
     int GetMinimalResolution(int activeSource[nmbCurvesInGraph], int *sourceResol);
     void clearAllVariables(void);
     void clearSignalHistory(int indexSignal);
     void clearAllSignalsHistory(void);
-    int findDiffTimeInLog(void);
+    int findMinAndMaxTimeInLog(void);
     void saveNewSampleToBuffer(int index, QTime time, double signal, QString text);
     bool isNoSignalDisplayed(void);
     void findPreciousTime(void);
+    void refrGr(QString nameEvent);
 
     QTime findMinTime(void);
     QTime findMaxTime(void);

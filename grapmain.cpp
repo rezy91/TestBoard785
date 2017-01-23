@@ -7,7 +7,6 @@
 
 Grapmain::Grapmain(QWidget *parent) : QMainWindow(parent)
 {
-
     scBar->setMinimum(0);
 
     startStopDisplay->setCheckable(true);
@@ -29,29 +28,28 @@ Grapmain::Grapmain(QWidget *parent) : QMainWindow(parent)
             if(startStopDisplay->isChecked())
             {
                 findPreciousTime();
-                repaint();
+                refrGr("scBar");
             }
         }
         else if(srcDataStream == LOG_STREAM)
         {
             findPreciousTime();
-            repaint();
+            refrGr("scBar");
         }
 
     });
 
     connect(setmaxResolution, &QPushButton::clicked, [this](){
 
-        int resultValue = findDiffTimeInLog() / usedWidth;
+        int resultValue = findMinAndMaxTimeInLog() / usedWidth;
 
         if(resultValue > constMinimalReolution * constLowLevelResolution)
         {
             msPerPixelValue = resultValue;
             resolutionValue->setText(QString::number(msPerPixelValue));
 
-
             findPreciousTime();
-            repaint();
+            refrGr("setmaxResolution");
         }
 
     });
@@ -72,13 +70,13 @@ Grapmain::Grapmain(QWidget *parent) : QMainWindow(parent)
                     if(startStopDisplay->isChecked())
                     {
                         findPreciousTime();
-                        repaint();
+                        refrGr("changeResolutionUp");
                     }
                 }
                 else if(srcDataStream == LOG_STREAM)
                 {
                     findPreciousTime();
-                    repaint();
+                    refrGr("changeResolutionUp");
                 }
             }
         }
@@ -90,22 +88,22 @@ Grapmain::Grapmain(QWidget *parent) : QMainWindow(parent)
         if(msPerPixelValue > constMinimalReolution * constLowLevelResolution)
         {
             msPerPixelValue /= constMinimalReolution;
+            resolutionValue->setText(QString::number(msPerPixelValue));
         }
 
-        resolutionValue->setText(QString::number(msPerPixelValue));
 
         if(srcDataStream == RECEIVE_STREAM)
         {
             if(startStopDisplay->isChecked())
             {
                 findPreciousTime();
-                repaint();
+                refrGr("changeResolutionDown");
             }
         }
         else if(srcDataStream == LOG_STREAM)
         {
             findPreciousTime();
-           repaint();
+            refrGr("changeResolutionDown");
         }
 
     });
@@ -116,7 +114,7 @@ Grapmain::Grapmain(QWidget *parent) : QMainWindow(parent)
         resolutionValue->setText(QString::number(msPerPixelValue));
 
         findPreciousTime();
-        repaint();
+        refrGr("setminResolution");
 
     });
 
@@ -138,7 +136,7 @@ Grapmain::Grapmain(QWidget *parent) : QMainWindow(parent)
     });
 }
 
-int Grapmain::findDiffTimeInLog()
+int Grapmain::findMinAndMaxTimeInLog()
 {
     lowAbsolute = findMinTime();
     highAbsolute = findMaxTime();
@@ -173,20 +171,21 @@ bool Grapmain::isNoSignalDisplayed()
 void Grapmain::findPreciousTime()
 {
 
-    int showedWidth = (width() - constLeftLimit - constRightLimit) * msPerPixelValue;
+    int showedWidth = usedWidth * msPerPixelValue;
     int showedHalfWidth = showedWidth / 2;
     int msFromLeft = 0;
     int msFromRight = 0;
+    int actualValueBar = scBar->value();
 
-    if(((scBar->value() - showedHalfWidth) >= 0) && ((scBar->value() + showedHalfWidth) <= scBar->maximum()))
+    if(((actualValueBar - showedHalfWidth) >= 0) && ((actualValueBar + showedHalfWidth) <= scBar->maximum()))
     {
-        msFromLeft = scBar->value() - showedHalfWidth;
-        msFromRight = scBar->value() + showedHalfWidth;
+        msFromLeft = actualValueBar - showedHalfWidth;
+        msFromRight = actualValueBar + showedHalfWidth;
 
         lowLevel = lowAbsolute.addMSecs(msFromLeft);
         highLevel = lowAbsolute.addMSecs(msFromRight);
     }
-    else if((scBar->value() - showedHalfWidth) < 0)
+    else if((actualValueBar - showedHalfWidth) < 0)
     {
         msFromLeft = 0;
         msFromRight = showedWidth;
@@ -194,9 +193,14 @@ void Grapmain::findPreciousTime()
         lowLevel = lowAbsolute;
         highLevel = lowAbsolute.addMSecs(showedWidth);
     }
-    else if((scBar->value() + showedHalfWidth) > scBar->maximum())
+    else if((actualValueBar + showedHalfWidth) > scBar->maximum())
     {
         msFromLeft = scBar->maximum() - showedWidth;
+        if(msFromLeft < 0)//in case when is displaying online and all points don´t cover all range of 'showedWidth'
+        {
+            msFromLeft = 0;
+        }
+
         msFromRight = scBar->maximum();
 
         lowLevel = lowAbsolute.addMSecs(msFromLeft);
@@ -207,35 +211,20 @@ void Grapmain::findPreciousTime()
         qDebug() << "!!!!!error in computing ranges for displaying signals!!!!!";
     }
 
-    /*qDebug() << lowAbsolute << highAbsolute;
-    qDebug() << "from:" << lowLevel << "to:" << highLevel;*/
+    if(lowLevel < lowAbsolute)
+    {
+        qDebug() << "some bad";
+    }
+
+    //qDebug() << lowAbsolute << highAbsolute;
+    //qDebug() << "from:" << lowLevel << "to:" << highLevel;
 }
 
-bool Grapmain::WasChangedStateSignal(int source, int stateSignal)
+void Grapmain::refrGr(QString nameEvent)
 {
-    bool retValue = false;
-
-    if(flagSignalRecord[source] != stateSignal)
-    {
-        flagSignalRecord[source] = stateSignal;
-
-        if(stateSignal == 0)
-        {
-            clearSignalHistory(source);
-        }
-
-        if(stateSignal == 1)
-        {
-            retValue = true;
-        }
-    }
-
-    if(isNoSignalDisplayed())
-    {
-       clearAllVariables();
-    }
-
-    return retValue;
+    Q_UNUSED(nameEvent);
+    //qDebug() << nameEvent;
+    repaint();
 }
 
 int Grapmain::GetMinimalResolution(int activeSource[], int* sourceResol)
@@ -274,6 +263,7 @@ void Grapmain::clearAllSignalsHistory()
         clearSignalHistory(iLoop);
     }
     msPerPixelValue = constMinimalReolution * constLowLevelResolution;
+    resolutionValue->setText(QString::number(msPerPixelValue));
 }
 
 QTime Grapmain::findMinTime()
@@ -326,10 +316,16 @@ void Grapmain::refreshGraph(QTime currTime, double ssignal, int recStat, QString
 
     if(srcDataStream == RECEIVE_STREAM)
     {
-        if(WasChangedStateSignal(sourceSig, recStat))
+        flagSignalRecord[sourceSig] = recStat;
+
+        if(flagSignalRecord[sourceSig] == 0)
         {
-            qDebug() << "start showing graph";
-            clearAllVariables();
+            clearSignalHistory(sourceSig);
+        }
+
+        if(isNoSignalDisplayed())
+        {
+           clearAllVariables();
         }
 
         if(!startStopDisplay->isChecked())
@@ -337,23 +333,20 @@ void Grapmain::refreshGraph(QTime currTime, double ssignal, int recStat, QString
             if(flagSignalRecord[sourceSig])
             {
                 saveNewSampleToBuffer(sourceSig, currTime, ssignal, signalText);
-
-                flagSignalRecord[sourceSig] = recStat;
+                findMinAndMaxTimeInLog();
             }
-
-            findDiffTimeInLog();
         }
 
         findPreciousTime();
-        repaint();
+        refrGr("srcDataStream - RECEIVE_STREAM");
     }
     else if(srcDataStream == LOG_STREAM)
     {
         if(flags == 1)//all history loaded
         {
+            findMinAndMaxTimeInLog();
             findPreciousTime();
-            findDiffTimeInLog();
-            repaint();
+            refrGr("srcDataStream - LOG_STREAM");
         }
         else//loading
         {
@@ -373,7 +366,7 @@ void Grapmain::refreshGraph(QTime currTime, double ssignal, int recStat, QString
                 {
                     clearSignalHistory(sourceSig);
                 }
-                repaint();
+                refrGr("srcDataStream - LOG_STREAM");
             }
         }
     }
@@ -382,7 +375,7 @@ void Grapmain::refreshGraph(QTime currTime, double ssignal, int recStat, QString
 void Grapmain::refreshCoeffSignal(double coefficient, int source)
 {
     mMaxCoefficient[source] = coefficient;
-    repaint();
+    refrGr("new coeff");
 }
 
 void Grapmain::paintEvent(QPaintEvent*)
@@ -533,6 +526,84 @@ void Grapmain::paintEvent(QPaintEvent*)
         painterMain.drawLine(QPoint(constLeftLimit, constTopLimit - 20),QPoint(constLeftLimit + 10, constTopLimit - 20 + 10));
     }
 
+    int timeAxisResolution = 0;
+
+    if(msPerPixelValue >= 36000)
+    {
+        timeAxisResolution = 60 * 60;
+    }
+    else if(msPerPixelValue >= 12000)
+    {
+        timeAxisResolution = 60 * 20;
+    }
+    else if(msPerPixelValue >= 6000)
+    {
+        timeAxisResolution = 60 * 10;
+    }
+    else if(msPerPixelValue >= 3000)
+    {
+        timeAxisResolution = 60 * 5;
+    }
+    else if(msPerPixelValue >= 1200)
+    {
+        timeAxisResolution = 60 * 2;
+    }
+    else if(msPerPixelValue >= 600)
+    {
+        timeAxisResolution = 60;
+    }
+    else if(msPerPixelValue >= 200)
+    {
+        timeAxisResolution = 20;
+    }
+    else if(msPerPixelValue >= 100)
+    {
+        timeAxisResolution = 10;
+    }
+    else if(msPerPixelValue >= 50)
+    {
+        timeAxisResolution = 5;
+    }
+    else if(msPerPixelValue >= 20)
+    {
+        timeAxisResolution = 2;
+    }
+    else
+    {
+        timeAxisResolution = 1;
+    }
+
+    painterMain.drawText(QPoint(200, 20),QString::number(timeAxisResolution));
+
+
+
+
+    int secondsAtRow = (usedWidth * msPerPixelValue) / 1000;
+    int valueOffset, drawXvalue;
+
+    valueOffset = 1000 - QTime(lowLevel).msec();
+    // drawXvalue = (valueOffset * timeAxisResolution) / msPerPixelValue;
+    drawXvalue = valueOffset / msPerPixelValue;
+
+    qDebug() << "lines:" << secondsAtRow << "offset:" << valueOffset << "value:" << drawXvalue;
+
+
+    for(int iLoop = 0; iLoop <= secondsAtRow; iLoop++)
+    {
+        if(!(iLoop % timeAxisResolution))
+        {
+            int xShift = (iLoop * 1000) / msPerPixelValue;
+
+            painterMain.drawLine(QPoint(constLeftLimit + drawXvalue + xShift, currentHeight - constBottomLimit), QPoint(constLeftLimit + drawXvalue + xShift, constTopLimit - 20));
+            painterMain.drawText(QPoint(constLeftLimit + drawXvalue + xShift, currentHeight - constBottomLimit), QString::number(lowLevel.second() + 1 + iLoop));
+        }
+
+    }
+
+    qDebug() << lowLevel << highLevel;
+
+
+
     /*//time axis computing
     if(mMinimalResSource == mSourceEvent)
     {
@@ -581,3 +652,4 @@ void Grapmain::paintEvent(QPaintEvent*)
         painterMain.drawLine(QPoint(constLeftLimit + widthOneVertLine - mThMoving * constSamples + widthOneVertLine * (kLoop - mHistoryTimeStart), currentHeight - constBottomLimit),QPoint(constLeftLimit + widthOneVertLine - mThMoving * constSamples + widthOneVertLine * (kLoop - mHistoryTimeStart), constTopLimit));
     }*/
 }
+
