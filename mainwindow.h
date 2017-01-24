@@ -127,14 +127,15 @@ private:
     double recvItems[nmbCurvesInGraph] = {0, 0, 0, 0};
     int recStat[nmbCurvesInGraph] = {0, 0, 0, 0};
 
-    QString allSignalsBaseOnly[6] = {"ad3c", "ad3s", "ad2c", "ad2s", "ad1c", "ad1s"};
-    QStringList allAdxSignals[6] = {{"ad3c_1", "ad3c_2", "ad3c_3"}, \
-                                    {"ad3s_1", "ad3s_2", "ad3s_3", "ad3s_4", "ad3s_5"}, \
-                                    {"ad2c_1", "ad2c_2", "ad2c_3", "ad2c_4", "ad2c_5", "ad2c_6", "ad2c_7", "ad2c_8", "ad2c_9", "ad2c_10"}, \
-                                    {"ad2s_1", "ad2s_2", "ad2s_3", "ad2s_4", "ad2s_5", "ad2s_6", "ad2s_7", "ad2s_8"}, \
-                                    {"ad1c_1", "ad1c_2", "ad1c_3"}, \
-                                    {"ad1s_1", "ad1s_2", "ad1s_3", "ad1s_4", "ad1s_5", "ad1s_6", "ad1s_7", "ad1s_8", "ad1s_9", "ad1s_10"}};
-    bool flagIfSourceIsLogged[6];
+    QString allSignalsBaseOnly[NMB_ITEMS_FOR_TIMERS] = {"ad3c", "ad3s", "ad2c", "ad2s", "ad1c", "ad1s"};
+    QStringList allAdxSignals[NMB_ITEMS_FOR_TIMERS] = { \
+                                    {"ad3c_counter", "ad3c_exec", "ad3c_conv"}, \
+                                    {"ad3s_counter", "Cooling_ADC1", "Cooling_ADC2", "Cooling_ADC3", "Cooling_ADC4"}, \
+                                    {"ad2c_counter", "imp_avg_mag", "imp_avg_phs", "imp_max_mag", "imp_max_phs", "ratio_real", "ratio_imag", "power", "ad2c_exec", "ad2c_conv"}, \
+                                    {"ad2s_counter", "Vrf_adc", "I4_adc", "Vforward_adc", "I2_adc", "Vreverse_adc", "I3_adc", "I1_adc"}, \
+                                    {"ad1c_counter", "ad1c_exec", "ad1c_conv"}, \
+                                    {"ad1s_counter", "Apl1_Vcc_Adc", "CQM1_adc", "CQM2_adc", "Vref", "Temperature1", "+24V_adc", "+5V_adc", "temper_mcu_adc", "vrefin_adc"}};
+    bool flagIfSourceIsLogged[NMB_ITEMS_FOR_TIMERS];
 
     int sourceSignal[nmbCurvesInGraph] = {0, 0, 0, 0};
     int sourceAd[nmbCurvesInGraph] = {0, 0, 0, 0};

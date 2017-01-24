@@ -62,11 +62,7 @@ private:
 
     int msPerPixelValue = constMinimalReolution * constLowLevelResolution;
 
-
-    Qt::GlobalColor colorSignal[nmbCurvesInGraph] = {Qt::blue, Qt::cyan, Qt::red, Qt::magenta};
-
-    QList<int> mTimeHistory;
-
+    Qt::GlobalColor colorSignal[nmbCurvesInGraph] = {Qt::blue, Qt::green, Qt::red, Qt::magenta};
 
     QScrollBar* scBar = new QScrollBar(Qt::Horizontal, this);
     QPushButton* setmaxResolution = new QPushButton(this);
@@ -75,10 +71,6 @@ private:
     QPushButton* setminResolution = new QPushButton(this);
     QPushButton* startStopDisplay = new QPushButton(this);
     QLabel* resolutionValue = new QLabel(this);
-
-    //saved time for all signals
-    QTime timeStartLog;
-    QTime timeCurrent;
 
     //min & max time of all signals
     QTime lowAbsolute;
@@ -90,23 +82,18 @@ private:
 
     int srcDataStream;
 
-
     int usedWidth;
     int usedHeight;
     int currentHeight;
     int currentWidth;
     int nmbHorizLines;
 
-
     //variables for separate signal
     strHistory mSignalHistory[nmbCurvesInGraph];
-
     QString mLegendItems[nmbCurvesInGraph];
     double mMaxCoefficient[nmbCurvesInGraph] = {1, 1, 1, 1};
     int mRefreshTime_ms[nmbCurvesInGraph] = {std::numeric_limits<int>::max(), std::numeric_limits<int>::max(), std::numeric_limits<int>::max(), std::numeric_limits<int>::max()};
-
     int flagSignalRecord[nmbCurvesInGraph] = {0, 0, 0, 0};
-
 
 public slots:
     void refreshGraph(QTime currTime, double ssignal, int recStat, QString signalText, int sourceSig, int sourceStream, int flags);
