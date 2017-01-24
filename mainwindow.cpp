@@ -124,7 +124,11 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
 
     connect(ui->doubleSpinBox,static_cast<void (QDoubleSpinBox::*)(double)>(&QDoubleSpinBox::valueChanged),[=](double nValue){
 
-        if(nValue >= 10)
+        if(nValue >= 100)
+        {
+           ui->doubleSpinBox->setSingleStep(10.0);
+        }
+        else if(nValue >= 10)
         {
             ui->doubleSpinBox->setSingleStep(1.0);
         }
@@ -144,7 +148,11 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
 
     connect(ui->doubleSpinBox_2,static_cast<void (QDoubleSpinBox::*)(double)>(&QDoubleSpinBox::valueChanged),[=](double nValue){
 
-        if(nValue >= 10)
+        if(nValue >= 100)
+        {
+            ui->doubleSpinBox_2->setSingleStep(10.0);
+        }
+        else if(nValue >= 10)
         {
             ui->doubleSpinBox_2->setSingleStep(1.0);
         }
@@ -164,7 +172,11 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
 
     connect(ui->doubleSpinBox_3,static_cast<void (QDoubleSpinBox::*)(double)>(&QDoubleSpinBox::valueChanged),[=](double nValue){
 
-        if(nValue >= 10)
+        if(nValue >= 100)
+        {
+            ui->doubleSpinBox_3->setSingleStep(10.0);
+        }
+        else if(nValue >= 10)
         {
             ui->doubleSpinBox_3->setSingleStep(1.0);
         }
@@ -184,7 +196,11 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
 
     connect(ui->doubleSpinBox_4,static_cast<void (QDoubleSpinBox::*)(double)>(&QDoubleSpinBox::valueChanged),[=](double nValue){
 
-        if(nValue >= 10)
+        if(nValue >= 100)
+        {
+            ui->doubleSpinBox_4->setSingleStep(10.0);
+        }
+        else if(nValue >= 10)
         {
             ui->doubleSpinBox_4->setSingleStep(1.0);
         }

@@ -248,7 +248,6 @@ int Grapmain::GetMinimalResolution(int activeSource[], int* sourceResol)
 void Grapmain::clearAllVariables(void)
 {
     clearAllSignalsHistory();
-    mTimeHistory.clear();
     startStopDisplay->setChecked(false);
 }
 
@@ -513,76 +512,6 @@ void Grapmain::paintEvent(QPaintEvent*)
         painterMain.drawLine(QPoint(constLeftLimit, constTopLimit - 20),QPoint(constLeftLimit - 10, constTopLimit - 20 + 10));
         painterMain.drawLine(QPoint(constLeftLimit, constTopLimit - 20),QPoint(constLeftLimit + 10, constTopLimit - 20 + 10));
 
-        /*
-        int timeAxisResolution = 0;
-
-        if(msPerPixelValue >= 36000)
-        {
-            timeAxisResolution = 60 * 60;
-        }
-        else if(msPerPixelValue >= 12000)
-        {
-            timeAxisResolution = 60 * 20;
-        }
-        else if(msPerPixelValue >= 6000)
-        {
-            timeAxisResolution = 60 * 10;
-        }
-        else if(msPerPixelValue >= 3000)
-        {
-            timeAxisResolution = 60 * 5;
-        }
-        else if(msPerPixelValue >= 1200)
-        {
-            timeAxisResolution = 60 * 2;
-        }
-        else if(msPerPixelValue >= 600)
-        {
-            timeAxisResolution = 60;
-        }
-        else if(msPerPixelValue >= 200)
-        {
-            timeAxisResolution = 20;
-        }
-        else if(msPerPixelValue >= 100)
-        {
-            timeAxisResolution = 10;
-        }
-        else if(msPerPixelValue >= 50)
-        {
-            timeAxisResolution = 5;
-        }
-        else if(msPerPixelValue >= 20)
-        {
-            timeAxisResolution = 2;
-        }
-        else
-        {
-            timeAxisResolution = 1;
-        }
-
-        int secondsAtRow = (usedWidth * msPerPixelValue) / 1000;
-        int valueOffset, drawXvalue;
-
-        valueOffset = 1000 - QTime(lowLevel).msec();
-        //drawXvalue = (valueOffset * timeAxisResolution) / msPerPixelValue;
-        drawXvalue = valueOffset / msPerPixelValue;
-
-        qDebug() << "lines:" << secondsAtRow << "offset:" << valueOffset << "value:" << drawXvalue;
-
-
-        for(int iLoop = 0; iLoop <= secondsAtRow; iLoop++)
-        {
-            if(!(iLoop % timeAxisResolution))
-            {
-                int xShift = (iLoop * 1000) / msPerPixelValue;
-
-                painterMain.drawLine(QPoint(constLeftLimit + drawXvalue + xShift, currentHeight - constBottomLimit), QPoint(constLeftLimit + drawXvalue + xShift, constTopLimit - 20));
-                painterMain.drawText(QPoint(constLeftLimit + drawXvalue + xShift, currentHeight - constBottomLimit), QString::number(lowLevel.second() + 1 + iLoop));
-            }
-        }
-
-        qDebug() << lowLevel << highLevel;*/
 
         painterMain.drawText(QPoint(constLeftLimit, currentHeight - constBottomLimit + 20), lowLevel.toString());
         painterMain.drawText(QPoint(currentWidth - constRightLimit, currentHeight - constBottomLimit + 20), highLevel.toString());
