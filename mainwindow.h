@@ -148,8 +148,6 @@ signals:
     void SendUpdateGraph(QTime timestamp, double receivedValue, int recordState, QString nameSignals, int src, int srStr, int flgs);
     void SendCoefficientSignals(double coef, int src);
 
-    void SendStateButton(bool state);
-
 protected:
     void closeEvent(QCloseEvent *event) override;
 };

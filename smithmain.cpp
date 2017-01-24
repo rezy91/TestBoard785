@@ -19,30 +19,16 @@ void SmithMain::ReceivedNewData(int magnitudeAvg, int phaseAvg, int magnitude50,
     mRatio_magnitude50 = qreal(magnitude50) / 1000;
     mRatio_phase50 = qreal(phase50) / 1000;
 
-    update();
-}
-
-void SmithMain::ReceivedStateButton(bool state)
-{
-    if(state)
-    {
-        setFixedSize(width(), height());
-    }
-    else
-    {
-        setMinimumSize(0,0);
-        setMaximumSize(10000,10000);
-    }
+    repaint();
 }
 
 bool SmithMain::eventFilter(QObject *, QEvent *event)
 {
-    static int counter = 0;
     bool state = false;
 
     if(event->type() == QEvent::Resize)
     {
-        qDebug() << "resize " << counter++;
+        repaint();
         state = true;
     }
     else

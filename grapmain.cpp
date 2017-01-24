@@ -7,6 +7,8 @@
 
 Grapmain::Grapmain(QWidget *parent) : QMainWindow(parent)
 {
+    installEventFilter(this);
+
     scBar->setMinimum(0);
 
     startStopDisplay->setCheckable(true);
@@ -304,14 +306,6 @@ QTime Grapmain::findMaxTime()
 
 void Grapmain::refreshGraph(QTime currTime, double ssignal, int recStat, QString signalText, int sourceSig, int sourceStream, int flags)
 {
-    currentHeight = height();
-    currentWidth = width();
-
-
-    usedWidth = currentWidth - constLeftLimit - constRightLimit;
-    nmbHorizLines = (currentHeight - constBottomLimit - constTopLimit) / constDistanceHorizontalLines_pxs;
-    usedHeight = nmbHorizLines * constDistanceHorizontalLines_pxs;
-
     srcDataStream = sourceStream;
 
     if(srcDataStream == RECEIVE_STREAM)
@@ -518,138 +512,119 @@ void Grapmain::paintEvent(QPaintEvent*)
         painterMain.drawLine(QPoint(constLeftLimit, currentHeight - constBottomLimit), QPoint(currentWidth - 40, currentHeight - constBottomLimit));
         painterMain.drawLine(QPoint(currentWidth - 10 - 40, currentHeight - constBottomLimit - 10), QPoint(currentWidth - 40, currentHeight - constBottomLimit));
         painterMain.drawLine(QPoint(currentWidth - 10 - 40, currentHeight - constBottomLimit + 10), QPoint(currentWidth - 40, currentHeight - constBottomLimit));
-        painterMain.drawText(QPoint(currentWidth + 5 - 40, currentHeight - constBottomLimit), "t[ms]");
+        painterMain.drawText(QPoint(currentWidth + 5 - 40, currentHeight - constBottomLimit), "t");
 
         //y-axis
         painterMain.drawLine(QPoint(constLeftLimit, currentHeight - constBottomLimit),QPoint(constLeftLimit, constTopLimit - 20));
         painterMain.drawLine(QPoint(constLeftLimit, constTopLimit - 20),QPoint(constLeftLimit - 10, constTopLimit - 20 + 10));
         painterMain.drawLine(QPoint(constLeftLimit, constTopLimit - 20),QPoint(constLeftLimit + 10, constTopLimit - 20 + 10));
+
+        /*
+        int timeAxisResolution = 0;
+
+        if(msPerPixelValue >= 36000)
+        {
+            timeAxisResolution = 60 * 60;
+        }
+        else if(msPerPixelValue >= 12000)
+        {
+            timeAxisResolution = 60 * 20;
+        }
+        else if(msPerPixelValue >= 6000)
+        {
+            timeAxisResolution = 60 * 10;
+        }
+        else if(msPerPixelValue >= 3000)
+        {
+            timeAxisResolution = 60 * 5;
+        }
+        else if(msPerPixelValue >= 1200)
+        {
+            timeAxisResolution = 60 * 2;
+        }
+        else if(msPerPixelValue >= 600)
+        {
+            timeAxisResolution = 60;
+        }
+        else if(msPerPixelValue >= 200)
+        {
+            timeAxisResolution = 20;
+        }
+        else if(msPerPixelValue >= 100)
+        {
+            timeAxisResolution = 10;
+        }
+        else if(msPerPixelValue >= 50)
+        {
+            timeAxisResolution = 5;
+        }
+        else if(msPerPixelValue >= 20)
+        {
+            timeAxisResolution = 2;
+        }
+        else
+        {
+            timeAxisResolution = 1;
+        }
+
+        int secondsAtRow = (usedWidth * msPerPixelValue) / 1000;
+        int valueOffset, drawXvalue;
+
+        valueOffset = 1000 - QTime(lowLevel).msec();
+        //drawXvalue = (valueOffset * timeAxisResolution) / msPerPixelValue;
+        drawXvalue = valueOffset / msPerPixelValue;
+
+        qDebug() << "lines:" << secondsAtRow << "offset:" << valueOffset << "value:" << drawXvalue;
+
+
+        for(int iLoop = 0; iLoop <= secondsAtRow; iLoop++)
+        {
+            if(!(iLoop % timeAxisResolution))
+            {
+                int xShift = (iLoop * 1000) / msPerPixelValue;
+
+                painterMain.drawLine(QPoint(constLeftLimit + drawXvalue + xShift, currentHeight - constBottomLimit), QPoint(constLeftLimit + drawXvalue + xShift, constTopLimit - 20));
+                painterMain.drawText(QPoint(constLeftLimit + drawXvalue + xShift, currentHeight - constBottomLimit), QString::number(lowLevel.second() + 1 + iLoop));
+            }
+        }
+
+        qDebug() << lowLevel << highLevel;*/
+
+        painterMain.drawText(QPoint(constLeftLimit, currentHeight - constBottomLimit + 20), lowLevel.toString());
+        painterMain.drawText(QPoint(currentWidth - constRightLimit, currentHeight - constBottomLimit + 20), highLevel.toString());
+
+        int diffTimeInMsec = QTime(lowLevel).msecsTo(highLevel);
+
+        QTime diffTime(0,0,0);
+        diffTime = diffTime.addMSecs(diffTimeInMsec);
+
+        painterMain.drawText(QPoint(currentWidth / 2, currentHeight - constBottomLimit + 20), diffTime.toString());
     }
 
-    int timeAxisResolution = 0;
+}
 
-    if(msPerPixelValue >= 36000)
+bool Grapmain::eventFilter(QObject *, QEvent *event)
+{
+    bool state = false;
+
+    if(event->type() == QEvent::Resize)
     {
-        timeAxisResolution = 60 * 60;
-    }
-    else if(msPerPixelValue >= 12000)
-    {
-        timeAxisResolution = 60 * 20;
-    }
-    else if(msPerPixelValue >= 6000)
-    {
-        timeAxisResolution = 60 * 10;
-    }
-    else if(msPerPixelValue >= 3000)
-    {
-        timeAxisResolution = 60 * 5;
-    }
-    else if(msPerPixelValue >= 1200)
-    {
-        timeAxisResolution = 60 * 2;
-    }
-    else if(msPerPixelValue >= 600)
-    {
-        timeAxisResolution = 60;
-    }
-    else if(msPerPixelValue >= 200)
-    {
-        timeAxisResolution = 20;
-    }
-    else if(msPerPixelValue >= 100)
-    {
-        timeAxisResolution = 10;
-    }
-    else if(msPerPixelValue >= 50)
-    {
-        timeAxisResolution = 5;
-    }
-    else if(msPerPixelValue >= 20)
-    {
-        timeAxisResolution = 2;
+        currentHeight = height();
+        currentWidth = width();
+
+
+        usedWidth = currentWidth - constLeftLimit - constRightLimit;
+        nmbHorizLines = (currentHeight - constBottomLimit - constTopLimit) / constDistanceHorizontalLines_pxs;
+        usedHeight = nmbHorizLines * constDistanceHorizontalLines_pxs;
+
+        findPreciousTime();
+        refrGr("resize widget");
+        state = true;
     }
     else
     {
-        timeAxisResolution = 1;
-    }
-
-    painterMain.drawText(QPoint(200, 20),QString::number(timeAxisResolution));
-
-
-
-
-    int secondsAtRow = (usedWidth * msPerPixelValue) / 1000;
-    int valueOffset, drawXvalue;
-
-    valueOffset = 1000 - QTime(lowLevel).msec();
-    // drawXvalue = (valueOffset * timeAxisResolution) / msPerPixelValue;
-    drawXvalue = valueOffset / msPerPixelValue;
-
-    qDebug() << "lines:" << secondsAtRow << "offset:" << valueOffset << "value:" << drawXvalue;
-
-
-    for(int iLoop = 0; iLoop <= secondsAtRow; iLoop++)
-    {
-        if(!(iLoop % timeAxisResolution))
-        {
-            int xShift = (iLoop * 1000) / msPerPixelValue;
-
-            painterMain.drawLine(QPoint(constLeftLimit + drawXvalue + xShift, currentHeight - constBottomLimit), QPoint(constLeftLimit + drawXvalue + xShift, constTopLimit - 20));
-            painterMain.drawText(QPoint(constLeftLimit + drawXvalue + xShift, currentHeight - constBottomLimit), QString::number(lowLevel.second() + 1 + iLoop));
-        }
+        state = false;
 
     }
-
-    qDebug() << lowLevel << highLevel;
-
-
-
-    /*//time axis computing
-    if(mMinimalResSource == mSourceEvent)
-    {
-        timeAppRuns_ms += mMinimalResolution;
-
-        if(maxXValue)
-        {
-            if(!(timeAppRuns_ms % (mMinimalResolution * constSamples)) && (mMinimalResSource == mSourceEvent))
-            {
-                mTimeHistory.append(timeAppRuns_ms);
-                mHistoryTimeStop = mTimeHistory.count();
-            }
-
-            if(mFromStaticToDynamic)
-            {
-                if(++mThMoving == constSamples)
-                {
-                    mThMoving = 0;
-                    mHistoryTimeStart++;
-                }
-
-                scBar->setMaximum(timeAppRuns_ms);
-                scBar->setValue(scBar->maximum());
-            }
-        }
-    }*/
-
-/*
-    //draw hozironzal lines & x(time) axis
-    for(int kLoop = mHistoryTimeStart; kLoop < mTimeHistory.count(); kLoop++)
-    {
-        painterMain.setPen(QPen(Qt::black));
-
-        if(((mTimeHistory.at(kLoop) / 1000) / 60) > 60)//time more than a hour
-        {
-            clearAllVariables(QTime::currentTime());
-        }
-
-        int minutes = (mTimeHistory.at(kLoop) / 1000) / 60;
-        int seconds = (mTimeHistory.at(kLoop) / 1000) % 60;
-        int milisec = (mTimeHistory.at(kLoop) % 1000) / 100;
-        painterMain.drawText(QPoint(constLeftLimit + widthOneVertLine - mThMoving * constSamples + widthOneVertLine * (kLoop - mHistoryTimeStart) - 20, currentHeight - constBottomLimit + 10), QString("%1:%2,%3").arg(minutes, 2, 10, QChar('0')).arg(seconds, 2, 10, QChar('0')).arg(milisec));
-
-
-        painterMain.setPen(QPen(Qt::lightGray));
-        painterMain.drawLine(QPoint(constLeftLimit + widthOneVertLine - mThMoving * constSamples + widthOneVertLine * (kLoop - mHistoryTimeStart), currentHeight - constBottomLimit),QPoint(constLeftLimit + widthOneVertLine - mThMoving * constSamples + widthOneVertLine * (kLoop - mHistoryTimeStart), constTopLimit));
-    }*/
+    return state;
 }
-

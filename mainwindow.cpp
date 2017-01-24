@@ -36,7 +36,6 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
     o_smith->show();
 
     connect(this, &MainWindow::SendNewData, o_smith, &SmithMain::ReceivedNewData);
-    connect(this, &MainWindow::SendStateButton, o_smith, &SmithMain::ReceivedStateButton);
 
 
     o_graph->setWindowIcon(QIcon(":/iconGraph.jpg"));
@@ -925,7 +924,6 @@ void MainWindow::on_connectButton_clicked()
             return;
         }
     }
-    emit SendStateButton(true);
 }
 
 void MainWindow::SetAvaiblePorts()
@@ -1260,8 +1258,6 @@ void MainWindow::on_disconnectButton_clicked()
     ui->comboBox_5->clear();
 
     sourceDataStream = NO_STREAM;
-
-    emit SendStateButton(false);
 }
 
 void MainWindow::on_checkBox_clicked()

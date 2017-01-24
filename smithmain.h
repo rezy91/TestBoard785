@@ -13,7 +13,6 @@ public:
     explicit SmithMain(QWidget *parent = 0);
 public slots:
     void ReceivedNewData(int magnitudeAvg, int phaseAvg, int magnitude50, int phase50);
-    void ReceivedStateButton(bool state);
 
 private:
     qreal mRatio_magnitudeAvg;

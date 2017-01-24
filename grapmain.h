@@ -114,6 +114,7 @@ public slots:
 
 protected:
     void paintEvent(QPaintEvent*);
+    bool eventFilter(QObject *object, QEvent *event);
 
 };
 
