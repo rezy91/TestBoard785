@@ -122,8 +122,8 @@ private:
     QString myTimeStamp(QTime time);
     QStringList adjustRowDataIntoOnlyNumber(QString rowData);
     void fillComboBoxesWithSignals(bool* flags);
+    void adjustCoefficientSingleStep(QDoubleSpinBox* p_oubleSpinBox, double newValue);
 
-    double coefInput[nmbCurvesInGraph];
     double recvItems[nmbCurvesInGraph] = {0, 0, 0, 0};
     int recStat[nmbCurvesInGraph] = {0, 0, 0, 0};
 
@@ -145,9 +145,10 @@ private:
     QTime timeCurrent;
 
 signals:
-    void SendNewData(int magnitudeA, int phaseA, int magnitude50, int phase50);
+    void SendNewImpedanceData(int magnitudeA, int phaseA, int magnitude50, int phase50);
     void SendUpdateGraph(QTime timestamp, double receivedValue, int recordState, QString nameSignals, int src, int srStr, int flgs);
     void SendCoefficientSignals(double coef, int src);
+    void SendLowLevel(double coef, int src);
 
 protected:
     void closeEvent(QCloseEvent *event) override;

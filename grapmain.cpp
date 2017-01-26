@@ -371,6 +371,11 @@ void Grapmain::refreshCoeffSignal(double coefficient, int source)
     refrGr("new coeff");
 }
 
+void Grapmain::refreshLowLevel(double level, int source)
+{
+    mLowLevelValue[source] = level;
+}
+
 void Grapmain::paintEvent(QPaintEvent*)
 {
     QPainter painterMain(this);
@@ -433,6 +438,7 @@ void Grapmain::paintEvent(QPaintEvent*)
                     else
                     {
                         painterMain.setBrush(colorSignal[iLoop]);
+                        //drawYvalue = (int)(mSignalHistory[iLoop].value.at(jLoop) / (mMaxCoefficient[iLoop]) - mLowLevelValue[iLoop]);
                         drawYvalue = (int)(mSignalHistory[iLoop].value.at(jLoop) / mMaxCoefficient[iLoop]);
                     }
 

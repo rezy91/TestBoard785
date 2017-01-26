@@ -35,7 +35,7 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
     o_smith->setWindowTitle("Smith diagram");
     o_smith->show();
 
-    connect(this, &MainWindow::SendNewData, o_smith, &SmithMain::ReceivedNewData);
+    connect(this, &MainWindow::SendNewImpedanceData, o_smith, &SmithMain::ReceivedNewData);
 
 
     o_graph->setWindowIcon(QIcon(":/iconGraph.jpg"));
@@ -46,6 +46,7 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
 
 
     connect(this, &MainWindow::SendCoefficientSignals, o_graph, &Grapmain::refreshCoeffSignal);
+    connect(this, &MainWindow::SendLowLevel, o_graph, &Grapmain::refreshLowLevel);
     connect(this, &MainWindow::SendUpdateGraph, o_graph, &Grapmain::refreshGraph);
 
 
@@ -94,6 +95,7 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
         }
         getIndexInQList(0, nValue);
         emit SendCoefficientSignals(ui->doubleSpinBox->value(), 0);
+        emit SendLowLevel(ui->doubleSpinBox_5->value(), 0);
     });
     connect(ui->comboBox_3,static_cast<void (QComboBox::*)(int)>(&QComboBox::currentIndexChanged),[=](int nValue){
         if(sourceDataStream == LOG_STREAM && nValue >= 0)
@@ -102,6 +104,7 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
         }
         getIndexInQList(1, nValue);
         emit SendCoefficientSignals(ui->doubleSpinBox_2->value(), 1);
+        emit SendLowLevel(ui->doubleSpinBox_6->value(), 1);
     });
     connect(ui->comboBox_4,static_cast<void (QComboBox::*)(int)>(&QComboBox::currentIndexChanged),[=](int nValue){
         if(sourceDataStream == LOG_STREAM && nValue >= 0)
@@ -110,6 +113,7 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
         }
         getIndexInQList(2, nValue);
         emit SendCoefficientSignals(ui->doubleSpinBox_3->value(), 2);
+        emit SendLowLevel(ui->doubleSpinBox_7->value(), 2);
     });
     connect(ui->comboBox_5,static_cast<void (QComboBox::*)(int)>(&QComboBox::currentIndexChanged),[=](int nValue){
         if(sourceDataStream == LOG_STREAM && nValue >= 0)
@@ -118,106 +122,57 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
         }
         getIndexInQList(3, nValue);
         emit SendCoefficientSignals(ui->doubleSpinBox_4->value(), 3);
-
+        emit SendLowLevel(ui->doubleSpinBox_8->value(), 3);
     });
 
 
     connect(ui->doubleSpinBox,static_cast<void (QDoubleSpinBox::*)(double)>(&QDoubleSpinBox::valueChanged),[=](double nValue){
 
-        if(nValue >= 100)
-        {
-           ui->doubleSpinBox->setSingleStep(10.0);
-        }
-        else if(nValue >= 10)
-        {
-            ui->doubleSpinBox->setSingleStep(1.0);
-        }
-        else if(nValue >= 1)
-        {
-            ui->doubleSpinBox->setSingleStep(0.1);
-        }
-        else if(nValue >= 0.1)
-        {
-            ui->doubleSpinBox->setSingleStep(0.01);
-        }
-
-        coefInput[0] = nValue;
-
+        adjustCoefficientSingleStep(ui->doubleSpinBox, nValue);
         emit SendCoefficientSignals(nValue, 0);
     });
 
     connect(ui->doubleSpinBox_2,static_cast<void (QDoubleSpinBox::*)(double)>(&QDoubleSpinBox::valueChanged),[=](double nValue){
 
-        if(nValue >= 100)
-        {
-            ui->doubleSpinBox_2->setSingleStep(10.0);
-        }
-        else if(nValue >= 10)
-        {
-            ui->doubleSpinBox_2->setSingleStep(1.0);
-        }
-        else if(nValue >= 1)
-        {
-            ui->doubleSpinBox_2->setSingleStep(0.1);
-        }
-        else if(nValue >= 0.1)
-        {
-            ui->doubleSpinBox_2->setSingleStep(0.01);
-        }
-
-        coefInput[1] = nValue;
-
+        adjustCoefficientSingleStep(ui->doubleSpinBox_2, nValue);
         emit SendCoefficientSignals(nValue, 1);
     });
 
     connect(ui->doubleSpinBox_3,static_cast<void (QDoubleSpinBox::*)(double)>(&QDoubleSpinBox::valueChanged),[=](double nValue){
 
-        if(nValue >= 100)
-        {
-            ui->doubleSpinBox_3->setSingleStep(10.0);
-        }
-        else if(nValue >= 10)
-        {
-            ui->doubleSpinBox_3->setSingleStep(1.0);
-        }
-        else if(nValue >= 1)
-        {
-            ui->doubleSpinBox_3->setSingleStep(0.1);
-        }
-        else if(nValue >= 0.1)
-        {
-            ui->doubleSpinBox_3->setSingleStep(0.01);
-        }
-
-        coefInput[2] = nValue;
-
+        adjustCoefficientSingleStep(ui->doubleSpinBox_3, nValue);
         emit SendCoefficientSignals(nValue, 2);
     });
 
     connect(ui->doubleSpinBox_4,static_cast<void (QDoubleSpinBox::*)(double)>(&QDoubleSpinBox::valueChanged),[=](double nValue){
 
-        if(nValue >= 100)
-        {
-            ui->doubleSpinBox_4->setSingleStep(10.0);
-        }
-        else if(nValue >= 10)
-        {
-            ui->doubleSpinBox_4->setSingleStep(1.0);
-        }
-        else if(nValue >= 1)
-        {
-            ui->doubleSpinBox_4->setSingleStep(0.1);
-        }
-        else if(nValue >= 0.1)
-        {
-            ui->doubleSpinBox_4->setSingleStep(0.01);
-        }
-
-        coefInput[3] = nValue;
-
+        adjustCoefficientSingleStep(ui->doubleSpinBox_4, nValue);
         emit SendCoefficientSignals(nValue, 3);
     });
 
+    connect(ui->doubleSpinBox_5,static_cast<void (QDoubleSpinBox::*)(double)>(&QDoubleSpinBox::valueChanged),[=](double nValue){
+
+        adjustCoefficientSingleStep(ui->doubleSpinBox_5, nValue);
+        emit SendLowLevel(nValue, 0);
+    });
+
+    connect(ui->doubleSpinBox_6,static_cast<void (QDoubleSpinBox::*)(double)>(&QDoubleSpinBox::valueChanged),[=](double nValue){
+
+        adjustCoefficientSingleStep(ui->doubleSpinBox_6, nValue);
+        emit SendLowLevel(nValue, 1);
+    });
+
+    connect(ui->doubleSpinBox_7,static_cast<void (QDoubleSpinBox::*)(double)>(&QDoubleSpinBox::valueChanged),[=](double nValue){
+
+        adjustCoefficientSingleStep(ui->doubleSpinBox_7, nValue);
+        emit SendLowLevel(nValue, 2);
+    });
+
+    connect(ui->doubleSpinBox_8,static_cast<void (QDoubleSpinBox::*)(double)>(&QDoubleSpinBox::valueChanged),[=](double nValue){
+
+        adjustCoefficientSingleStep(ui->doubleSpinBox_8, nValue);
+        emit SendLowLevel(nValue, 3);
+    });
 
     connect(ui->spinBox,static_cast<void (QSpinBox::*)(int)>(&QSpinBox::valueChanged),[=](int nValue){
         m_pSettingStrorage->StoreRefreshFirst(nValue);
@@ -358,8 +313,6 @@ void MainWindow::on_sendButton_clicked()
                     CurrentTime_ms[row] = 0;
                     timerEnable[row] = true;
 
-                    emit SendCoefficientSignals(coefInput[row], row);
-
                     assemblyMsq[row] = QByteArray::fromHex(strCmd.toStdString().c_str());
                     respExp[row] = true;
                 }
@@ -431,6 +384,26 @@ void MainWindow::fillComboBoxesWithSignals(bool* flags)
             ui->comboBox_4->addItems(allAdxSignals[fillComboBoxSignal]);
             ui->comboBox_5->addItems(allAdxSignals[fillComboBoxSignal]);
         }
+    }
+}
+
+void MainWindow::adjustCoefficientSingleStep(QDoubleSpinBox *p_oubleSpinBox, double newValue)
+{
+    if(newValue >= 100)
+    {
+       p_oubleSpinBox->setSingleStep(10.0);
+    }
+    else if(newValue >= 10)
+    {
+        p_oubleSpinBox->setSingleStep(1.0);
+    }
+    else if(newValue >= 1)
+    {
+        p_oubleSpinBox->setSingleStep(0.1);
+    }
+    else if(newValue >= 0.1)
+    {
+        p_oubleSpinBox->setSingleStep(0.01);
     }
 }
 
@@ -1269,14 +1242,10 @@ void MainWindow::restoreAllSettings()
     ui->spinBox_5->setValue(m_pSettingStrorage->RestoreRefreshFifth());
     ui->spinBox_6->setValue(m_pSettingStrorage->RestoreRefreshSixth());
 
-    coefInput[0] = m_pSettingStrorage->RestoreMultiplierSignalFirst();
-    ui->doubleSpinBox->setValue(coefInput[0]);
-    coefInput[1] = m_pSettingStrorage->RestoreMultiplierSignalSecond();
-    ui->doubleSpinBox_2->setValue(coefInput[1]);
-    coefInput[2] = m_pSettingStrorage->RestoreMultiplierSignalThird();
-    ui->doubleSpinBox_3->setValue(coefInput[2]);
-    coefInput[3] = m_pSettingStrorage->RestoreMultiplierSignalFourth();
-    ui->doubleSpinBox_4->setValue(coefInput[3]);
+    ui->doubleSpinBox->setValue(m_pSettingStrorage->RestoreMultiplierSignalFirst());
+    ui->doubleSpinBox_2->setValue(m_pSettingStrorage->RestoreMultiplierSignalSecond());
+    ui->doubleSpinBox_3->setValue(m_pSettingStrorage->RestoreMultiplierSignalThird());
+    ui->doubleSpinBox_4->setValue(m_pSettingStrorage->RestoreMultiplierSignalFourth());
 }
 
 void MainWindow::newDataV200(QByteArray aData)
@@ -1325,7 +1294,7 @@ void MainWindow::newDataV200(QByteArray aData)
             averageData50.phase_rad = 0;
 
             reflRatio50 = CalculateReflectionRatio(currentData, averageData50);
-            emit SendNewData(int(reflRatioAvg.magnitude * 1000), int(reflRatioAvg.phase_rad * 1000),int(reflRatio50.magnitude * 1000), int(reflRatio50.phase_rad * 1000));
+            emit SendNewImpedanceData(int(reflRatioAvg.magnitude * 1000), int(reflRatioAvg.phase_rad * 1000),int(reflRatio50.magnitude * 1000), int(reflRatio50.phase_rad * 1000));
         }
         else if(aData.at(2) == '2' && aData.at(3) == 's')//ADC2 average data
         {
@@ -1643,10 +1612,10 @@ void MainWindow::closeEvent(QCloseEvent *event)
     }
     m_pSettingStrorage->StoreRowItem(allDataItems);
 
-    m_pSettingStrorage->StoreMultiplierSignalFirst(coefInput[0]);
-    m_pSettingStrorage->StoreMultiplierSignalSecond(coefInput[1]);
-    m_pSettingStrorage->StoreMultiplierSignalThird(coefInput[2]);
-    m_pSettingStrorage->StoreMultiplierSignalFourth(coefInput[3]);
+    m_pSettingStrorage->StoreMultiplierSignalFirst(ui->doubleSpinBox->value());
+    m_pSettingStrorage->StoreMultiplierSignalSecond(ui->doubleSpinBox_2->value());
+    m_pSettingStrorage->StoreMultiplierSignalThird(ui->doubleSpinBox_3->value());
+    m_pSettingStrorage->StoreMultiplierSignalFourth(ui->doubleSpinBox_4->value());
 
 
     QWidget::closeEvent(event);
