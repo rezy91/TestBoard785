@@ -126,44 +126,84 @@ QString settings::RestoreRowItem() const
     return RestoreValue(QString("ItemsData")).toString();
 }
 
-void settings::StoreMultiplierSignalFirst(const qreal &multiplier)
+void settings::StoreHighValueSignalFirst(const qreal &value)
 {
-    StoreValue(QString("Multiplier1"), multiplier);
+    StoreValue(QString("HighLevel1"), value);
 }
 
-qreal settings::RestoreMultiplierSignalFirst() const
+void settings::StoreLowValueSignalFirst(const qreal &value)
 {
-    return RestoreValue(QString("Multiplier1")).toDouble();
+    StoreValue(QString("LowLevel1"), value);
 }
 
-void settings::StoreMultiplierSignalSecond(const qreal &multiplier)
+qreal settings::RestoreHighValueSignalFirst() const
 {
-    StoreValue(QString("Multiplier2"), multiplier);
+    return RestoreValue(QString("HighLevel1")).toDouble();
 }
 
-qreal settings::RestoreMultiplierSignalSecond() const
+qreal settings::RestoreLowValueSignalFirst() const
 {
-    return RestoreValue(QString("Multiplier2")).toDouble();
+    return RestoreValue(QString("LowLevel1")).toDouble();
 }
 
-void settings::StoreMultiplierSignalThird(const qreal &multiplier)
+void settings::StoreHighValueSignalSecond(const qreal &value)
 {
-    StoreValue(QString("Multiplier3"), multiplier);
+    StoreValue(QString("HighLevel2"), value);
 }
 
-qreal settings::RestoreMultiplierSignalThird() const
+void settings::StoreLowValueSignalSecond(const qreal &value)
 {
-    return RestoreValue(QString("Multiplier3")).toDouble();
+    StoreValue(QString("LowLevel2"), value);
 }
 
-void settings::StoreMultiplierSignalFourth(const qreal &multiplier)
+qreal settings::RestoreHighValueSignalSecond() const
 {
-    StoreValue(QString("Multiplier4"), multiplier);
+    return RestoreValue(QString("HighLevel2")).toDouble();
 }
 
-qreal settings::RestoreMultiplierSignalFourth() const
+qreal settings::RestoreLowValueSignalSecond() const
 {
-    return RestoreValue(QString("Multiplier4")).toDouble();
+    return RestoreValue(QString("LowLevel2")).toDouble();
+}
+
+void settings::StoreHighValueSignalThird(const qreal &value)
+{
+    StoreValue(QString("HighLevel3"), value);
+}
+
+void settings::StoreLowValueSignalThird(const qreal &value)
+{
+    StoreValue(QString("LowLevel3"), value);
+}
+
+qreal settings::RestoreHighValueSignalThird() const
+{
+    return RestoreValue(QString("HighLevel3")).toDouble();
+}
+
+qreal settings::RestoreLowValueSignalThird() const
+{
+    return RestoreValue(QString("LowLevel3")).toDouble();
+}
+
+void settings::StoreHighValueSignalFourth(const qreal &value)
+{
+    StoreValue(QString("HighLevel4"), value);
+}
+
+void settings::StoreLowValueSignalFourth(const qreal &value)
+{
+    StoreValue(QString("LowLevel4"), value);
+}
+
+qreal settings::RestoreHighValueSignalFourth() const
+{
+    return RestoreValue(QString("HighLevel4")).toDouble();
+}
+
+qreal settings::RestoreLowValueSignalFourth() const
+{
+    return RestoreValue(QString("LowLevel4")).toDouble();
 }
 
 void settings::StorePathLog(const QString &strPath)

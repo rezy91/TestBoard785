@@ -225,7 +225,7 @@ void Grapmain::findPreciousTime()
 void Grapmain::refrGr(QString nameEvent)
 {
     Q_UNUSED(nameEvent);
-    //qDebug() << nameEvent;
+    //qDebug() << "source repaint:" << nameEvent;
     repaint();
 }
 
@@ -368,12 +368,13 @@ void Grapmain::refreshGraph(QTime currTime, double ssignal, int recStat, QString
 void Grapmain::refreshHighLevel(double level, int source)
 {
     mHighLevelAxis_y[source] = level;
-    refrGr("new coeff");
+    refrGr("new high level");
 }
 
 void Grapmain::refreshLowLevel(double level, int source)
 {
     mLowLevelAxis_y[source] = level;
+    refrGr("new low level");
 }
 
 void Grapmain::paintEvent(QPaintEvent*)
@@ -396,8 +397,9 @@ void Grapmain::paintEvent(QPaintEvent*)
         if(mSignalHistory[iLoop].time.count())
         {
             //adjust Y-axis according window height
-            //find max value
+            //find min and max value
             double mHistoryHighlLevelAxis_y = 0.001;
+            double mHistoryLowLevelAxis_y = std::numeric_limits<double>::max();
 
             for(int kLoop = 0; kLoop < mSignalHistory[iLoop].time.count(); kLoop++)
             {
@@ -407,22 +409,38 @@ void Grapmain::paintEvent(QPaintEvent*)
                     {
                         mHistoryHighlLevelAxis_y = mSignalHistory[iLoop].value.at(kLoop);
                     }
+                    if(mSignalHistory[iLoop].value.at(kLoop) < mHistoryLowLevelAxis_y)
+                    {
+                        mHistoryLowLevelAxis_y = mSignalHistory[iLoop].value.at(kLoop);
+                    }
                 }
+            }
+
+            if(mHistoryLowLevelAxis_y > mLowLevelAxis_y[iLoop])
+            {
+                mHistoryLowLevelAxis_y = mLowLevelAxis_y[iLoop];
             }
 
 
             //actualize coefficient according max value
-            double mHistoryHighCoefficient = mHistoryHighlLevelAxis_y / (double)(usedHeight);
+            double mHistoryCoefficient = (mHistoryHighlLevelAxis_y - mHistoryLowLevelAxis_y) / (double)(usedHeight);
 
             if(mHistoryHighlLevelAxis_y > mHighLevelAxis_y[iLoop])
             {
                 mHighLevelAxis_y[iLoop] = mHistoryHighlLevelAxis_y;
-                //qDebug() << "value with coeff:" << iLoop << " actual mHighLevelAxis_y is: " << mHighLevelAxis_y[iLoop];
+                //qDebug() << "high value:" << iLoop << "actual mHighLevelAxis_y is:" << mHighLevelAxis_y[iLoop];
+            }
+
+            if(mHistoryLowLevelAxis_y < mLowLevelAxis_y[iLoop])
+            {
+                mLowLevelAxis_y[iLoop] = mHistoryLowLevelAxis_y;
+                //qDebug() << "low value:" << iLoop << "actual mLowLevelAxis_y is:" << mLowLevelAxis_y[iLoop];
             }
 
             //draw points
             int drawXvalue;
             int tempVar;
+            double updateCoeff = mHistoryCoefficient * ((mHighLevelAxis_y[iLoop] - mLowLevelAxis_y[iLoop]) / (mHistoryHighlLevelAxis_y - mHistoryLowLevelAxis_y));
 
             for(int jLoop = 0; jLoop < mSignalHistory[iLoop].time.count(); jLoop++)
             {
@@ -438,7 +456,7 @@ void Grapmain::paintEvent(QPaintEvent*)
                     else
                     {
                         painterMain.setBrush(colorSignal[iLoop]);
-                        drawYvalue = (int)(mSignalHistory[iLoop].value.at(jLoop) / (mHistoryHighCoefficient * (mHighLevelAxis_y[iLoop] / mHistoryHighlLevelAxis_y)));
+                        drawYvalue = (int)((mSignalHistory[iLoop].value.at(jLoop) - mHistoryLowLevelAxis_y) / updateCoeff);
                     }
 
                     tempVar = QTime(lowLevel).msecsTo(mSignalHistory[iLoop].time.at(jLoop));
@@ -455,9 +473,9 @@ void Grapmain::paintEvent(QPaintEvent*)
 
             //Draw y-axes
             int offsetAxis;
-            double resValue = ((double)mSignalHistory[iLoop].value.last() / (mHistoryHighCoefficient * (mHighLevelAxis_y[iLoop] / mHistoryHighlLevelAxis_y)));
+            double maxValue = mHighLevelAxis_y[iLoop] - mHistoryLowLevelAxis_y;
 
-            if(resValue >= 1)// can not be divided by zero value
+            if(maxValue >= 1)// can not be divided by zero value
             {
                 if(iLoop == 0)
                 {
@@ -476,26 +494,23 @@ void Grapmain::paintEvent(QPaintEvent*)
                     offsetAxis = currentWidth - constRightLimit + 70;
                 }
 
-
                 painterMain.setPen(colorSignal[iLoop]);
                 painterMain.drawLine(QPoint(offsetAxis, currentHeight - constBottomLimit),QPoint(offsetAxis, constTopLimit - 20));
                 painterMain.drawLine(QPoint(offsetAxis, constTopLimit - 20),QPoint( - 10 + offsetAxis, constTopLimit - 20 + 10));
                 painterMain.drawLine(QPoint(offsetAxis, constTopLimit - 20),QPoint(10 + offsetAxis, constTopLimit - 20 + 10));
                 painterMain.drawText(QPoint( - 5 + offsetAxis, constBottomLimit - 20 - 5), mLegendItems[iLoop]);
 
-                double multiplier = (double)(usedHeight) / (resValue);
-                double maxValue = multiplier * (double)mSignalHistory[iLoop].value.last();
 
-                for(int kLoop = 1; kLoop < (nmbHorizLines + 1); kLoop++)
+                for(int kLoop = 0; kLoop < (nmbHorizLines + 1); kLoop++)
                 {
                     painterMain.setPen(colorSignal[iLoop]);
                     if(iLoop == 0 || iLoop == 1)
                     {
-                        painterMain.drawText(QPoint(offsetAxis - 40, currentHeight - constBottomLimit - constDistanceHorizontalLines_pxs * kLoop), QString("%1").arg((maxValue /  nmbHorizLines) * kLoop));
+                        painterMain.drawText(QPoint(offsetAxis - 40, currentHeight - constBottomLimit - constDistanceHorizontalLines_pxs * kLoop), QString("%1").arg(((maxValue /  nmbHorizLines) * kLoop) + mHistoryLowLevelAxis_y));
                     }
                     else
                     {
-                        painterMain.drawText(QPoint(offsetAxis + 5, currentHeight - constBottomLimit - constDistanceHorizontalLines_pxs * kLoop), QString("%1").arg((maxValue /  nmbHorizLines) * kLoop));
+                        painterMain.drawText(QPoint(offsetAxis + 5, currentHeight - constBottomLimit - constDistanceHorizontalLines_pxs * kLoop), QString("%1").arg(((maxValue /  nmbHorizLines) * kLoop) + mHistoryLowLevelAxis_y));
                     }
                     painterMain.setPen(QPen(Qt::lightGray));
                     painterMain.drawLine(QPoint(constLeftLimit, currentHeight - constBottomLimit - constDistanceHorizontalLines_pxs * kLoop), QPoint(currentWidth - constRightLimit, currentHeight - constBottomLimit - constDistanceHorizontalLines_pxs * kLoop));

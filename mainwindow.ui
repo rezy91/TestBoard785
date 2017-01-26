@@ -298,28 +298,28 @@
       <item>
        <widget class="QLabel" name="signal_1">
         <property name="text">
-         <string>Signal_1 [y-axis multiplier, source]</string>
+         <string>Signal_1 [y-axis max value, y-axis min value, source]</string>
         </property>
        </widget>
       </item>
       <item>
        <widget class="QLabel" name="signal_2">
         <property name="text">
-         <string>Signal_2 [y-axis multiplier, source]</string>
+         <string>Signal_2 [y-axis max value, y-axis min value, source]</string>
         </property>
        </widget>
       </item>
       <item>
        <widget class="QLabel" name="signal_3">
         <property name="text">
-         <string>Signal_3 [y-axis multiplier, source]</string>
+         <string>Signal_3 [y-axis max value, y-axis min value, source]</string>
         </property>
        </widget>
       </item>
       <item>
        <widget class="QLabel" name="signal_4">
         <property name="text">
-         <string>Signal_4 [y-axis multiplier, source]</string>
+         <string>Signal_4 [y-axis max value, y-axis min value, source]</string>
         </property>
        </widget>
       </item>

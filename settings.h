@@ -51,17 +51,29 @@ public:
     void StoreRowItem(const QString& strValue);
     QString RestoreRowItem() const;
 
-    void StoreMultiplierSignalFirst(const qreal &multiplier);
-    qreal RestoreMultiplierSignalFirst() const;
+    void StoreHighValueSignalFirst(const qreal &value);
+    qreal RestoreHighValueSignalFirst() const;
 
-    void StoreMultiplierSignalSecond(const qreal &multiplier);
-    qreal RestoreMultiplierSignalSecond() const;
+    void StoreLowValueSignalFirst(const qreal &value);
+    qreal RestoreLowValueSignalFirst() const;
 
-    void StoreMultiplierSignalThird(const qreal &multiplier);
-    qreal RestoreMultiplierSignalThird() const;
+    void StoreHighValueSignalSecond(const qreal &value);
+    qreal RestoreHighValueSignalSecond() const;
 
-    void StoreMultiplierSignalFourth(const qreal &multiplier);
-    qreal RestoreMultiplierSignalFourth() const;
+    void StoreLowValueSignalSecond(const qreal &value);
+    qreal RestoreLowValueSignalSecond() const;
+
+    void StoreHighValueSignalThird(const qreal &value);
+    qreal RestoreHighValueSignalThird() const;
+
+    void StoreLowValueSignalThird(const qreal &value);
+    qreal RestoreLowValueSignalThird() const;
+
+    void StoreHighValueSignalFourth(const qreal &value);
+    qreal RestoreHighValueSignalFourth() const;
+
+    void StoreLowValueSignalFourth(const qreal &value);
+    qreal RestoreLowValueSignalFourth() const;
 
     void StorePathLog(const QString& strPath);
     QString RestorePathLog() const;

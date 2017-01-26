@@ -297,9 +297,8 @@ void MainWindow::on_sendButton_clicked()
 
                 strCmd += strHexNumber.rightJustified(nAlignment, '0');
             }
-            qDebug() << strCmd;
-
         }
+        qDebug() << strCmd;
 
 
         for(qint32 row = 0; row < NMB_ITEMS_FOR_TIMERS; row++)
@@ -1250,10 +1249,15 @@ void MainWindow::restoreAllSettings()
     ui->spinBox_5->setValue(m_pSettingStrorage->RestoreRefreshFifth());
     ui->spinBox_6->setValue(m_pSettingStrorage->RestoreRefreshSixth());
 
-    ui->doubleSpinBox->setValue(m_pSettingStrorage->RestoreMultiplierSignalFirst());
-    ui->doubleSpinBox_2->setValue(m_pSettingStrorage->RestoreMultiplierSignalSecond());
-    ui->doubleSpinBox_3->setValue(m_pSettingStrorage->RestoreMultiplierSignalThird());
-    ui->doubleSpinBox_4->setValue(m_pSettingStrorage->RestoreMultiplierSignalFourth());
+    ui->doubleSpinBox->setValue(m_pSettingStrorage->RestoreHighValueSignalFirst());
+    ui->doubleSpinBox_2->setValue(m_pSettingStrorage->RestoreHighValueSignalSecond());
+    ui->doubleSpinBox_3->setValue(m_pSettingStrorage->RestoreHighValueSignalThird());
+    ui->doubleSpinBox_4->setValue(m_pSettingStrorage->RestoreHighValueSignalFourth());
+
+    ui->doubleSpinBox_5->setValue(m_pSettingStrorage->RestoreLowValueSignalFirst());
+    ui->doubleSpinBox_6->setValue(m_pSettingStrorage->RestoreLowValueSignalSecond());
+    ui->doubleSpinBox_7->setValue(m_pSettingStrorage->RestoreLowValueSignalThird());
+    ui->doubleSpinBox_8->setValue(m_pSettingStrorage->RestoreLowValueSignalFourth());
 }
 
 void MainWindow::newDataV200(QByteArray aData)
@@ -1620,10 +1624,15 @@ void MainWindow::closeEvent(QCloseEvent *event)
     }
     m_pSettingStrorage->StoreRowItem(allDataItems);
 
-    m_pSettingStrorage->StoreMultiplierSignalFirst(ui->doubleSpinBox->value());
-    m_pSettingStrorage->StoreMultiplierSignalSecond(ui->doubleSpinBox_2->value());
-    m_pSettingStrorage->StoreMultiplierSignalThird(ui->doubleSpinBox_3->value());
-    m_pSettingStrorage->StoreMultiplierSignalFourth(ui->doubleSpinBox_4->value());
+    m_pSettingStrorage->StoreHighValueSignalFirst(ui->doubleSpinBox->value());
+    m_pSettingStrorage->StoreHighValueSignalSecond(ui->doubleSpinBox_2->value());
+    m_pSettingStrorage->StoreHighValueSignalThird(ui->doubleSpinBox_3->value());
+    m_pSettingStrorage->StoreHighValueSignalFourth(ui->doubleSpinBox_4->value());
+
+    m_pSettingStrorage->StoreLowValueSignalFirst(ui->doubleSpinBox_5->value());
+    m_pSettingStrorage->StoreLowValueSignalSecond(ui->doubleSpinBox_6->value());
+    m_pSettingStrorage->StoreLowValueSignalThird(ui->doubleSpinBox_7->value());
+    m_pSettingStrorage->StoreLowValueSignalFourth(ui->doubleSpinBox_8->value());
 
 
     QWidget::closeEvent(event);
