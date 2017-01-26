@@ -929,7 +929,7 @@ void MainWindow::on_connectButton_clicked()
 
     if(m_bSaveData)
     {
-        m_oFile.setFileName(QString("SavedData_%1.txt").arg(QDateTime::currentDateTime().toTime_t()));
+        m_oFile.setFileName(QString("SavedData_%1.log").arg(QDateTime::currentDateTime().toTime_t()));
         if(!m_oFile.open(QFile::WriteOnly))
         {
             qDebug() << "error: cannot open file";
@@ -1291,7 +1291,7 @@ void MainWindow::on_openlogButton_clicked()
     }
 
     QString savedPath = m_pSettingStrorage->RestorePathLog();
-    logPath = QFileDialog::getOpenFileName(this, "Open log file", savedPath, "Text File (*.txt)");
+    logPath = QFileDialog::getOpenFileName(this, "Open log file", savedPath, "Log File (*.log)");
     m_pSettingStrorage->StorePathLog(logPath);
 
     QFile m_logFile(logPath);
