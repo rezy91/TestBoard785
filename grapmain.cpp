@@ -365,15 +365,15 @@ void Grapmain::refreshGraph(QTime currTime, double ssignal, int recStat, QString
     }
 }
 
-void Grapmain::refreshCoeffSignal(double coefficient, int source)
+void Grapmain::refreshHighLevel(double level, int source)
 {
-    mMaxCoefficient[source] = coefficient;
+    mHighLevelAxis_y[source] = level;
     refrGr("new coeff");
 }
 
 void Grapmain::refreshLowLevel(double level, int source)
 {
-    mLowLevelValue[source] = level;
+    mLowLevelAxis_y[source] = level;
 }
 
 void Grapmain::paintEvent(QPaintEvent*)
@@ -397,28 +397,28 @@ void Grapmain::paintEvent(QPaintEvent*)
         {
             //adjust Y-axis according window height
             //find max value
-            double mHistoryMaxValue = 0.001;
+            double mHistoryHighlLevelAxis_y = 0.001;
 
             for(int kLoop = 0; kLoop < mSignalHistory[iLoop].time.count(); kLoop++)
             {
                 if(mSignalHistory[iLoop].time.at(kLoop) >= lowLevel && mSignalHistory[iLoop].time.at(kLoop) <= highLevel)
                 {
-                    if(mSignalHistory[iLoop].value.at(kLoop) > mHistoryMaxValue)
+                    if(mSignalHistory[iLoop].value.at(kLoop) > mHistoryHighlLevelAxis_y)
                     {
-                        mHistoryMaxValue = mSignalHistory[iLoop].value.at(kLoop);
+                        mHistoryHighlLevelAxis_y = mSignalHistory[iLoop].value.at(kLoop);
                     }
                 }
             }
 
 
             //actualize coefficient according max value
-            double actualCoefficient = mHistoryMaxValue / (double)(usedHeight);
-            if(actualCoefficient > mMaxCoefficient[iLoop])
-            {
-                mMaxCoefficient[iLoop] = actualCoefficient;
-                //qDebug() << "value with coeff:" << iLoop << " exceed at: " << maxElement << " actual mMaxCoefficient is: " << mMaxCoefficient[iLoop];
-            }
+            double mHistoryHighCoefficient = mHistoryHighlLevelAxis_y / (double)(usedHeight);
 
+            if(mHistoryHighlLevelAxis_y > mHighLevelAxis_y[iLoop])
+            {
+                mHighLevelAxis_y[iLoop] = mHistoryHighlLevelAxis_y;
+                //qDebug() << "value with coeff:" << iLoop << " actual mHighLevelAxis_y is: " << mHighLevelAxis_y[iLoop];
+            }
 
             //draw points
             int drawXvalue;
@@ -438,8 +438,7 @@ void Grapmain::paintEvent(QPaintEvent*)
                     else
                     {
                         painterMain.setBrush(colorSignal[iLoop]);
-                        //drawYvalue = (int)(mSignalHistory[iLoop].value.at(jLoop) / (mMaxCoefficient[iLoop]) - mLowLevelValue[iLoop]);
-                        drawYvalue = (int)(mSignalHistory[iLoop].value.at(jLoop) / mMaxCoefficient[iLoop]);
+                        drawYvalue = (int)(mSignalHistory[iLoop].value.at(jLoop) / (mHistoryHighCoefficient * (mHighLevelAxis_y[iLoop] / mHistoryHighlLevelAxis_y)));
                     }
 
                     tempVar = QTime(lowLevel).msecsTo(mSignalHistory[iLoop].time.at(jLoop));
@@ -456,7 +455,7 @@ void Grapmain::paintEvent(QPaintEvent*)
 
             //Draw y-axes
             int offsetAxis;
-            double resValue = ((double)mSignalHistory[iLoop].value.last() / mMaxCoefficient[iLoop]);
+            double resValue = ((double)mSignalHistory[iLoop].value.last() / (mHistoryHighCoefficient * (mHighLevelAxis_y[iLoop] / mHistoryHighlLevelAxis_y)));
 
             if(resValue >= 1)// can not be divided by zero value
             {

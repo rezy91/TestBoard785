@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>1114</width>
-    <height>706</height>
+    <height>725</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -29,7 +29,7 @@
          <double>0.010000000000000</double>
         </property>
         <property name="maximum">
-         <double>999.990000000000009</double>
+         <double>99999.990000000005239</double>
         </property>
         <property name="singleStep">
          <double>0.100000000000000</double>
@@ -48,7 +48,7 @@
          <double>0.010000000000000</double>
         </property>
         <property name="maximum">
-         <double>999.990000000000009</double>
+         <double>99999.990000000005239</double>
         </property>
         <property name="singleStep">
          <double>0.100000000000000</double>
@@ -67,7 +67,7 @@
          <double>0.010000000000000</double>
         </property>
         <property name="maximum">
-         <double>999.990000000000009</double>
+         <double>99999.990000000005239</double>
         </property>
         <property name="singleStep">
          <double>0.100000000000000</double>
@@ -86,7 +86,7 @@
          <double>0.010000000000000</double>
         </property>
         <property name="maximum">
-         <double>999.990000000000009</double>
+         <double>99999.990000000005239</double>
         </property>
         <property name="singleStep">
          <double>0.100000000000000</double>

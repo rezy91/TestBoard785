@@ -45,7 +45,7 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
 
 
 
-    connect(this, &MainWindow::SendCoefficientSignals, o_graph, &Grapmain::refreshCoeffSignal);
+    connect(this, &MainWindow::SendHighLevel, o_graph, &Grapmain::refreshHighLevel);
     connect(this, &MainWindow::SendLowLevel, o_graph, &Grapmain::refreshLowLevel);
     connect(this, &MainWindow::SendUpdateGraph, o_graph, &Grapmain::refreshGraph);
 
@@ -94,7 +94,7 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
             getIndexInQList(0, 0);//send fake in order to clear history signal
         }
         getIndexInQList(0, nValue);
-        emit SendCoefficientSignals(ui->doubleSpinBox->value(), 0);
+        emit SendHighLevel(ui->doubleSpinBox->value(), 0);
         emit SendLowLevel(ui->doubleSpinBox_5->value(), 0);
     });
     connect(ui->comboBox_3,static_cast<void (QComboBox::*)(int)>(&QComboBox::currentIndexChanged),[=](int nValue){
@@ -103,7 +103,7 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
             getIndexInQList(1, 0);//send fake in order to clear history signal
         }
         getIndexInQList(1, nValue);
-        emit SendCoefficientSignals(ui->doubleSpinBox_2->value(), 1);
+        emit SendHighLevel(ui->doubleSpinBox_2->value(), 1);
         emit SendLowLevel(ui->doubleSpinBox_6->value(), 1);
     });
     connect(ui->comboBox_4,static_cast<void (QComboBox::*)(int)>(&QComboBox::currentIndexChanged),[=](int nValue){
@@ -112,7 +112,7 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
             getIndexInQList(2, 0);//send fake in order to clear history signal
         }
         getIndexInQList(2, nValue);
-        emit SendCoefficientSignals(ui->doubleSpinBox_3->value(), 2);
+        emit SendHighLevel(ui->doubleSpinBox_3->value(), 2);
         emit SendLowLevel(ui->doubleSpinBox_7->value(), 2);
     });
     connect(ui->comboBox_5,static_cast<void (QComboBox::*)(int)>(&QComboBox::currentIndexChanged),[=](int nValue){
@@ -121,7 +121,7 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
             getIndexInQList(3, 0);//send fake in order to clear history signal
         }
         getIndexInQList(3, nValue);
-        emit SendCoefficientSignals(ui->doubleSpinBox_4->value(), 3);
+        emit SendHighLevel(ui->doubleSpinBox_4->value(), 3);
         emit SendLowLevel(ui->doubleSpinBox_8->value(), 3);
     });
 
@@ -129,25 +129,25 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
     connect(ui->doubleSpinBox,static_cast<void (QDoubleSpinBox::*)(double)>(&QDoubleSpinBox::valueChanged),[=](double nValue){
 
         adjustCoefficientSingleStep(ui->doubleSpinBox, nValue);
-        emit SendCoefficientSignals(nValue, 0);
+        emit SendHighLevel(nValue, 0);
     });
 
     connect(ui->doubleSpinBox_2,static_cast<void (QDoubleSpinBox::*)(double)>(&QDoubleSpinBox::valueChanged),[=](double nValue){
 
         adjustCoefficientSingleStep(ui->doubleSpinBox_2, nValue);
-        emit SendCoefficientSignals(nValue, 1);
+        emit SendHighLevel(nValue, 1);
     });
 
     connect(ui->doubleSpinBox_3,static_cast<void (QDoubleSpinBox::*)(double)>(&QDoubleSpinBox::valueChanged),[=](double nValue){
 
         adjustCoefficientSingleStep(ui->doubleSpinBox_3, nValue);
-        emit SendCoefficientSignals(nValue, 2);
+        emit SendHighLevel(nValue, 2);
     });
 
     connect(ui->doubleSpinBox_4,static_cast<void (QDoubleSpinBox::*)(double)>(&QDoubleSpinBox::valueChanged),[=](double nValue){
 
         adjustCoefficientSingleStep(ui->doubleSpinBox_4, nValue);
-        emit SendCoefficientSignals(nValue, 3);
+        emit SendHighLevel(nValue, 3);
     });
 
     connect(ui->doubleSpinBox_5,static_cast<void (QDoubleSpinBox::*)(double)>(&QDoubleSpinBox::valueChanged),[=](double nValue){
@@ -389,9 +389,17 @@ void MainWindow::fillComboBoxesWithSignals(bool* flags)
 
 void MainWindow::adjustCoefficientSingleStep(QDoubleSpinBox *p_oubleSpinBox, double newValue)
 {
-    if(newValue >= 100)
+    if(newValue >= 10000)
     {
-       p_oubleSpinBox->setSingleStep(10.0);
+        p_oubleSpinBox->setSingleStep(1000.0);
+    }
+    else if(newValue >= 1000)
+    {
+        p_oubleSpinBox->setSingleStep(100.0);
+    }
+    else if(newValue >= 100)
+    {
+        p_oubleSpinBox->setSingleStep(10.0);
     }
     else if(newValue >= 10)
     {

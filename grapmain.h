@@ -91,14 +91,14 @@ private:
     //variables for separate signal
     strHistory mSignalHistory[nmbCurvesInGraph];
     QString mLegendItems[nmbCurvesInGraph];
-    double mMaxCoefficient[nmbCurvesInGraph];
-    double mLowLevelValue[nmbCurvesInGraph];
+    double mHighLevelAxis_y[nmbCurvesInGraph];
+    double mLowLevelAxis_y[nmbCurvesInGraph];
     int mRefreshTime_ms[nmbCurvesInGraph] = {std::numeric_limits<int>::max(), std::numeric_limits<int>::max(), std::numeric_limits<int>::max(), std::numeric_limits<int>::max()};
     int flagSignalRecord[nmbCurvesInGraph] = {0, 0, 0, 0};
 
 public slots:
     void refreshGraph(QTime currTime, double ssignal, int recStat, QString signalText, int sourceSig, int sourceStream, int flags);
-    void refreshCoeffSignal(double coefficient, int source);
+    void refreshHighLevel(double level, int source);
     void refreshLowLevel(double level, int source);
 
 protected:
