@@ -438,8 +438,6 @@ void Grapmain::paintEvent(QPaintEvent*)
             }
 
             //draw points
-            int drawXvalue;
-            int tempVar;
             double updateCoeff = mHistoryCoefficient * ((mHighLevelAxis_y[iLoop] - mLowLevelAxis_y[iLoop]) / (mHistoryHighlLevelAxis_y - mHistoryLowLevelAxis_y));
 
             for(int jLoop = 0; jLoop < mSignalHistory[iLoop].time.count(); jLoop++)
@@ -447,17 +445,11 @@ void Grapmain::paintEvent(QPaintEvent*)
                 if(mSignalHistory[iLoop].time.at(jLoop) >= lowLevel && mSignalHistory[iLoop].time.at(jLoop) <= highLevel)
                 {
                     int drawYvalue;
+                    int drawXvalue;
+                    int tempVar;
 
-                    if(mSignalHistory[iLoop].value.at(jLoop) < 0)
-                    {
-                        drawYvalue = -1;
-                        painterMain.setBrush(Qt::black);
-                    }
-                    else
-                    {
-                        painterMain.setBrush(colorSignal[iLoop]);
-                        drawYvalue = (int)((mSignalHistory[iLoop].value.at(jLoop) - mHistoryLowLevelAxis_y) / updateCoeff);
-                    }
+                    painterMain.setBrush(colorSignal[iLoop]);
+                    drawYvalue = (int)((mSignalHistory[iLoop].value.at(jLoop) - mHistoryLowLevelAxis_y) / updateCoeff);
 
                     tempVar = QTime(lowLevel).msecsTo(mSignalHistory[iLoop].time.at(jLoop));
                     drawXvalue = tempVar / msPerPixelValue;

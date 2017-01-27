@@ -26,7 +26,7 @@
          <number>3</number>
         </property>
         <property name="minimum">
-         <double>0.010000000000000</double>
+         <double>-99999.990000000005239</double>
         </property>
         <property name="maximum">
          <double>99999.990000000005239</double>
@@ -45,7 +45,7 @@
          <number>3</number>
         </property>
         <property name="minimum">
-         <double>0.010000000000000</double>
+         <double>-99999.990000000005239</double>
         </property>
         <property name="maximum">
          <double>99999.990000000005239</double>
@@ -64,7 +64,7 @@
          <number>3</number>
         </property>
         <property name="minimum">
-         <double>0.010000000000000</double>
+         <double>-99999.990000000005239</double>
         </property>
         <property name="maximum">
          <double>99999.990000000005239</double>
@@ -83,7 +83,7 @@
          <number>3</number>
         </property>
         <property name="minimum">
-         <double>0.010000000000000</double>
+         <double>-99999.990000000005239</double>
         </property>
         <property name="maximum">
          <double>99999.990000000005239</double>
@@ -558,29 +558,56 @@
       </property>
       <item>
        <widget class="QDoubleSpinBox" name="doubleSpinBox_5">
+        <property name="decimals">
+         <number>3</number>
+        </property>
+        <property name="minimum">
+         <double>-99999.990000000005239</double>
+        </property>
         <property name="maximum">
-         <double>9999.989999999999782</double>
+         <double>99999.990000000005239</double>
         </property>
        </widget>
       </item>
       <item>
        <widget class="QDoubleSpinBox" name="doubleSpinBox_6">
+        <property name="decimals">
+         <number>3</number>
+        </property>
+        <property name="minimum">
+         <double>-99999.990000000005239</double>
+        </property>
         <property name="maximum">
-         <double>9999.989999999999782</double>
+         <double>99999.990000000005239</double>
         </property>
        </widget>
       </item>
       <item>
        <widget class="QDoubleSpinBox" name="doubleSpinBox_7">
+        <property name="decimals">
+         <number>3</number>
+        </property>
+        <property name="minimum">
+         <double>-99999.990000000005239</double>
+        </property>
         <property name="maximum">
-         <double>9999.989999999999782</double>
+         <double>99999.990000000005239</double>
         </property>
        </widget>
       </item>
       <item>
        <widget class="QDoubleSpinBox" name="doubleSpinBox_8">
+        <property name="decimals">
+         <number>3</number>
+        </property>
+        <property name="minimum">
+         <double>-99999.990000000005239</double>
+        </property>
         <property name="maximum">
-         <double>9999.989999999999782</double>
+         <double>99999.990000000005239</double>
+        </property>
+        <property name="value">
+         <double>0.000000000000000</double>
         </property>
        </widget>
       </item>
