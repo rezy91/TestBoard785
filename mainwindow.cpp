@@ -54,7 +54,7 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
 
 
     ui->sendButton->setEnabled(false);
-    ui->tableWidget->setColumnWidth(1, 230);
+    ui->tableWidget->setColumnWidth(1, 250);
 
     SetAvaiblePorts();
     SetLastPort();
@@ -292,7 +292,7 @@ void MainWindow::on_sendButton_clicked()
             }
             else if(oTableSelection.at(nItemIndex).data(TableRoles::NumeralSystem) == TableRoles::Decimal)
             {
-                if(ui->tableWidget->currentRow() >= 11 && ui->tableWidget->currentRow() <= 16)
+                if(ui->tableWidget->currentRow() >= 11 && ui->tableWidget->currentRow() <= 18)
                 {
                     QString strHexNumber;
                     int convertedNumber = oTableSelection.at(nItemIndex).data().toInt();
@@ -453,7 +453,7 @@ void MainWindow::AppendText(QTime timestamp, QString strText)
 
 void MainWindow::FillCommandTable()
 {
-    int m_NumberOfFilledTables = 2 + 2 + 1 + 2 + 6 + 3 + 4 * 2 * 2 + 7 * 2 * 2 + 9 * 2 * 2 + 9 + 3;
+    int m_NumberOfFilledTables = 2 + 2 + 1 + 2 + 6 + 3 + 4 * 2 * 2 + 7 * 2 * 2 + 9 * 2 * 2 + 9 * 2 * 2 + 9 + 3;
     bool b_dataAreSaved = false;
 
     QString StoredItems = m_pSettingStrorage->RestoreRowItem();
@@ -860,13 +860,13 @@ void MainWindow::FillCommandTable()
     {
         ui->tableWidget->insertRow(ui->tableWidget->rowCount());                            // create new row in table
         int numberPID = 41 + 6 - iLoop;
-        QTableWidgetItem *pvalue17PacketID = new QTableWidgetItem(QString::number(numberPID));// paket id
-        pvalue17PacketID->setData(TableRoles::ByteCount, 1);                              // paket id is 1 byte
-        pvalue17PacketID->setData(TableRoles::NumeralSystem, TableRoles::Hex);            // packet id is displayed as hex
-        ui->tableWidget->setItem(ui->tableWidget->rowCount() - 1, 0, pvalue17PacketID);   // insert item to created row to the first column
+        QTableWidgetItem *pvalueADCCoeffsPacketID = new QTableWidgetItem(QString::number(numberPID));// paket id
+        pvalueADCCoeffsPacketID->setData(TableRoles::ByteCount, 1);                              // paket id is 1 byte
+        pvalueADCCoeffsPacketID->setData(TableRoles::NumeralSystem, TableRoles::Hex);            // packet id is displayed as hex
+        ui->tableWidget->setItem(ui->tableWidget->rowCount() - 1, 0, pvalueADCCoeffsPacketID);   // insert item to created row to the first column
 
         // the second column (it has no impact on data to be sent)
-        QTableWidgetItem *pvalue17PacketName = new QTableWidgetItem();
+        QTableWidgetItem *pvalueADCCoeffsPacketName = new QTableWidgetItem();
         QString textDescriptionPID;
         int iNmbChannels;
 
@@ -891,64 +891,141 @@ void MainWindow::FillCommandTable()
             textDescriptionPID = QString("ADC%1_SET_COEFFICIENTS_ADDITIVE").arg((iLoop + 1) / 2);
         }
 
-        pvalue17PacketName->setText(textDescriptionPID);
-        ui->tableWidget->setItem(ui->tableWidget->rowCount() - 1, 1, pvalue17PacketName); // insert item to created row to the second column
+        pvalueADCCoeffsPacketName->setText(textDescriptionPID);
+        ui->tableWidget->setItem(ui->tableWidget->rowCount() - 1, 1, pvalueADCCoeffsPacketName); // insert item to created row to the second column
 
 
 
         for(qint32 jLoop = 0; jLoop < 2 * iNmbChannels; jLoop++)
         {
-            QTableWidgetItem *pvalue17PacketArg = new QTableWidgetItem();             // the value it contains
+            QTableWidgetItem *pvalueADCCoeffsPacketArg = new QTableWidgetItem();
 
             if(!(jLoop % 2))
             {
                 if(b_dataAreSaved)
                 {
-                    pvalue17PacketArg->setText(list.at(w_IndexInList++));
+                    pvalueADCCoeffsPacketArg->setText(list.at(w_IndexInList++));
                 }
                 else
                 {
                     if(iLoop % 2)
                     {
-                        pvalue17PacketArg->setText("0");
+                        pvalueADCCoeffsPacketArg->setText("0");
                     }
                     else
                     {
-                        pvalue17PacketArg->setText("3300");
+                        pvalueADCCoeffsPacketArg->setText("3300");
                     }
                 }
-                pvalue17PacketArg->setData(Qt::ToolTipRole, "Divident channel(" + QString::number(jLoop / 2) + ") [-32768 - 32767]");
+                pvalueADCCoeffsPacketArg->setData(Qt::ToolTipRole, "Divident channel(" + QString::number(jLoop / 2) + ") [-32768 - 32767]");
             }
             else
             {
                 if(b_dataAreSaved)
                 {
-                    pvalue17PacketArg->setText(list.at(w_IndexInList++));
+                    pvalueADCCoeffsPacketArg->setText(list.at(w_IndexInList++));
                 }
                 else
                 {
                     if(iLoop % 2)
                     {
-                        pvalue17PacketArg->setText("1");
+                        pvalueADCCoeffsPacketArg->setText("1");
                     }
                     else
                     {
-                        pvalue17PacketArg->setText("4096");
+                        pvalueADCCoeffsPacketArg->setText("4096");
                     }
                 }
-                pvalue17PacketArg->setData(Qt::ToolTipRole, "Divisor channel(" + QString::number(jLoop / 2) + ") [-32768 - 32767]");
+                pvalueADCCoeffsPacketArg->setData(Qt::ToolTipRole, "Divisor channel(" + QString::number(jLoop / 2) + ") [-32768 - 32767]");
             }
 
-            pvalue17PacketArg->setData(TableRoles::ByteCount, 2);
-            pvalue17PacketArg->setData(TableRoles::NumeralSystem, TableRoles::Decimal);
-            ui->tableWidget->setItem(ui->tableWidget->rowCount() - 1, 3 + jLoop, pvalue17PacketArg);
+            pvalueADCCoeffsPacketArg->setData(TableRoles::ByteCount, 2);
+            pvalueADCCoeffsPacketArg->setData(TableRoles::NumeralSystem, TableRoles::Decimal);
+            ui->tableWidget->setItem(ui->tableWidget->rowCount() - 1, 3 + jLoop, pvalueADCCoeffsPacketArg);
+        }
+    }
+
+    // the first column
+    for(int iLoop = 0; iLoop < 2; iLoop++)
+    {
+        ui->tableWidget->insertRow(ui->tableWidget->rowCount());                            // create new row in table
+        int numberPID = 47 + iLoop;
+        QTableWidgetItem *pvalueOthersCoeffsPacketID = new QTableWidgetItem(QString::number(numberPID));// paket id
+        pvalueOthersCoeffsPacketID->setData(TableRoles::ByteCount, 1);                              // paket id is 1 byte
+        pvalueOthersCoeffsPacketID->setData(TableRoles::NumeralSystem, TableRoles::Hex);            // packet id is displayed as hex
+        ui->tableWidget->setItem(ui->tableWidget->rowCount() - 1, 0, pvalueOthersCoeffsPacketID);   // insert item to created row to the first column
+
+        // the second column (it has no impact on data to be sent)
+        QTableWidgetItem *pvalueOthersCoeffsPacketName = new QTableWidgetItem();
+        QString textDescriptionPID;
+
+        if(!(iLoop % 2))
+        {
+            textDescriptionPID = QString("ADC_OTHERS_SET_COEFFICIENTS_MULTIPLE");
+        }
+        else
+        {
+            textDescriptionPID = QString("ADC_OTHERS_SET_COEFFICIENTS_ADDITIVE");
+        }
+
+        pvalueOthersCoeffsPacketName->setText(textDescriptionPID);
+        ui->tableWidget->setItem(ui->tableWidget->rowCount() - 1, 1, pvalueOthersCoeffsPacketName); // insert item to created row to the second column
+
+
+
+        for(qint32 jLoop = 0; jLoop < 2 * NMB_COEFFICIENTS_OTHERS; jLoop++)
+        {
+            QTableWidgetItem *pvalueOthersCoeffsPacketArg = new QTableWidgetItem();
+
+            if(!(jLoop % 2))
+            {
+                if(b_dataAreSaved)
+                {
+                    pvalueOthersCoeffsPacketArg->setText(list.at(w_IndexInList++));
+                }
+                else
+                {
+                    if(iLoop % 2)
+                    {
+                        pvalueOthersCoeffsPacketArg->setText("0");
+                    }
+                    else
+                    {
+                        pvalueOthersCoeffsPacketArg->setText("1");
+                    }
+                }
+                pvalueOthersCoeffsPacketArg->setData(Qt::ToolTipRole, QString("Divident %1 [-32768 - 32767]").arg(coeffsOthersName[jLoop / 2]));
+            }
+            else
+            {
+                if(b_dataAreSaved)
+                {
+                    pvalueOthersCoeffsPacketArg->setText(list.at(w_IndexInList++));
+                }
+                else
+                {
+                    if(iLoop % 2)
+                    {
+                        pvalueOthersCoeffsPacketArg->setText("1");
+                    }
+                    else
+                    {
+                        pvalueOthersCoeffsPacketArg->setText("1");
+                    }
+                }
+                pvalueOthersCoeffsPacketArg->setData(Qt::ToolTipRole, QString("Divisor %1 [-32768 - 32767]").arg(coeffsOthersName[jLoop / 2]));
+            }
+
+            pvalueOthersCoeffsPacketArg->setData(TableRoles::ByteCount, 2);
+            pvalueOthersCoeffsPacketArg->setData(TableRoles::NumeralSystem, TableRoles::Decimal);
+            ui->tableWidget->setItem(ui->tableWidget->rowCount() - 1, 3 + jLoop, pvalueOthersCoeffsPacketArg);
         }
     }
 
     //! and next packet definition
     // the first column
     ui->tableWidget->insertRow(ui->tableWidget->rowCount());                            // create new row in table
-    QTableWidgetItem *pvalue18PacketID = new QTableWidgetItem("47");                  // paket id
+    QTableWidgetItem *pvalue18PacketID = new QTableWidgetItem("49");                  // paket id
     pvalue18PacketID->setData(TableRoles::ByteCount, 1);                              // paket id is 1 byte
     pvalue18PacketID->setData(TableRoles::NumeralSystem, TableRoles::Hex);            // packet id is displayed as hex
     ui->tableWidget->setItem(ui->tableWidget->rowCount() - 1, 0, pvalue18PacketID);   // insert item to created row to the first column
@@ -1089,7 +1166,7 @@ void MainWindow::FillCommandTable()
     //! and next packet definition
     // the first column
     ui->tableWidget->insertRow(ui->tableWidget->rowCount());                            // create new row in table
-    QTableWidgetItem *pvalue19PacketID = new QTableWidgetItem("48");                  // paket id
+    QTableWidgetItem *pvalue19PacketID = new QTableWidgetItem("4A");                  // paket id
     pvalue19PacketID->setData(TableRoles::ByteCount, 1);                              // paket id is 1 byte
     pvalue19PacketID->setData(TableRoles::NumeralSystem, TableRoles::Hex);            // packet id is displayed as hex
     ui->tableWidget->setItem(ui->tableWidget->rowCount() - 1, 0, pvalue19PacketID);   // insert item to created row to the first column
