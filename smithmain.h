@@ -12,15 +12,10 @@ class SmithMain : public QMainWindow
 public:
     explicit SmithMain(QWidget *parent = 0);
 public slots:
-    void ReceivedNewData(int magnitudeAvg, int phaseAvg, int magnitude50, int phase50);
+    void ReceivedNewData(qreal magnitudeCurrAvg, qreal phaseCurrAvg, qreal magnitudeCurr50, qreal phaseCurr50, qreal magnitudeAvg50, qreal phaseAvg50);
 
 private:
-    qreal mRatio_magnitudeAvg;
-    qreal mRatio_phaseAvg;
-    qreal mRatio_magnitude50;
-    qreal mRatio_phase50;
-
-    bool bEnableDraw = false;
+    QList<QPointF> axis[3];
 
 protected:
     void paintEvent(QPaintEvent*);

@@ -8,16 +8,11 @@ SmithMain::SmithMain(QWidget *parent) : QMainWindow(parent)
     installEventFilter(this);
 }
 
-void SmithMain::ReceivedNewData(int magnitudeAvg, int phaseAvg, int magnitude50, int phase50)
+void SmithMain::ReceivedNewData(qreal magnitudeCurrAvg, qreal phaseCurrAvg, qreal magnitudeCurr50, qreal phaseCurr50, qreal magnitudeAvg50, qreal phaseAvg50)
 {
-    if(!bEnableDraw)
-    {
-        bEnableDraw = true;
-    }
-    mRatio_magnitudeAvg = qreal(magnitudeAvg) / 1000;
-    mRatio_phaseAvg = qreal(phaseAvg) / 1000;
-    mRatio_magnitude50 = qreal(magnitude50) / 1000;
-    mRatio_phase50 = qreal(phase50) / 1000;
+    axis[0].append(QPointF(magnitudeAvg50, phaseAvg50));
+    axis[1].append(QPointF(magnitudeCurr50, phaseCurr50));
+    axis[2].append(QPointF(magnitudeCurrAvg, phaseCurrAvg));
 
     repaint();
 }
@@ -41,44 +36,51 @@ bool SmithMain::eventFilter(QObject *, QEvent *event)
 
 void SmithMain::paintEvent(QPaintEvent*)
 {
-    static QList<QPointF> centers;
     QPainter painterMain(this);
 
     painterMain.drawPixmap(0, 0, QPixmap("smith.png").scaled(size()));
 
-    if(bEnableDraw)
+    for(int jLoop = 0; jLoop < 3; jLoop++)
     {
-        if(centers.count() >= 200)
+        if(axis[jLoop].count() >= 200)
         {
-            centers.removeFirst();
-            centers.removeFirst();
+            axis[jLoop].removeFirst();
         }
 
-        QPointF centerLeft(mRatio_magnitudeAvg,mRatio_phaseAvg);
-        centers.append(centerLeft);
-
-        QPointF centerRight(mRatio_magnitude50,mRatio_phase50);
-        centers.append(centerRight);
-
-        for(int iLoop = 0; iLoop < centers.count(); iLoop++)
+        for(int iLoop = 0; iLoop < axis[jLoop].count(); iLoop++)
         {
             painterMain.setPen(QPen(Qt::blue));
-            painterMain.setBrush(QBrush(Qt::red));
-            qreal xSave = centers.at(iLoop).x();
-            qreal ySave = centers.at(iLoop).y();
+            qreal xSave = axis[jLoop].at(iLoop).x() * cos(axis[jLoop].at(iLoop).y());
+            qreal ySave = axis[jLoop].at(iLoop).x() * sin(axis[jLoop].at(iLoop).y());
 
-            //qDebug() << "values: " << xSave << " and " << ySave;
+            //qDebug() << "values: " << xSave << "and" << ySave;
 
-            if(iLoop % 2)
+            if(jLoop == 0)
             {
-                QPointF adjustSize((width() / 4) - (xSave * width() * 7 / (4 * 9)), (height() / 2) - (ySave * height() * 7 / (2 * 9)));
+                painterMain.setBrush(QBrush(Qt::blue));
+                QPointF adjustSize((width() / 4) + (xSave * width() * 7 / (4 * 9)), (height() / 2) - (ySave * height() * 7 / (2 * 9)));
                 painterMain.drawEllipse(adjustSize,3,3);
             }
-            else
+            else if(jLoop == 1)
             {
-                QPointF adjustSize((width() * 3 / 4) - (xSave * width() * 7 / (4 * 9)), (height() / 2) - (ySave * height() * 7 / (2 * 9)));
+                painterMain.setBrush(QBrush(Qt::red));
+                QPointF adjustSize((width() / 4) + (xSave * width() * 7 / (4 * 9)), (height() / 2) - (ySave * height() * 7 / (2 * 9)));
+                painterMain.drawEllipse(adjustSize,3,3);
+            }
+            else if(jLoop == 2)
+            {
+                painterMain.setBrush(QBrush(Qt::green));
+                QPointF adjustSize((width() * 3 / 4) + (xSave * width() * 7 / (4 * 9)), (height() / 2) - (ySave * height() * 7 / (2 * 9)));
                 painterMain.drawEllipse(adjustSize,3,3);
             }
         }
+
     }
+
+    painterMain.setPen(QPen(Qt::blue));
+    painterMain.drawText(QPoint(width() / 2, 20), QString("average x 50%1").arg(QChar(0x03A9)));
+    painterMain.setPen(QPen(Qt::red));
+    painterMain.drawText(QPoint(width() / 2, 40), QString("current x 50%1").arg(QChar(0x03A9)));
+    painterMain.setPen(QPen(Qt::green));
+    painterMain.drawText(QPoint(width() / 2, 60), "current x average");
 }

@@ -453,7 +453,7 @@ void MainWindow::AppendText(QTime timestamp, QString strText)
 
 void MainWindow::FillCommandTable()
 {
-    int m_NumberOfFilledTables = 2 + 2 + 1 + 2 + 6 + 3 + 4 * 2 * 2 + 7 * 2 * 2 + 9 * 2 * 2 + 9 * 2 * 2 + 9 + 3;
+    int m_NumberOfFilledTables = 2 + 2 + 1 + 2 + 6 + 3 + 4 * 2 * 2 + 7 * 2 * 2 + 9 * 2 * 2 + 9 * 2 * 2 + 8 + 6;
     bool b_dataAreSaved = false;
 
     QString StoredItems = m_pSettingStrorage->RestoreRowItem();
@@ -1120,20 +1120,6 @@ void MainWindow::FillCommandTable()
     pvalue18PacketArg6->setData(Qt::ToolTipRole, "(Amp_PWR_ON) [0-1] disable/enable");     // a hint which is displayed when mouse hovers over
     ui->tableWidget->setItem(ui->tableWidget->rowCount() - 1, 8, pvalue18PacketArg6); // insert item to created row to the fourth column
 
-    QTableWidgetItem *pvalue18PacketArg7 = new QTableWidgetItem();
-    if(b_dataAreSaved)
-    {
-        pvalue18PacketArg7->setText(list.at(w_IndexInList++));
-    }
-    else
-    {
-        pvalue18PacketArg7->setText("0");
-    }
-    pvalue18PacketArg7->setData(TableRoles::ByteCount, 1);                            // the value is 3 bytes
-    pvalue18PacketArg7->setData(TableRoles::NumeralSystem, TableRoles::Decimal);      // packet id is displayed as decimal
-    pvalue18PacketArg7->setData(Qt::ToolTipRole, "(nAMPComm_OCP) [0-1] disable/enable");     // a hint which is displayed when mouse hovers over
-    ui->tableWidget->setItem(ui->tableWidget->rowCount() - 1, 9, pvalue18PacketArg7); // insert item to created row to the fourth column
-
     QTableWidgetItem *pvalue18PacketArg8 = new QTableWidgetItem();
     if(b_dataAreSaved)
     {
@@ -1146,7 +1132,7 @@ void MainWindow::FillCommandTable()
     pvalue18PacketArg8->setData(TableRoles::ByteCount, 1);                            // the value is 3 bytes
     pvalue18PacketArg8->setData(TableRoles::NumeralSystem, TableRoles::Decimal);      // packet id is displayed as decimal
     pvalue18PacketArg8->setData(Qt::ToolTipRole, "(nGenErr_uP) [0-1] disable/enable");     // a hint which is displayed when mouse hovers over
-    ui->tableWidget->setItem(ui->tableWidget->rowCount() - 1, 10, pvalue18PacketArg8); // insert item to created row to the fourth column
+    ui->tableWidget->setItem(ui->tableWidget->rowCount() - 1, 9, pvalue18PacketArg8); // insert item to created row to the fourth column
 
     QTableWidgetItem *pvalue18PacketArg9 = new QTableWidgetItem();
     if(b_dataAreSaved)
@@ -1160,7 +1146,7 @@ void MainWindow::FillCommandTable()
     pvalue18PacketArg9->setData(TableRoles::ByteCount, 1);                            // the value is 3 bytes
     pvalue18PacketArg9->setData(TableRoles::NumeralSystem, TableRoles::Decimal);      // packet id is displayed as decimal
     pvalue18PacketArg9->setData(Qt::ToolTipRole, "(Fraction/Exilis) [0-1] disable/enable");     // a hint which is displayed when mouse hovers over
-    ui->tableWidget->setItem(ui->tableWidget->rowCount() - 1, 11, pvalue18PacketArg9); // insert item to created row to the fourth column
+    ui->tableWidget->setItem(ui->tableWidget->rowCount() - 1, 10, pvalue18PacketArg9); // insert item to created row to the fourth column
 
 
     //! and next packet definition
@@ -1172,7 +1158,7 @@ void MainWindow::FillCommandTable()
     ui->tableWidget->setItem(ui->tableWidget->rowCount() - 1, 0, pvalue19PacketID);   // insert item to created row to the first column
 
     // the second column (it has no impact on data to be sent)
-    QTableWidgetItem *pvalue19PacketName = new QTableWidgetItem("apl_PWR(X)");     // readable description
+    QTableWidgetItem *pvalue19PacketName = new QTableWidgetItem("apl_(X)");     // readable description
     ui->tableWidget->setItem(ui->tableWidget->rowCount() - 1, 1, pvalue19PacketName); // insert item to created row to the second column
 
     QTableWidgetItem *pvalue19PacketArg0 = new QTableWidgetItem();
@@ -1182,11 +1168,11 @@ void MainWindow::FillCommandTable()
     }
     else
     {
-        pvalue19PacketArg0->setText("10");
+        pvalue19PacketArg0->setText("0");
     }
     pvalue19PacketArg0->setData(TableRoles::ByteCount, 1);                            // the value is 3 bytes
     pvalue19PacketArg0->setData(TableRoles::NumeralSystem, TableRoles::Decimal);      // packet id is displayed as decimal
-    pvalue19PacketArg0->setData(Qt::ToolTipRole, "(RESET) [0-100] in us");     // a hint which is displayed when mouse hovers over
+    pvalue19PacketArg0->setData(Qt::ToolTipRole, "(1_ON) [0-1] disable/enable");     // a hint which is displayed when mouse hovers over
     ui->tableWidget->setItem(ui->tableWidget->rowCount() - 1, 3, pvalue19PacketArg0); // insert item to created row to the fourth column
 
     QTableWidgetItem *pvalue19PacketArg1 = new QTableWidgetItem();
@@ -1196,11 +1182,11 @@ void MainWindow::FillCommandTable()
     }
     else
     {
-        pvalue19PacketArg1->setText("0");
+        pvalue19PacketArg1->setText("10");
     }
     pvalue19PacketArg1->setData(TableRoles::ByteCount, 1);                            // the value is 3 bytes
     pvalue19PacketArg1->setData(TableRoles::NumeralSystem, TableRoles::Decimal);      // packet id is displayed as decimal
-    pvalue19PacketArg1->setData(Qt::ToolTipRole, "(ON) [0-1] disable/enable");     // a hint which is displayed when mouse hovers over
+    pvalue19PacketArg1->setData(Qt::ToolTipRole, "(1_PWR_RESET) [0-100] in us");     // a hint which is displayed when mouse hovers over
     ui->tableWidget->setItem(ui->tableWidget->rowCount() - 1, 4, pvalue19PacketArg1); // insert item to created row to the fourth column
 
     QTableWidgetItem *pvalue19PacketArg2 = new QTableWidgetItem();
@@ -1214,8 +1200,50 @@ void MainWindow::FillCommandTable()
     }
     pvalue19PacketArg2->setData(TableRoles::ByteCount, 1);                            // the value is 3 bytes
     pvalue19PacketArg2->setData(TableRoles::NumeralSystem, TableRoles::Decimal);      // packet id is displayed as decimal
-    pvalue19PacketArg2->setData(Qt::ToolTipRole, "(OCP) [0-1] disable/enable");     // a hint which is displayed when mouse hovers over
+    pvalue19PacketArg2->setData(Qt::ToolTipRole, "(1_PWR_ON) [0-1] disable/enable");     // a hint which is displayed when mouse hovers over
     ui->tableWidget->setItem(ui->tableWidget->rowCount() - 1, 5, pvalue19PacketArg2); // insert item to created row to the fourth column
+
+    QTableWidgetItem *pvalue19PacketArg3 = new QTableWidgetItem();
+    if(b_dataAreSaved)
+    {
+        pvalue19PacketArg3->setText(list.at(w_IndexInList++));
+    }
+    else
+    {
+        pvalue19PacketArg3->setText("0");
+    }
+    pvalue19PacketArg3->setData(TableRoles::ByteCount, 1);                            // the value is 3 bytes
+    pvalue19PacketArg3->setData(TableRoles::NumeralSystem, TableRoles::Decimal);      // packet id is displayed as decimal
+    pvalue19PacketArg3->setData(Qt::ToolTipRole, "(2_ON) [0-1] disable/enable");     // a hint which is displayed when mouse hovers over
+    ui->tableWidget->setItem(ui->tableWidget->rowCount() - 1, 6, pvalue19PacketArg3); // insert item to created row to the fourth column
+
+    QTableWidgetItem *pvalue19PacketArg4 = new QTableWidgetItem();
+    if(b_dataAreSaved)
+    {
+        pvalue19PacketArg4->setText(list.at(w_IndexInList++));
+    }
+    else
+    {
+        pvalue19PacketArg4->setText("0");
+    }
+    pvalue19PacketArg4->setData(TableRoles::ByteCount, 1);                            // the value is 3 bytes
+    pvalue19PacketArg4->setData(TableRoles::NumeralSystem, TableRoles::Decimal);      // packet id is displayed as decimal
+    pvalue19PacketArg4->setData(Qt::ToolTipRole, "(3_ON) [0-1] disable/enable");     // a hint which is displayed when mouse hovers over
+    ui->tableWidget->setItem(ui->tableWidget->rowCount() - 1, 7, pvalue19PacketArg4); // insert item to created row to the fourth column
+
+    QTableWidgetItem *pvalue19PacketArg5 = new QTableWidgetItem();
+    if(b_dataAreSaved)
+    {
+        pvalue19PacketArg5->setText(list.at(w_IndexInList++));
+    }
+    else
+    {
+        pvalue19PacketArg5->setText("0");
+    }
+    pvalue19PacketArg5->setData(TableRoles::ByteCount, 1);                            // the value is 3 bytes
+    pvalue19PacketArg5->setData(TableRoles::NumeralSystem, TableRoles::Decimal);      // packet id is displayed as decimal
+    pvalue19PacketArg5->setData(Qt::ToolTipRole, "(4_ON) [0-1] disable/enable");     // a hint which is displayed when mouse hovers over
+    ui->tableWidget->setItem(ui->tableWidget->rowCount() - 1, 8, pvalue19PacketArg5); // insert item to created row to the fourth column
 
 }
 
@@ -1349,24 +1377,29 @@ void MainWindow::newDataV200(QByteArray aData)
 
             recognizeIfDisplayNewDataAllSignals(timeShot, &myStringOnlyNumbers, 2, 0);
 
-            COMPLEX_NUMBER_GONIO currentData;
-            COMPLEX_NUMBER_GONIO averageDataA;
-            COMPLEX_NUMBER_GONIO averageData50;
-            COMPLEX_NUMBER_GONIO reflRatioAvg;
-            COMPLEX_NUMBER_GONIO reflRatio50;
+            COMPLEX_NUMBER_GONIO currentData, averageData, const50Data;
+            COMPLEX_NUMBER_GONIO reflRatioCurrVsAvg, reflRatioCurrVs50, reflRatioAvgVs50;
 
-            currentData.magnitude = myStringOnlyNumbers.at(1).toFloat();
-            currentData.phase_rad = myStringOnlyNumbers.at(2).toFloat();
-            averageDataA.magnitude = myStringOnlyNumbers.at(3).toFloat();
-            averageDataA.phase_rad = myStringOnlyNumbers.at(4).toFloat();
+            averageData.magnitude = myStringOnlyNumbers.at(1).toFloat();
+            averageData.phase_rad = myStringOnlyNumbers.at(2).toFloat();
+            currentData.magnitude = myStringOnlyNumbers.at(3).toFloat();
+            currentData.phase_rad = myStringOnlyNumbers.at(4).toFloat();
+            const50Data.magnitude = 50;
+            const50Data.phase_rad = 0;
 
-            reflRatioAvg = CalculateReflectionRatio(currentData, averageDataA);
+            /*COMPLEX_NUMBER_GONIO test;
+            COMPLEX_NUMBER_GONIO reflret;
 
-            averageData50.magnitude = 50;
-            averageData50.phase_rad = 0;
+            test.magnitude = 110;
+            test.phase_rad = 1.57;
 
-            reflRatio50 = CalculateReflectionRatio(currentData, averageData50);
-            emit SendNewImpedanceData(int(reflRatioAvg.magnitude * 1000), int(reflRatioAvg.phase_rad * 1000),int(reflRatio50.magnitude * 1000), int(reflRatio50.phase_rad * 1000));
+            reflret = CalculateReflectionRatio(test,const50Data);*/
+
+            reflRatioCurrVsAvg = CalculateReflectionRatio(currentData, averageData);
+            reflRatioCurrVs50 = CalculateReflectionRatio(currentData, const50Data);
+            reflRatioAvgVs50 = CalculateReflectionRatio(averageData, const50Data);
+            emit SendNewImpedanceData(qreal(reflRatioCurrVsAvg.magnitude), qreal(reflRatioCurrVsAvg.phase_rad),qreal(reflRatioCurrVs50.magnitude), qreal(reflRatioCurrVs50.phase_rad), qreal(reflRatioAvgVs50.magnitude), qreal(reflRatioAvgVs50.phase_rad));
+
         }
         else if(aData.at(2) == '2' && aData.at(3) == 's')//ADC2 average data
         {
@@ -1431,17 +1464,16 @@ MainWindow::COMPLEX_NUMBER_GONIO MainWindow::CalculateReflectionRatio(COMPLEX_NU
     double divisorAlgebImag = recentAlgebImag + averageAlgebImag;
 
 
-    ReflectionRatio.magnitude = sqrt(dividentAlgebReal * dividentAlgebReal + dividentAlgebImag * dividentAlgebImag) / sqrt(divisorAlgebReal * divisorAlgebReal + divisorAlgebImag * divisorAlgebImag);
-    if(ReflectionRatio.magnitude > 0.05)
-    {
-        ReflectionRatio.phase_rad = atan(divisorAlgebImag / divisorAlgebReal) - atan(dividentAlgebImag / dividentAlgebReal);
 
-        //qDebug() << ReflectionRatio.magnitude << " " << ReflectionRatio.phase_rad;
-    }
-    else
-    {
-        ReflectionRatio.phase_rad = 0;
-    }
+    double commonDivisor = divisorAlgebReal * divisorAlgebReal + divisorAlgebImag * divisorAlgebImag;
+    double realPart = (dividentAlgebReal * divisorAlgebReal + dividentAlgebImag * divisorAlgebImag) / commonDivisor;
+    double imagPart = (dividentAlgebImag * divisorAlgebReal - dividentAlgebReal * divisorAlgebImag) / commonDivisor;
+
+    ReflectionRatio.magnitude = sqrt(realPart * realPart + imagPart * imagPart);
+    ReflectionRatio.phase_rad = atan(imagPart / realPart);
+
+    //qDebug() << ReflectionRatio.magnitude << " " << ReflectionRatio.phase_rad;
+
 
     return ReflectionRatio;
 }
