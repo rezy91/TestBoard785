@@ -77,6 +77,9 @@ public:
 
     void StorePathLog(const QString& strPath);
     QString RestorePathLog() const;
+
+    void StoreSmithPoints(const quint32& nPoints);
+    quint32 RestoreSmithPoints() const;
 };
 
 #endif // SETTINGS_H

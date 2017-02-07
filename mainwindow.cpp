@@ -464,11 +464,6 @@ void MainWindow::FillCommandTable()
     if((list.count() - 1) == m_NumberOfFilledTables)
     {
         b_dataAreSaved = true;
-        qDebug() << "+ it is saved";
-    }
-    else
-    {
-        qDebug() << "- it is not saved";
     }
 
     //! set packet
@@ -1346,6 +1341,12 @@ void MainWindow::restoreAllSettings()
     ui->doubleSpinBox_6->setValue(m_pSettingStrorage->RestoreLowValueSignalSecond());
     ui->doubleSpinBox_7->setValue(m_pSettingStrorage->RestoreLowValueSignalThird());
     ui->doubleSpinBox_8->setValue(m_pSettingStrorage->RestoreLowValueSignalFourth());
+
+    if(m_pSettingStrorage->RestoreSmithPoints())
+    {
+        o_smith->SetNmbPoints(m_pSettingStrorage->RestoreSmithPoints());
+    }
+
 }
 
 void MainWindow::newDataV200(QByteArray aData)
@@ -1696,6 +1697,7 @@ void MainWindow::closeEvent(QCloseEvent *event)
     m_pSettingStrorage->StoreGeometryMain(saveGeometry());
     m_pSettingStrorage->StoreGeometrySmith(o_smith->saveGeometry());
     m_pSettingStrorage->StoreGeometryGraph(o_graph->saveGeometry());
+    m_pSettingStrorage->StoreSmithPoints(o_smith->GetNmbPoints());
 
 
     int iColumns = ui->tableWidget->columnCount();

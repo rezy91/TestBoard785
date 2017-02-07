@@ -6,6 +6,57 @@
 SmithMain::SmithMain(QWidget *parent) : QMainWindow(parent)
 {
     installEventFilter(this);
+
+    clearButton->setText("Clear");
+    nmbDisplayedSamples->setMinimum(1);
+    nmbDisplayedSamples->setMaximum(9999);
+    nmbDisplayedSamples->setValue(100);
+    currentNmbPoint = nmbDisplayedSamples->value();
+
+
+    connect(clearButton, &QPushButton::clicked, [this](){
+
+        for(int jLoop = 0; jLoop < 3; jLoop++)
+        {
+            axis[jLoop].clear();
+        }
+
+        repaint();
+    });
+
+    connect(nmbDisplayedSamples, static_cast<void (QSpinBox::*)(int)>(&QSpinBox::valueChanged), [=](int newValue){
+
+        for(int jLoop = 0; jLoop < 3; jLoop++)
+        {
+            if(axis[jLoop].count() > newValue)
+            {
+                int removeItems = axis[jLoop].count() - newValue;
+
+                for(int iLoop = 0; iLoop < removeItems; iLoop++)
+                {
+                    axis[jLoop].removeFirst();
+                }
+            }
+        }
+
+        currentNmbPoint = newValue;
+        qDebug() << "value changed:" << newValue;
+
+
+    });
+
+
+}
+
+quint32 SmithMain::GetNmbPoints()
+{
+    return nmbDisplayedSamples->value();
+}
+
+void SmithMain::SetNmbPoints(quint32 value)
+{
+    nmbDisplayedSamples->setValue(value);
+    currentNmbPoint = value;
 }
 
 void SmithMain::ReceivedNewData(qreal magnitudeCurrAvg, qreal phaseCurrAvg, qreal magnitudeCurr50, qreal phaseCurr50, qreal magnitudeAvg50, qreal phaseAvg50)
@@ -38,11 +89,15 @@ void SmithMain::paintEvent(QPaintEvent*)
 {
     QPainter painterMain(this);
 
+    clearButton->setGeometry(width() / 2, height() - 50, 50, 20);
+    nmbDisplayedSamples->setGeometry(width() / 2, height() - 25, 50, 20);
+
+
     painterMain.drawPixmap(0, 0, QPixmap("smith.png").scaled(size()));
 
     for(int jLoop = 0; jLoop < 3; jLoop++)
     {
-        if(axis[jLoop].count() >= 200)
+        if(axis[jLoop].count() >= int(currentNmbPoint))
         {
             axis[jLoop].removeFirst();
         }

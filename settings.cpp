@@ -216,6 +216,16 @@ QString settings::RestorePathLog() const
     return RestoreValue(QString("pathlog")).toString();
 }
 
+void settings::StoreSmithPoints(const quint32 &nPoints)
+{
+    StoreValue(QString("smithPoints"), nPoints);
+}
+
+quint32 settings::RestoreSmithPoints() const
+{
+    return RestoreValue(QString("smithPoints")).toUInt();
+}
+
 void settings::StoreValue(const QString &strKey, const QVariant &vValue)
 {
     m_pAppSettings->setValue(strKey, vValue);
