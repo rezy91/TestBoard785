@@ -132,11 +132,12 @@ private:
     QStringList allAdxSignals[NMB_ITEMS_FOR_TIMERS] = { \
                                     {"ad3c_counter", "ad3c_exec", "ad3c_conv"}, \
                                     {"ad3s_counter", "Cooling_ADC1", "Cooling_ADC2", "Cooling_ADC3", "Cooling_ADC4"}, \
-                                    {"ad2c_counter", "imp_avg_mag", "imp_avg_phs", "imp_max_mag", "imp_max_phs", "power_average", "power_current", "reserve", "ad2c_exec", "ad2c_conv"}, \
+                                    {"ad2c_counter", "imp_avg_mag", "imp_avg_phs", "imp_max_mag", "imp_max_phs", "power_average", "power_current", "power_regulator", "ad2c_exec", "ad2c_conv"}, \
                                     {"ad2s_counter", "Vrf_adc", "I4_adc", "Vforward_adc", "I2_adc", "Vreverse_adc", "I3_adc", "I1_adc"}, \
                                     {"ad1c_counter", "ad1c_exec", "ad1c_conv"}, \
                                     {"ad1s_counter", "Apl1_Vcc_Adc", "CQM1_adc", "CQM2_adc", "Vref", "Temperature1", "+24V_adc", "+5V_adc", "temper_mcu_adc", "vrefin_adc"}};
     QString coeffsOthersName[NMB_COEFFICIENTS_OTHERS] = {"for power", "NOT_USED", "NOT_USED", "NOT_USED", "NOT_USED", "NOT_USED", "NOT_USED", "NOT_USED", "NOT_USED"};
+    QString coeffsRegulatorName[3] = {"PROPORCIAL", "INTEGRAL", "DERIVATIVE"};
     bool flagIfSourceIsLogged[NMB_ITEMS_FOR_TIMERS];
 
     int sourceSignal[nmbCurvesInGraph] = {0, 0, 0, 0};
