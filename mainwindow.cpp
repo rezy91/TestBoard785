@@ -26,6 +26,7 @@
 
 #include <windows.h>
 
+
 MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWindow)
 {
     static int mMainTimer = 0;
@@ -329,6 +330,16 @@ void MainWindow::on_sendButton_clicked()
                     strCmd += strHexNumber.rightJustified(nAlignment, '0');
                 }
             }
+            else if(oTableSelection.at(nItemIndex).data(TableRoles::NumeralSystem) == TableRoles::Float)
+            {
+                float f_convertedValue = oTableSelection.at(nItemIndex).data().toFloat();
+
+                QByteArray arrFloatInArraysDec(reinterpret_cast<const char *>(&f_convertedValue), sizeof (f_convertedValue));
+                QByteArray arrFloatInArraysHexa = arrFloatInArraysDec.toHex();
+                strCmd += QString(arrFloatInArraysHexa);
+
+                //qDebug() <<  f_convertedValue << arrFloatInArraysHexa;
+            }
         }
         qDebug() << strCmd;
 
@@ -453,7 +464,7 @@ void MainWindow::AppendText(QTime timestamp, QString strText)
 
 void MainWindow::FillCommandTable()
 {
-    int m_NumberOfFilledTables = 2 + 2 + 1 + 2 + 6 + 3 + 4 * 2 * 2 + 7 * 2 * 2 + 9 * 2 * 2 + 9 * 2 * 2 + 8 + 6 + 6 + 2;
+    int m_NumberOfFilledTables = 2 + 2 + 1 + 2 + 6 + 3 + 4 * 2 + 7 * 2 + 9 * 2 + 9 * 2 + 8 + 6 + 3 + 2;
     bool b_dataAreSaved = false;
 
     QString StoredItems = m_pSettingStrorage->RestoreRowItem();
@@ -891,54 +902,36 @@ void MainWindow::FillCommandTable()
 
 
 
-        for(qint32 jLoop = 0; jLoop < 2 * iNmbChannels; jLoop++)
+        for(qint32 jLoop = 0; jLoop < iNmbChannels; jLoop++)
         {
             QTableWidgetItem *pvalueADCCoeffsPacketArg = new QTableWidgetItem();
 
-            if(!(jLoop % 2))
+
+            if(b_dataAreSaved)
             {
-                if(b_dataAreSaved)
-                {
-                    pvalueADCCoeffsPacketArg->setText(list.at(w_IndexInList++));
-                }
-                else
-                {
-                    if(iLoop % 2)
-                    {
-                        pvalueADCCoeffsPacketArg->setText("0");
-                    }
-                    else
-                    {
-                        pvalueADCCoeffsPacketArg->setText("3300");
-                    }
-                }
-                pvalueADCCoeffsPacketArg->setData(Qt::ToolTipRole, "Divident channel(" + QString::number(jLoop / 2) + ") [-32768 - 32767]");
+                pvalueADCCoeffsPacketArg->setText(list.at(w_IndexInList++));
             }
             else
             {
-                if(b_dataAreSaved)
+                if(iLoop % 2)
                 {
-                    pvalueADCCoeffsPacketArg->setText(list.at(w_IndexInList++));
+                    pvalueADCCoeffsPacketArg->setText("0.0");
                 }
                 else
                 {
-                    if(iLoop % 2)
-                    {
-                        pvalueADCCoeffsPacketArg->setText("1");
-                    }
-                    else
-                    {
-                        pvalueADCCoeffsPacketArg->setText("4096");
-                    }
+                    pvalueADCCoeffsPacketArg->setText("1.0");
                 }
-                pvalueADCCoeffsPacketArg->setData(Qt::ToolTipRole, "Divisor channel(" + QString::number(jLoop / 2) + ") [-32768 - 32767]");
             }
+            pvalueADCCoeffsPacketArg->setData(Qt::ToolTipRole, "Channel(" + QString::number(jLoop) + ")");
 
-            pvalueADCCoeffsPacketArg->setData(TableRoles::ByteCount, 2);
-            pvalueADCCoeffsPacketArg->setData(TableRoles::NumeralSystem, TableRoles::Decimal);
+
+            pvalueADCCoeffsPacketArg->setData(TableRoles::ByteCount, 4);
+            pvalueADCCoeffsPacketArg->setData(TableRoles::NumeralSystem, TableRoles::Float);
             ui->tableWidget->setItem(ui->tableWidget->rowCount() - 1, 3 + jLoop, pvalueADCCoeffsPacketArg);
         }
     }
+
+
 
     // the first column
     for(int iLoop = 0; iLoop < 2; iLoop++)
@@ -968,51 +961,31 @@ void MainWindow::FillCommandTable()
 
 
 
-        for(qint32 jLoop = 0; jLoop < 2 * NMB_COEFFICIENTS_OTHERS; jLoop++)
+        for(qint32 jLoop = 0; jLoop < NMB_COEFFICIENTS_OTHERS; jLoop++)
         {
             QTableWidgetItem *pvalueOthersCoeffsPacketArg = new QTableWidgetItem();
 
-            if(!(jLoop % 2))
+            if(b_dataAreSaved)
             {
-                if(b_dataAreSaved)
-                {
-                    pvalueOthersCoeffsPacketArg->setText(list.at(w_IndexInList++));
-                }
-                else
-                {
-                    if(iLoop % 2)
-                    {
-                        pvalueOthersCoeffsPacketArg->setText("0");
-                    }
-                    else
-                    {
-                        pvalueOthersCoeffsPacketArg->setText("1");
-                    }
-                }
-                pvalueOthersCoeffsPacketArg->setData(Qt::ToolTipRole, QString("Divident %1 [-32768 - 32767]").arg(coeffsOthersName[jLoop / 2]));
+                pvalueOthersCoeffsPacketArg->setText(list.at(w_IndexInList++));
             }
             else
             {
-                if(b_dataAreSaved)
+                if(iLoop % 2)
                 {
-                    pvalueOthersCoeffsPacketArg->setText(list.at(w_IndexInList++));
+                    pvalueOthersCoeffsPacketArg->setText("0.0");
                 }
                 else
                 {
-                    if(iLoop % 2)
-                    {
-                        pvalueOthersCoeffsPacketArg->setText("1");
-                    }
-                    else
-                    {
-                        pvalueOthersCoeffsPacketArg->setText("1");
-                    }
+                    pvalueOthersCoeffsPacketArg->setText("1.0");
                 }
-                pvalueOthersCoeffsPacketArg->setData(Qt::ToolTipRole, QString("Divisor %1 [-32768 - 32767]").arg(coeffsOthersName[jLoop / 2]));
             }
+            pvalueOthersCoeffsPacketArg->setData(Qt::ToolTipRole, QString("%1").arg(coeffsOthersName[jLoop]));
 
-            pvalueOthersCoeffsPacketArg->setData(TableRoles::ByteCount, 2);
-            pvalueOthersCoeffsPacketArg->setData(TableRoles::NumeralSystem, TableRoles::Decimal);
+
+
+            pvalueOthersCoeffsPacketArg->setData(TableRoles::ByteCount, 4);
+            pvalueOthersCoeffsPacketArg->setData(TableRoles::NumeralSystem, TableRoles::Float);
             ui->tableWidget->setItem(ui->tableWidget->rowCount() - 1, 3 + jLoop, pvalueOthersCoeffsPacketArg);
         }
     }
@@ -1251,42 +1224,69 @@ void MainWindow::FillCommandTable()
     ui->tableWidget->setItem(ui->tableWidget->rowCount() - 1, 0, pvalue20PacketID);   // insert item to created row to the first column
 
     // the second column (it has no impact on data to be sent)
-    QTableWidgetItem *pvalue20PacketName = new QTableWidgetItem("REGULATOR(X)_SET_COEFFICIENTS");     // readable description
+    QTableWidgetItem *pvalue20PacketName = new QTableWidgetItem("REGULATOR_SETTINGS_(X)");     // readable description
     ui->tableWidget->setItem(ui->tableWidget->rowCount() - 1, 1, pvalue20PacketName); // insert item to created row to the second column
 
-    for(qint32 jLoop = 0; jLoop < 2 * 3; jLoop++)
+
+
+    QTableWidgetItem *pvalue20PacketArg0 = new QTableWidgetItem();
+    if(b_dataAreSaved)
     {
-        QTableWidgetItem *pvalue20PacketArg = new QTableWidgetItem();
-
-        if(!(jLoop % 2))
-        {
-            if(b_dataAreSaved)
-            {
-                pvalue20PacketArg->setText(list.at(w_IndexInList++));
-            }
-            else
-            {
-                pvalue20PacketArg->setText("1");
-            }
-            pvalue20PacketArg->setData(Qt::ToolTipRole, QString("Divident %1 [-32768 - 32767]").arg(coeffsRegulatorName[jLoop / 2]));
-        }
-        else
-        {
-            if(b_dataAreSaved)
-            {
-                pvalue20PacketArg->setText(list.at(w_IndexInList++));
-            }
-            else
-            {
-                pvalue20PacketArg->setText("1");
-            }
-            pvalue20PacketArg->setData(Qt::ToolTipRole, QString("Divisor %1 [-32768 - 32767]").arg(coeffsRegulatorName[jLoop / 2]));
-        }
-
-        pvalue20PacketArg->setData(TableRoles::ByteCount, 2);
-        pvalue20PacketArg->setData(TableRoles::NumeralSystem, TableRoles::Decimal);
-        ui->tableWidget->setItem(ui->tableWidget->rowCount() - 1, 3 + jLoop, pvalue20PacketArg);
+        pvalue20PacketArg0->setText(list.at(w_IndexInList++));
     }
+    else
+    {
+        pvalue20PacketArg0->setText("1.0");
+    }
+    pvalue20PacketArg0->setData(TableRoles::ByteCount, 4);                            // the value is 3 bytes
+    pvalue20PacketArg0->setData(TableRoles::NumeralSystem, TableRoles::Float);      // packet id is displayed as decimal
+    pvalue20PacketArg0->setData(Qt::ToolTipRole, "PROPORCIAL");     // a hint which is displayed when mouse hovers over
+    ui->tableWidget->setItem(ui->tableWidget->rowCount() - 1, 3, pvalue20PacketArg0); // insert item to created row to the fourth column
+
+
+    QTableWidgetItem *pvalue20PacketArg1 = new QTableWidgetItem();
+    if(b_dataAreSaved)
+    {
+        pvalue20PacketArg1->setText(list.at(w_IndexInList++));
+    }
+    else
+    {
+        pvalue20PacketArg1->setText("1.0");
+    }
+    pvalue20PacketArg1->setData(TableRoles::ByteCount, 4);                            // the value is 3 bytes
+    pvalue20PacketArg1->setData(TableRoles::NumeralSystem, TableRoles::Float);      // packet id is displayed as decimal
+    pvalue20PacketArg1->setData(Qt::ToolTipRole, "INTEGRAL");     // a hint which is displayed when mouse hovers over
+    ui->tableWidget->setItem(ui->tableWidget->rowCount() - 1, 4, pvalue20PacketArg1); // insert item to created row to the fourth column
+
+
+    QTableWidgetItem *pvalue20PacketArg2 = new QTableWidgetItem();
+    if(b_dataAreSaved)
+    {
+        pvalue20PacketArg2->setText(list.at(w_IndexInList++));
+    }
+    else
+    {
+        pvalue20PacketArg2->setText("1.0");
+    }
+    pvalue20PacketArg2->setData(TableRoles::ByteCount, 4);                            // the value is 3 bytes
+    pvalue20PacketArg2->setData(TableRoles::NumeralSystem, TableRoles::Float);      // packet id is displayed as decimal
+    pvalue20PacketArg2->setData(Qt::ToolTipRole, "DERIVATIVE");     // a hint which is displayed when mouse hovers over
+    ui->tableWidget->setItem(ui->tableWidget->rowCount() - 1, 5, pvalue20PacketArg2); // insert item to created row to the fourth column
+
+
+    QTableWidgetItem *pvalue20PacketArg3 = new QTableWidgetItem();
+    if(b_dataAreSaved)
+    {
+        pvalue20PacketArg3->setText(list.at(w_IndexInList++));
+    }
+    else
+    {
+        pvalue20PacketArg3->setText("100");
+    }
+    pvalue20PacketArg3->setData(TableRoles::ByteCount, 2);                            // the value is 3 bytes
+    pvalue20PacketArg3->setData(TableRoles::NumeralSystem, TableRoles::Decimal);      // packet id is displayed as decimal
+    pvalue20PacketArg3->setData(Qt::ToolTipRole, "Period [10-1000] in ms");     // a hint which is displayed when mouse hovers over
+    ui->tableWidget->setItem(ui->tableWidget->rowCount() - 1, 6, pvalue20PacketArg3); // insert item to created row to the fourth column
 
 
 
@@ -1299,7 +1299,7 @@ void MainWindow::FillCommandTable()
     ui->tableWidget->setItem(ui->tableWidget->rowCount() - 1, 0, pvalue21PacketID);   // insert item to created row to the first column
 
     // the second column (it has no impact on data to be sent)
-    QTableWidgetItem *pvalue21PacketName = new QTableWidgetItem("REGULATION..(X)");     // readable description
+    QTableWidgetItem *pvalue21PacketName = new QTableWidgetItem("REGULATION_POWER");     // readable description
     ui->tableWidget->setItem(ui->tableWidget->rowCount() - 1, 1, pvalue21PacketName); // insert item to created row to the second column
 
     // the third column
@@ -1315,24 +1315,8 @@ void MainWindow::FillCommandTable()
 
     pvalue21PacketArg0->setData(TableRoles::ByteCount, 2);                            // the value is 3 bytes
     pvalue21PacketArg0->setData(TableRoles::NumeralSystem, TableRoles::Decimal);      // packet id is displayed as decimal
-    pvalue21PacketArg0->setData(Qt::ToolTipRole, "Power [0-100] in W");     // a hint which is displayed when mouse hovers over
+    pvalue21PacketArg0->setData(Qt::ToolTipRole, "[0-100] in W");     // a hint which is displayed when mouse hovers over
     ui->tableWidget->setItem(ui->tableWidget->rowCount() - 1, 3, pvalue21PacketArg0); // insert item to created row to the fourth column
-
-    // the fourth column
-    QTableWidgetItem *pvalue21PacketArg1 = new QTableWidgetItem();
-    if(b_dataAreSaved)
-    {
-        pvalue21PacketArg1->setText(list.at(w_IndexInList++));
-    }
-    else
-    {
-        pvalue21PacketArg1->setText("10");
-    }
-    pvalue21PacketArg1->setData(TableRoles::ByteCount, 2);                            // the value is 3 bytes
-    pvalue21PacketArg1->setData(TableRoles::NumeralSystem, TableRoles::Decimal);      // packet id is displayed as decimal
-    pvalue21PacketArg1->setData(Qt::ToolTipRole, "Period [10-1000] in ms");     // a hint which is displayed when mouse hovers over
-    ui->tableWidget->setItem(ui->tableWidget->rowCount() - 1, 4, pvalue21PacketArg1); // insert item to created row to the fourth column
-
 
 
 }

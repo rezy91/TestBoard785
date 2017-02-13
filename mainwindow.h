@@ -55,6 +55,7 @@ public:
     enum eNumeralSystem
     {
         Decimal,
+        Float,
         Hex
     };
 };
