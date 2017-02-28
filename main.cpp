@@ -29,14 +29,17 @@ int main(int argc, char *argv[])
     QCoreApplication::setOrganizationName("btl_projects");
     QCoreApplication::setApplicationName(APP_NAME);
 
-    MainWindow w;
+    MainWindow o_main;
 
     QFontDatabase::addApplicationFont("/usr/lib/fonts/Vera.ttf");
     QGuiApplication::setFont(QFont("Vera",15));
 
-    w.setWindowTitle(QString("%1 %2").arg(APP_NAME).arg(APP_VERSION));
-    w.setWindowIcon(QIcon(":/appicon.ico"));
-    w.show();
+    //w.setWindowTitle(QString("%1 %2").arg(APP_NAME).arg(APP_VERSION));
+    //w.setWindowIcon(QIcon(":/appicon.ico"));
+
+    o_main.setWindowTitle("Master 785 simulator");
+    o_main.setWindowIcon(QIcon(":/iconMain.png"));
+    o_main.show();
 
     return a.exec();
 }

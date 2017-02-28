@@ -24,13 +24,15 @@ CONFIG += c++11
 
 SOURCES += main.cpp\
     mainwindow.cpp \
-    settingstorage.cpp \
-    settingstoragetestboard785.cpp
+    settings.cpp \
+    smithmain.cpp \
+    grapmain.cpp
 
 HEADERS  += mainwindow.h \
-    bytearrayparser.h \
-    settingstorage.h \
-    settingstoragetestboard785.h
+    settings.h \
+    smithmain.h \
+    grapmain.h \
+    common.h
 
 FORMS    += mainwindow.ui
 
