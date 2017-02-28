@@ -48,8 +48,11 @@ public:
     void StoreSaveDataBox(const bool& bSaveDataBox);
     bool RestoreSaveDataBox() const;
 
-    void StoreRowItem(const QString& strValue);
-    QString RestoreRowItem() const;
+    void StoreRowItemGener(const QString& strValue);
+    QString RestoreRowItemGener() const;
+
+    void StoreRowItemAmp(const QString& strValue);
+    QString RestoreRowItemAmp() const;
 
     void StoreHighValueSignalFirst(const qreal &value);
     qreal RestoreHighValueSignalFirst() const;

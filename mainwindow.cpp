@@ -452,33 +452,32 @@ void MainWindow::AppendText(QTime timestamp, QString strText)
 
 void MainWindow::FillTableContent()
 {
-    int m_NumberOfFilledTablesGenerator = 2 + 2 + 1 + 2 + 6 + 3 + 4 * 2 + 7 * 2 + 9 * 2 + 9 * 2 + 8 + 6 + 3 + 2;
-    int m_NumberOfFilledTablesAmplifier = 0;
-    bool b_dataSaved = false;
-
-    QString StoredItems = m_pSettingStrorage->RestoreRowItem();
-    QStringList arrListSaved;
-    arrListSaved = StoredItems.split(QRegExp("\\s+"));
-
-    if((arrListSaved.count() - 1) == (m_NumberOfFilledTablesGenerator + m_NumberOfFilledTablesAmplifier))
-    {
-        b_dataSaved = true;
-    }
-
     ui->tableWidget->setRowCount(0);
 
     if(m_nDeviceAddress == constGenerID)
     {
-        FillCommandTableGenerator(b_dataSaved, arrListSaved);
+        FillCommandTableGenerator();
     }
     else if(m_nDeviceAddress == constAmpID)
     {
-        FillCommandTableAmplifier(b_dataSaved, arrListSaved, m_NumberOfFilledTablesGenerator);
+        FillCommandTableAmplifier();
     }
 }
 
-void MainWindow::FillCommandTableGenerator(bool b_dataAreSaved, QStringList &arrAllDataSaved)
+void MainWindow::FillCommandTableGenerator()
 {
+    int m_NumberOfFilledTables = 2 + 2 + 1 + 2 + 6 + 3 + 4 * 2 + 7 * 2 + 9 * 2 + 9 * 2 + 8 + 6 + 3 + 2;
+    bool b_dataSaved = false;
+
+    QString StoredItems = m_pSettingStrorage->RestoreRowItemGener();
+    QStringList arrListSaved;
+    arrListSaved = StoredItems.split(QRegExp("\\s+"));
+
+    if((arrListSaved.count() - 1) == m_NumberOfFilledTables)
+    {
+        b_dataSaved = true;
+    }
+
     int w_IndexInList = 0;
 
 
@@ -496,9 +495,9 @@ void MainWindow::FillCommandTableGenerator(bool b_dataAreSaved, QStringList &arr
 
     // the third column
     QTableWidgetItem *pvalue1PacketArg0 = new QTableWidgetItem();
-    if(b_dataAreSaved)
+    if(b_dataSaved)
     {
-        pvalue1PacketArg0->setText(arrAllDataSaved.at(w_IndexInList++));
+        pvalue1PacketArg0->setText(arrListSaved.at(w_IndexInList++));
     }
     else
     {
@@ -512,9 +511,9 @@ void MainWindow::FillCommandTableGenerator(bool b_dataAreSaved, QStringList &arr
 
     // the fourth column
     QTableWidgetItem *pvalue2PacketArg1 = new QTableWidgetItem();
-    if(b_dataAreSaved)
+    if(b_dataSaved)
     {
-        pvalue2PacketArg1->setText(arrAllDataSaved.at(w_IndexInList++));
+        pvalue2PacketArg1->setText(arrListSaved.at(w_IndexInList++));
     }
     else
     {
@@ -542,9 +541,9 @@ void MainWindow::FillCommandTableGenerator(bool b_dataAreSaved, QStringList &arr
 
     // the fourth column
     QTableWidgetItem *pvalue3PacketArg0 = new QTableWidgetItem();             // the value it contains
-    if(b_dataAreSaved)
+    if(b_dataSaved)
     {
-        pvalue3PacketArg0->setText(arrAllDataSaved.at(w_IndexInList++));
+        pvalue3PacketArg0->setText(arrListSaved.at(w_IndexInList++));
     }
     else
     {
@@ -557,9 +556,9 @@ void MainWindow::FillCommandTableGenerator(bool b_dataAreSaved, QStringList &arr
 
     // the fourth column
     QTableWidgetItem *pvalue3PacketArg1 = new QTableWidgetItem();
-    if(b_dataAreSaved)
+    if(b_dataSaved)
     {
-        pvalue3PacketArg1->setText(arrAllDataSaved.at(w_IndexInList++));
+        pvalue3PacketArg1->setText(arrListSaved.at(w_IndexInList++));
     }
     else
     {
@@ -585,9 +584,9 @@ void MainWindow::FillCommandTableGenerator(bool b_dataAreSaved, QStringList &arr
 
     // the fourth column
     QTableWidgetItem *pvalue4PacketArg0 = new QTableWidgetItem();
-    if(b_dataAreSaved)
+    if(b_dataSaved)
     {
-        pvalue4PacketArg0->setText(arrAllDataSaved.at(w_IndexInList++));
+        pvalue4PacketArg0->setText(arrListSaved.at(w_IndexInList++));
     }
     else
     {
@@ -613,9 +612,9 @@ void MainWindow::FillCommandTableGenerator(bool b_dataAreSaved, QStringList &arr
 
     // the fourth column
     QTableWidgetItem *pvalue6PacketArg0 = new QTableWidgetItem();
-    if(b_dataAreSaved)
+    if(b_dataSaved)
     {
-        pvalue6PacketArg0->setText(arrAllDataSaved.at(w_IndexInList++));
+        pvalue6PacketArg0->setText(arrListSaved.at(w_IndexInList++));
     }
     else
     {
@@ -628,9 +627,9 @@ void MainWindow::FillCommandTableGenerator(bool b_dataAreSaved, QStringList &arr
 
     // the fourth column
     QTableWidgetItem *pvalue6PacketArg1 = new QTableWidgetItem();
-    if(b_dataAreSaved)
+    if(b_dataSaved)
     {
-        pvalue6PacketArg1->setText(arrAllDataSaved.at(w_IndexInList++));
+        pvalue6PacketArg1->setText(arrListSaved.at(w_IndexInList++));
     }
     else
     {
@@ -655,9 +654,9 @@ void MainWindow::FillCommandTableGenerator(bool b_dataAreSaved, QStringList &arr
     ui->tableWidget->setItem(ui->tableWidget->rowCount() - 1, 1, pvalue83PacketName); // insert item to created row to the second column
 
     QTableWidgetItem *pvalue83PacketArg0 = new QTableWidgetItem();
-    if(b_dataAreSaved)
+    if(b_dataSaved)
     {
-        pvalue83PacketArg0->setText(arrAllDataSaved.at(w_IndexInList++));
+        pvalue83PacketArg0->setText(arrListSaved.at(w_IndexInList++));
     }
     else
     {
@@ -682,9 +681,9 @@ void MainWindow::FillCommandTableGenerator(bool b_dataAreSaved, QStringList &arr
     ui->tableWidget->setItem(ui->tableWidget->rowCount() - 1, 1, pvalue93PacketName); // insert item to created row to the second column
 
     QTableWidgetItem *pvalue93PacketArg0 = new QTableWidgetItem();
-    if(b_dataAreSaved)
+    if(b_dataSaved)
     {
-        pvalue93PacketArg0->setText(arrAllDataSaved.at(w_IndexInList++));
+        pvalue93PacketArg0->setText(arrListSaved.at(w_IndexInList++));
     }
     else
     {
@@ -711,9 +710,9 @@ void MainWindow::FillCommandTableGenerator(bool b_dataAreSaved, QStringList &arr
     ui->tableWidget->setItem(ui->tableWidget->rowCount() - 1, 1, pvalue8PacketName); // insert item to created row to the second column
 
     QTableWidgetItem *pvalue8PacketArg0 = new QTableWidgetItem();
-    if(b_dataAreSaved)
+    if(b_dataSaved)
     {
-        pvalue8PacketArg0->setText(arrAllDataSaved.at(w_IndexInList++));
+        pvalue8PacketArg0->setText(arrListSaved.at(w_IndexInList++));
     }
     else
     {
@@ -738,9 +737,9 @@ void MainWindow::FillCommandTableGenerator(bool b_dataAreSaved, QStringList &arr
     ui->tableWidget->setItem(ui->tableWidget->rowCount() - 1, 1, pvalue9PacketName); // insert item to created row to the second column
 
     QTableWidgetItem *pvalue9PacketArg0 = new QTableWidgetItem();
-    if(b_dataAreSaved)
+    if(b_dataSaved)
     {
-        pvalue9PacketArg0->setText(arrAllDataSaved.at(w_IndexInList++));
+        pvalue9PacketArg0->setText(arrListSaved.at(w_IndexInList++));
     }
     else
     {
@@ -766,9 +765,9 @@ void MainWindow::FillCommandTableGenerator(bool b_dataAreSaved, QStringList &arr
     ui->tableWidget->setItem(ui->tableWidget->rowCount() - 1, 1, pvalue10PacketName); // insert item to created row to the second column
 
     QTableWidgetItem *pvalue10PacketArg0 = new QTableWidgetItem();
-    if(b_dataAreSaved)
+    if(b_dataSaved)
     {
-        pvalue10PacketArg0->setText(arrAllDataSaved.at(w_IndexInList++));
+        pvalue10PacketArg0->setText(arrListSaved.at(w_IndexInList++));
     }
     else
     {
@@ -794,9 +793,9 @@ void MainWindow::FillCommandTableGenerator(bool b_dataAreSaved, QStringList &arr
     ui->tableWidget->setItem(ui->tableWidget->rowCount() - 1, 1, pvalue11PacketName); // insert item to created row to the second column
 
     QTableWidgetItem *pvalue11PacketArg0 = new QTableWidgetItem();
-    if(b_dataAreSaved)
+    if(b_dataSaved)
     {
-        pvalue11PacketArg0->setText(arrAllDataSaved.at(w_IndexInList++));
+        pvalue11PacketArg0->setText(arrListSaved.at(w_IndexInList++));
     }
     else
     {
@@ -823,9 +822,9 @@ void MainWindow::FillCommandTableGenerator(bool b_dataAreSaved, QStringList &arr
     ui->tableWidget->setItem(ui->tableWidget->rowCount() - 1, 1, pvalue14PacketName); // insert item to created row to the second column
 
     QTableWidgetItem *pvalue14PacketArg0 = new QTableWidgetItem();
-    if(b_dataAreSaved)
+    if(b_dataSaved)
     {
-        pvalue14PacketArg0->setText(arrAllDataSaved.at(w_IndexInList++));
+        pvalue14PacketArg0->setText(arrListSaved.at(w_IndexInList++));
     }
     else
     {
@@ -837,9 +836,9 @@ void MainWindow::FillCommandTableGenerator(bool b_dataAreSaved, QStringList &arr
     ui->tableWidget->setItem(ui->tableWidget->rowCount() - 1, 3, pvalue14PacketArg0); // insert item to created row to the fourth column
 
     QTableWidgetItem *pvalue14PacketArg1 = new QTableWidgetItem();
-    if(b_dataAreSaved)
+    if(b_dataSaved)
     {
-        pvalue14PacketArg1->setText(arrAllDataSaved.at(w_IndexInList++));
+        pvalue14PacketArg1->setText(arrListSaved.at(w_IndexInList++));
     }
     else
     {
@@ -851,9 +850,9 @@ void MainWindow::FillCommandTableGenerator(bool b_dataAreSaved, QStringList &arr
     ui->tableWidget->setItem(ui->tableWidget->rowCount() - 1, 4, pvalue14PacketArg1); // insert item to created row to the fourth column
 
     QTableWidgetItem *pvalue14PacketArg2 = new QTableWidgetItem();
-    if(b_dataAreSaved)
+    if(b_dataSaved)
     {
-        pvalue14PacketArg2->setText(arrAllDataSaved.at(w_IndexInList++));
+        pvalue14PacketArg2->setText(arrListSaved.at(w_IndexInList++));
     }
     else
     {
@@ -912,9 +911,9 @@ void MainWindow::FillCommandTableGenerator(bool b_dataAreSaved, QStringList &arr
             QTableWidgetItem *pvalueADCCoeffsPacketArg = new QTableWidgetItem();
 
 
-            if(b_dataAreSaved)
+            if(b_dataSaved)
             {
-                pvalueADCCoeffsPacketArg->setText(arrAllDataSaved.at(w_IndexInList++));
+                pvalueADCCoeffsPacketArg->setText(arrListSaved.at(w_IndexInList++));
             }
             else
             {
@@ -970,9 +969,9 @@ void MainWindow::FillCommandTableGenerator(bool b_dataAreSaved, QStringList &arr
         {
             QTableWidgetItem *pvalueOthersCoeffsPacketArg = new QTableWidgetItem();
 
-            if(b_dataAreSaved)
+            if(b_dataSaved)
             {
-                pvalueOthersCoeffsPacketArg->setText(arrAllDataSaved.at(w_IndexInList++));
+                pvalueOthersCoeffsPacketArg->setText(arrListSaved.at(w_IndexInList++));
             }
             else
             {
@@ -1009,9 +1008,9 @@ void MainWindow::FillCommandTableGenerator(bool b_dataAreSaved, QStringList &arr
 
     // the fourth column
     QTableWidgetItem *pvalue18PacketArg0 = new QTableWidgetItem();
-    if(b_dataAreSaved)
+    if(b_dataSaved)
     {
-        pvalue18PacketArg0->setText(arrAllDataSaved.at(w_IndexInList++));
+        pvalue18PacketArg0->setText(arrListSaved.at(w_IndexInList++));
     }
     else
     {
@@ -1024,9 +1023,9 @@ void MainWindow::FillCommandTableGenerator(bool b_dataAreSaved, QStringList &arr
 
     // the fourth column
     QTableWidgetItem *pvalue18PacketArg1 = new QTableWidgetItem();
-    if(b_dataAreSaved)
+    if(b_dataSaved)
     {
-        pvalue18PacketArg1->setText(arrAllDataSaved.at(w_IndexInList++));
+        pvalue18PacketArg1->setText(arrListSaved.at(w_IndexInList++));
     }
     else
     {
@@ -1038,9 +1037,9 @@ void MainWindow::FillCommandTableGenerator(bool b_dataAreSaved, QStringList &arr
     ui->tableWidget->setItem(ui->tableWidget->rowCount() - 1, 4, pvalue18PacketArg1); // insert item to created row to the fourth column
 
     QTableWidgetItem *pvalue18PacketArg2 = new QTableWidgetItem();
-    if(b_dataAreSaved)
+    if(b_dataSaved)
     {
-        pvalue18PacketArg2->setText(arrAllDataSaved.at(w_IndexInList++));
+        pvalue18PacketArg2->setText(arrListSaved.at(w_IndexInList++));
     }
     else
     {
@@ -1052,9 +1051,9 @@ void MainWindow::FillCommandTableGenerator(bool b_dataAreSaved, QStringList &arr
     ui->tableWidget->setItem(ui->tableWidget->rowCount() - 1, 5, pvalue18PacketArg2); // insert item to created row to the fourth column
 
     QTableWidgetItem *pvalue18PacketArg4 = new QTableWidgetItem();
-    if(b_dataAreSaved)
+    if(b_dataSaved)
     {
-        pvalue18PacketArg4->setText(arrAllDataSaved.at(w_IndexInList++));
+        pvalue18PacketArg4->setText(arrListSaved.at(w_IndexInList++));
     }
     else
     {
@@ -1066,9 +1065,9 @@ void MainWindow::FillCommandTableGenerator(bool b_dataAreSaved, QStringList &arr
     ui->tableWidget->setItem(ui->tableWidget->rowCount() - 1, 6, pvalue18PacketArg4); // insert item to created row to the fourth column
 
     QTableWidgetItem *pvalue18PacketArg5 = new QTableWidgetItem();
-    if(b_dataAreSaved)
+    if(b_dataSaved)
     {
-        pvalue18PacketArg5->setText(arrAllDataSaved.at(w_IndexInList++));
+        pvalue18PacketArg5->setText(arrListSaved.at(w_IndexInList++));
     }
     else
     {
@@ -1080,9 +1079,9 @@ void MainWindow::FillCommandTableGenerator(bool b_dataAreSaved, QStringList &arr
     ui->tableWidget->setItem(ui->tableWidget->rowCount() - 1, 7, pvalue18PacketArg5); // insert item to created row to the fourth column
 
     QTableWidgetItem *pvalue18PacketArg6 = new QTableWidgetItem();
-    if(b_dataAreSaved)
+    if(b_dataSaved)
     {
-        pvalue18PacketArg6->setText(arrAllDataSaved.at(w_IndexInList++));
+        pvalue18PacketArg6->setText(arrListSaved.at(w_IndexInList++));
     }
     else
     {
@@ -1094,9 +1093,9 @@ void MainWindow::FillCommandTableGenerator(bool b_dataAreSaved, QStringList &arr
     ui->tableWidget->setItem(ui->tableWidget->rowCount() - 1, 8, pvalue18PacketArg6); // insert item to created row to the fourth column
 
     QTableWidgetItem *pvalue18PacketArg8 = new QTableWidgetItem();
-    if(b_dataAreSaved)
+    if(b_dataSaved)
     {
-        pvalue18PacketArg8->setText(arrAllDataSaved.at(w_IndexInList++));
+        pvalue18PacketArg8->setText(arrListSaved.at(w_IndexInList++));
     }
     else
     {
@@ -1108,9 +1107,9 @@ void MainWindow::FillCommandTableGenerator(bool b_dataAreSaved, QStringList &arr
     ui->tableWidget->setItem(ui->tableWidget->rowCount() - 1, 9, pvalue18PacketArg8); // insert item to created row to the fourth column
 
     QTableWidgetItem *pvalue18PacketArg9 = new QTableWidgetItem();
-    if(b_dataAreSaved)
+    if(b_dataSaved)
     {
-        pvalue18PacketArg9->setText(arrAllDataSaved.at(w_IndexInList++));
+        pvalue18PacketArg9->setText(arrListSaved.at(w_IndexInList++));
     }
     else
     {
@@ -1135,9 +1134,9 @@ void MainWindow::FillCommandTableGenerator(bool b_dataAreSaved, QStringList &arr
     ui->tableWidget->setItem(ui->tableWidget->rowCount() - 1, 1, pvalue19PacketName); // insert item to created row to the second column
 
     QTableWidgetItem *pvalue19PacketArg0 = new QTableWidgetItem();
-    if(b_dataAreSaved)
+    if(b_dataSaved)
     {
-        pvalue19PacketArg0->setText(arrAllDataSaved.at(w_IndexInList++));
+        pvalue19PacketArg0->setText(arrListSaved.at(w_IndexInList++));
     }
     else
     {
@@ -1149,9 +1148,9 @@ void MainWindow::FillCommandTableGenerator(bool b_dataAreSaved, QStringList &arr
     ui->tableWidget->setItem(ui->tableWidget->rowCount() - 1, 3, pvalue19PacketArg0); // insert item to created row to the fourth column
 
     QTableWidgetItem *pvalue19PacketArg1 = new QTableWidgetItem();
-    if(b_dataAreSaved)
+    if(b_dataSaved)
     {
-        pvalue19PacketArg1->setText(arrAllDataSaved.at(w_IndexInList++));
+        pvalue19PacketArg1->setText(arrListSaved.at(w_IndexInList++));
     }
     else
     {
@@ -1163,9 +1162,9 @@ void MainWindow::FillCommandTableGenerator(bool b_dataAreSaved, QStringList &arr
     ui->tableWidget->setItem(ui->tableWidget->rowCount() - 1, 4, pvalue19PacketArg1); // insert item to created row to the fourth column
 
     QTableWidgetItem *pvalue19PacketArg2 = new QTableWidgetItem();
-    if(b_dataAreSaved)
+    if(b_dataSaved)
     {
-        pvalue19PacketArg2->setText(arrAllDataSaved.at(w_IndexInList++));
+        pvalue19PacketArg2->setText(arrListSaved.at(w_IndexInList++));
     }
     else
     {
@@ -1177,9 +1176,9 @@ void MainWindow::FillCommandTableGenerator(bool b_dataAreSaved, QStringList &arr
     ui->tableWidget->setItem(ui->tableWidget->rowCount() - 1, 5, pvalue19PacketArg2); // insert item to created row to the fourth column
 
     QTableWidgetItem *pvalue19PacketArg3 = new QTableWidgetItem();
-    if(b_dataAreSaved)
+    if(b_dataSaved)
     {
-        pvalue19PacketArg3->setText(arrAllDataSaved.at(w_IndexInList++));
+        pvalue19PacketArg3->setText(arrListSaved.at(w_IndexInList++));
     }
     else
     {
@@ -1191,9 +1190,9 @@ void MainWindow::FillCommandTableGenerator(bool b_dataAreSaved, QStringList &arr
     ui->tableWidget->setItem(ui->tableWidget->rowCount() - 1, 6, pvalue19PacketArg3); // insert item to created row to the fourth column
 
     QTableWidgetItem *pvalue19PacketArg4 = new QTableWidgetItem();
-    if(b_dataAreSaved)
+    if(b_dataSaved)
     {
-        pvalue19PacketArg4->setText(arrAllDataSaved.at(w_IndexInList++));
+        pvalue19PacketArg4->setText(arrListSaved.at(w_IndexInList++));
     }
     else
     {
@@ -1205,9 +1204,9 @@ void MainWindow::FillCommandTableGenerator(bool b_dataAreSaved, QStringList &arr
     ui->tableWidget->setItem(ui->tableWidget->rowCount() - 1, 7, pvalue19PacketArg4); // insert item to created row to the fourth column
 
     QTableWidgetItem *pvalue19PacketArg5 = new QTableWidgetItem();
-    if(b_dataAreSaved)
+    if(b_dataSaved)
     {
-        pvalue19PacketArg5->setText(arrAllDataSaved.at(w_IndexInList++));
+        pvalue19PacketArg5->setText(arrListSaved.at(w_IndexInList++));
     }
     else
     {
@@ -1235,9 +1234,9 @@ void MainWindow::FillCommandTableGenerator(bool b_dataAreSaved, QStringList &arr
 
 
     QTableWidgetItem *pvalue20PacketArg0 = new QTableWidgetItem();
-    if(b_dataAreSaved)
+    if(b_dataSaved)
     {
-        pvalue20PacketArg0->setText(arrAllDataSaved.at(w_IndexInList++));
+        pvalue20PacketArg0->setText(arrListSaved.at(w_IndexInList++));
     }
     else
     {
@@ -1250,9 +1249,9 @@ void MainWindow::FillCommandTableGenerator(bool b_dataAreSaved, QStringList &arr
 
 
     QTableWidgetItem *pvalue20PacketArg1 = new QTableWidgetItem();
-    if(b_dataAreSaved)
+    if(b_dataSaved)
     {
-        pvalue20PacketArg1->setText(arrAllDataSaved.at(w_IndexInList++));
+        pvalue20PacketArg1->setText(arrListSaved.at(w_IndexInList++));
     }
     else
     {
@@ -1265,9 +1264,9 @@ void MainWindow::FillCommandTableGenerator(bool b_dataAreSaved, QStringList &arr
 
 
     QTableWidgetItem *pvalue20PacketArg2 = new QTableWidgetItem();
-    if(b_dataAreSaved)
+    if(b_dataSaved)
     {
-        pvalue20PacketArg2->setText(arrAllDataSaved.at(w_IndexInList++));
+        pvalue20PacketArg2->setText(arrListSaved.at(w_IndexInList++));
     }
     else
     {
@@ -1280,9 +1279,9 @@ void MainWindow::FillCommandTableGenerator(bool b_dataAreSaved, QStringList &arr
 
 
     QTableWidgetItem *pvalue20PacketArg3 = new QTableWidgetItem();
-    if(b_dataAreSaved)
+    if(b_dataSaved)
     {
-        pvalue20PacketArg3->setText(arrAllDataSaved.at(w_IndexInList++));
+        pvalue20PacketArg3->setText(arrListSaved.at(w_IndexInList++));
     }
     else
     {
@@ -1309,9 +1308,9 @@ void MainWindow::FillCommandTableGenerator(bool b_dataAreSaved, QStringList &arr
 
     // the third column
     QTableWidgetItem *pvalue21PacketArg0 = new QTableWidgetItem();
-    if(b_dataAreSaved)
+    if(b_dataSaved)
     {
-        pvalue21PacketArg0->setText(arrAllDataSaved.at(w_IndexInList++));
+        pvalue21PacketArg0->setText(arrListSaved.at(w_IndexInList++));
     }
     else
     {
@@ -1324,9 +1323,21 @@ void MainWindow::FillCommandTableGenerator(bool b_dataAreSaved, QStringList &arr
     ui->tableWidget->setItem(ui->tableWidget->rowCount() - 1, 3, pvalue21PacketArg0); // insert item to created row to the fourth column
 }
 
-void MainWindow::FillCommandTableAmplifier(bool b_dataAreSaved, QStringList &arrAllDataSaved, quint32 byStartIndex)
+void MainWindow::FillCommandTableAmplifier()
 {
-    int w_IndexInList = int(byStartIndex);
+    int m_NumberOfFilledTables = 1 + 1;
+    bool b_dataSaved = false;
+
+    QString StoredItems = m_pSettingStrorage->RestoreRowItemAmp();
+    QStringList arrListSaved;
+    arrListSaved = StoredItems.split(QRegExp("\\s+"));
+
+    if((arrListSaved.count() - 1) == m_NumberOfFilledTables)
+    {
+        b_dataSaved = true;
+    }
+
+    int w_IndexInList = 0;
 
 
     ui->tableWidget->insertRow(ui->tableWidget->rowCount());                            // create new row in table
@@ -1341,9 +1352,9 @@ void MainWindow::FillCommandTableAmplifier(bool b_dataAreSaved, QStringList &arr
 
     // the fourth column
     QTableWidgetItem *pFrequencyPacketArg0 = new QTableWidgetItem();
-    if(b_dataAreSaved)
+    if(b_dataSaved)
     {
-        pFrequencyPacketArg0->setText(arrAllDataSaved.at(w_IndexInList++));
+        pFrequencyPacketArg0->setText(arrListSaved.at(w_IndexInList++));
     }
     else
     {
@@ -1372,9 +1383,9 @@ void MainWindow::FillCommandTableAmplifier(bool b_dataAreSaved, QStringList &arr
 
     // the fourth column
     QTableWidgetItem *pPacketArg0 = new QTableWidgetItem();
-    if(b_dataAreSaved)
+    if(b_dataSaved)
     {
-        pPacketArg0->setText(arrAllDataSaved.at(w_IndexInList++));
+        pPacketArg0->setText(arrListSaved.at(w_IndexInList++));
     }
     else
     {
@@ -1406,6 +1417,8 @@ void MainWindow::on_clearButton_clicked()
 void MainWindow::on_connectButton_clicked()
 {
     ui->checkBox->setEnabled(false);
+    ui->comboBox_SelectDevice->setEnabled(false);
+    ui->comboBox->setEnabled(false);
 
     sourceDataStream = RECEIVE_STREAM;
 
@@ -1771,6 +1784,8 @@ QStringList MainWindow::adjustRowDataIntoOnlyNumber(QString rowData)
 void MainWindow::on_disconnectButton_clicked()
 {
     ui->checkBox->setEnabled(true);
+    ui->comboBox_SelectDevice->setEnabled(true);
+    ui->comboBox->setEnabled(true);
 
     m_CommProt.data()->SetTargetMedium("");
 
@@ -1882,7 +1897,15 @@ void MainWindow::closeEvent(QCloseEvent *event)
             }
         }
     }
-    m_pSettingStrorage->StoreRowItem(allDataItems);
+    if(m_nDeviceAddress == constGenerID)
+    {
+        m_pSettingStrorage->StoreRowItemGener(allDataItems);
+    }
+    else if(m_nDeviceAddress == constAmpID)
+    {
+        m_pSettingStrorage->StoreRowItemAmp(allDataItems);
+    }
+
 
     m_pSettingStrorage->StoreHighValueSignalFirst(ui->doubleSpinBox->value());
     m_pSettingStrorage->StoreHighValueSignalSecond(ui->doubleSpinBox_2->value());

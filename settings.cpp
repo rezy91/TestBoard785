@@ -116,14 +116,24 @@ bool settings::RestoreSaveDataBox() const
     return RestoreValue("savedatabox").toBool();
 }
 
-void settings::StoreRowItem(const QString& strValue)
+void settings::StoreRowItemGener(const QString& strValue)
 {
-    StoreValue(QString("ItemsData"), strValue);
+    StoreValue(QString("ItemsDataGener"), strValue);
 }
 
-QString settings::RestoreRowItem() const
+QString settings::RestoreRowItemGener() const
 {
-    return RestoreValue(QString("ItemsData")).toString();
+    return RestoreValue(QString("ItemsDataGener")).toString();
+}
+
+void settings::StoreRowItemAmp(const QString &strValue)
+{
+    StoreValue(QString("ItemsDataAmp"), strValue);
+}
+
+QString settings::RestoreRowItemAmp() const
+{
+    return RestoreValue(QString("ItemsDataAmp")).toString();
 }
 
 void settings::StoreHighValueSignalFirst(const qreal &value)

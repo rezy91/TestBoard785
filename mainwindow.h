@@ -116,8 +116,8 @@ private:
 
     void AppendText(QTime timestamp, QString strText);
     void FillTableContent();
-    void FillCommandTableGenerator(bool b_dataAreSaved, QStringList &arrAllDataSaved);
-    void FillCommandTableAmplifier(bool b_dataAreSaved, QStringList &arrAllDataSaved, quint32 byStartIndex);
+    void FillCommandTableGenerator();
+    void FillCommandTableAmplifier();
     void StoreValue(const QString& strKey, const QVariant& vValue);
     QVariant LoadValue(const QString& strKey);
     void SetAvaiblePorts();
