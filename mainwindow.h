@@ -50,11 +50,13 @@ public:
     {
         NumeralSystem = Qt::UserRole + 1,
         ByteCount,
+        DivisorPosition,
     };
 
     enum eNumeralSystem
     {
         Decimal,
+        DecimalFloat,
         Float,
         Hex
     };
@@ -86,9 +88,12 @@ private slots:
     void on_textBrowser_anchorClicked(const QUrl &arg1);
 
 private:
+    const quint32 constGenerID = 18;
+    const quint32 constAmpID = 20;
+
     Ui::MainWindow *ui;
     QSharedPointer<CommProtV200> m_CommProt;
-    const quint32 m_nDeviceAddress = 18;
+    quint32 m_nDeviceAddress;
     QSettings* m_pAppSettings = new QSettings(QCoreApplication::organizationName(), QCoreApplication::applicationName(), this);
     QTimer TmrMstr;
 
@@ -110,7 +115,9 @@ private:
     Grapmain* o_graph = new Grapmain(this);
 
     void AppendText(QTime timestamp, QString strText);
-    void FillCommandTable();
+    void FillTableContent();
+    void FillCommandTableGenerator(bool b_dataAreSaved, QStringList &arrAllDataSaved);
+    void FillCommandTableAmplifier(bool b_dataAreSaved, QStringList &arrAllDataSaved, quint32 byStartIndex);
     void StoreValue(const QString& strKey, const QVariant& vValue);
     QVariant LoadValue(const QString& strKey);
     void SetAvaiblePorts();

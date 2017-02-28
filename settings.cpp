@@ -226,6 +226,16 @@ quint32 settings::RestoreSmithPoints() const
     return RestoreValue(QString("smithPoints")).toUInt();
 }
 
+void settings::StoreSelectedDevice(const quint32 &nDevice)
+{
+    StoreValue(QString("selectedDevice"), nDevice);
+}
+
+quint32 settings::RestoreSelectedDevice() const
+{
+    return RestoreValue(QString("selectedDevice")).toUInt();
+}
+
 void settings::StoreValue(const QString &strKey, const QVariant &vValue)
 {
     m_pAppSettings->setValue(strKey, vValue);

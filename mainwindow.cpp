@@ -63,10 +63,11 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
 
 
 
+    ui->comboBox_SelectDevice->addItem(QString("Generator (ID = %1d").arg(constGenerID));
+    ui->comboBox_SelectDevice->addItem(QString("Amplifier (ID = %1d").arg(constAmpID));
+
     restoreAllSettings();
-
     timeCurrent.start();
-
 
 
     connect(&TmrMstr,&QTimer::timeout,[this](){
@@ -124,6 +125,20 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
         getIndexInQList(3, nValue);
         emit SendHighLevel(ui->doubleSpinBox_4->value(), 3);
         emit SendLowLevel(ui->doubleSpinBox_8->value(), 3);
+    });
+    connect(ui->comboBox_SelectDevice,static_cast<void (QComboBox::*)(int)>(&QComboBox::currentIndexChanged),[=](int nValue){
+        if(nValue == 0)
+        {
+            m_nDeviceAddress = constGenerID;
+        }
+        else if(nValue == 1)
+        {
+            m_nDeviceAddress = constAmpID;
+        }
+
+        m_pSettingStrorage->StoreSelectedDevice(ui->comboBox_SelectDevice->currentIndex());
+        FillTableContent();
+
     });
 
 
@@ -261,9 +276,7 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
     });
 
     ui->statusBar->showMessage("Not connected");
-
-    ui->deviceIdLabel->setText(QString("Device Id: %1").arg(m_nDeviceAddress));
-    FillCommandTable();
+    FillTableContent();
 
     RequirementTime_ms[6] = 500;
 }
@@ -293,42 +306,17 @@ void MainWindow::on_sendButton_clicked()
             }
             else if(oTableSelection.at(nItemIndex).data(TableRoles::NumeralSystem) == TableRoles::Decimal)
             {
-                if((ui->tableWidget->currentRow() >= 11 && ui->tableWidget->currentRow() <= 18) || ui->tableWidget->currentRow() == 21)
-                {
-                    QString strHexNumber;
-                    int convertedNumber = oTableSelection.at(nItemIndex).data().toInt();
+                QString strNumber = oTableSelection.at(nItemIndex).data().toString();
+                QString strHexNumber = QString::number(strNumber.toInt(), 16);
+                strCmd += strHexNumber.rightJustified(nAlignment, '0');
+            }
+            else if(oTableSelection.at(nItemIndex).data(TableRoles::NumeralSystem) == TableRoles::DecimalFloat)
+            {
+                const QVariant& vDisplayText = oTableSelection.at(nItemIndex).data(Qt::DisplayRole);
+                qint32 nNumber = vDisplayText.toDouble() * oTableSelection.at(nItemIndex).data(TableRoles::DivisorPosition).toInt();
+                QString strHexNumber = QString::number(nNumber, 16);
+                strCmd += strHexNumber.rightJustified(nAlignment, '0');
 
-                    if(convertedNumber < 0)
-                    {
-                        if(convertedNumber < std::numeric_limits<qint16>::min())
-                        {
-                            convertedNumber = std::numeric_limits<qint16>::min();
-                            ui->tableWidget->item(ui->tableWidget->currentRow(),nItemIndex)->setText(QString::number(convertedNumber, 10));
-                        }
-
-                        strHexNumber = QString::number(convertedNumber, 16);
-                        QString strMinusNumber = strHexNumber.mid(strHexNumber.length() - 4, 4);
-                        strCmd += strMinusNumber;
-                    }
-                    else
-                    {
-                        if(convertedNumber > std::numeric_limits<qint16>::max())
-                        {
-                            convertedNumber = std::numeric_limits<qint16>::max();
-                            ui->tableWidget->item(ui->tableWidget->currentRow(),nItemIndex)->setText(QString::number(convertedNumber, 10));
-                        }
-
-                        strHexNumber = QString::number(convertedNumber, 16);
-                        strCmd += strHexNumber.rightJustified(nAlignment, '0');
-                    }
-
-                }
-                else
-                {
-                    QString strNumber = oTableSelection.at(nItemIndex).data().toString();
-                    QString strHexNumber = QString::number(strNumber.toInt(), 16);
-                    strCmd += strHexNumber.rightJustified(nAlignment, '0');
-                }
             }
             else if(oTableSelection.at(nItemIndex).data(TableRoles::NumeralSystem) == TableRoles::Float)
             {
@@ -462,20 +450,37 @@ void MainWindow::AppendText(QTime timestamp, QString strText)
     ui->textBrowser->append(myTimeStamp(timestamp) + "\t" + strText);
 }
 
-void MainWindow::FillCommandTable()
+void MainWindow::FillTableContent()
 {
-    int m_NumberOfFilledTables = 2 + 2 + 1 + 2 + 6 + 3 + 4 * 2 + 7 * 2 + 9 * 2 + 9 * 2 + 8 + 6 + 3 + 2;
-    bool b_dataAreSaved = false;
+    int m_NumberOfFilledTablesGenerator = 2 + 2 + 1 + 2 + 6 + 3 + 4 * 2 + 7 * 2 + 9 * 2 + 9 * 2 + 8 + 6 + 3 + 2;
+    int m_NumberOfFilledTablesAmplifier = 0;
+    bool b_dataSaved = false;
 
     QString StoredItems = m_pSettingStrorage->RestoreRowItem();
-    QStringList list;
-    list = StoredItems.split(QRegExp("\\s+"));
+    QStringList arrListSaved;
+    arrListSaved = StoredItems.split(QRegExp("\\s+"));
+
+    if((arrListSaved.count() - 1) == (m_NumberOfFilledTablesGenerator + m_NumberOfFilledTablesAmplifier))
+    {
+        b_dataSaved = true;
+    }
+
+    ui->tableWidget->setRowCount(0);
+
+    if(m_nDeviceAddress == constGenerID)
+    {
+        FillCommandTableGenerator(b_dataSaved, arrListSaved);
+    }
+    else if(m_nDeviceAddress == constAmpID)
+    {
+        FillCommandTableAmplifier(b_dataSaved, arrListSaved, m_NumberOfFilledTablesGenerator);
+    }
+}
+
+void MainWindow::FillCommandTableGenerator(bool b_dataAreSaved, QStringList &arrAllDataSaved)
+{
     int w_IndexInList = 0;
 
-    if((list.count() - 1) == m_NumberOfFilledTables)
-    {
-        b_dataAreSaved = true;
-    }
 
     //! set packet
     // the first column
@@ -493,7 +498,7 @@ void MainWindow::FillCommandTable()
     QTableWidgetItem *pvalue1PacketArg0 = new QTableWidgetItem();
     if(b_dataAreSaved)
     {
-        pvalue1PacketArg0->setText(list.at(w_IndexInList++));
+        pvalue1PacketArg0->setText(arrAllDataSaved.at(w_IndexInList++));
     }
     else
     {
@@ -509,7 +514,7 @@ void MainWindow::FillCommandTable()
     QTableWidgetItem *pvalue2PacketArg1 = new QTableWidgetItem();
     if(b_dataAreSaved)
     {
-        pvalue2PacketArg1->setText(list.at(w_IndexInList++));
+        pvalue2PacketArg1->setText(arrAllDataSaved.at(w_IndexInList++));
     }
     else
     {
@@ -539,7 +544,7 @@ void MainWindow::FillCommandTable()
     QTableWidgetItem *pvalue3PacketArg0 = new QTableWidgetItem();             // the value it contains
     if(b_dataAreSaved)
     {
-        pvalue3PacketArg0->setText(list.at(w_IndexInList++));
+        pvalue3PacketArg0->setText(arrAllDataSaved.at(w_IndexInList++));
     }
     else
     {
@@ -554,7 +559,7 @@ void MainWindow::FillCommandTable()
     QTableWidgetItem *pvalue3PacketArg1 = new QTableWidgetItem();
     if(b_dataAreSaved)
     {
-        pvalue3PacketArg1->setText(list.at(w_IndexInList++));
+        pvalue3PacketArg1->setText(arrAllDataSaved.at(w_IndexInList++));
     }
     else
     {
@@ -582,7 +587,7 @@ void MainWindow::FillCommandTable()
     QTableWidgetItem *pvalue4PacketArg0 = new QTableWidgetItem();
     if(b_dataAreSaved)
     {
-        pvalue4PacketArg0->setText(list.at(w_IndexInList++));
+        pvalue4PacketArg0->setText(arrAllDataSaved.at(w_IndexInList++));
     }
     else
     {
@@ -610,7 +615,7 @@ void MainWindow::FillCommandTable()
     QTableWidgetItem *pvalue6PacketArg0 = new QTableWidgetItem();
     if(b_dataAreSaved)
     {
-        pvalue6PacketArg0->setText(list.at(w_IndexInList++));
+        pvalue6PacketArg0->setText(arrAllDataSaved.at(w_IndexInList++));
     }
     else
     {
@@ -625,7 +630,7 @@ void MainWindow::FillCommandTable()
     QTableWidgetItem *pvalue6PacketArg1 = new QTableWidgetItem();
     if(b_dataAreSaved)
     {
-        pvalue6PacketArg1->setText(list.at(w_IndexInList++));
+        pvalue6PacketArg1->setText(arrAllDataSaved.at(w_IndexInList++));
     }
     else
     {
@@ -652,7 +657,7 @@ void MainWindow::FillCommandTable()
     QTableWidgetItem *pvalue83PacketArg0 = new QTableWidgetItem();
     if(b_dataAreSaved)
     {
-        pvalue83PacketArg0->setText(list.at(w_IndexInList++));
+        pvalue83PacketArg0->setText(arrAllDataSaved.at(w_IndexInList++));
     }
     else
     {
@@ -679,7 +684,7 @@ void MainWindow::FillCommandTable()
     QTableWidgetItem *pvalue93PacketArg0 = new QTableWidgetItem();
     if(b_dataAreSaved)
     {
-        pvalue93PacketArg0->setText(list.at(w_IndexInList++));
+        pvalue93PacketArg0->setText(arrAllDataSaved.at(w_IndexInList++));
     }
     else
     {
@@ -708,7 +713,7 @@ void MainWindow::FillCommandTable()
     QTableWidgetItem *pvalue8PacketArg0 = new QTableWidgetItem();
     if(b_dataAreSaved)
     {
-        pvalue8PacketArg0->setText(list.at(w_IndexInList++));
+        pvalue8PacketArg0->setText(arrAllDataSaved.at(w_IndexInList++));
     }
     else
     {
@@ -735,7 +740,7 @@ void MainWindow::FillCommandTable()
     QTableWidgetItem *pvalue9PacketArg0 = new QTableWidgetItem();
     if(b_dataAreSaved)
     {
-        pvalue9PacketArg0->setText(list.at(w_IndexInList++));
+        pvalue9PacketArg0->setText(arrAllDataSaved.at(w_IndexInList++));
     }
     else
     {
@@ -763,7 +768,7 @@ void MainWindow::FillCommandTable()
     QTableWidgetItem *pvalue10PacketArg0 = new QTableWidgetItem();
     if(b_dataAreSaved)
     {
-        pvalue10PacketArg0->setText(list.at(w_IndexInList++));
+        pvalue10PacketArg0->setText(arrAllDataSaved.at(w_IndexInList++));
     }
     else
     {
@@ -791,7 +796,7 @@ void MainWindow::FillCommandTable()
     QTableWidgetItem *pvalue11PacketArg0 = new QTableWidgetItem();
     if(b_dataAreSaved)
     {
-        pvalue11PacketArg0->setText(list.at(w_IndexInList++));
+        pvalue11PacketArg0->setText(arrAllDataSaved.at(w_IndexInList++));
     }
     else
     {
@@ -820,7 +825,7 @@ void MainWindow::FillCommandTable()
     QTableWidgetItem *pvalue14PacketArg0 = new QTableWidgetItem();
     if(b_dataAreSaved)
     {
-        pvalue14PacketArg0->setText(list.at(w_IndexInList++));
+        pvalue14PacketArg0->setText(arrAllDataSaved.at(w_IndexInList++));
     }
     else
     {
@@ -834,7 +839,7 @@ void MainWindow::FillCommandTable()
     QTableWidgetItem *pvalue14PacketArg1 = new QTableWidgetItem();
     if(b_dataAreSaved)
     {
-        pvalue14PacketArg1->setText(list.at(w_IndexInList++));
+        pvalue14PacketArg1->setText(arrAllDataSaved.at(w_IndexInList++));
     }
     else
     {
@@ -848,7 +853,7 @@ void MainWindow::FillCommandTable()
     QTableWidgetItem *pvalue14PacketArg2 = new QTableWidgetItem();
     if(b_dataAreSaved)
     {
-        pvalue14PacketArg2->setText(list.at(w_IndexInList++));
+        pvalue14PacketArg2->setText(arrAllDataSaved.at(w_IndexInList++));
     }
     else
     {
@@ -909,7 +914,7 @@ void MainWindow::FillCommandTable()
 
             if(b_dataAreSaved)
             {
-                pvalueADCCoeffsPacketArg->setText(list.at(w_IndexInList++));
+                pvalueADCCoeffsPacketArg->setText(arrAllDataSaved.at(w_IndexInList++));
             }
             else
             {
@@ -967,7 +972,7 @@ void MainWindow::FillCommandTable()
 
             if(b_dataAreSaved)
             {
-                pvalueOthersCoeffsPacketArg->setText(list.at(w_IndexInList++));
+                pvalueOthersCoeffsPacketArg->setText(arrAllDataSaved.at(w_IndexInList++));
             }
             else
             {
@@ -1006,7 +1011,7 @@ void MainWindow::FillCommandTable()
     QTableWidgetItem *pvalue18PacketArg0 = new QTableWidgetItem();
     if(b_dataAreSaved)
     {
-        pvalue18PacketArg0->setText(list.at(w_IndexInList++));
+        pvalue18PacketArg0->setText(arrAllDataSaved.at(w_IndexInList++));
     }
     else
     {
@@ -1021,7 +1026,7 @@ void MainWindow::FillCommandTable()
     QTableWidgetItem *pvalue18PacketArg1 = new QTableWidgetItem();
     if(b_dataAreSaved)
     {
-        pvalue18PacketArg1->setText(list.at(w_IndexInList++));
+        pvalue18PacketArg1->setText(arrAllDataSaved.at(w_IndexInList++));
     }
     else
     {
@@ -1035,7 +1040,7 @@ void MainWindow::FillCommandTable()
     QTableWidgetItem *pvalue18PacketArg2 = new QTableWidgetItem();
     if(b_dataAreSaved)
     {
-        pvalue18PacketArg2->setText(list.at(w_IndexInList++));
+        pvalue18PacketArg2->setText(arrAllDataSaved.at(w_IndexInList++));
     }
     else
     {
@@ -1049,7 +1054,7 @@ void MainWindow::FillCommandTable()
     QTableWidgetItem *pvalue18PacketArg4 = new QTableWidgetItem();
     if(b_dataAreSaved)
     {
-        pvalue18PacketArg4->setText(list.at(w_IndexInList++));
+        pvalue18PacketArg4->setText(arrAllDataSaved.at(w_IndexInList++));
     }
     else
     {
@@ -1063,7 +1068,7 @@ void MainWindow::FillCommandTable()
     QTableWidgetItem *pvalue18PacketArg5 = new QTableWidgetItem();
     if(b_dataAreSaved)
     {
-        pvalue18PacketArg5->setText(list.at(w_IndexInList++));
+        pvalue18PacketArg5->setText(arrAllDataSaved.at(w_IndexInList++));
     }
     else
     {
@@ -1077,7 +1082,7 @@ void MainWindow::FillCommandTable()
     QTableWidgetItem *pvalue18PacketArg6 = new QTableWidgetItem();
     if(b_dataAreSaved)
     {
-        pvalue18PacketArg6->setText(list.at(w_IndexInList++));
+        pvalue18PacketArg6->setText(arrAllDataSaved.at(w_IndexInList++));
     }
     else
     {
@@ -1091,7 +1096,7 @@ void MainWindow::FillCommandTable()
     QTableWidgetItem *pvalue18PacketArg8 = new QTableWidgetItem();
     if(b_dataAreSaved)
     {
-        pvalue18PacketArg8->setText(list.at(w_IndexInList++));
+        pvalue18PacketArg8->setText(arrAllDataSaved.at(w_IndexInList++));
     }
     else
     {
@@ -1105,7 +1110,7 @@ void MainWindow::FillCommandTable()
     QTableWidgetItem *pvalue18PacketArg9 = new QTableWidgetItem();
     if(b_dataAreSaved)
     {
-        pvalue18PacketArg9->setText(list.at(w_IndexInList++));
+        pvalue18PacketArg9->setText(arrAllDataSaved.at(w_IndexInList++));
     }
     else
     {
@@ -1132,7 +1137,7 @@ void MainWindow::FillCommandTable()
     QTableWidgetItem *pvalue19PacketArg0 = new QTableWidgetItem();
     if(b_dataAreSaved)
     {
-        pvalue19PacketArg0->setText(list.at(w_IndexInList++));
+        pvalue19PacketArg0->setText(arrAllDataSaved.at(w_IndexInList++));
     }
     else
     {
@@ -1146,7 +1151,7 @@ void MainWindow::FillCommandTable()
     QTableWidgetItem *pvalue19PacketArg1 = new QTableWidgetItem();
     if(b_dataAreSaved)
     {
-        pvalue19PacketArg1->setText(list.at(w_IndexInList++));
+        pvalue19PacketArg1->setText(arrAllDataSaved.at(w_IndexInList++));
     }
     else
     {
@@ -1160,7 +1165,7 @@ void MainWindow::FillCommandTable()
     QTableWidgetItem *pvalue19PacketArg2 = new QTableWidgetItem();
     if(b_dataAreSaved)
     {
-        pvalue19PacketArg2->setText(list.at(w_IndexInList++));
+        pvalue19PacketArg2->setText(arrAllDataSaved.at(w_IndexInList++));
     }
     else
     {
@@ -1174,7 +1179,7 @@ void MainWindow::FillCommandTable()
     QTableWidgetItem *pvalue19PacketArg3 = new QTableWidgetItem();
     if(b_dataAreSaved)
     {
-        pvalue19PacketArg3->setText(list.at(w_IndexInList++));
+        pvalue19PacketArg3->setText(arrAllDataSaved.at(w_IndexInList++));
     }
     else
     {
@@ -1188,7 +1193,7 @@ void MainWindow::FillCommandTable()
     QTableWidgetItem *pvalue19PacketArg4 = new QTableWidgetItem();
     if(b_dataAreSaved)
     {
-        pvalue19PacketArg4->setText(list.at(w_IndexInList++));
+        pvalue19PacketArg4->setText(arrAllDataSaved.at(w_IndexInList++));
     }
     else
     {
@@ -1202,7 +1207,7 @@ void MainWindow::FillCommandTable()
     QTableWidgetItem *pvalue19PacketArg5 = new QTableWidgetItem();
     if(b_dataAreSaved)
     {
-        pvalue19PacketArg5->setText(list.at(w_IndexInList++));
+        pvalue19PacketArg5->setText(arrAllDataSaved.at(w_IndexInList++));
     }
     else
     {
@@ -1232,7 +1237,7 @@ void MainWindow::FillCommandTable()
     QTableWidgetItem *pvalue20PacketArg0 = new QTableWidgetItem();
     if(b_dataAreSaved)
     {
-        pvalue20PacketArg0->setText(list.at(w_IndexInList++));
+        pvalue20PacketArg0->setText(arrAllDataSaved.at(w_IndexInList++));
     }
     else
     {
@@ -1247,7 +1252,7 @@ void MainWindow::FillCommandTable()
     QTableWidgetItem *pvalue20PacketArg1 = new QTableWidgetItem();
     if(b_dataAreSaved)
     {
-        pvalue20PacketArg1->setText(list.at(w_IndexInList++));
+        pvalue20PacketArg1->setText(arrAllDataSaved.at(w_IndexInList++));
     }
     else
     {
@@ -1262,7 +1267,7 @@ void MainWindow::FillCommandTable()
     QTableWidgetItem *pvalue20PacketArg2 = new QTableWidgetItem();
     if(b_dataAreSaved)
     {
-        pvalue20PacketArg2->setText(list.at(w_IndexInList++));
+        pvalue20PacketArg2->setText(arrAllDataSaved.at(w_IndexInList++));
     }
     else
     {
@@ -1277,7 +1282,7 @@ void MainWindow::FillCommandTable()
     QTableWidgetItem *pvalue20PacketArg3 = new QTableWidgetItem();
     if(b_dataAreSaved)
     {
-        pvalue20PacketArg3->setText(list.at(w_IndexInList++));
+        pvalue20PacketArg3->setText(arrAllDataSaved.at(w_IndexInList++));
     }
     else
     {
@@ -1306,7 +1311,7 @@ void MainWindow::FillCommandTable()
     QTableWidgetItem *pvalue21PacketArg0 = new QTableWidgetItem();
     if(b_dataAreSaved)
     {
-        pvalue21PacketArg0->setText(list.at(w_IndexInList++));
+        pvalue21PacketArg0->setText(arrAllDataSaved.at(w_IndexInList++));
     }
     else
     {
@@ -1317,7 +1322,69 @@ void MainWindow::FillCommandTable()
     pvalue21PacketArg0->setData(TableRoles::NumeralSystem, TableRoles::Decimal);      // packet id is displayed as decimal
     pvalue21PacketArg0->setData(Qt::ToolTipRole, "[0-100] in W");     // a hint which is displayed when mouse hovers over
     ui->tableWidget->setItem(ui->tableWidget->rowCount() - 1, 3, pvalue21PacketArg0); // insert item to created row to the fourth column
+}
 
+void MainWindow::FillCommandTableAmplifier(bool b_dataAreSaved, QStringList &arrAllDataSaved, quint32 byStartIndex)
+{
+    int w_IndexInList = int(byStartIndex);
+
+
+    ui->tableWidget->insertRow(ui->tableWidget->rowCount());                            // create new row in table
+    QTableWidgetItem *pFrequencyPacketID = new QTableWidgetItem("30");                  // paket id
+    pFrequencyPacketID->setData(TableRoles::ByteCount, 1);                              // paket id is 1 byte
+    pFrequencyPacketID->setData(TableRoles::NumeralSystem, TableRoles::Hex);            // packet id is displayed as hex
+    ui->tableWidget->setItem(ui->tableWidget->rowCount() - 1, 0, pFrequencyPacketID);   // insert item to created row to the first column
+
+    // the second column (it has no impact on data to be sent)
+    QTableWidgetItem *pFrequencyPacketName = new QTableWidgetItem("SET_FREQUENCY");     // readable description
+    ui->tableWidget->setItem(ui->tableWidget->rowCount() - 1, 1, pFrequencyPacketName); // insert item to created row to the second column
+
+    // the fourth column
+    QTableWidgetItem *pFrequencyPacketArg0 = new QTableWidgetItem();
+    if(b_dataAreSaved)
+    {
+        pFrequencyPacketArg0->setText(arrAllDataSaved.at(w_IndexInList++));
+    }
+    else
+    {
+        pFrequencyPacketArg0->setText("30000");
+    }
+    pFrequencyPacketArg0->setData(TableRoles::ByteCount, 3);                            // the value is 3 bytes
+    pFrequencyPacketArg0->setData(TableRoles::NumeralSystem, TableRoles::Decimal);      // packet id is displayed as decimal
+    pFrequencyPacketArg0->setData(Qt::ToolTipRole, "minimal resolution is 100 Hz");     // a hint which is displayed when mouse hovers over
+    ui->tableWidget->setItem(ui->tableWidget->rowCount() - 1, 3, pFrequencyPacketArg0); // insert item to created row to the fourth column
+
+
+
+
+
+
+    ui->tableWidget->insertRow(ui->tableWidget->rowCount());                            // create new row in table
+    QTableWidgetItem *pPacketID = new QTableWidgetItem("31");                           // paket id
+    pPacketID->setData(TableRoles::ByteCount, 1);                                       // paket id is 1 byte
+    pPacketID->setData(TableRoles::NumeralSystem, TableRoles::Hex);                     // packet id is displayed as hex
+    ui->tableWidget->setItem(ui->tableWidget->rowCount() - 1, 0, pPacketID);            // insert item to created row to the first column
+
+    // the second column (it has no impact on data to be sent)
+    QTableWidgetItem *pPacketName = new QTableWidgetItem("SET_PWM");                    // readable description
+    ui->tableWidget->setItem(ui->tableWidget->rowCount() - 1, 1, pPacketName);          // insert item to created row to the second column
+
+
+    // the fourth column
+    QTableWidgetItem *pPacketArg0 = new QTableWidgetItem();
+    if(b_dataAreSaved)
+    {
+        pPacketArg0->setText(arrAllDataSaved.at(w_IndexInList++));
+    }
+    else
+    {
+        pPacketArg0->setText("50.0");
+    }
+    pPacketArg0->setData(TableRoles::ByteCount, 2);                                     // the value is 3 bytes
+    pPacketArg0->setData(TableRoles::NumeralSystem, TableRoles::DecimalFloat);          // packet id is displayed as float in decimal
+    pPacketArg0->setData(TableRoles::DivisorPosition, 10);
+    pPacketArg0->setData(Qt::ToolTipRole, "from 0.0 to 100.0 %");                     // a hint which is displayed when mouse hovers over
+    ui->tableWidget->setItem(ui->tableWidget->rowCount() - 1, 3, pPacketArg0);          // insert item to created row to the third column
 
 }
 
@@ -1353,6 +1420,17 @@ void MainWindow::on_connectButton_clicked()
     m_CommProt.data()->SetTargetMedium(ui->comboBox->currentText());
 
     m_pSettingStrorage->StorePortName(ui->comboBox->currentText());
+
+
+    if(ui->comboBox_SelectDevice->currentIndex() == 0)
+    {
+        m_nDeviceAddress = constGenerID;
+    }
+    else
+    {
+        m_nDeviceAddress = constAmpID;
+    }
+
 
     if(m_bSaveData)
     {
@@ -1426,6 +1504,15 @@ void MainWindow::restoreAllSettings()
         o_smith->SetNmbPoints(m_pSettingStrorage->RestoreSmithPoints());
     }
 
+    ui->comboBox_SelectDevice->setCurrentIndex(m_pSettingStrorage->RestoreSelectedDevice());
+    if(m_pSettingStrorage->RestoreSelectedDevice() == 0)
+    {
+        m_nDeviceAddress = constGenerID;
+    }
+    else
+    {
+        m_nDeviceAddress = constAmpID;
+    }
 }
 
 void MainWindow::newDataV200(QByteArray aData)

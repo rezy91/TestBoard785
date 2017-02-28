@@ -80,6 +80,9 @@ public:
 
     void StoreSmithPoints(const quint32& nPoints);
     quint32 RestoreSmithPoints() const;
+
+    void StoreSelectedDevice(const quint32& nDevice);
+    quint32 RestoreSelectedDevice() const;
 };
 
 #endif // SETTINGS_H

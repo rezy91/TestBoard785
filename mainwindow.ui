@@ -464,13 +464,6 @@
        </widget>
       </item>
       <item>
-       <widget class="QLabel" name="deviceIdLabel">
-        <property name="text">
-         <string>TextLabel</string>
-        </property>
-       </widget>
-      </item>
-      <item>
        <widget class="QCheckBox" name="checkBox">
         <property name="text">
          <string>SaveData</string>
@@ -479,6 +472,9 @@
          <bool>true</bool>
         </property>
        </widget>
+      </item>
+      <item>
+       <widget class="QComboBox" name="comboBox_SelectDevice"/>
       </item>
       <item>
        <widget class="QComboBox" name="comboBox"/>
