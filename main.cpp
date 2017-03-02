@@ -27,14 +27,14 @@ int main(int argc, char *argv[])
     QApplication a(argc, argv);
 
     QCoreApplication::setOrganizationName("btl_projects");
-    QCoreApplication::setApplicationName(APP_NAME);
+    QCoreApplication::setApplicationName(QString("%1 %2").arg(APP_NAME).arg(APP_VERSION));
 
     MainWindow o_main;
 
     QFontDatabase::addApplicationFont("/usr/lib/fonts/Vera.ttf");
     QGuiApplication::setFont(QFont("Vera",15));
 
-    o_main.setWindowTitle(QString("%1").arg(APP_NAME));
+    o_main.setWindowTitle(QString("%1 %2").arg(APP_NAME).arg(APP_VERSION));
     o_main.setWindowIcon(QIcon(":/iconMain.png"));
     o_main.show();
 

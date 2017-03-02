@@ -13,8 +13,7 @@ TEMPLATE = app
 APPNAME = Master_785_simulator
 VERSION = 0.0.1
 
-#TARGET = "$$APPNAME $$VERSION"
-TARGET = "$$APPNAME"
+TARGET = "$$APPNAME $$VERSION"
 
 CONFIG += c++11
 
