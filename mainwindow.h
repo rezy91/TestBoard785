@@ -39,6 +39,12 @@
 #define NMB_ITEMS_FOR_TIMERS         6
 #define NMB_COEFFICIENTS_OTHERS        9
 
+
+#define COLOR_BLUE_LIGHT        QColor(0,255,255)
+#define COLOR_BLUE_DARK         QColor(0,128,255)
+#define COLOR_BROWN_LIGHT       QColor(200,149,121)
+#define COLOR_BROWN_DARK        QColor(124,78,52)
+
 namespace Ui {
 class MainWindow;
 }
@@ -90,6 +96,10 @@ private slots:
 private:
     const quint32 constGenerID = 18;
     const quint32 constAmpID = 20;
+
+
+    const int m_NumberOfFilledTablesGenerator = 2 + 2 + 1 + 2 + 6 + 3 + 4 * 2 + 7 * 2 + 9 * 2 + 9 * 2 + 8 + 6 + 3 + 2;
+    const int m_NumberOfFilledTablesAmplifier = 1 + 1;
 
     Ui::MainWindow *ui;
     QSharedPointer<CommProtV200> m_CommProt;

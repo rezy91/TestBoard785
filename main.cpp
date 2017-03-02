@@ -34,10 +34,7 @@ int main(int argc, char *argv[])
     QFontDatabase::addApplicationFont("/usr/lib/fonts/Vera.ttf");
     QGuiApplication::setFont(QFont("Vera",15));
 
-    //w.setWindowTitle(QString("%1 %2").arg(APP_NAME).arg(APP_VERSION));
-    //w.setWindowIcon(QIcon(":/appicon.ico"));
-
-    o_main.setWindowTitle("Master 785 simulator");
+    o_main.setWindowTitle(QString("%1").arg(APP_NAME));
     o_main.setWindowIcon(QIcon(":/iconMain.png"));
     o_main.show();
 

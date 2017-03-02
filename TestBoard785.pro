@@ -10,10 +10,11 @@ greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
 TEMPLATE = app
 
-APPNAME = TestAmp785Messenger
-VERSION = 0.2.0
+APPNAME = Master_785_simulator
+VERSION = 0.0.1
 
-TARGET = "$$APPNAME $$VERSION"
+#TARGET = "$$APPNAME $$VERSION"
+TARGET = "$$APPNAME"
 
 CONFIG += c++11
 
