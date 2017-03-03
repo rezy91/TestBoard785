@@ -154,7 +154,7 @@
          <number>0</number>
         </property>
         <property name="columnCount">
-         <number>12</number>
+         <number>11</number>
         </property>
         <attribute name="horizontalHeaderDefaultSectionSize">
          <number>50</number>
@@ -177,52 +177,47 @@
         </column>
         <column>
          <property name="text">
-          <string>response</string>
+          <string>x0</string>
          </property>
         </column>
         <column>
          <property name="text">
-          <string>arg0</string>
+          <string>x1</string>
          </property>
         </column>
         <column>
          <property name="text">
-          <string>arg1</string>
+          <string>x2</string>
          </property>
         </column>
         <column>
          <property name="text">
-          <string>arg2</string>
+          <string>x3</string>
          </property>
         </column>
         <column>
          <property name="text">
-          <string>arg3</string>
+          <string>x4</string>
          </property>
         </column>
         <column>
          <property name="text">
-          <string>arg4</string>
+          <string>x5</string>
          </property>
         </column>
         <column>
          <property name="text">
-          <string>arg5</string>
+          <string>x6</string>
          </property>
         </column>
         <column>
          <property name="text">
-          <string>arg6</string>
+          <string>x7</string>
          </property>
         </column>
         <column>
          <property name="text">
-          <string>arg7</string>
-         </property>
-        </column>
-        <column>
-         <property name="text">
-          <string>arg8</string>
+          <string>x8</string>
          </property>
         </column>
        </widget>
