@@ -48,7 +48,7 @@ private:
     const int constVolumePoint = 3;
 
     const int constBottomLimit = 50;
-    const int constTopLimit = 50;
+    const int constTopLimit = 75;
     const int constLeftLimit = 150;
     const int constRightLimit = 170;
 

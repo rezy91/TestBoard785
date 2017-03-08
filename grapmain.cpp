@@ -490,7 +490,8 @@ void Grapmain::paintEvent(QPaintEvent*)
                 painterMain.drawLine(QPoint(offsetAxis, currentHeight - constBottomLimit),QPoint(offsetAxis, constTopLimit - 20));
                 painterMain.drawLine(QPoint(offsetAxis, constTopLimit - 20),QPoint( - 10 + offsetAxis, constTopLimit - 20 + 10));
                 painterMain.drawLine(QPoint(offsetAxis, constTopLimit - 20),QPoint(10 + offsetAxis, constTopLimit - 20 + 10));
-                painterMain.drawText(QPoint( - 5 + offsetAxis, constBottomLimit - 20 - 5), mLegendItems[iLoop]);
+                painterMain.drawText(QPoint( - 20 + offsetAxis, constTopLimit - 20 - 5), mLegendItems[iLoop]);
+                painterMain.drawText(QPoint( - 20 + offsetAxis, constTopLimit - 40 - 5), QString::number(mSignalHistory[iLoop].value.last()));
 
 
                 for(int kLoop = 0; kLoop < (nmbHorizLines + 1); kLoop++)
