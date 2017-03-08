@@ -66,24 +66,46 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
     ui->comboBox_SelectDevice->addItem(QString("Generator (ID = %1d").arg(constGenerID));
     ui->comboBox_SelectDevice->addItem(QString("Amplifier (ID = %1d").arg(constAmpID));
 
+    for(int iLoop = 0; iLoop < NMB_ITEMS_FOR_TIMERS; iLoop++)
+    {
+        eRequestsGenerAdcx[iLoop].timer.CurrentTime_ms = 0;
+        eRequestsGenerAdcx[iLoop].timer.bEnable = false;
+    }
+
+    eRequestGenerInput.timer.CurrentTime_ms = 0;
+    eRequestGenerInput.timer.bEnable = false;
+
     restoreAllSettings();
     timeCurrent.start();
 
 
     connect(&TmrMstr,&QTimer::timeout,[this](){
-        for(qint32 loop = 0; loop < NMB_ITEMS_FOR_TIMERS + 1; loop++)
+        for(qint32 loop = 0; loop < NMB_ITEMS_FOR_TIMERS; loop++)
         {
-            if(timerEnable[loop] == true)
+            if(eRequestsGenerAdcx[loop].timer.bEnable == true)
             {
-                CurrentTime_ms[loop]++;
-                if(CurrentTime_ms[loop] >= RequirementTime_ms[loop])
+                eRequestsGenerAdcx[loop].timer.CurrentTime_ms++;
+                if(eRequestsGenerAdcx[loop].timer.CurrentTime_ms >= eRequestsGenerAdcx[loop].timer.RequirementTime_ms)
                 {
-                    CurrentTime_ms[loop] = 0;
+                    eRequestsGenerAdcx[loop].timer.CurrentTime_ms = 0;
                     //qDebug() << "Timer" << loop << "tick";
-                    m_CommProt.data()->SendData(m_nDeviceAddress, assemblyMsq[loop], respExp[loop]);
+                    m_CommProt.data()->SendData(m_nDeviceAddress, eRequestsGenerAdcx[loop].assemblyMsq, eRequestsGenerAdcx[loop].respExp);
                 }
             }
         }
+
+
+        if(eRequestGenerInput.timer.bEnable == true)
+        {
+            eRequestGenerInput.timer.CurrentTime_ms++;
+            if(eRequestGenerInput.timer.CurrentTime_ms >= eRequestGenerInput.timer.RequirementTime_ms)
+            {
+                eRequestGenerInput.timer.CurrentTime_ms = 0;
+                //qDebug() << "Timer input tick";
+                m_CommProt.data()->SendData(m_nDeviceAddress, eRequestGenerInput.assemblyMsq, eRequestGenerInput.respExp);
+            }
+        }
+
         if(++mMainTimer >= 100)
         {
             mMainTimer = 0;
@@ -192,32 +214,32 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
 
     connect(ui->spinBox,static_cast<void (QSpinBox::*)(int)>(&QSpinBox::valueChanged),[=](int nValue){
         m_pSettingStrorage->StoreRefreshFirst(nValue);
-        RequirementTime_ms[0] = ui->spinBox->value();
+        eRequestsGenerAdcx[0].timer.RequirementTime_ms = ui->spinBox->value();
     });
 
     connect(ui->spinBox_2,static_cast<void (QSpinBox::*)(int)>(&QSpinBox::valueChanged),[=](int nValue){
         m_pSettingStrorage->StoreRefreshSecond(nValue);
-        RequirementTime_ms[1] = ui->spinBox_2->value();
+        eRequestsGenerAdcx[1].timer.RequirementTime_ms = ui->spinBox_2->value();
     });
 
     connect(ui->spinBox_3,static_cast<void (QSpinBox::*)(int)>(&QSpinBox::valueChanged),[=](int nValue){
         m_pSettingStrorage->StoreRefreshThird(nValue);
-        RequirementTime_ms[2] = ui->spinBox_3->value();
+        eRequestsGenerAdcx[2].timer.RequirementTime_ms = ui->spinBox_3->value();
     });
 
     connect(ui->spinBox_4,static_cast<void (QSpinBox::*)(int)>(&QSpinBox::valueChanged),[=](int nValue){
         m_pSettingStrorage->StoreRefreshFourth(nValue);
-        RequirementTime_ms[3] = ui->spinBox_4->value();
+        eRequestsGenerAdcx[3].timer.RequirementTime_ms = ui->spinBox_4->value();
     });
 
     connect(ui->spinBox_5,static_cast<void (QSpinBox::*)(int)>(&QSpinBox::valueChanged),[=](int nValue){
         m_pSettingStrorage->StoreRefreshFifth(nValue);
-        RequirementTime_ms[4] = ui->spinBox_5->value();
+        eRequestsGenerAdcx[4].timer.RequirementTime_ms = ui->spinBox_5->value();
     });
 
     connect(ui->spinBox_6,static_cast<void (QSpinBox::*)(int)>(&QSpinBox::valueChanged),[=](int nValue){
         m_pSettingStrorage->StoreRefreshSixth(nValue);
-        RequirementTime_ms[5] = ui->spinBox_6->value();
+        eRequestsGenerAdcx[5].timer.RequirementTime_ms = ui->spinBox_6->value();
     });
 
     // vytvoříme instanci CommProt200
@@ -278,7 +300,7 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
     ui->statusBar->showMessage("Not connected");
     FillTableContent();
 
-    RequirementTime_ms[6] = 500;
+    eRequestGenerInput.timer.RequirementTime_ms = 500;
 }
 
 MainWindow::~MainWindow()
@@ -340,23 +362,33 @@ void MainWindow::on_sendButton_clicked()
                 {
                     m_CommProt.data()->SendData(m_nDeviceAddress, QByteArray::fromHex(strCmd.toStdString().c_str()), true);
 
-                    CurrentTime_ms[row] = 0;
-                    timerEnable[row] = true;
+                    eRequestsGenerAdcx[row].timer.CurrentTime_ms = 0;
+                    eRequestsGenerAdcx[row].timer.bEnable = true;
 
-                    assemblyMsq[row] = QByteArray::fromHex(strCmd.toStdString().c_str());
-                    respExp[row] = true;
+                    eRequestsGenerAdcx[row].assemblyMsq = QByteArray::fromHex(strCmd.toStdString().c_str());
+                    eRequestsGenerAdcx[row].respExp = true;
                 }
                 else if(oTableSelection.at(2).data().toInt() == 0)
                 {
                     m_CommProt.data()->SendData(m_nDeviceAddress, QByteArray::fromHex(strCmd.toStdString().c_str()), false);
 
-                    timerEnable[row] = false;
-                    respExp[row] = false;
+                    eRequestsGenerAdcx[row].timer.bEnable = false;
+                    eRequestsGenerAdcx[row].respExp = false;
 
                 }
 
-                fillComboBoxesWithSignals(timerEnable);
+                prepareComboBoxesWithSignals();
 
+                for(qint32 fillComboBoxSignal = 0; fillComboBoxSignal < NMB_ITEMS_FOR_TIMERS; fillComboBoxSignal++)
+                {
+                    if(eRequestsGenerAdcx[fillComboBoxSignal].timer.bEnable)
+                    {
+                        ui->comboBox_2->addItems(allAdxSignals[fillComboBoxSignal]);
+                        ui->comboBox_3->addItems(allAdxSignals[fillComboBoxSignal]);
+                        ui->comboBox_4->addItems(allAdxSignals[fillComboBoxSignal]);
+                        ui->comboBox_5->addItems(allAdxSignals[fillComboBoxSignal]);
+                    }
+                }
 
                 return;
             }
@@ -367,18 +399,18 @@ void MainWindow::on_sendButton_clicked()
             {
                 m_CommProt.data()->SendData(m_nDeviceAddress, QByteArray::fromHex(strCmd.toStdString().c_str()), true);
 
-                CurrentTime_ms[6] = 0;
-                timerEnable[6] = true;
+                eRequestGenerInput.timer.CurrentTime_ms = 0;
+                eRequestGenerInput.timer.bEnable = true;
 
-                assemblyMsq[6] = QByteArray::fromHex(strCmd.toStdString().c_str());
-                respExp[6] = true;
+                eRequestGenerInput.assemblyMsq = QByteArray::fromHex(strCmd.toStdString().c_str());
+                eRequestGenerInput.respExp = true;
             }
             else if(oTableSelection.at(2).data().toInt() == 0)
             {
                 m_CommProt.data()->SendData(m_nDeviceAddress, QByteArray::fromHex(strCmd.toStdString().c_str()), false);
 
-                timerEnable[6] = false;
-                respExp[6] = false;
+                eRequestGenerInput.timer.bEnable = false;
+                eRequestGenerInput.respExp = false;
             }
             return;
         }
@@ -393,7 +425,7 @@ void MainWindow::on_sendButton_clicked()
     }
 }
 
-void MainWindow::fillComboBoxesWithSignals(bool* flags)
+void MainWindow::prepareComboBoxesWithSignals()
 {
     ui->comboBox_2->clear();
     ui->comboBox_3->clear();
@@ -404,17 +436,6 @@ void MainWindow::fillComboBoxesWithSignals(bool* flags)
     ui->comboBox_3->addItem("-");
     ui->comboBox_4->addItem("-");
     ui->comboBox_5->addItem("-");
-
-    for(qint32 fillComboBoxSignal = 0; fillComboBoxSignal < NMB_ITEMS_FOR_TIMERS; fillComboBoxSignal++)
-    {
-        if(flags[fillComboBoxSignal])
-        {
-            ui->comboBox_2->addItems(allAdxSignals[fillComboBoxSignal]);
-            ui->comboBox_3->addItems(allAdxSignals[fillComboBoxSignal]);
-            ui->comboBox_4->addItems(allAdxSignals[fillComboBoxSignal]);
-            ui->comboBox_5->addItems(allAdxSignals[fillComboBoxSignal]);
-        }
-    }
 }
 
 void MainWindow::adjustCoefficientSingleStep(QDoubleSpinBox *p_oubleSpinBox, double newValue)
@@ -804,7 +825,7 @@ void MainWindow::FillCommandTableGenerator()
     // the first column
     ui->tableWidget->insertRow(ui->tableWidget->rowCount());                            // create new row in table
     QTableWidgetItem *pvalue4PacketID = new QTableWidgetItem("49");                  // paket id
-    pvalue4PacketID->setBackground(COLOR_BLUE_LIGHT);
+    pvalue4PacketID->setBackground(COLOR_BLUE_DARK);
     pvalue4PacketID->setData(TableRoles::ByteCount, 1);                              // paket id is 1 byte
     pvalue4PacketID->setData(TableRoles::NumeralSystem, TableRoles::Hex);            // packet id is displayed as hex
     ui->tableWidget->setItem(ui->tableWidget->rowCount() - 1, 0, pvalue4PacketID);   // insert item to created row to the first column
@@ -875,10 +896,10 @@ void MainWindow::FillCommandTableGenerator()
 
 
     // the first column
-    for(int iLoop = 6; iLoop > 0; iLoop--)
+    for(int iLoop = NMB_ITEMS_FOR_TIMERS; iLoop > 0; iLoop--)
     {
         ui->tableWidget->insertRow(ui->tableWidget->rowCount());                            // create new row in table
-        int numberPID = 50 + 6 - iLoop;
+        int numberPID = 50 + NMB_ITEMS_FOR_TIMERS - iLoop;
         QTableWidgetItem *pvalueADCCoeffsPacketID = new QTableWidgetItem(QString::number(numberPID));// paket id
         pvalueADCCoeffsPacketID->setBackground(COLOR_BLUE_LIGHT);
         pvalueADCCoeffsPacketID->setData(TableRoles::ByteCount, 1);                              // paket id is 1 byte
@@ -1334,7 +1355,7 @@ void MainWindow::FillCommandTableGenerator()
 
     pvalue21PacketArg0->setData(TableRoles::ByteCount, 2);                            // the value is 3 bytes
     pvalue21PacketArg0->setData(TableRoles::NumeralSystem, TableRoles::Decimal);      // packet id is displayed as decimal
-    pvalue21PacketArg0->setData(Qt::ToolTipRole, "[0-100] in W");     // a hint which is displayed when mouse hovers over
+    pvalue21PacketArg0->setData(Qt::ToolTipRole, "[0-300] in W");     // a hint which is displayed when mouse hovers over
     ui->tableWidget->setItem(ui->tableWidget->rowCount() - 1, 2, pvalue21PacketArg0); // insert item to created row to the fourth column
 }
 
@@ -1437,12 +1458,12 @@ void MainWindow::on_connectButton_clicked()
     sourceDataStream = RECEIVE_STREAM;
 
 
-    RequirementTime_ms[0] = ui->spinBox->value();
-    RequirementTime_ms[1] = ui->spinBox_2->value();
-    RequirementTime_ms[2] = ui->spinBox_3->value();
-    RequirementTime_ms[3] = ui->spinBox_4->value();
-    RequirementTime_ms[4] = ui->spinBox_5->value();
-    RequirementTime_ms[5] = ui->spinBox_6->value();
+    eRequestsGenerAdcx[0].timer.RequirementTime_ms = ui->spinBox->value();
+    eRequestsGenerAdcx[1].timer.RequirementTime_ms = ui->spinBox_2->value();
+    eRequestsGenerAdcx[2].timer.RequirementTime_ms = ui->spinBox_3->value();
+    eRequestsGenerAdcx[3].timer.RequirementTime_ms = ui->spinBox_4->value();
+    eRequestsGenerAdcx[4].timer.RequirementTime_ms = ui->spinBox_5->value();
+    eRequestsGenerAdcx[5].timer.RequirementTime_ms = ui->spinBox_6->value();
 
     m_CommProt.data()->SetTargetMedium(ui->comboBox->currentText());
 
@@ -1683,7 +1704,7 @@ void MainWindow::getIndexInQList(int NumberComboBox, int indexInComboBox)
 
         for(qint32 iLoop = 0; iLoop < NMB_ITEMS_FOR_TIMERS; iLoop++)
         {
-            if((sourceDataStream == RECEIVE_STREAM && timerEnable[iLoop]) || (sourceDataStream == LOG_STREAM && flagIfSourceIsLogged[iLoop]))
+            if((sourceDataStream == RECEIVE_STREAM && eRequestsGenerAdcx[iLoop].timer.bEnable) || (sourceDataStream == LOG_STREAM && flagIfSourceIsLogged[iLoop]))
             {
                 if((absoluteIndex - allAdxSignals[iLoop].count()) < 0)
                 {
@@ -1806,10 +1827,12 @@ void MainWindow::on_disconnectButton_clicked()
     SetAvaiblePorts();
     SetLastPort();
 
-    for(qint32 loop = 0; loop < NMB_ITEMS_FOR_TIMERS + 1; loop++)
+    for(qint32 loop = 0; loop < NMB_ITEMS_FOR_TIMERS; loop++)
     {
-        timerEnable[loop] = false;
+        eRequestsGenerAdcx[loop].timer.bEnable = false;
     }
+
+    eRequestGenerInput.timer.bEnable = false;
 
     if(m_oFile.isOpen())
     {
@@ -1839,7 +1862,7 @@ void MainWindow::on_openlogButton_clicked()
 {
     sourceDataStream = LOG_STREAM;
 
-    for(int iLoop = 0; iLoop < 6; iLoop++)
+    for(int iLoop = 0; iLoop < NMB_ITEMS_FOR_TIMERS; iLoop++)
     {
         flagIfSourceIsLogged[iLoop] = false;
     }
@@ -1875,7 +1898,18 @@ void MainWindow::on_openlogButton_clicked()
 
         qDebug("sources: %d, %d, %d, %d, %d, %d", flagIfSourceIsLogged[0], flagIfSourceIsLogged[1], flagIfSourceIsLogged[2], flagIfSourceIsLogged[3], flagIfSourceIsLogged[4], flagIfSourceIsLogged[5]);
 
-        fillComboBoxesWithSignals(flagIfSourceIsLogged);
+        prepareComboBoxesWithSignals();
+
+        for(qint32 fillComboBoxSignal = 0; fillComboBoxSignal < NMB_ITEMS_FOR_TIMERS; fillComboBoxSignal++)
+        {
+            if(flagIfSourceIsLogged[fillComboBoxSignal])
+            {
+                ui->comboBox_2->addItems(allAdxSignals[fillComboBoxSignal]);
+                ui->comboBox_3->addItems(allAdxSignals[fillComboBoxSignal]);
+                ui->comboBox_4->addItems(allAdxSignals[fillComboBoxSignal]);
+                ui->comboBox_5->addItems(allAdxSignals[fillComboBoxSignal]);
+            }
+        }
 
         m_logFile.close();
     }

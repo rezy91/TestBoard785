@@ -283,42 +283,42 @@
       <item>
        <widget class="QLabel" name="label">
         <property name="text">
-         <string>ADC3 adjusted data [ms]</string>
+         <string>GENER ADC3 adjusted data [ms]</string>
         </property>
        </widget>
       </item>
       <item>
        <widget class="QLabel" name="label_2">
         <property name="text">
-         <string>ADC3 average data [ms]</string>
+         <string>GENER ADC3 average data [ms]</string>
         </property>
        </widget>
       </item>
       <item>
        <widget class="QLabel" name="label_3">
         <property name="text">
-         <string>ADC2 adjusted data [ms]</string>
+         <string>GENER ADC2 adjusted data [ms]</string>
         </property>
        </widget>
       </item>
       <item>
        <widget class="QLabel" name="label_4">
         <property name="text">
-         <string>ADC2 average data [ms]</string>
+         <string>GENER ADC2 average data [ms]</string>
         </property>
        </widget>
       </item>
       <item>
        <widget class="QLabel" name="label_5">
         <property name="text">
-         <string>ADC1 adjusted data [ms]</string>
+         <string>GENER ADC1 adjusted data [ms]</string>
         </property>
        </widget>
       </item>
       <item>
        <widget class="QLabel" name="label_6">
         <property name="text">
-         <string>ADC1 average data [ms]</string>
+         <string>GENER ADC1 average data [ms]</string>
         </property>
        </widget>
       </item>
