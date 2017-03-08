@@ -36,7 +36,7 @@
 #include "grapmain.h"
 
 
-#define NMB_ITEMS_FOR_TIMERS         6
+#define NMB_ITEMS_FOR_TIMERS           6
 #define NMB_COEFFICIENTS_OTHERS        9
 
 
@@ -135,7 +135,7 @@ private:
     QTimer TmrMstr;
 
 
-
+    PERIODIC_REQUEST eRequestsAmplifAdcx[NMB_ITEMS_FOR_TIMERS];
     PERIODIC_REQUEST eRequestsGenerAdcx[NMB_ITEMS_FOR_TIMERS];
     PERIODIC_REQUEST eRequestGenerInput;
 
@@ -169,6 +169,7 @@ private:
     QStringList adjustRowDataIntoOnlyNumber(QString rowData);
     void prepareComboBoxesWithSignals();
     void adjustCoefficientSingleStep(QDoubleSpinBox* p_oubleSpinBox, double newValue);
+    void selectedDeviceSetAccordingSaved(quint32 value);
 
     double recvItems[nmbCurvesInGraph] = {0, 0, 0, 0};
     int recStat[nmbCurvesInGraph] = {0, 0, 0, 0};

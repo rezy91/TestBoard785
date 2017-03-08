@@ -16,64 +16,24 @@ QString settings::RestorePortName() const
     return RestoreValue(QString("portname")).toString();
 }
 
-void settings::StoreRefreshFirst(const quint32 &nPeriod_ms)
+void settings::StoreRefreshGener(const quint32 &nIndexTimer, const quint32 &nPeriod_ms)
 {
-    StoreValue(QString("timer1"), nPeriod_ms);
+    StoreValue(QString("timerGener%1").arg(nIndexTimer), nPeriod_ms);
 }
 
-qreal settings::RestoreRefreshFirst() const
+qreal settings::RestoreRefreshGener(const quint32 &nIndexTimer) const
 {
-    return RestoreValue(QString("timer1")).toUInt();
+    return RestoreValue(QString("timerGener%1").arg(nIndexTimer)).toUInt();
 }
 
-void settings::StoreRefreshSecond(const quint32 &nPeriod_ms)
+void settings::StoreRefreshAmplif(const quint32 &nIndexTimer, const quint32 &nPeriod_ms)
 {
-    StoreValue(QString("timer2"), nPeriod_ms);
+    StoreValue(QString("timerAmp%1").arg(nIndexTimer), nPeriod_ms);
 }
 
-qreal settings::RestoreRefreshSecond() const
+qreal settings::RestoreRefreshAmplif(const quint32 &nIndexTimer) const
 {
-    return RestoreValue(QString("timer2")).toUInt();
-}
-
-void settings::StoreRefreshThird(const quint32 &nPeriod_ms)
-{
-    StoreValue(QString("timer3"), nPeriod_ms);
-}
-
-qreal settings::RestoreRefreshThird() const
-{
-    return RestoreValue(QString("timer3")).toUInt();
-}
-
-void settings::StoreRefreshFourth(const quint32 &nPeriod_ms)
-{
-    StoreValue(QString("timer4"), nPeriod_ms);
-}
-
-qreal settings::RestoreRefreshFourth() const
-{
-    return RestoreValue(QString("timer4")).toUInt();
-}
-
-void settings::StoreRefreshFifth(const quint32 &nPeriod_ms)
-{
-    StoreValue(QString("timer5"), nPeriod_ms);
-}
-
-qreal settings::RestoreRefreshFifth() const
-{
-    return RestoreValue(QString("timer5")).toUInt();
-}
-
-void settings::StoreRefreshSixth(const quint32 &nPeriod_ms)
-{
-    StoreValue(QString("timer6"), nPeriod_ms);
-}
-
-qreal settings::RestoreRefreshSixth() const
-{
-    return RestoreValue(QString("timer6")).toUInt();
+    return RestoreValue(QString("timerAmp%1").arg(nIndexTimer)).toUInt();
 }
 
 void settings::StoreGeometryMain(const QByteArray &arrGeometry)

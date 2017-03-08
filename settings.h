@@ -18,23 +18,11 @@ public:
     void StorePortName(const QString& strPortName);
     QString RestorePortName() const;
 
-    void StoreRefreshFirst(const quint32& nPeriod_ms);
-    qreal RestoreRefreshFirst() const;
+    void StoreRefreshGener(const quint32& nIndexTimer, const quint32& nPeriod_ms);
+    qreal RestoreRefreshGener(const quint32& nIndexTimer) const;
 
-    void StoreRefreshSecond(const quint32& nPeriod_ms);
-    qreal RestoreRefreshSecond() const;
-
-    void StoreRefreshThird(const quint32& nPeriod_ms);
-    qreal RestoreRefreshThird() const;
-
-    void StoreRefreshFourth(const quint32& nPeriod_ms);
-    qreal RestoreRefreshFourth() const;
-
-    void StoreRefreshFifth(const quint32& nPeriod_ms);
-    qreal RestoreRefreshFifth() const;
-
-    void StoreRefreshSixth(const quint32& nPeriod_ms);
-    qreal RestoreRefreshSixth() const;
+    void StoreRefreshAmplif(const quint32& nIndexTimer, const quint32& nPeriod_ms);
+    qreal RestoreRefreshAmplif(const quint32& nIndexTimer) const;
 
     void StoreGeometryMain(const QByteArray& arrGeometry);
     QByteArray RestoreGeometryMain() const;

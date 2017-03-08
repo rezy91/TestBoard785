@@ -69,7 +69,9 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
     for(int iLoop = 0; iLoop < NMB_ITEMS_FOR_TIMERS; iLoop++)
     {
         eRequestsGenerAdcx[iLoop].timer.CurrentTime_ms = 0;
+        eRequestsAmplifAdcx[iLoop].timer.CurrentTime_ms = 0;
         eRequestsGenerAdcx[iLoop].timer.bEnable = false;
+        eRequestsAmplifAdcx[iLoop].timer.bEnable = false;
     }
 
     eRequestGenerInput.timer.CurrentTime_ms = 0;
@@ -90,6 +92,17 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
                     eRequestsGenerAdcx[loop].timer.CurrentTime_ms = 0;
                     //qDebug() << "Timer" << loop << "tick";
                     m_CommProt.data()->SendData(m_nDeviceAddress, eRequestsGenerAdcx[loop].assemblyMsq, eRequestsGenerAdcx[loop].respExp);
+                }
+            }
+
+            if(eRequestsAmplifAdcx[loop].timer.bEnable == true)
+            {
+                eRequestsAmplifAdcx[loop].timer.CurrentTime_ms++;
+                if(eRequestsAmplifAdcx[loop].timer.CurrentTime_ms >= eRequestsAmplifAdcx[loop].timer.RequirementTime_ms)
+                {
+                    eRequestsAmplifAdcx[loop].timer.CurrentTime_ms = 0;
+                    //qDebug() << "Timer" << loop << "tick";
+                    m_CommProt.data()->SendData(m_nDeviceAddress, eRequestsAmplifAdcx[loop].assemblyMsq, eRequestsAmplifAdcx[loop].respExp);
                 }
             }
         }
@@ -149,14 +162,7 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
         emit SendLowLevel(ui->doubleSpinBox_8->value(), 3);
     });
     connect(ui->comboBox_SelectDevice,static_cast<void (QComboBox::*)(int)>(&QComboBox::currentIndexChanged),[=](int nValue){
-        if(nValue == 0)
-        {
-            m_nDeviceAddress = constGenerID;
-        }
-        else if(nValue == 1)
-        {
-            m_nDeviceAddress = constAmpID;
-        }
+        selectedDeviceSetAccordingSaved(nValue);
 
         m_pSettingStrorage->StoreSelectedDevice(ui->comboBox_SelectDevice->currentIndex());
         FillTableContent();
@@ -213,34 +219,66 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
     });
 
     connect(ui->spinBox,static_cast<void (QSpinBox::*)(int)>(&QSpinBox::valueChanged),[=](int nValue){
-        m_pSettingStrorage->StoreRefreshFirst(nValue);
+        m_pSettingStrorage->StoreRefreshGener(0, nValue);
         eRequestsGenerAdcx[0].timer.RequirementTime_ms = ui->spinBox->value();
     });
 
     connect(ui->spinBox_2,static_cast<void (QSpinBox::*)(int)>(&QSpinBox::valueChanged),[=](int nValue){
-        m_pSettingStrorage->StoreRefreshSecond(nValue);
+        m_pSettingStrorage->StoreRefreshGener(1, nValue);
         eRequestsGenerAdcx[1].timer.RequirementTime_ms = ui->spinBox_2->value();
     });
 
     connect(ui->spinBox_3,static_cast<void (QSpinBox::*)(int)>(&QSpinBox::valueChanged),[=](int nValue){
-        m_pSettingStrorage->StoreRefreshThird(nValue);
+        m_pSettingStrorage->StoreRefreshGener(2, nValue);
         eRequestsGenerAdcx[2].timer.RequirementTime_ms = ui->spinBox_3->value();
     });
 
     connect(ui->spinBox_4,static_cast<void (QSpinBox::*)(int)>(&QSpinBox::valueChanged),[=](int nValue){
-        m_pSettingStrorage->StoreRefreshFourth(nValue);
+        m_pSettingStrorage->StoreRefreshGener(3, nValue);
         eRequestsGenerAdcx[3].timer.RequirementTime_ms = ui->spinBox_4->value();
     });
 
     connect(ui->spinBox_5,static_cast<void (QSpinBox::*)(int)>(&QSpinBox::valueChanged),[=](int nValue){
-        m_pSettingStrorage->StoreRefreshFifth(nValue);
+        m_pSettingStrorage->StoreRefreshGener(4, nValue);
         eRequestsGenerAdcx[4].timer.RequirementTime_ms = ui->spinBox_5->value();
     });
 
     connect(ui->spinBox_6,static_cast<void (QSpinBox::*)(int)>(&QSpinBox::valueChanged),[=](int nValue){
-        m_pSettingStrorage->StoreRefreshSixth(nValue);
+        m_pSettingStrorage->StoreRefreshGener(5, nValue);
         eRequestsGenerAdcx[5].timer.RequirementTime_ms = ui->spinBox_6->value();
     });
+
+
+    connect(ui->spinBox_7,static_cast<void (QSpinBox::*)(int)>(&QSpinBox::valueChanged),[=](int nValue){
+        m_pSettingStrorage->StoreRefreshAmplif(0, nValue);
+        eRequestsAmplifAdcx[0].timer.RequirementTime_ms = ui->spinBox_7->value();
+    });
+
+    connect(ui->spinBox_8,static_cast<void (QSpinBox::*)(int)>(&QSpinBox::valueChanged),[=](int nValue){
+        m_pSettingStrorage->StoreRefreshAmplif(1, nValue);
+        eRequestsAmplifAdcx[1].timer.RequirementTime_ms = ui->spinBox_8->value();
+    });
+
+    connect(ui->spinBox_9,static_cast<void (QSpinBox::*)(int)>(&QSpinBox::valueChanged),[=](int nValue){
+        m_pSettingStrorage->StoreRefreshAmplif(2, nValue);
+        eRequestsAmplifAdcx[2].timer.RequirementTime_ms = ui->spinBox_9->value();
+    });
+
+    connect(ui->spinBox_10,static_cast<void (QSpinBox::*)(int)>(&QSpinBox::valueChanged),[=](int nValue){
+        m_pSettingStrorage->StoreRefreshAmplif(3, nValue);
+        eRequestsAmplifAdcx[3].timer.RequirementTime_ms = ui->spinBox_10->value();
+    });
+
+    connect(ui->spinBox_11,static_cast<void (QSpinBox::*)(int)>(&QSpinBox::valueChanged),[=](int nValue){
+        m_pSettingStrorage->StoreRefreshAmplif(4, nValue);
+        eRequestsAmplifAdcx[4].timer.RequirementTime_ms = ui->spinBox_11->value();
+    });
+
+    connect(ui->spinBox_12,static_cast<void (QSpinBox::*)(int)>(&QSpinBox::valueChanged),[=](int nValue){
+        m_pSettingStrorage->StoreRefreshAmplif(5, nValue);
+        eRequestsAmplifAdcx[5].timer.RequirementTime_ms = ui->spinBox_12->value();
+    });
+
 
     // vytvoříme instanci CommProt200
     m_CommProt.reset(CommProtV200_Create(this));
@@ -463,6 +501,32 @@ void MainWindow::adjustCoefficientSingleStep(QDoubleSpinBox *p_oubleSpinBox, dou
     else if(abs(newValue) >= 0.1)
     {
         p_oubleSpinBox->setSingleStep(0.01);
+    }
+}
+
+void MainWindow::selectedDeviceSetAccordingSaved(quint32 value)
+{
+    if(value == 0)
+    {
+        m_nDeviceAddress = constGenerID;
+
+        ui->spinBox->setEnabled(true);
+        ui->spinBox_2->setEnabled(true);
+        ui->spinBox_3->setEnabled(true);
+        ui->spinBox_4->setEnabled(true);
+        ui->spinBox_5->setEnabled(true);
+        ui->spinBox_6->setEnabled(true);
+    }
+    else if(value == 1)
+    {
+        m_nDeviceAddress = constAmpID;
+
+        ui->spinBox->setEnabled(false);
+        ui->spinBox_2->setEnabled(false);
+        ui->spinBox_3->setEnabled(false);
+        ui->spinBox_4->setEnabled(false);
+        ui->spinBox_5->setEnabled(false);
+        ui->spinBox_6->setEnabled(false);
     }
 }
 
@@ -1465,10 +1529,16 @@ void MainWindow::on_connectButton_clicked()
     eRequestsGenerAdcx[4].timer.RequirementTime_ms = ui->spinBox_5->value();
     eRequestsGenerAdcx[5].timer.RequirementTime_ms = ui->spinBox_6->value();
 
+    eRequestsAmplifAdcx[0].timer.RequirementTime_ms = ui->spinBox_7->value();
+    eRequestsAmplifAdcx[1].timer.RequirementTime_ms = ui->spinBox_8->value();
+    eRequestsAmplifAdcx[2].timer.RequirementTime_ms = ui->spinBox_9->value();
+    eRequestsAmplifAdcx[3].timer.RequirementTime_ms = ui->spinBox_10->value();
+    eRequestsAmplifAdcx[4].timer.RequirementTime_ms = ui->spinBox_11->value();
+    eRequestsAmplifAdcx[5].timer.RequirementTime_ms = ui->spinBox_12->value();
+
     m_CommProt.data()->SetTargetMedium(ui->comboBox->currentText());
 
     m_pSettingStrorage->StorePortName(ui->comboBox->currentText());
-
 
     if(ui->comboBox_SelectDevice->currentIndex() == 0)
     {
@@ -1530,12 +1600,19 @@ void MainWindow::restoreAllSettings()
     ui->checkBox->setChecked(m_pSettingStrorage->RestoreSaveDataBox());
     m_bSaveData = m_pSettingStrorage->RestoreSaveDataBox();
 
-    ui->spinBox->setValue(m_pSettingStrorage->RestoreRefreshFirst());
-    ui->spinBox_2->setValue(m_pSettingStrorage->RestoreRefreshSecond());
-    ui->spinBox_3->setValue(m_pSettingStrorage->RestoreRefreshThird());
-    ui->spinBox_4->setValue(m_pSettingStrorage->RestoreRefreshFourth());
-    ui->spinBox_5->setValue(m_pSettingStrorage->RestoreRefreshFifth());
-    ui->spinBox_6->setValue(m_pSettingStrorage->RestoreRefreshSixth());
+    ui->spinBox->setValue(m_pSettingStrorage->RestoreRefreshGener(0));
+    ui->spinBox_2->setValue(m_pSettingStrorage->RestoreRefreshGener(1));
+    ui->spinBox_3->setValue(m_pSettingStrorage->RestoreRefreshGener(2));
+    ui->spinBox_4->setValue(m_pSettingStrorage->RestoreRefreshGener(3));
+    ui->spinBox_5->setValue(m_pSettingStrorage->RestoreRefreshGener(4));
+    ui->spinBox_6->setValue(m_pSettingStrorage->RestoreRefreshGener(5));
+
+    ui->spinBox_7->setValue(m_pSettingStrorage->RestoreRefreshAmplif(0));
+    ui->spinBox_8->setValue(m_pSettingStrorage->RestoreRefreshAmplif(1));
+    ui->spinBox_9->setValue(m_pSettingStrorage->RestoreRefreshAmplif(2));
+    ui->spinBox_10->setValue(m_pSettingStrorage->RestoreRefreshAmplif(3));
+    ui->spinBox_11->setValue(m_pSettingStrorage->RestoreRefreshAmplif(4));
+    ui->spinBox_12->setValue(m_pSettingStrorage->RestoreRefreshAmplif(5));
 
     ui->doubleSpinBox->setValue(m_pSettingStrorage->RestoreHighValueSignalFirst());
     ui->doubleSpinBox_2->setValue(m_pSettingStrorage->RestoreHighValueSignalSecond());
@@ -1553,14 +1630,8 @@ void MainWindow::restoreAllSettings()
     }
 
     ui->comboBox_SelectDevice->setCurrentIndex(m_pSettingStrorage->RestoreSelectedDevice());
-    if(m_pSettingStrorage->RestoreSelectedDevice() == 0)
-    {
-        m_nDeviceAddress = constGenerID;
-    }
-    else
-    {
-        m_nDeviceAddress = constAmpID;
-    }
+
+    selectedDeviceSetAccordingSaved(ui->comboBox_SelectDevice->currentIndex());
 }
 
 void MainWindow::newDataV200(QByteArray aData)
@@ -1704,7 +1775,7 @@ void MainWindow::getIndexInQList(int NumberComboBox, int indexInComboBox)
 
         for(qint32 iLoop = 0; iLoop < NMB_ITEMS_FOR_TIMERS; iLoop++)
         {
-            if((sourceDataStream == RECEIVE_STREAM && eRequestsGenerAdcx[iLoop].timer.bEnable) || (sourceDataStream == LOG_STREAM && flagIfSourceIsLogged[iLoop]))
+            if((sourceDataStream == RECEIVE_STREAM && (eRequestsGenerAdcx[iLoop].timer.bEnable || eRequestsGenerAdcx[iLoop].timer.bEnable)) || (sourceDataStream == LOG_STREAM && flagIfSourceIsLogged[iLoop]))
             {
                 if((absoluteIndex - allAdxSignals[iLoop].count()) < 0)
                 {
@@ -1830,6 +1901,7 @@ void MainWindow::on_disconnectButton_clicked()
     for(qint32 loop = 0; loop < NMB_ITEMS_FOR_TIMERS; loop++)
     {
         eRequestsGenerAdcx[loop].timer.bEnable = false;
+        eRequestsAmplifAdcx[loop].timer.bEnable = false;
     }
 
     eRequestGenerInput.timer.bEnable = false;
