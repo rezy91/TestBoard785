@@ -36,8 +36,13 @@
 #include "grapmain.h"
 
 
-#define NMB_ITEMS_FOR_TIMERS           6
-#define NMB_COEFFICIENTS_OTHERS        9
+#define NMB_ITEMS_FOR_TIMERS                6
+#define NMB_COEFFICIENTS_OTHERS             9
+
+#define PID_TIMERS_ADCX_GENER              40
+#define PID_TIMER_INPUT_GENER              49
+#define PID_TIMERS_ADCX_AMPLF              32
+#define PID_TIMER_INPUT_AMPLF              38
 
 
 #define COLOR_BLUE_LIGHT        QColor(0,255,255)

@@ -394,7 +394,7 @@ void MainWindow::on_sendButton_clicked()
 
         for(qint32 row = 0; row < NMB_ITEMS_FOR_TIMERS; row++)
         {
-            if(oTableSelection.at(0).data().toInt() == (40 + row))
+            if(oTableSelection.at(0).data().toInt() == (PID_TIMERS_ADCX_GENER + row))
             {
                 if(oTableSelection.at(2).data().toInt() == 1)
                 {
@@ -431,7 +431,7 @@ void MainWindow::on_sendButton_clicked()
                 return;
             }
         }
-        if(oTableSelection.at(0).data().toInt() == 49)
+        if(oTableSelection.at(0).data().toInt() == PID_TIMER_INPUT_GENER)
         {
             if(oTableSelection.at(2).data().toInt() == 1)
             {
@@ -569,7 +569,7 @@ void MainWindow::FillCommandTableGenerator()
     //! set packet
     // the first column
     ui->tableWidget->insertRow(ui->tableWidget->rowCount());                            // create new row in table
-    QTableWidgetItem *pvalue83PacketID = new QTableWidgetItem("40");                  // paket id
+    QTableWidgetItem *pvalue83PacketID = new QTableWidgetItem(QString::number(PID_TIMERS_ADCX_GENER));                  // paket id
     pvalue83PacketID->setBackground(COLOR_BLUE_DARK);
     pvalue83PacketID->setData(TableRoles::ByteCount, 1);                              // paket id is 1 byte
     pvalue83PacketID->setData(TableRoles::NumeralSystem, TableRoles::Hex);            // packet id is displayed as hex
@@ -597,7 +597,7 @@ void MainWindow::FillCommandTableGenerator()
     //! and next packet definition
     // the first column
     ui->tableWidget->insertRow(ui->tableWidget->rowCount());                            // create new row in table
-    QTableWidgetItem *pvalue93PacketID = new QTableWidgetItem("41");                  // paket id
+    QTableWidgetItem *pvalue93PacketID = new QTableWidgetItem(QString::number(PID_TIMERS_ADCX_GENER + 1));                  // paket id
     pvalue93PacketID->setBackground(COLOR_BLUE_DARK);
     pvalue93PacketID->setData(TableRoles::ByteCount, 1);                              // paket id is 1 byte
     pvalue93PacketID->setData(TableRoles::NumeralSystem, TableRoles::Hex);            // packet id is displayed as hex
@@ -627,7 +627,7 @@ void MainWindow::FillCommandTableGenerator()
     //! and next packet definition
     // the first column
     ui->tableWidget->insertRow(ui->tableWidget->rowCount());                            // create new row in table
-    QTableWidgetItem *pvalue8PacketID = new QTableWidgetItem("42");                  // paket id
+    QTableWidgetItem *pvalue8PacketID = new QTableWidgetItem(QString::number(PID_TIMERS_ADCX_GENER + 2));                  // paket id
     pvalue8PacketID->setBackground(COLOR_BLUE_DARK);
     pvalue8PacketID->setData(TableRoles::ByteCount, 1);                              // paket id is 1 byte
     pvalue8PacketID->setData(TableRoles::NumeralSystem, TableRoles::Hex);            // packet id is displayed as hex
@@ -655,7 +655,7 @@ void MainWindow::FillCommandTableGenerator()
     //! and next packet definition
     // the first column
     ui->tableWidget->insertRow(ui->tableWidget->rowCount());                            // create new row in table
-    QTableWidgetItem *pvalue9PacketID = new QTableWidgetItem("43");                  // paket id
+    QTableWidgetItem *pvalue9PacketID = new QTableWidgetItem(QString::number(PID_TIMERS_ADCX_GENER + 3));                  // paket id
     pvalue9PacketID->setBackground(COLOR_BLUE_DARK);
     pvalue9PacketID->setData(TableRoles::ByteCount, 1);                              // paket id is 1 byte
     pvalue9PacketID->setData(TableRoles::NumeralSystem, TableRoles::Hex);            // packet id is displayed as hex
@@ -684,7 +684,7 @@ void MainWindow::FillCommandTableGenerator()
     //! and next packet definition
     // the first column
     ui->tableWidget->insertRow(ui->tableWidget->rowCount());                            // create new row in table
-    QTableWidgetItem *pvalue10PacketID = new QTableWidgetItem("44");                  // paket id
+    QTableWidgetItem *pvalue10PacketID = new QTableWidgetItem(QString::number(PID_TIMERS_ADCX_GENER + 4));                  // paket id
     pvalue10PacketID->setBackground(COLOR_BLUE_DARK);
     pvalue10PacketID->setData(TableRoles::ByteCount, 1);                              // paket id is 1 byte
     pvalue10PacketID->setData(TableRoles::NumeralSystem, TableRoles::Hex);            // packet id is displayed as hex
@@ -713,7 +713,7 @@ void MainWindow::FillCommandTableGenerator()
     //! and next packet definition
     // the first column
     ui->tableWidget->insertRow(ui->tableWidget->rowCount());                            // create new row in table
-    QTableWidgetItem *pvalue11PacketID = new QTableWidgetItem("45");                  // paket id
+    QTableWidgetItem *pvalue11PacketID = new QTableWidgetItem(QString::number(PID_TIMERS_ADCX_GENER + 5));                  // paket id
     pvalue11PacketID->setBackground(COLOR_BLUE_DARK);
     pvalue11PacketID->setData(TableRoles::ByteCount, 1);                              // paket id is 1 byte
     pvalue11PacketID->setData(TableRoles::NumeralSystem, TableRoles::Hex);            // packet id is displayed as hex
@@ -744,7 +744,7 @@ void MainWindow::FillCommandTableGenerator()
     // the first column
     ui->tableWidget->insertRow(ui->tableWidget->rowCount());                            // create new row in table
     QTableWidgetItem *pvalue14PacketID = new QTableWidgetItem("46");                  // paket id
-    pvalue14PacketID->setBackground(COLOR_BLUE_DARK);
+    pvalue14PacketID->setBackground(COLOR_BLUE_LIGHT);
     pvalue14PacketID->setData(TableRoles::ByteCount, 1);                              // paket id is 1 byte
     pvalue14PacketID->setData(TableRoles::NumeralSystem, TableRoles::Hex);            // packet id is displayed as hex
     ui->tableWidget->setItem(ui->tableWidget->rowCount() - 1, 0, pvalue14PacketID);   // insert item to created row to the first column
@@ -888,7 +888,7 @@ void MainWindow::FillCommandTableGenerator()
     //! and next packet definition
     // the first column
     ui->tableWidget->insertRow(ui->tableWidget->rowCount());                            // create new row in table
-    QTableWidgetItem *pvalue4PacketID = new QTableWidgetItem("49");                  // paket id
+    QTableWidgetItem *pvalue4PacketID = new QTableWidgetItem(QString::number(PID_TIMER_INPUT_GENER));                  // paket id
     pvalue4PacketID->setBackground(COLOR_BLUE_DARK);
     pvalue4PacketID->setData(TableRoles::ByteCount, 1);                              // paket id is 1 byte
     pvalue4PacketID->setData(TableRoles::NumeralSystem, TableRoles::Hex);            // packet id is displayed as hex
@@ -1775,7 +1775,7 @@ void MainWindow::getIndexInQList(int NumberComboBox, int indexInComboBox)
 
         for(qint32 iLoop = 0; iLoop < NMB_ITEMS_FOR_TIMERS; iLoop++)
         {
-            if((sourceDataStream == RECEIVE_STREAM && (eRequestsGenerAdcx[iLoop].timer.bEnable || eRequestsGenerAdcx[iLoop].timer.bEnable)) || (sourceDataStream == LOG_STREAM && flagIfSourceIsLogged[iLoop]))
+            if((sourceDataStream == RECEIVE_STREAM && (eRequestsGenerAdcx[iLoop].timer.bEnable || eRequestsAmplifAdcx[iLoop].timer.bEnable)) || (sourceDataStream == LOG_STREAM && flagIfSourceIsLogged[iLoop]))
             {
                 if((absoluteIndex - allAdxSignals[iLoop].count()) < 0)
                 {
