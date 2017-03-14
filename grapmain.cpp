@@ -351,14 +351,16 @@ void Grapmain::refreshGraph(QTime currTime, double ssignal, int recStat, QString
             }
             else
             {
-                if(isNoSignalDisplayed())
+                (isNoSignalDisplayed() == true) ? clearAllVariables() : clearSignalHistory(sourceSig);
+
+                /*if(isNoSignalDisplayed())
                 {
                     clearAllVariables();
                 }
                 else
                 {
                     clearSignalHistory(sourceSig);
-                }
+                }*/
                 refrGr("srcDataStream - LOG_STREAM");
             }
         }

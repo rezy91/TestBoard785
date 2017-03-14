@@ -186,14 +186,13 @@ private:
     void adjustCoefficientSingleStep(QDoubleSpinBox* p_oubleSpinBox, double newValue);
     void selectedDeviceSetAccordingSaved(quint32 value);
 
+
     double recvItems[nmbCurvesInGraph] = {0, 0, 0, 0};
     int recStat[nmbCurvesInGraph] = {0, 0, 0, 0};
-
 
     int sourceSignal[nmbCurvesInGraph] = {0, 0, 0, 0};
     int sourceAd[nmbCurvesInGraph] = {0, 0, 0, 0};
     QString sourceSignText[nmbCurvesInGraph] = {"\0", "\0", "\0", "\0"};
-
 
     QTime timeCurrent;
 
