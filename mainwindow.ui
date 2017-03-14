@@ -621,6 +621,20 @@
        </widget>
       </item>
       <item>
+       <widget class="QLabel" name="label_7">
+        <property name="text">
+         <string/>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QLabel" name="label_8">
+        <property name="text">
+         <string/>
+        </property>
+       </widget>
+      </item>
+      <item>
        <widget class="QSpinBox" name="spinBox_9">
         <property name="minimum">
          <number>100</number>
@@ -638,38 +652,6 @@
       </item>
       <item>
        <widget class="QSpinBox" name="spinBox_10">
-        <property name="minimum">
-         <number>50</number>
-        </property>
-        <property name="maximum">
-         <number>250</number>
-        </property>
-        <property name="singleStep">
-         <number>10</number>
-        </property>
-        <property name="value">
-         <number>100</number>
-        </property>
-       </widget>
-      </item>
-      <item>
-       <widget class="QSpinBox" name="spinBox_11">
-        <property name="minimum">
-         <number>100</number>
-        </property>
-        <property name="maximum">
-         <number>1000</number>
-        </property>
-        <property name="singleStep">
-         <number>100</number>
-        </property>
-        <property name="value">
-         <number>1000</number>
-        </property>
-       </widget>
-      </item>
-      <item>
-       <widget class="QSpinBox" name="spinBox_12">
         <property name="minimum">
          <number>50</number>
         </property>

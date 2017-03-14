@@ -66,23 +66,31 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
     ui->comboBox_SelectDevice->addItem(QString("Generator (ID = %1d").arg(constGenerID));
     ui->comboBox_SelectDevice->addItem(QString("Amplifier (ID = %1d").arg(constAmpID));
 
-    for(int iLoop = 0; iLoop < NMB_ITEMS_FOR_TIMERS; iLoop++)
+    for(int iLoop = 0; iLoop < NMB_ITEMS_TIMERS_GENER; iLoop++)
     {
         eRequestsGenerAdcx[iLoop].timer.CurrentTime_ms = 0;
-        eRequestsAmplifAdcx[iLoop].timer.CurrentTime_ms = 0;
         eRequestsGenerAdcx[iLoop].timer.bEnable = false;
+    }
+
+    for(int iLoop = 0; iLoop < NMB_ITEMS_TIMERS_AMPLF; iLoop++)
+    {
+        eRequestsAmplifAdcx[iLoop].timer.CurrentTime_ms = 0;
         eRequestsAmplifAdcx[iLoop].timer.bEnable = false;
     }
 
+
     eRequestGenerInput.timer.CurrentTime_ms = 0;
     eRequestGenerInput.timer.bEnable = false;
+
+    eRequestAmplfInput.timer.CurrentTime_ms = 0;
+    eRequestAmplfInput.timer.bEnable = false;
 
     restoreAllSettings();
     timeCurrent.start();
 
 
     connect(&TmrMstr,&QTimer::timeout,[this](){
-        for(qint32 loop = 0; loop < NMB_ITEMS_FOR_TIMERS; loop++)
+        for(qint32 loop = 0; loop < NMB_ITEMS_TIMERS_GENER; loop++)
         {
             if(eRequestsGenerAdcx[loop].timer.bEnable == true)
             {
@@ -90,18 +98,21 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
                 if(eRequestsGenerAdcx[loop].timer.CurrentTime_ms >= eRequestsGenerAdcx[loop].timer.RequirementTime_ms)
                 {
                     eRequestsGenerAdcx[loop].timer.CurrentTime_ms = 0;
-                    //qDebug() << "Timer" << loop << "tick";
+                    qDebug() << "Timer gener" << loop << "tick";
                     m_CommProt.data()->SendData(m_nDeviceAddress, eRequestsGenerAdcx[loop].assemblyMsq, eRequestsGenerAdcx[loop].respExp);
                 }
             }
+        }
 
+        for(qint32 loop = 0; loop < NMB_ITEMS_TIMERS_AMPLF; loop++)
+        {
             if(eRequestsAmplifAdcx[loop].timer.bEnable == true)
             {
                 eRequestsAmplifAdcx[loop].timer.CurrentTime_ms++;
                 if(eRequestsAmplifAdcx[loop].timer.CurrentTime_ms >= eRequestsAmplifAdcx[loop].timer.RequirementTime_ms)
                 {
                     eRequestsAmplifAdcx[loop].timer.CurrentTime_ms = 0;
-                    //qDebug() << "Timer" << loop << "tick";
+                    qDebug() << "Timer amplf" << loop << "tick";
                     m_CommProt.data()->SendData(m_nDeviceAddress, eRequestsAmplifAdcx[loop].assemblyMsq, eRequestsAmplifAdcx[loop].respExp);
                 }
             }
@@ -114,8 +125,19 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
             if(eRequestGenerInput.timer.CurrentTime_ms >= eRequestGenerInput.timer.RequirementTime_ms)
             {
                 eRequestGenerInput.timer.CurrentTime_ms = 0;
-                //qDebug() << "Timer input tick";
+                qDebug() << "Timer GEN input tick";
                 m_CommProt.data()->SendData(m_nDeviceAddress, eRequestGenerInput.assemblyMsq, eRequestGenerInput.respExp);
+            }
+        }
+
+        if(eRequestAmplfInput.timer.bEnable == true)
+        {
+            eRequestAmplfInput.timer.CurrentTime_ms++;
+            if(eRequestAmplfInput.timer.CurrentTime_ms >= eRequestAmplfInput.timer.RequirementTime_ms)
+            {
+                eRequestAmplfInput.timer.CurrentTime_ms = 0;
+                qDebug() << "Timer AMP input tick";
+                m_CommProt.data()->SendData(m_nDeviceAddress, eRequestAmplfInput.assemblyMsq, eRequestAmplfInput.respExp);
             }
         }
 
@@ -269,16 +291,6 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
         eRequestsAmplifAdcx[3].timer.RequirementTime_ms = ui->spinBox_10->value();
     });
 
-    connect(ui->spinBox_11,static_cast<void (QSpinBox::*)(int)>(&QSpinBox::valueChanged),[=](int nValue){
-        m_pSettingStrorage->StoreRefreshAmplif(4, nValue);
-        eRequestsAmplifAdcx[4].timer.RequirementTime_ms = ui->spinBox_11->value();
-    });
-
-    connect(ui->spinBox_12,static_cast<void (QSpinBox::*)(int)>(&QSpinBox::valueChanged),[=](int nValue){
-        m_pSettingStrorage->StoreRefreshAmplif(5, nValue);
-        eRequestsAmplifAdcx[5].timer.RequirementTime_ms = ui->spinBox_12->value();
-    });
-
 
     // vytvoříme instanci CommProt200
     m_CommProt.reset(CommProtV200_Create(this));
@@ -339,6 +351,7 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
     FillTableContent();
 
     eRequestGenerInput.timer.RequirementTime_ms = 500;
+    eRequestAmplfInput.timer.RequirementTime_ms = 500;
 }
 
 MainWindow::~MainWindow()
@@ -392,7 +405,7 @@ void MainWindow::on_sendButton_clicked()
         qDebug() << strCmd;
 
 
-        for(qint32 row = 0; row < NMB_ITEMS_FOR_TIMERS; row++)
+        for(qint32 row = 0; row < NMB_ITEMS_TIMERS_GENER; row++)
         {
             if(oTableSelection.at(0).data().toInt() == (PID_TIMERS_ADCX_GENER + row))
             {
@@ -412,25 +425,64 @@ void MainWindow::on_sendButton_clicked()
 
                     eRequestsGenerAdcx[row].timer.bEnable = false;
                     eRequestsGenerAdcx[row].respExp = false;
-
                 }
 
                 prepareComboBoxesWithSignals();
 
-                for(qint32 fillComboBoxSignal = 0; fillComboBoxSignal < NMB_ITEMS_FOR_TIMERS; fillComboBoxSignal++)
+                for(qint32 fillComboBoxSignal = 0; fillComboBoxSignal < NMB_ITEMS_TIMERS_GENER; fillComboBoxSignal++)
                 {
                     if(eRequestsGenerAdcx[fillComboBoxSignal].timer.bEnable)
                     {
-                        ui->comboBox_2->addItems(allAdxSignals[fillComboBoxSignal]);
-                        ui->comboBox_3->addItems(allAdxSignals[fillComboBoxSignal]);
-                        ui->comboBox_4->addItems(allAdxSignals[fillComboBoxSignal]);
-                        ui->comboBox_5->addItems(allAdxSignals[fillComboBoxSignal]);
+                        ui->comboBox_2->addItems(allAdxSignalsGener[fillComboBoxSignal]);
+                        ui->comboBox_3->addItems(allAdxSignalsGener[fillComboBoxSignal]);
+                        ui->comboBox_4->addItems(allAdxSignalsGener[fillComboBoxSignal]);
+                        ui->comboBox_5->addItems(allAdxSignalsGener[fillComboBoxSignal]);
                     }
                 }
 
-                return;
+                break;
             }
         }
+
+        for(qint32 row = 0; row < NMB_ITEMS_TIMERS_AMPLF; row++)
+        {
+            if(oTableSelection.at(0).data().toInt() == (PID_TIMERS_ADCX_AMPLF + row))
+            {
+                if(oTableSelection.at(2).data().toInt() == 1)
+                {
+                    m_CommProt.data()->SendData(m_nDeviceAddress, QByteArray::fromHex(strCmd.toStdString().c_str()), true);
+
+                    eRequestsAmplifAdcx[row].timer.CurrentTime_ms = 0;
+                    eRequestsAmplifAdcx[row].timer.bEnable = true;
+
+                    eRequestsAmplifAdcx[row].assemblyMsq = QByteArray::fromHex(strCmd.toStdString().c_str());
+                    eRequestsAmplifAdcx[row].respExp = true;
+                }
+                else if(oTableSelection.at(2).data().toInt() == 0)
+                {
+                    m_CommProt.data()->SendData(m_nDeviceAddress, QByteArray::fromHex(strCmd.toStdString().c_str()), false);
+
+                    eRequestsAmplifAdcx[row].timer.bEnable = false;
+                    eRequestsAmplifAdcx[row].respExp = false;
+                }
+
+                prepareComboBoxesWithSignals();
+
+                for(qint32 fillComboBoxSignal = 0; fillComboBoxSignal < NMB_ITEMS_TIMERS_AMPLF; fillComboBoxSignal++)
+                {
+                    if(eRequestsAmplifAdcx[fillComboBoxSignal].timer.bEnable)
+                    {
+                        ui->comboBox_2->addItems(allAdxSignalsAmplf[fillComboBoxSignal]);
+                        ui->comboBox_3->addItems(allAdxSignalsAmplf[fillComboBoxSignal]);
+                        ui->comboBox_4->addItems(allAdxSignalsAmplf[fillComboBoxSignal]);
+                        ui->comboBox_5->addItems(allAdxSignalsAmplf[fillComboBoxSignal]);
+                    }
+                }
+
+                break;
+            }
+        }
+
         if(oTableSelection.at(0).data().toInt() == PID_TIMER_INPUT_GENER)
         {
             if(oTableSelection.at(2).data().toInt() == 1)
@@ -450,7 +502,27 @@ void MainWindow::on_sendButton_clicked()
                 eRequestGenerInput.timer.bEnable = false;
                 eRequestGenerInput.respExp = false;
             }
-            return;
+        }
+
+        if(oTableSelection.at(0).data().toInt() == PID_TIMER_INPUT_AMPLF)
+        {
+            if(oTableSelection.at(2).data().toInt() == 1)
+            {
+                m_CommProt.data()->SendData(m_nDeviceAddress, QByteArray::fromHex(strCmd.toStdString().c_str()), true);
+
+                eRequestAmplfInput.timer.CurrentTime_ms = 0;
+                eRequestAmplfInput.timer.bEnable = true;
+
+                eRequestAmplfInput.assemblyMsq = QByteArray::fromHex(strCmd.toStdString().c_str());
+                eRequestAmplfInput.respExp = true;
+            }
+            else if(oTableSelection.at(2).data().toInt() == 0)
+            {
+                m_CommProt.data()->SendData(m_nDeviceAddress, QByteArray::fromHex(strCmd.toStdString().c_str()), false);
+
+                eRequestAmplfInput.timer.bEnable = false;
+                eRequestAmplfInput.respExp = false;
+            }
         }
 
         m_CommProt.data()->SendData(m_nDeviceAddress, QByteArray::fromHex(strCmd.toStdString().c_str()), false);
@@ -566,176 +638,63 @@ void MainWindow::FillCommandTableGenerator()
     int w_IndexInList = 0;
 
 
-    //! set packet
-    // the first column
-    ui->tableWidget->insertRow(ui->tableWidget->rowCount());                            // create new row in table
-    QTableWidgetItem *pvalue83PacketID = new QTableWidgetItem(QString::number(PID_TIMERS_ADCX_GENER));                  // paket id
-    pvalue83PacketID->setBackground(COLOR_BLUE_DARK);
-    pvalue83PacketID->setData(TableRoles::ByteCount, 1);                              // paket id is 1 byte
-    pvalue83PacketID->setData(TableRoles::NumeralSystem, TableRoles::Hex);            // packet id is displayed as hex
-    ui->tableWidget->setItem(ui->tableWidget->rowCount() - 1, 0, pvalue83PacketID);   // insert item to created row to the first column
-
-    // the second column (it has no impact on data to be sent)
-    QTableWidgetItem *pvalue83PacketName = new QTableWidgetItem("NOT_USED_CURRENTLY");     // readable description
-    ui->tableWidget->setItem(ui->tableWidget->rowCount() - 1, 1, pvalue83PacketName); // insert item to created row to the second column
-
-    QTableWidgetItem *pvalue83PacketArg0 = new QTableWidgetItem();
-    if(b_dataSaved)
+    for(int iLoop = 0; iLoop < NMB_ITEMS_TIMERS_GENER; iLoop++)
     {
-        pvalue83PacketArg0->setText(arrListSaved.at(w_IndexInList++));
+        ui->tableWidget->insertRow(ui->tableWidget->rowCount());                            // create new row in table
+        QTableWidgetItem *pvalueXPacketID = new QTableWidgetItem(QString::number(PID_TIMERS_ADCX_GENER + iLoop));                  // paket id
+        pvalueXPacketID->setBackground(COLOR_BLUE_DARK);
+        pvalueXPacketID->setData(TableRoles::ByteCount, 1);                              // paket id is 1 byte
+        pvalueXPacketID->setData(TableRoles::NumeralSystem, TableRoles::Hex);            // packet id is displayed as hex
+        ui->tableWidget->setItem(ui->tableWidget->rowCount() - 1, 0, pvalueXPacketID);   // insert item to created row to the first column
+
+        // the second column (it has no impact on data to be sent)
+        QTableWidgetItem *pvalueXPacketName = new QTableWidgetItem(allSignalsNameGener[iLoop]);     // readable description
+        ui->tableWidget->setItem(ui->tableWidget->rowCount() - 1, 1, pvalueXPacketName); // insert item to created row to the second column
+
+        QTableWidgetItem *pvalueXPacketArg0 = new QTableWidgetItem();
+        if(b_dataSaved)
+        {
+            pvalueXPacketArg0->setText(arrListSaved.at(w_IndexInList++));
+        }
+        else
+        {
+            pvalueXPacketArg0->setText("1");
+        }
+        pvalueXPacketArg0->setData(TableRoles::ByteCount, 1);                            // the value is 3 bytes
+        pvalueXPacketArg0->setData(TableRoles::NumeralSystem, TableRoles::Decimal);      // packet id is displayed as decimal
+        pvalueXPacketArg0->setData(Qt::ToolTipRole, "[0-1] disable/enable");     // a hint which is displayed when mouse hovers over
+        ui->tableWidget->setItem(ui->tableWidget->rowCount() - 1, 2, pvalueXPacketArg0); // insert item to created row to the fourth column
     }
-    else
-    {
-        pvalue83PacketArg0->setText("1");
-    }
-    pvalue83PacketArg0->setData(TableRoles::ByteCount, 1);                            // the value is 3 bytes
-    pvalue83PacketArg0->setData(TableRoles::NumeralSystem, TableRoles::Decimal);      // packet id is displayed as decimal
-    pvalue83PacketArg0->setData(Qt::ToolTipRole, "[0-1] disable/enable");     // a hint which is displayed when mouse hovers over
-    ui->tableWidget->setItem(ui->tableWidget->rowCount() - 1, 2, pvalue83PacketArg0); // insert item to created row to the fourth column
-
-
-    //! and next packet definition
-    // the first column
-    ui->tableWidget->insertRow(ui->tableWidget->rowCount());                            // create new row in table
-    QTableWidgetItem *pvalue93PacketID = new QTableWidgetItem(QString::number(PID_TIMERS_ADCX_GENER + 1));                  // paket id
-    pvalue93PacketID->setBackground(COLOR_BLUE_DARK);
-    pvalue93PacketID->setData(TableRoles::ByteCount, 1);                              // paket id is 1 byte
-    pvalue93PacketID->setData(TableRoles::NumeralSystem, TableRoles::Hex);            // packet id is displayed as hex
-    ui->tableWidget->setItem(ui->tableWidget->rowCount() - 1, 0, pvalue93PacketID);   // insert item to created row to the first column
-
-    // the second column (it has no impact on data to be sent)
-    QTableWidgetItem *pvalue93PacketName = new QTableWidgetItem("ADC3_RECEIVE_AVERAGE_DATA");     // readable description
-    ui->tableWidget->setItem(ui->tableWidget->rowCount() - 1, 1, pvalue93PacketName); // insert item to created row to the second column
-
-    QTableWidgetItem *pvalue93PacketArg0 = new QTableWidgetItem();
-    if(b_dataSaved)
-    {
-        pvalue93PacketArg0->setText(arrListSaved.at(w_IndexInList++));
-    }
-    else
-    {
-        pvalue93PacketArg0->setText("1");
-    }
-    pvalue93PacketArg0->setData(TableRoles::ByteCount, 1);                            // the value is 3 bytes
-    pvalue93PacketArg0->setData(TableRoles::NumeralSystem, TableRoles::Decimal);      // packet id is displayed as decimal
-    pvalue93PacketArg0->setData(Qt::ToolTipRole, "[0-1] disable/enable");     // a hint which is displayed when mouse hovers over
-    ui->tableWidget->setItem(ui->tableWidget->rowCount() - 1, 2, pvalue93PacketArg0); // insert item to created row to the fourth column
-
 
 
 
     //! and next packet definition
     // the first column
     ui->tableWidget->insertRow(ui->tableWidget->rowCount());                            // create new row in table
-    QTableWidgetItem *pvalue8PacketID = new QTableWidgetItem(QString::number(PID_TIMERS_ADCX_GENER + 2));                  // paket id
-    pvalue8PacketID->setBackground(COLOR_BLUE_DARK);
-    pvalue8PacketID->setData(TableRoles::ByteCount, 1);                              // paket id is 1 byte
-    pvalue8PacketID->setData(TableRoles::NumeralSystem, TableRoles::Hex);            // packet id is displayed as hex
-    ui->tableWidget->setItem(ui->tableWidget->rowCount() - 1, 0, pvalue8PacketID);   // insert item to created row to the first column
+    QTableWidgetItem *pvalue4PacketID = new QTableWidgetItem(QString::number(PID_TIMER_INPUT_GENER));                  // paket id
+    pvalue4PacketID->setBackground(COLOR_BLUE_DARK);
+    pvalue4PacketID->setData(TableRoles::ByteCount, 1);                              // paket id is 1 byte
+    pvalue4PacketID->setData(TableRoles::NumeralSystem, TableRoles::Hex);            // packet id is displayed as hex
+    ui->tableWidget->setItem(ui->tableWidget->rowCount() - 1, 0, pvalue4PacketID);   // insert item to created row to the first column
 
     // the second column (it has no impact on data to be sent)
-    QTableWidgetItem *pvalue8PacketName = new QTableWidgetItem("IMPEDANCE_RECEIVE_DATA");     // readable description
-    ui->tableWidget->setItem(ui->tableWidget->rowCount() - 1, 1, pvalue8PacketName); // insert item to created row to the second column
+    QTableWidgetItem *pvalue4PacketName = new QTableWidgetItem("READ INPUT");     // readable description
+    ui->tableWidget->setItem(ui->tableWidget->rowCount() - 1, 1, pvalue4PacketName); // insert item to created row to the second column
 
-    QTableWidgetItem *pvalue8PacketArg0 = new QTableWidgetItem();
+    // the fourth column
+    QTableWidgetItem *pvalue4PacketArg0 = new QTableWidgetItem();
     if(b_dataSaved)
     {
-        pvalue8PacketArg0->setText(arrListSaved.at(w_IndexInList++));
+        pvalue4PacketArg0->setText(arrListSaved.at(w_IndexInList++));
     }
     else
     {
-        pvalue8PacketArg0->setText("1");
+        pvalue4PacketArg0->setText("1");
     }
-    pvalue8PacketArg0->setData(TableRoles::ByteCount, 1);                            // the value is 3 bytes
-    pvalue8PacketArg0->setData(TableRoles::NumeralSystem, TableRoles::Decimal);      // packet id is displayed as decimal
-    pvalue8PacketArg0->setData(Qt::ToolTipRole, "[0-1] disable/enable");     // a hint which is displayed when mouse hovers over
-    ui->tableWidget->setItem(ui->tableWidget->rowCount() - 1, 2, pvalue8PacketArg0); // insert item to created row to the fourth column
-
-
-    //! and next packet definition
-    // the first column
-    ui->tableWidget->insertRow(ui->tableWidget->rowCount());                            // create new row in table
-    QTableWidgetItem *pvalue9PacketID = new QTableWidgetItem(QString::number(PID_TIMERS_ADCX_GENER + 3));                  // paket id
-    pvalue9PacketID->setBackground(COLOR_BLUE_DARK);
-    pvalue9PacketID->setData(TableRoles::ByteCount, 1);                              // paket id is 1 byte
-    pvalue9PacketID->setData(TableRoles::NumeralSystem, TableRoles::Hex);            // packet id is displayed as hex
-    ui->tableWidget->setItem(ui->tableWidget->rowCount() - 1, 0, pvalue9PacketID);   // insert item to created row to the first column
-
-    // the second column (it has no impact on data to be sent)
-    QTableWidgetItem *pvalue9PacketName = new QTableWidgetItem("ADC2_RECEIVE_AVERAGE_DATA");     // readable description
-    ui->tableWidget->setItem(ui->tableWidget->rowCount() - 1, 1, pvalue9PacketName); // insert item to created row to the second column
-
-    QTableWidgetItem *pvalue9PacketArg0 = new QTableWidgetItem();
-    if(b_dataSaved)
-    {
-        pvalue9PacketArg0->setText(arrListSaved.at(w_IndexInList++));
-    }
-    else
-    {
-        pvalue9PacketArg0->setText("1");
-    }
-    pvalue9PacketArg0->setData(TableRoles::ByteCount, 1);                            // the value is 3 bytes
-    pvalue9PacketArg0->setData(TableRoles::NumeralSystem, TableRoles::Decimal);      // packet id is displayed as decimal
-    pvalue9PacketArg0->setData(Qt::ToolTipRole, "[0-1] disable/enable");     // a hint which is displayed when mouse hovers over
-    ui->tableWidget->setItem(ui->tableWidget->rowCount() - 1, 2, pvalue9PacketArg0); // insert item to created row to the fourth column
-
-
-
-    //! and next packet definition
-    // the first column
-    ui->tableWidget->insertRow(ui->tableWidget->rowCount());                            // create new row in table
-    QTableWidgetItem *pvalue10PacketID = new QTableWidgetItem(QString::number(PID_TIMERS_ADCX_GENER + 4));                  // paket id
-    pvalue10PacketID->setBackground(COLOR_BLUE_DARK);
-    pvalue10PacketID->setData(TableRoles::ByteCount, 1);                              // paket id is 1 byte
-    pvalue10PacketID->setData(TableRoles::NumeralSystem, TableRoles::Hex);            // packet id is displayed as hex
-    ui->tableWidget->setItem(ui->tableWidget->rowCount() - 1, 0, pvalue10PacketID);   // insert item to created row to the first column
-
-    // the second column (it has no impact on data to be sent)
-    QTableWidgetItem *pvalue10PacketName = new QTableWidgetItem("NOT_USED_CURRENTLY");     // readable description
-    ui->tableWidget->setItem(ui->tableWidget->rowCount() - 1, 1, pvalue10PacketName); // insert item to created row to the second column
-
-    QTableWidgetItem *pvalue10PacketArg0 = new QTableWidgetItem();
-    if(b_dataSaved)
-    {
-        pvalue10PacketArg0->setText(arrListSaved.at(w_IndexInList++));
-    }
-    else
-    {
-        pvalue10PacketArg0->setText("1");
-    }
-    pvalue10PacketArg0->setData(TableRoles::ByteCount, 1);                            // the value is 3 bytes
-    pvalue10PacketArg0->setData(TableRoles::NumeralSystem, TableRoles::Decimal);      // packet id is displayed as decimal
-    pvalue10PacketArg0->setData(Qt::ToolTipRole, "[0-1] disable/enable");     // a hint which is displayed when mouse hovers over
-    ui->tableWidget->setItem(ui->tableWidget->rowCount() - 1, 2, pvalue10PacketArg0); // insert item to created row to the fourth column
-
-
-
-    //! and next packet definition
-    // the first column
-    ui->tableWidget->insertRow(ui->tableWidget->rowCount());                            // create new row in table
-    QTableWidgetItem *pvalue11PacketID = new QTableWidgetItem(QString::number(PID_TIMERS_ADCX_GENER + 5));                  // paket id
-    pvalue11PacketID->setBackground(COLOR_BLUE_DARK);
-    pvalue11PacketID->setData(TableRoles::ByteCount, 1);                              // paket id is 1 byte
-    pvalue11PacketID->setData(TableRoles::NumeralSystem, TableRoles::Hex);            // packet id is displayed as hex
-    ui->tableWidget->setItem(ui->tableWidget->rowCount() - 1, 0, pvalue11PacketID);   // insert item to created row to the first column
-
-    // the second column (it has no impact on data to be sent)
-    QTableWidgetItem *pvalue11PacketName = new QTableWidgetItem("ADC1_RECEIVE_AVERAGE_DATA");     // readable description
-    ui->tableWidget->setItem(ui->tableWidget->rowCount() - 1, 1, pvalue11PacketName); // insert item to created row to the second column
-
-    QTableWidgetItem *pvalue11PacketArg0 = new QTableWidgetItem();
-    if(b_dataSaved)
-    {
-        pvalue11PacketArg0->setText(arrListSaved.at(w_IndexInList++));
-    }
-    else
-    {
-        pvalue11PacketArg0->setText("1");
-    }
-    pvalue11PacketArg0->setData(TableRoles::ByteCount, 1);                            // the value is 3 bytes
-    pvalue11PacketArg0->setData(TableRoles::NumeralSystem, TableRoles::Decimal);      // packet id is displayed as decimal
-    pvalue11PacketArg0->setData(Qt::ToolTipRole, "[0-1] disable/enable");     // a hint which is displayed when mouse hovers over
-    ui->tableWidget->setItem(ui->tableWidget->rowCount() - 1, 2, pvalue11PacketArg0); // insert item to created row to the fourth column
+    pvalue4PacketArg0->setData(TableRoles::ByteCount, 1);                            // the value is 3 bytes
+    pvalue4PacketArg0->setData(TableRoles::NumeralSystem, TableRoles::Decimal);      // packet id is displayed as decimal
+    pvalue4PacketArg0->setData(Qt::ToolTipRole, "[0-1] disable/enable");     // a hint which is displayed when mouse hovers over
+    ui->tableWidget->setItem(ui->tableWidget->rowCount() - 1, 2, pvalue4PacketArg0); // insert item to created row to the fourth column
 
 
 
@@ -743,7 +702,7 @@ void MainWindow::FillCommandTableGenerator()
     //! and next packet definition
     // the first column
     ui->tableWidget->insertRow(ui->tableWidget->rowCount());                            // create new row in table
-    QTableWidgetItem *pvalue14PacketID = new QTableWidgetItem("46");                  // paket id
+    QTableWidgetItem *pvalue14PacketID = new QTableWidgetItem("47");                  // paket id
     pvalue14PacketID->setBackground(COLOR_BLUE_LIGHT);
     pvalue14PacketID->setData(TableRoles::ByteCount, 1);                              // paket id is 1 byte
     pvalue14PacketID->setData(TableRoles::NumeralSystem, TableRoles::Hex);            // packet id is displayed as hex
@@ -799,7 +758,7 @@ void MainWindow::FillCommandTableGenerator()
 
     // the first column
     ui->tableWidget->insertRow(ui->tableWidget->rowCount());                            // create new row in table
-    QTableWidgetItem *pvalue1PacketID = new QTableWidgetItem("47");                  // paket id
+    QTableWidgetItem *pvalue1PacketID = new QTableWidgetItem("48");                  // paket id
     pvalue1PacketID->setBackground(COLOR_BLUE_LIGHT);
     pvalue1PacketID->setData(TableRoles::ByteCount, 1);                              // paket id is 1 byte
     pvalue1PacketID->setData(TableRoles::NumeralSystem, TableRoles::Hex);            // packet id is displayed as hex
@@ -844,7 +803,7 @@ void MainWindow::FillCommandTableGenerator()
     //! and next packet definition
     // the first column
     ui->tableWidget->insertRow(ui->tableWidget->rowCount());                            // create new row in table
-    QTableWidgetItem *pvalue3PacketID = new QTableWidgetItem("48");                  // paket id
+    QTableWidgetItem *pvalue3PacketID = new QTableWidgetItem("49");                  // paket id
     pvalue3PacketID->setBackground(COLOR_BLUE_LIGHT);
     pvalue3PacketID->setData(TableRoles::ByteCount, 1);                              // paket id is 1 byte
     pvalue3PacketID->setData(TableRoles::NumeralSystem, TableRoles::Hex);            // packet id is displayed as hex
@@ -883,35 +842,6 @@ void MainWindow::FillCommandTableGenerator()
     pvalue3PacketArg1->setData(TableRoles::NumeralSystem, TableRoles::Decimal);      // packet id is displayed as decimal
     pvalue3PacketArg1->setData(Qt::ToolTipRole, "(2) [0-4095]");     // a hint which is displayed when mouse hovers over
     ui->tableWidget->setItem(ui->tableWidget->rowCount() - 1, 3, pvalue3PacketArg1); // insert item to created row to the fourth column
-
-
-    //! and next packet definition
-    // the first column
-    ui->tableWidget->insertRow(ui->tableWidget->rowCount());                            // create new row in table
-    QTableWidgetItem *pvalue4PacketID = new QTableWidgetItem(QString::number(PID_TIMER_INPUT_GENER));                  // paket id
-    pvalue4PacketID->setBackground(COLOR_BLUE_DARK);
-    pvalue4PacketID->setData(TableRoles::ByteCount, 1);                              // paket id is 1 byte
-    pvalue4PacketID->setData(TableRoles::NumeralSystem, TableRoles::Hex);            // packet id is displayed as hex
-    ui->tableWidget->setItem(ui->tableWidget->rowCount() - 1, 0, pvalue4PacketID);   // insert item to created row to the first column
-
-    // the second column (it has no impact on data to be sent)
-    QTableWidgetItem *pvalue4PacketName = new QTableWidgetItem("READ INPUT");     // readable description
-    ui->tableWidget->setItem(ui->tableWidget->rowCount() - 1, 1, pvalue4PacketName); // insert item to created row to the second column
-
-    // the fourth column
-    QTableWidgetItem *pvalue4PacketArg0 = new QTableWidgetItem();
-    if(b_dataSaved)
-    {
-        pvalue4PacketArg0->setText(arrListSaved.at(w_IndexInList++));
-    }
-    else
-    {
-        pvalue4PacketArg0->setText("1");
-    }
-    pvalue4PacketArg0->setData(TableRoles::ByteCount, 1);                            // the value is 3 bytes
-    pvalue4PacketArg0->setData(TableRoles::NumeralSystem, TableRoles::Decimal);      // packet id is displayed as decimal
-    pvalue4PacketArg0->setData(Qt::ToolTipRole, "[0-1] disable/enable");     // a hint which is displayed when mouse hovers over
-    ui->tableWidget->setItem(ui->tableWidget->rowCount() - 1, 2, pvalue4PacketArg0); // insert item to created row to the fourth column
 
 
     //! and next packet definition
@@ -960,10 +890,10 @@ void MainWindow::FillCommandTableGenerator()
 
 
     // the first column
-    for(int iLoop = NMB_ITEMS_FOR_TIMERS; iLoop > 0; iLoop--)
+    for(int iLoop = NMB_ITEMS_TIMERS_GENER; iLoop > 0; iLoop--)
     {
         ui->tableWidget->insertRow(ui->tableWidget->rowCount());                            // create new row in table
-        int numberPID = 50 + NMB_ITEMS_FOR_TIMERS - iLoop;
+        int numberPID = 50 + NMB_ITEMS_TIMERS_GENER - iLoop;
         QTableWidgetItem *pvalueADCCoeffsPacketID = new QTableWidgetItem(QString::number(numberPID));// paket id
         pvalueADCCoeffsPacketID->setBackground(COLOR_BLUE_LIGHT);
         pvalueADCCoeffsPacketID->setData(TableRoles::ByteCount, 1);                              // paket id is 1 byte
@@ -1476,7 +1406,7 @@ void MainWindow::FillCommandTableAmplifier()
     ui->tableWidget->setItem(ui->tableWidget->rowCount() - 1, 0, pPacketID);            // insert item to created row to the first column
 
     // the second column (it has no impact on data to be sent)
-    QTableWidgetItem *pPacketName = new QTableWidgetItem("SET_PWM");                    // readable description
+    QTableWidgetItem *pPacketName = new QTableWidgetItem("SET_VOLTAGE");                    // readable description
     ui->tableWidget->setItem(ui->tableWidget->rowCount() - 1, 1, pPacketName);          // insert item to created row to the second column
 
 
@@ -1495,6 +1425,167 @@ void MainWindow::FillCommandTableAmplifier()
     pPacketArg0->setData(TableRoles::DivisorPosition, 10);
     pPacketArg0->setData(Qt::ToolTipRole, "from 0.0 to 100.0 %");                     // a hint which is displayed when mouse hovers over
     ui->tableWidget->setItem(ui->tableWidget->rowCount() - 1, 2, pPacketArg0);          // insert item to created row to the third column
+
+
+    for(int iLoop = 0; iLoop < NMB_ITEMS_TIMERS_AMPLF; iLoop++)
+    {
+        ui->tableWidget->insertRow(ui->tableWidget->rowCount());                            // create new row in table
+        QTableWidgetItem *pvalueYPacketID = new QTableWidgetItem(QString::number(PID_TIMERS_ADCX_AMPLF + iLoop));                  // paket id
+        pvalueYPacketID->setBackground(COLOR_BROWN_DARK);
+        pvalueYPacketID->setData(TableRoles::ByteCount, 1);                              // paket id is 1 byte
+        pvalueYPacketID->setData(TableRoles::NumeralSystem, TableRoles::Hex);            // packet id is displayed as hex
+        ui->tableWidget->setItem(ui->tableWidget->rowCount() - 1, 0, pvalueYPacketID);   // insert item to created row to the first column
+
+        // the second column (it has no impact on data to be sent)
+        QTableWidgetItem *pvalueYPacketName = new QTableWidgetItem(allSignalsNameAmplf[iLoop]);     // readable description
+        ui->tableWidget->setItem(ui->tableWidget->rowCount() - 1, 1, pvalueYPacketName); // insert item to created row to the second column
+
+        QTableWidgetItem *pvalueYPacketArg0 = new QTableWidgetItem();
+        if(b_dataSaved)
+        {
+            pvalueYPacketArg0->setText(arrListSaved.at(w_IndexInList++));
+        }
+        else
+        {
+            pvalueYPacketArg0->setText("1");
+        }
+        pvalueYPacketArg0->setData(TableRoles::ByteCount, 1);                            // the value is 3 bytes
+        pvalueYPacketArg0->setData(TableRoles::NumeralSystem, TableRoles::Decimal);      // packet id is displayed as decimal
+        pvalueYPacketArg0->setData(Qt::ToolTipRole, "[0-1] disable/enable");     // a hint which is displayed when mouse hovers over
+        ui->tableWidget->setItem(ui->tableWidget->rowCount() - 1, 2, pvalueYPacketArg0); // insert item to created row to the fourth column
+    }
+
+
+    //! and next packet definition
+    // the first column
+    ui->tableWidget->insertRow(ui->tableWidget->rowCount());                            // create new row in table
+    QTableWidgetItem *pvalue4PacketID = new QTableWidgetItem(QString::number(PID_TIMER_INPUT_AMPLF));                  // paket id
+    pvalue4PacketID->setBackground(COLOR_BROWN_DARK);
+    pvalue4PacketID->setData(TableRoles::ByteCount, 1);                              // paket id is 1 byte
+    pvalue4PacketID->setData(TableRoles::NumeralSystem, TableRoles::Hex);            // packet id is displayed as hex
+    ui->tableWidget->setItem(ui->tableWidget->rowCount() - 1, 0, pvalue4PacketID);   // insert item to created row to the first column
+
+    // the second column (it has no impact on data to be sent)
+    QTableWidgetItem *pvalue4PacketName = new QTableWidgetItem("READ INPUT");     // readable description
+    ui->tableWidget->setItem(ui->tableWidget->rowCount() - 1, 1, pvalue4PacketName); // insert item to created row to the second column
+
+    // the fourth column
+    QTableWidgetItem *pvalue4PacketArg0 = new QTableWidgetItem();
+    if(b_dataSaved)
+    {
+        pvalue4PacketArg0->setText(arrListSaved.at(w_IndexInList++));
+    }
+    else
+    {
+        pvalue4PacketArg0->setText("1");
+    }
+    pvalue4PacketArg0->setData(TableRoles::ByteCount, 1);                            // the value is 3 bytes
+    pvalue4PacketArg0->setData(TableRoles::NumeralSystem, TableRoles::Decimal);      // packet id is displayed as decimal
+    pvalue4PacketArg0->setData(Qt::ToolTipRole, "[0-1] disable/enable");     // a hint which is displayed when mouse hovers over
+    ui->tableWidget->setItem(ui->tableWidget->rowCount() - 1, 2, pvalue4PacketArg0); // insert item to created row to the fourth column
+
+
+
+
+
+    //! and next packet definition
+    // the first column
+    ui->tableWidget->insertRow(ui->tableWidget->rowCount());                            // create new row in table
+    QTableWidgetItem *pvalue18PacketID = new QTableWidgetItem("37");                  // paket id
+    pvalue18PacketID->setBackground(COLOR_BROWN_LIGHT);
+    pvalue18PacketID->setData(TableRoles::ByteCount, 1);                              // paket id is 1 byte
+    pvalue18PacketID->setData(TableRoles::NumeralSystem, TableRoles::Hex);            // packet id is displayed as hex
+    ui->tableWidget->setItem(ui->tableWidget->rowCount() - 1, 0, pvalue18PacketID);   // insert item to created row to the first column
+
+    // the second column (it has no impact on data to be sent)
+    QTableWidgetItem *pvalue18PacketName = new QTableWidgetItem("(RE)SET OUTPUT (X)");     // readable description
+    ui->tableWidget->setItem(ui->tableWidget->rowCount() - 1, 1, pvalue18PacketName); // insert item to created row to the second column
+
+    // the fourth column
+    QTableWidgetItem *pvalue18PacketArg0 = new QTableWidgetItem();
+    if(b_dataSaved)
+    {
+        pvalue18PacketArg0->setText(arrListSaved.at(w_IndexInList++));
+    }
+    else
+    {
+        pvalue18PacketArg0->setText("0");
+    }
+    pvalue18PacketArg0->setData(TableRoles::ByteCount, 1);                            // the value is 3 bytes
+    pvalue18PacketArg0->setData(TableRoles::NumeralSystem, TableRoles::Decimal);      // packet id is displayed as decimal
+    pvalue18PacketArg0->setData(Qt::ToolTipRole, "(REL_OUT_1) [0-1] disable/enable");     // a hint which is displayed when mouse hovers over
+    ui->tableWidget->setItem(ui->tableWidget->rowCount() - 1, 2, pvalue18PacketArg0); // insert item to created row to the fourth column
+
+    // the fourth column
+    QTableWidgetItem *pvalue18PacketArg1 = new QTableWidgetItem();
+    if(b_dataSaved)
+    {
+        pvalue18PacketArg1->setText(arrListSaved.at(w_IndexInList++));
+    }
+    else
+    {
+        pvalue18PacketArg1->setText("0");
+    }
+    pvalue18PacketArg1->setData(TableRoles::ByteCount, 1);                            // the value is 3 bytes
+    pvalue18PacketArg1->setData(TableRoles::NumeralSystem, TableRoles::Decimal);      // packet id is displayed as decimal
+    pvalue18PacketArg1->setData(Qt::ToolTipRole, "(REL_OUT_2) [0-1] disable/enable");     // a hint which is displayed when mouse hovers over
+    ui->tableWidget->setItem(ui->tableWidget->rowCount() - 1, 3, pvalue18PacketArg1); // insert item to created row to the fourth column
+
+    QTableWidgetItem *pvalue18PacketArg2 = new QTableWidgetItem();
+    if(b_dataSaved)
+    {
+        pvalue18PacketArg2->setText(arrListSaved.at(w_IndexInList++));
+    }
+    else
+    {
+        pvalue18PacketArg2->setText("0");
+    }
+    pvalue18PacketArg2->setData(TableRoles::ByteCount, 1);                            // the value is 3 bytes
+    pvalue18PacketArg2->setData(TableRoles::NumeralSystem, TableRoles::Decimal);      // packet id is displayed as decimal
+    pvalue18PacketArg2->setData(Qt::ToolTipRole, "(REL_OUT_3) [0-1] disable/enable");     // a hint which is displayed when mouse hovers over
+    ui->tableWidget->setItem(ui->tableWidget->rowCount() - 1, 4, pvalue18PacketArg2); // insert item to created row to the fourth column
+
+    QTableWidgetItem *pvalue18PacketArg4 = new QTableWidgetItem();
+    if(b_dataSaved)
+    {
+        pvalue18PacketArg4->setText(arrListSaved.at(w_IndexInList++));
+    }
+    else
+    {
+        pvalue18PacketArg4->setText("0");
+    }
+    pvalue18PacketArg4->setData(TableRoles::ByteCount, 1);                            // the value is 3 bytes
+    pvalue18PacketArg4->setData(TableRoles::NumeralSystem, TableRoles::Decimal);      // packet id is displayed as decimal
+    pvalue18PacketArg4->setData(Qt::ToolTipRole, "(REL_OUT_4) [0-1] disable/enable");     // a hint which is displayed when mouse hovers over
+    ui->tableWidget->setItem(ui->tableWidget->rowCount() - 1, 5, pvalue18PacketArg4); // insert item to created row to the fourth column
+
+    QTableWidgetItem *pvalue18PacketArg5 = new QTableWidgetItem();
+    if(b_dataSaved)
+    {
+        pvalue18PacketArg5->setText(arrListSaved.at(w_IndexInList++));
+    }
+    else
+    {
+        pvalue18PacketArg5->setText("0");
+    }
+    pvalue18PacketArg5->setData(TableRoles::ByteCount, 1);                            // the value is 3 bytes
+    pvalue18PacketArg5->setData(TableRoles::NumeralSystem, TableRoles::Decimal);      // packet id is displayed as decimal
+    pvalue18PacketArg5->setData(Qt::ToolTipRole, "(REL_OUT_5) [0-1] disable/enable");     // a hint which is displayed when mouse hovers over
+    ui->tableWidget->setItem(ui->tableWidget->rowCount() - 1, 6, pvalue18PacketArg5); // insert item to created row to the fourth column
+
+    QTableWidgetItem *pvalue18PacketArg6 = new QTableWidgetItem();
+    if(b_dataSaved)
+    {
+        pvalue18PacketArg6->setText(arrListSaved.at(w_IndexInList++));
+    }
+    else
+    {
+        pvalue18PacketArg6->setText("0");
+    }
+    pvalue18PacketArg6->setData(TableRoles::ByteCount, 1);                            // the value is 3 bytes
+    pvalue18PacketArg6->setData(TableRoles::NumeralSystem, TableRoles::Decimal);      // packet id is displayed as decimal
+    pvalue18PacketArg6->setData(Qt::ToolTipRole, "(REL_OUT_6) [0-1] disable/enable");     // a hint which is displayed when mouse hovers over
+    ui->tableWidget->setItem(ui->tableWidget->rowCount() - 1, 7, pvalue18PacketArg6); // insert item to created row to the fourth column
 
 }
 
@@ -1533,8 +1624,6 @@ void MainWindow::on_connectButton_clicked()
     eRequestsAmplifAdcx[1].timer.RequirementTime_ms = ui->spinBox_8->value();
     eRequestsAmplifAdcx[2].timer.RequirementTime_ms = ui->spinBox_9->value();
     eRequestsAmplifAdcx[3].timer.RequirementTime_ms = ui->spinBox_10->value();
-    eRequestsAmplifAdcx[4].timer.RequirementTime_ms = ui->spinBox_11->value();
-    eRequestsAmplifAdcx[5].timer.RequirementTime_ms = ui->spinBox_12->value();
 
     m_CommProt.data()->SetTargetMedium(ui->comboBox->currentText());
 
@@ -1611,8 +1700,6 @@ void MainWindow::restoreAllSettings()
     ui->spinBox_8->setValue(m_pSettingStrorage->RestoreRefreshAmplif(1));
     ui->spinBox_9->setValue(m_pSettingStrorage->RestoreRefreshAmplif(2));
     ui->spinBox_10->setValue(m_pSettingStrorage->RestoreRefreshAmplif(3));
-    ui->spinBox_11->setValue(m_pSettingStrorage->RestoreRefreshAmplif(4));
-    ui->spinBox_12->setValue(m_pSettingStrorage->RestoreRefreshAmplif(5));
 
     ui->doubleSpinBox->setValue(m_pSettingStrorage->RestoreHighValueSignalFirst());
     ui->doubleSpinBox_2->setValue(m_pSettingStrorage->RestoreHighValueSignalSecond());
@@ -1646,21 +1733,20 @@ void MainWindow::newDataV200(QByteArray aData)
     AppendText(timeShot, QString(aData));
 
 
-    if(aData.at(0) == 'a' && aData.at(1) == 'd')//ADCx data
+    if(aData.at(0) == 'g')//Gener´s data
     {
         QStringList myStringOnlyNumbers = adjustRowDataIntoOnlyNumber(aData);
 
-        if(aData.at(2) == '3' && aData.at(3) == 'c')//ADC3 adjusted data
+        if(aData.at(1) == '3' && aData.at(2) == 'c')//ADC3 adjusted data
         {
             recognizeIfDisplayNewDataAllSignals(timeShot, &myStringOnlyNumbers, 0, 0);
         }
-        else if(aData.at(2) == '3' && aData.at(3) == 's')//ADC3 average data
+        else if(aData.at(1) == '3' && aData.at(2) == 's')//ADC3 average data
         {
             recognizeIfDisplayNewDataAllSignals(timeShot, &myStringOnlyNumbers, 1, 0);
         }
-        else if(aData.at(2) == '2' && aData.at(3) == 'c')//ADC2 adjusted data
+        else if(aData.at(1) == '2' && aData.at(2) == 'c')//ADC2 adjusted data
         {
-
             recognizeIfDisplayNewDataAllSignals(timeShot, &myStringOnlyNumbers, 2, 0);
 
             COMPLEX_NUMBER_GONIO currentData, averageData, const50Data;
@@ -1687,43 +1773,43 @@ void MainWindow::newDataV200(QByteArray aData)
             emit SendNewImpedanceData(qreal(reflRatioCurrVsAvg.magnitude), qreal(reflRatioCurrVsAvg.phase_rad),qreal(reflRatioCurrVs50.magnitude), qreal(reflRatioCurrVs50.phase_rad), qreal(reflRatioAvgVs50.magnitude), qreal(reflRatioAvgVs50.phase_rad));
 
         }
-        else if(aData.at(2) == '2' && aData.at(3) == 's')//ADC2 average data
+        else if(aData.at(1) == '2' && aData.at(2) == 's')//ADC2 average data
         {
             recognizeIfDisplayNewDataAllSignals(timeShot, &myStringOnlyNumbers, 3, 0);
         }
-        else if(aData.at(2) == '1' && aData.at(3) == 'c')//ADC1 adjusted data
+        else if(aData.at(1) == '1' && aData.at(2) == 'c')//ADC1 adjusted data
         {
             recognizeIfDisplayNewDataAllSignals(timeShot, &myStringOnlyNumbers, 4, 0);
         }
-        else if(aData.at(2) == '1' && aData.at(3) == 's')//ADC1 average data
+        else if(aData.at(1) == '1' && aData.at(2) == 's')//ADC1 average data
         {
             recognizeIfDisplayNewDataAllSignals(timeShot, &myStringOnlyNumbers, 5, 0);
         }
 
-
-    }
-    else if(aData.at(1) == '|')//Digital input readed
-    {
-        if(aData.at(0) == '0')
-        {
-            ui->toolButton->setStyleSheet("background-color:red;color:black;font:11px");
-        }
-        else if(aData.at(0) == '1')
-        {
-            ui->toolButton->setStyleSheet("background-color:green;color:black;font:11px");
-        }
-        if(aData.at(3) == '|')
+        else if(aData.at(1) == '|')//Digital input readed
         {
             if(aData.at(2) == '0')
             {
-                ui->toolButton_2->setStyleSheet("background-color:red;color:black;font:11px");
+                ui->toolButton->setStyleSheet("background-color:red;color:black;font:11px");
             }
             else if(aData.at(2) == '1')
             {
-                ui->toolButton_2->setStyleSheet("background-color:green;color:black;font:11px");
+                ui->toolButton->setStyleSheet("background-color:green;color:black;font:11px");
+            }
+            if(aData.at(3) == '|')
+            {
+                if(aData.at(4) == '0')
+                {
+                    ui->toolButton_2->setStyleSheet("background-color:red;color:black;font:11px");
+                }
+                else if(aData.at(4) == '1')
+                {
+                    ui->toolButton_2->setStyleSheet("background-color:green;color:black;font:11px");
+                }
             }
         }
     }
+
 
     if(m_bSaveData)
     {
@@ -1773,19 +1859,19 @@ void MainWindow::getIndexInQList(int NumberComboBox, int indexInComboBox)
         recStat[NumberComboBox] = 1;
         int absoluteIndex = indexInComboBox - 1;
 
-        for(qint32 iLoop = 0; iLoop < NMB_ITEMS_FOR_TIMERS; iLoop++)
+        for(qint32 iLoop = 0; iLoop < NMB_ITEMS_TIMERS_GENER; iLoop++)
         {
             if((sourceDataStream == RECEIVE_STREAM && (eRequestsGenerAdcx[iLoop].timer.bEnable || eRequestsAmplifAdcx[iLoop].timer.bEnable)) || (sourceDataStream == LOG_STREAM && flagIfSourceIsLogged[iLoop]))
             {
-                if((absoluteIndex - allAdxSignals[iLoop].count()) < 0)
+                if((absoluteIndex - allAdxSignalsGener[iLoop].count()) < 0)
                 {
                     sourceAd[NumberComboBox] = iLoop;
                     sourceSignal[NumberComboBox] = absoluteIndex;
-                    sourceSignText[NumberComboBox] = allSignalsBaseOnly[iLoop];
+                    sourceSignText[NumberComboBox] = allSignalsBaseOnlyGener[iLoop];
 
                     if(sourceDataStream == LOG_STREAM)
                     {
-                        //qDebug() << "has been found signal: " << allAdxSignals[iLoop].at(absoluteIndex) << endl;
+                        //qDebug() << "has been found signal: " << allAdxSignalsGener[iLoop].at(absoluteIndex) << endl;
                         //qDebug() << sourceSignText[NumberComboBox];
 
                         QFile m_logFile(logPath);
@@ -1826,7 +1912,7 @@ void MainWindow::getIndexInQList(int NumberComboBox, int indexInComboBox)
                     return;
                 }
 
-                absoluteIndex -= allAdxSignals[iLoop].count();
+                absoluteIndex -= allAdxSignalsGener[iLoop].count();
             }
         }
     }
@@ -1854,7 +1940,7 @@ void MainWindow::recognizeIfDisplayNewDataInSignal(QTime timestamp, QStringList 
 {
     recvItems[indexInSignal] = listOfNumbers->at(sourceSignal[indexInSignal]).toDouble();
 
-    QString textToShow = allAdxSignals[sourceAd[indexInSignal]].at(sourceSignal[indexInSignal]);
+    QString textToShow = allAdxSignalsGener[sourceAd[indexInSignal]].at(sourceSignal[indexInSignal]);
 
     emit SendUpdateGraph(timestamp, recvItems[indexInSignal], recStat[indexInSignal], textToShow, indexInSignal, sourceDataStream, flg);
 }
@@ -1898,13 +1984,18 @@ void MainWindow::on_disconnectButton_clicked()
     SetAvaiblePorts();
     SetLastPort();
 
-    for(qint32 loop = 0; loop < NMB_ITEMS_FOR_TIMERS; loop++)
+    for(qint32 loop = 0; loop < NMB_ITEMS_TIMERS_GENER; loop++)
     {
         eRequestsGenerAdcx[loop].timer.bEnable = false;
+    }
+
+    for(qint32 loop = 0; loop < NMB_ITEMS_TIMERS_AMPLF; loop++)
+    {
         eRequestsAmplifAdcx[loop].timer.bEnable = false;
     }
 
     eRequestGenerInput.timer.bEnable = false;
+    eRequestAmplfInput.timer.bEnable = false;
 
     if(m_oFile.isOpen())
     {
@@ -1934,7 +2025,7 @@ void MainWindow::on_openlogButton_clicked()
 {
     sourceDataStream = LOG_STREAM;
 
-    for(int iLoop = 0; iLoop < NMB_ITEMS_FOR_TIMERS; iLoop++)
+    for(int iLoop = 0; iLoop < NMB_ITEMS_TIMERS_GENER; iLoop++)
     {
         flagIfSourceIsLogged[iLoop] = false;
     }
@@ -1958,9 +2049,9 @@ void MainWindow::on_openlogButton_clicked()
             QString newLinereaded = fileStream.readLine();
             QStringList stringsSplitted = newLinereaded.split(QRegExp("\\s+"));
 
-            for(int iLoop = 0; iLoop < NMB_ITEMS_FOR_TIMERS; iLoop++)
+            for(int iLoop = 0; iLoop < NMB_ITEMS_TIMERS_GENER; iLoop++)
             {
-                if(stringsSplitted[1] == allSignalsBaseOnly[iLoop])
+                if(stringsSplitted[1] == allSignalsBaseOnlyGener[iLoop])
                 {
                     flagIfSourceIsLogged[iLoop] = true;
                 }
@@ -1972,14 +2063,14 @@ void MainWindow::on_openlogButton_clicked()
 
         prepareComboBoxesWithSignals();
 
-        for(qint32 fillComboBoxSignal = 0; fillComboBoxSignal < NMB_ITEMS_FOR_TIMERS; fillComboBoxSignal++)
+        for(qint32 fillComboBoxSignal = 0; fillComboBoxSignal < NMB_ITEMS_TIMERS_GENER; fillComboBoxSignal++)
         {
             if(flagIfSourceIsLogged[fillComboBoxSignal])
             {
-                ui->comboBox_2->addItems(allAdxSignals[fillComboBoxSignal]);
-                ui->comboBox_3->addItems(allAdxSignals[fillComboBoxSignal]);
-                ui->comboBox_4->addItems(allAdxSignals[fillComboBoxSignal]);
-                ui->comboBox_5->addItems(allAdxSignals[fillComboBoxSignal]);
+                ui->comboBox_2->addItems(allAdxSignalsGener[fillComboBoxSignal]);
+                ui->comboBox_3->addItems(allAdxSignalsGener[fillComboBoxSignal]);
+                ui->comboBox_4->addItems(allAdxSignalsGener[fillComboBoxSignal]);
+                ui->comboBox_5->addItems(allAdxSignalsGener[fillComboBoxSignal]);
             }
         }
 
@@ -2007,7 +2098,7 @@ void MainWindow::closeEvent(QCloseEvent *event)
 
 
     //Amp data
-    for(int i = 0; i < m_NumberOfFilledTablesAmplifier; ++i)
+    for(int i = 0; i < m_NumberOfFilledRowsAmplifier; ++i)
     {
         for(int j = 2; j < iColumns; ++j)
         {
@@ -2024,7 +2115,7 @@ void MainWindow::closeEvent(QCloseEvent *event)
     //Gen data
     if(m_nDeviceAddress == constGenerID)
     {
-        for(int i = m_NumberOfFilledTablesAmplifier; i < iRows; ++i)
+        for(int i = m_NumberOfFilledRowsAmplifier; i < iRows; ++i)
         {
             for(int j = 2; j < iColumns; ++j)
             {

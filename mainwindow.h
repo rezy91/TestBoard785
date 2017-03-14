@@ -36,13 +36,14 @@
 #include "grapmain.h"
 
 
-#define NMB_ITEMS_FOR_TIMERS                6
+#define NMB_ITEMS_TIMERS_GENER              6
+#define NMB_ITEMS_TIMERS_AMPLF              4
 #define NMB_COEFFICIENTS_OTHERS             9
 
 #define PID_TIMERS_ADCX_GENER              40
-#define PID_TIMER_INPUT_GENER              49
+#define PID_TIMER_INPUT_GENER              (PID_TIMERS_ADCX_GENER + NMB_ITEMS_TIMERS_GENER)
 #define PID_TIMERS_ADCX_AMPLF              32
-#define PID_TIMER_INPUT_AMPLF              38
+#define PID_TIMER_INPUT_AMPLF              (PID_TIMERS_ADCX_AMPLF + NMB_ITEMS_TIMERS_AMPLF)
 
 
 #define COLOR_BLUE_LIGHT        QColor(0,255,255)
@@ -118,18 +119,26 @@ private:
 
 
     const int m_NumberOfFilledTablesGenerator = 2 + 2 + 1 + 2 + 6 + 3 + 4 * 2 + 7 * 2 + 9 * 2 + 9 * 2 + 8 + 6 + 3 + 2;
-    const int m_NumberOfFilledTablesAmplifier = 1 + 1;
+    const int m_NumberOfFilledTablesAmplifier = 1 + 1 + 4 + 1 + 6;
+    const int m_NumberOfFilledRowsAmplifier = 1 + 1 + 4 + 1 + 1;
 
-    const QString allSignalsBaseOnly[NMB_ITEMS_FOR_TIMERS] = {"ad3c", "ad3s", "ad2c", "ad2s", "ad1c", "ad1s"};
-    const QStringList allAdxSignals[NMB_ITEMS_FOR_TIMERS] = { \
-                                    {"ad3c_counter", "ad3c_exec", "ad3c_conv"}, \
-                                    {"ad3s_counter", "Cooling_ADC1", "Cooling_ADC2", "Cooling_ADC3", "Cooling_ADC4"}, \
-                                    {"ad2c_counter", "imp_avg_mag", "imp_avg_phs", "imp_max_mag", "imp_max_phs", "power_average", "power_current", "power_regulator", "ad2c_exec", "ad2c_conv"}, \
-                                    {"ad2s_counter", "Vrf_adc", "I4_adc", "Vforward_adc", "I2_adc", "Vreverse_adc", "I3_adc", "I1_adc"}, \
-                                    {"ad1c_counter", "ad1c_exec", "ad1c_conv"}, \
-                                    {"ad1s_counter", "Apl1_Vcc_Adc", "CQM1_adc", "CQM2_adc", "Vref", "Temperature1", "+24V_adc", "+5V_adc", "temper_mcu_adc", "vrefin_adc"}};
-    const QString coeffsOthersName[NMB_COEFFICIENTS_OTHERS] = {"for power", "NOT_USED", "NOT_USED", "NOT_USED", "NOT_USED", "NOT_USED", "NOT_USED", "NOT_USED", "NOT_USED"};
-
+    const QString allSignalsNameGener[NMB_ITEMS_TIMERS_GENER] = {"NOT_USED_CURRENTLY", "ADC3_RECEIVE_AVERAGE_DATA", "IMPEDANCE_RECEIVE_DATA", "ADC2_RECEIVE_AVERAGE_DATA", "NOT_USED_CURRENTLY", "ADC1_RECEIVE_AVERAGE_DATA"};
+    const QString allSignalsNameAmplf[NMB_ITEMS_TIMERS_AMPLF] = {"NOT_USED_CURRENTLY", "ADC3_RECEIVE_AVERAGE_DATA", "NOT_USED_CURRENTLY", "ADC1_RECEIVE_AVERAGE_DATA"};
+    const QString allSignalsBaseOnlyGener[NMB_ITEMS_TIMERS_GENER] = {"g3c", "g3s", "g2c", "g2s", "g1c", "g1s"};
+    const QString allSignalsBaseOnlyAmplf[NMB_ITEMS_TIMERS_AMPLF] = {"a3c", "a3s", "a1c", "a1s"};
+    const QStringList allAdxSignalsGener[NMB_ITEMS_TIMERS_GENER] = { \
+                                    {"g3c_counter", "ad3c_exec", "ad3c_conv"}, \
+                                    {"g3s_counter", "Cooling_ADC1", "Cooling_ADC2", "Cooling_ADC3", "Cooling_ADC4"}, \
+                                    {"g2c_counter", "imp_avg_mag", "imp_avg_phs", "imp_max_mag", "imp_max_phs", "power_average", "power_current", "power_regulator", "regulator_output_prc", "regulator_error_sum", "ad2c_exec", "ad2c_conv"}, \
+                                    {"g2s_counter", "Vrf_adc", "I4_adc", "Vforward_adc", "I2_adc", "Vreverse_adc", "I3_adc", "I1_adc"}, \
+                                    {"g1c_counter", "ad1c_exec", "ad1c_conv"}, \
+                                    {"g1s_counter", "Apl1_Vcc_Adc", "CQM1_adc", "CQM2_adc", "Vref", "Temperature1", "+24V_adc", "+5V_adc", "temper_mcu_adc", "vrefin_adc"}};
+    const QStringList allAdxSignalsAmplf[NMB_ITEMS_TIMERS_AMPLF] = { \
+                                    {"a3c_counter", "ad3c_exec", "ad3c_conv"}, \
+                                    {"a3s_counter", "3adc1", "3adc2", "3adc3", "3adc4", "3adc5", "3adc6", "3adc7", "3adc8"}, \
+                                    {"a1c_counter", "ad1c_exec", "ad1c_conv"}, \
+                                    {"a1s_counter", "1adc1", "1adc2", "1adc3", "1adc4", "1adc5", "1adc6", "1adc7", "1adc8"}};
+    const QString coeffsOthersName[NMB_COEFFICIENTS_OTHERS] = {"for power", "for phase", "NOT_USED", "NOT_USED", "NOT_USED", "NOT_USED", "NOT_USED", "NOT_USED", "NOT_USED"};
     const QString coeffsRegulatorName[3] = {"PROPORCIAL", "INTEGRAL", "DERIVATIVE"};
 
 
@@ -140,11 +149,12 @@ private:
     QTimer TmrMstr;
 
 
-    PERIODIC_REQUEST eRequestsAmplifAdcx[NMB_ITEMS_FOR_TIMERS];
-    PERIODIC_REQUEST eRequestsGenerAdcx[NMB_ITEMS_FOR_TIMERS];
+    PERIODIC_REQUEST eRequestsAmplifAdcx[NMB_ITEMS_TIMERS_AMPLF];
+    PERIODIC_REQUEST eRequestsGenerAdcx[NMB_ITEMS_TIMERS_GENER];
     PERIODIC_REQUEST eRequestGenerInput;
+    PERIODIC_REQUEST eRequestAmplfInput;
 
-    bool flagIfSourceIsLogged[NMB_ITEMS_FOR_TIMERS];
+    bool flagIfSourceIsLogged[NMB_ITEMS_TIMERS_GENER];
 
     bool m_bSaveData = true;
     int sourceDataStream = NO_STREAM;
