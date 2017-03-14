@@ -98,7 +98,7 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
                 if(eRequestsGenerAdcx[loop].timer.CurrentTime_ms >= eRequestsGenerAdcx[loop].timer.RequirementTime_ms)
                 {
                     eRequestsGenerAdcx[loop].timer.CurrentTime_ms = 0;
-                    qDebug() << "Timer gener" << loop << "tick";
+                    //qDebug() << "Timer gener" << loop << "tick";
                     m_CommProt.data()->SendData(m_nDeviceAddress, eRequestsGenerAdcx[loop].assemblyMsq, eRequestsGenerAdcx[loop].respExp);
                 }
             }
@@ -112,7 +112,7 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
                 if(eRequestsAmplifAdcx[loop].timer.CurrentTime_ms >= eRequestsAmplifAdcx[loop].timer.RequirementTime_ms)
                 {
                     eRequestsAmplifAdcx[loop].timer.CurrentTime_ms = 0;
-                    qDebug() << "Timer amplf" << loop << "tick";
+                    //qDebug() << "Timer amplf" << loop << "tick";
                     m_CommProt.data()->SendData(m_nDeviceAddress, eRequestsAmplifAdcx[loop].assemblyMsq, eRequestsAmplifAdcx[loop].respExp);
                 }
             }
@@ -125,7 +125,7 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
             if(eRequestGenerInput.timer.CurrentTime_ms >= eRequestGenerInput.timer.RequirementTime_ms)
             {
                 eRequestGenerInput.timer.CurrentTime_ms = 0;
-                qDebug() << "Timer GEN input tick";
+                //qDebug() << "Timer GEN input tick";
                 m_CommProt.data()->SendData(m_nDeviceAddress, eRequestGenerInput.assemblyMsq, eRequestGenerInput.respExp);
             }
         }
@@ -136,7 +136,7 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
             if(eRequestAmplfInput.timer.CurrentTime_ms >= eRequestAmplfInput.timer.RequirementTime_ms)
             {
                 eRequestAmplfInput.timer.CurrentTime_ms = 0;
-                qDebug() << "Timer AMP input tick";
+                //qDebug() << "Timer AMP input tick";
                 m_CommProt.data()->SendData(m_nDeviceAddress, eRequestAmplfInput.assemblyMsq, eRequestAmplfInput.respExp);
             }
         }
@@ -501,6 +501,9 @@ void MainWindow::on_sendButton_clicked()
 
                 eRequestGenerInput.timer.bEnable = false;
                 eRequestGenerInput.respExp = false;
+
+                ui->toolButton->setStyleSheet("font:10px");
+                ui->toolButton_2->setStyleSheet("font:10px");
             }
         }
 
@@ -522,6 +525,13 @@ void MainWindow::on_sendButton_clicked()
 
                 eRequestAmplfInput.timer.bEnable = false;
                 eRequestAmplfInput.respExp = false;
+
+                ui->toolButton_3->setStyleSheet("font:10px");
+                ui->toolButton_4->setStyleSheet("font:10px");
+                ui->toolButton_5->setStyleSheet("font:10px");
+                ui->toolButton_6->setStyleSheet("font:10px");
+                ui->toolButton_7->setStyleSheet("font:10px");
+                ui->toolButton_8->setStyleSheet("font:10px");
             }
         }
 
@@ -1733,21 +1743,22 @@ void MainWindow::newDataV200(QByteArray aData)
     AppendText(timeShot, QString(aData));
 
 
+
+    QStringList myStringOnlyNumbers = adjustRowDataIntoOnlyNumber(aData);
+
     if(aData.at(0) == 'g')//Gener´s data
     {
-        QStringList myStringOnlyNumbers = adjustRowDataIntoOnlyNumber(aData);
-
         if(aData.at(1) == '3' && aData.at(2) == 'c')//ADC3 adjusted data
         {
-            recognizeIfDisplayNewDataAllSignals(timeShot, &myStringOnlyNumbers, 0, 0);
+            recognizeIfDisplayNewDataAllSignals(timeShot, &myStringOnlyNumbers, 0);
         }
         else if(aData.at(1) == '3' && aData.at(2) == 's')//ADC3 average data
         {
-            recognizeIfDisplayNewDataAllSignals(timeShot, &myStringOnlyNumbers, 1, 0);
+            recognizeIfDisplayNewDataAllSignals(timeShot, &myStringOnlyNumbers, 1);
         }
         else if(aData.at(1) == '2' && aData.at(2) == 'c')//ADC2 adjusted data
         {
-            recognizeIfDisplayNewDataAllSignals(timeShot, &myStringOnlyNumbers, 2, 0);
+            recognizeIfDisplayNewDataAllSignals(timeShot, &myStringOnlyNumbers, 2);
 
             COMPLEX_NUMBER_GONIO currentData, averageData, const50Data;
             COMPLEX_NUMBER_GONIO reflRatioCurrVsAvg, reflRatioCurrVs50, reflRatioAvgVs50;
@@ -1775,38 +1786,33 @@ void MainWindow::newDataV200(QByteArray aData)
         }
         else if(aData.at(1) == '2' && aData.at(2) == 's')//ADC2 average data
         {
-            recognizeIfDisplayNewDataAllSignals(timeShot, &myStringOnlyNumbers, 3, 0);
+            recognizeIfDisplayNewDataAllSignals(timeShot, &myStringOnlyNumbers, 3);
         }
         else if(aData.at(1) == '1' && aData.at(2) == 'c')//ADC1 adjusted data
         {
-            recognizeIfDisplayNewDataAllSignals(timeShot, &myStringOnlyNumbers, 4, 0);
+            recognizeIfDisplayNewDataAllSignals(timeShot, &myStringOnlyNumbers, 4);
         }
         else if(aData.at(1) == '1' && aData.at(2) == 's')//ADC1 average data
         {
-            recognizeIfDisplayNewDataAllSignals(timeShot, &myStringOnlyNumbers, 5, 0);
+            recognizeIfDisplayNewDataAllSignals(timeShot, &myStringOnlyNumbers, 5);
         }
 
-        else if(aData.at(1) == '|')//Digital input readed
+        else if(aData.at(1) == 'i')//Digital input readed
         {
-            if(aData.at(2) == '0')
-            {
-                ui->toolButton->setStyleSheet("background-color:red;color:black;font:11px");
-            }
-            else if(aData.at(2) == '1')
-            {
-                ui->toolButton->setStyleSheet("background-color:green;color:black;font:11px");
-            }
-            if(aData.at(3) == '|')
-            {
-                if(aData.at(4) == '0')
-                {
-                    ui->toolButton_2->setStyleSheet("background-color:red;color:black;font:11px");
-                }
-                else if(aData.at(4) == '1')
-                {
-                    ui->toolButton_2->setStyleSheet("background-color:green;color:black;font:11px");
-                }
-            }
+            ui->toolButton->setStyleSheet(myStringOnlyNumbers.at(0) == "0" ? "background-color:red;color:black;font:10px" : "background-color:green;color:black;font:10px");
+            ui->toolButton_2->setStyleSheet(myStringOnlyNumbers.at(1) == "0" ? "background-color:red;color:black;font:10px" : "background-color:green;color:black;font:10px");
+        }
+    }
+    else if(aData.at(0) == 'a')//Amp´s data
+    {
+        if(aData.at(1) == 'i')//Digital input readed
+        {
+            ui->toolButton_3->setStyleSheet(myStringOnlyNumbers.at(0) == "0" ? "background-color:green;color:black;font:10px" : "background-color:red;color:black;font:10px");
+            ui->toolButton_4->setStyleSheet(myStringOnlyNumbers.at(1) == "0" ? "background-color:green;color:black;font:10px" : "background-color:red;color:black;font:10px");
+            ui->toolButton_5->setStyleSheet(myStringOnlyNumbers.at(2) == "0" ? "background-color:green;color:black;font:10px" : "background-color:red;color:black;font:10px");
+            ui->toolButton_6->setStyleSheet(myStringOnlyNumbers.at(3) == "0" ? "background-color:green;color:black;font:10px" : "background-color:red;color:black;font:10px");
+            ui->toolButton_7->setStyleSheet(myStringOnlyNumbers.at(4) == "0" ? "background-color:green;color:black;font:10px" : "background-color:red;color:black;font:10px");
+            ui->toolButton_8->setStyleSheet(myStringOnlyNumbers.at(5) == "0" ? "background-color:green;color:black;font:10px" : "background-color:red;color:black;font:10px");
         }
     }
 
@@ -1861,7 +1867,7 @@ void MainWindow::getIndexInQList(int NumberComboBox, int indexInComboBox)
 
         for(qint32 iLoop = 0; iLoop < NMB_ITEMS_TIMERS_GENER; iLoop++)
         {
-            if((sourceDataStream == RECEIVE_STREAM && (eRequestsGenerAdcx[iLoop].timer.bEnable || eRequestsAmplifAdcx[iLoop].timer.bEnable)) || (sourceDataStream == LOG_STREAM && flagIfSourceIsLogged[iLoop]))
+            if((sourceDataStream == RECEIVE_STREAM && eRequestsGenerAdcx[iLoop].timer.bEnable) || (sourceDataStream == LOG_STREAM && flagIfSourceIsLogged[iLoop]))
             {
                 if((absoluteIndex - allAdxSignalsGener[iLoop].count()) < 0)
                 {
@@ -1897,7 +1903,7 @@ void MainWindow::getIndexInQList(int NumberComboBox, int indexInComboBox)
                                     QTime timeLog = QTime::fromString(stringsSplitted[0], "hh:mm:ss,zzz");
                                     QStringList myStringOnlyNumbers = adjustRowDataIntoOnlyNumber(newLinereaded);
 
-                                    recognizeIfDisplayNewDataInSignal(timeLog, &myStringOnlyNumbers, NumberComboBox, 0);
+                                    recognizeIfDisplayNewDataInSignal(timeLog, &myStringOnlyNumbers, NumberComboBox);
                                 }
 
                             }
@@ -1925,24 +1931,24 @@ void MainWindow::getIndexInQList(int NumberComboBox, int indexInComboBox)
     }
 }
 
-void MainWindow::recognizeIfDisplayNewDataAllSignals(QTime timestamp, QStringList* listOfNumbers, int adx, int flg)
+void MainWindow::recognizeIfDisplayNewDataAllSignals(QTime timestamp, QStringList* listOfNumbers, int adx)
 {
     for(int iLoop = 0; iLoop < nmbCurvesInGraph; iLoop++)
     {
         if((sourceAd[iLoop] == adx) && (sourceSignal[iLoop] >= 0))
         {
-            recognizeIfDisplayNewDataInSignal(timestamp, listOfNumbers, iLoop, flg);
+            recognizeIfDisplayNewDataInSignal(timestamp, listOfNumbers, iLoop);
         }
     }
 }
 
-void MainWindow::recognizeIfDisplayNewDataInSignal(QTime timestamp, QStringList *listOfNumbers, int indexInSignal, int flg)
+void MainWindow::recognizeIfDisplayNewDataInSignal(QTime timestamp, QStringList *listOfNumbers, int indexInSignal)
 {
     recvItems[indexInSignal] = listOfNumbers->at(sourceSignal[indexInSignal]).toDouble();
 
     QString textToShow = allAdxSignalsGener[sourceAd[indexInSignal]].at(sourceSignal[indexInSignal]);
 
-    emit SendUpdateGraph(timestamp, recvItems[indexInSignal], recStat[indexInSignal], textToShow, indexInSignal, sourceDataStream, flg);
+    emit SendUpdateGraph(timestamp, recvItems[indexInSignal], recStat[indexInSignal], textToShow, indexInSignal, sourceDataStream, 0);
 }
 
 QString MainWindow::myTimeStamp(QTime time)

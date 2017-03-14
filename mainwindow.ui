@@ -15,7 +15,7 @@
   </property>
   <widget class="QWidget" name="centralWidget">
    <layout class="QGridLayout" name="gridLayout">
-    <item row="13" column="0">
+    <item row="14" column="0">
      <layout class="QHBoxLayout" name="horizontalLayout_4">
       <property name="topMargin">
        <number>0</number>
@@ -115,7 +115,7 @@
       </property>
      </widget>
     </item>
-    <item row="15" column="0">
+    <item row="16" column="0">
      <layout class="QHBoxLayout" name="horizontalLayout_5">
       <property name="topMargin">
        <number>0</number>
@@ -240,7 +240,7 @@
       </item>
      </layout>
     </item>
-    <item row="12" column="0">
+    <item row="13" column="0">
      <layout class="QHBoxLayout" name="horizontalLayout_6">
       <property name="topMargin">
        <number>20</number>
@@ -330,6 +330,13 @@
        </widget>
       </item>
      </layout>
+    </item>
+    <item row="12" column="0">
+     <widget class="QPushButton" name="openlogButton">
+      <property name="text">
+       <string>Open log</string>
+      </property>
+     </widget>
     </item>
     <item row="9" column="0">
      <layout class="QHBoxLayout" name="horizontalLayout_3">
@@ -444,15 +451,8 @@
       </item>
      </layout>
     </item>
-    <item row="11" column="0">
-     <widget class="QPushButton" name="openlogButton">
-      <property name="text">
-       <string>Open log</string>
-      </property>
-     </widget>
-    </item>
     <item row="5" column="0">
-     <layout class="QHBoxLayout" name="horizontalLayout" stretch="0,0,0,0,0,0,0">
+     <layout class="QHBoxLayout" name="horizontalLayout" stretch="0,0,0,0,0">
       <property name="spacing">
        <number>6</number>
       </property>
@@ -462,26 +462,6 @@
       <property name="topMargin">
        <number>0</number>
       </property>
-      <item>
-       <widget class="QToolButton" name="toolButton">
-        <property name="enabled">
-         <bool>false</bool>
-        </property>
-        <property name="text">
-         <string>input 1</string>
-        </property>
-       </widget>
-      </item>
-      <item>
-       <widget class="QToolButton" name="toolButton_2">
-        <property name="enabled">
-         <bool>false</bool>
-        </property>
-        <property name="text">
-         <string>input 2</string>
-        </property>
-       </widget>
-      </item>
       <item>
        <widget class="QCheckBox" name="checkBox">
         <property name="text">
@@ -514,7 +494,7 @@
       </item>
      </layout>
     </item>
-    <item row="14" column="0">
+    <item row="15" column="0">
      <layout class="QHBoxLayout" name="horizontalLayout_7">
       <property name="topMargin">
        <number>0</number>
@@ -663,6 +643,93 @@
         </property>
         <property name="value">
          <number>100</number>
+        </property>
+       </widget>
+      </item>
+     </layout>
+    </item>
+    <item row="11" column="0">
+     <layout class="QHBoxLayout" name="horizontalLayout_8">
+      <property name="topMargin">
+       <number>0</number>
+      </property>
+      <item>
+       <widget class="QToolButton" name="toolButton">
+        <property name="enabled">
+         <bool>false</bool>
+        </property>
+        <property name="text">
+         <string>G_1</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QToolButton" name="toolButton_2">
+        <property name="enabled">
+         <bool>false</bool>
+        </property>
+        <property name="text">
+         <string>G_2</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QToolButton" name="toolButton_3">
+        <property name="enabled">
+         <bool>false</bool>
+        </property>
+        <property name="text">
+         <string>A_1</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QToolButton" name="toolButton_4">
+        <property name="enabled">
+         <bool>false</bool>
+        </property>
+        <property name="text">
+         <string>A_2</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QToolButton" name="toolButton_5">
+        <property name="enabled">
+         <bool>false</bool>
+        </property>
+        <property name="text">
+         <string>A_3</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QToolButton" name="toolButton_6">
+        <property name="enabled">
+         <bool>false</bool>
+        </property>
+        <property name="text">
+         <string>A_4</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QToolButton" name="toolButton_7">
+        <property name="enabled">
+         <bool>false</bool>
+        </property>
+        <property name="text">
+         <string>A_5</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QToolButton" name="toolButton_8">
+        <property name="enabled">
+         <bool>false</bool>
+        </property>
+        <property name="text">
+         <string>A_6</string>
         </property>
        </widget>
       </item>

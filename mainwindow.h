@@ -178,8 +178,8 @@ private:
     void newDataV200(QByteArray aData);
     COMPLEX_NUMBER_GONIO CalculateReflectionRatio(COMPLEX_NUMBER_GONIO current, COMPLEX_NUMBER_GONIO average);
     void getIndexInQList(int NumberComboBox, int indexInComboBox);
-    void recognizeIfDisplayNewDataAllSignals(QTime timestamp, QStringList *listOfNumbers, int adx, int flg);
-    void recognizeIfDisplayNewDataInSignal(QTime timestamp, QStringList *listOfNumbers, int indexInSignal, int flg);
+    void recognizeIfDisplayNewDataAllSignals(QTime timestamp, QStringList *listOfNumbers, int adx);
+    void recognizeIfDisplayNewDataInSignal(QTime timestamp, QStringList *listOfNumbers, int indexInSignal);
     QString myTimeStamp(QTime time);
     QStringList adjustRowDataIntoOnlyNumber(QString rowData);
     void prepareComboBoxesWithSignals();
