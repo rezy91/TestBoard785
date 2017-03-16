@@ -90,56 +90,11 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
 
 
     connect(&TmrMstr,&QTimer::timeout,[this](){
-        for(qint32 loop = 0; loop < NMB_ITEMS_TIMERS_GENER; loop++)
-        {
-            if(eRequestsGenerAdcx[loop].timer.bEnable == true)
-            {
-                eRequestsGenerAdcx[loop].timer.CurrentTime_ms++;
-                if(eRequestsGenerAdcx[loop].timer.CurrentTime_ms >= eRequestsGenerAdcx[loop].timer.RequirementTime_ms)
-                {
-                    eRequestsGenerAdcx[loop].timer.CurrentTime_ms = 0;
-                    //qDebug() << "Timer gener" << loop << "tick";
-                    m_CommProt.data()->SendData(m_nDeviceAddress, eRequestsGenerAdcx[loop].assemblyMsq, eRequestsGenerAdcx[loop].respExp);
-                }
-            }
-        }
+        HasTimerRequestsExpired(GENERATOR_SOURCE);
+        HasTimerRequestsExpired(AMPLIFIER_SOURCE);
 
-        for(qint32 loop = 0; loop < NMB_ITEMS_TIMERS_AMPLF; loop++)
-        {
-            if(eRequestsAmplifAdcx[loop].timer.bEnable == true)
-            {
-                eRequestsAmplifAdcx[loop].timer.CurrentTime_ms++;
-                if(eRequestsAmplifAdcx[loop].timer.CurrentTime_ms >= eRequestsAmplifAdcx[loop].timer.RequirementTime_ms)
-                {
-                    eRequestsAmplifAdcx[loop].timer.CurrentTime_ms = 0;
-                    //qDebug() << "Timer amplf" << loop << "tick";
-                    m_CommProt.data()->SendData(m_nDeviceAddress, eRequestsAmplifAdcx[loop].assemblyMsq, eRequestsAmplifAdcx[loop].respExp);
-                }
-            }
-        }
-
-
-        if(eRequestGenerInput.timer.bEnable == true)
-        {
-            eRequestGenerInput.timer.CurrentTime_ms++;
-            if(eRequestGenerInput.timer.CurrentTime_ms >= eRequestGenerInput.timer.RequirementTime_ms)
-            {
-                eRequestGenerInput.timer.CurrentTime_ms = 0;
-                //qDebug() << "Timer GEN input tick";
-                m_CommProt.data()->SendData(m_nDeviceAddress, eRequestGenerInput.assemblyMsq, eRequestGenerInput.respExp);
-            }
-        }
-
-        if(eRequestAmplfInput.timer.bEnable == true)
-        {
-            eRequestAmplfInput.timer.CurrentTime_ms++;
-            if(eRequestAmplfInput.timer.CurrentTime_ms >= eRequestAmplfInput.timer.RequirementTime_ms)
-            {
-                eRequestAmplfInput.timer.CurrentTime_ms = 0;
-                //qDebug() << "Timer AMP input tick";
-                m_CommProt.data()->SendData(m_nDeviceAddress, eRequestAmplfInput.assemblyMsq, eRequestAmplfInput.respExp);
-            }
-        }
+        HasTimerInputExpired(GENERATOR_SOURCE);
+        HasTimerInputExpired(AMPLIFIER_SOURCE);
 
         if(++mMainTimer >= 100)
         {
@@ -404,14 +359,11 @@ void MainWindow::on_sendButton_clicked()
         }
         qDebug() << strCmd;
 
-        prepareComboBoxesWithSignals();
-
         SetTimerRequests(oTableSelection, strCmd, GENERATOR_SOURCE);
         SetTimerRequests(oTableSelection, strCmd, AMPLIFIER_SOURCE);
 
 
-        ShowSignalsIfAreReceiving(GENERATOR_SOURCE);
-        ShowSignalsIfAreReceiving(AMPLIFIER_SOURCE);
+        ShowSignalsIntoComboBox(RECEIVE_STREAM);
 
         SetTimerinput(oTableSelection, strCmd, GENERATOR_SOURCE);
         SetTimerinput(oTableSelection, strCmd, AMPLIFIER_SOURCE);
@@ -469,7 +421,7 @@ void MainWindow::adjustCoefficientSingleStep(QDoubleSpinBox *p_oubleSpinBox, dou
 
 void MainWindow::selectedDeviceSetAccordingSaved(quint32 value)
 {
-    if(value == 0)
+    if(value == GENERATOR_SOURCE)
     {
         m_nDeviceAddress = constGenerID;
 
@@ -480,7 +432,7 @@ void MainWindow::selectedDeviceSetAccordingSaved(quint32 value)
         ui->spinBox_5->setEnabled(true);
         ui->spinBox_6->setEnabled(true);
     }
-    else if(value == 1)
+    else if(value == AMPLIFIER_SOURCE)
     {
         m_nDeviceAddress = constAmpID;
 
@@ -1235,20 +1187,9 @@ void MainWindow::on_connectButton_clicked()
     eRequestsAmplifAdcx[3].timer.RequirementTime_ms = ui->spinBox_10->value();
 
     m_CommProt.data()->SetTargetMedium(ui->comboBox->currentText());
-
     m_pSettingStrorage->StorePortName(ui->comboBox->currentText());
 
-
     m_nDeviceAddress = (ui->comboBox_SelectDevice->currentIndex() == 0) ? constGenerID : constAmpID;
-    /*if(ui->comboBox_SelectDevice->currentIndex() == 0)
-    {
-        m_nDeviceAddress = constGenerID;
-    }
-    else
-    {
-        m_nDeviceAddress = constAmpID;
-    }*/
-
 
     if(m_bSaveData)
     {
@@ -1432,13 +1373,11 @@ void MainWindow::newDataV200(QByteArray aData)
         }
     }
 
-
     if(m_bSaveData)
     {
         m_oFile.write(myTimeStamp(timeShot).toUtf8() + "\t" + QString(aData).simplified().toUtf8() + "\r\n");
         m_oFile.flush();
     }
-
 }
 
 MainWindow::COMPLEX_NUMBER_GONIO MainWindow::CalculateReflectionRatio(COMPLEX_NUMBER_GONIO current, COMPLEX_NUMBER_GONIO average)
@@ -1458,7 +1397,6 @@ MainWindow::COMPLEX_NUMBER_GONIO MainWindow::CalculateReflectionRatio(COMPLEX_NU
     double divisorAlgebImag = recentAlgebImag + averageAlgebImag;
 
 
-
     double commonDivisor = divisorAlgebReal * divisorAlgebReal + divisorAlgebImag * divisorAlgebImag;
     double realPart = (dividentAlgebReal * divisorAlgebReal + dividentAlgebImag * divisorAlgebImag) / commonDivisor;
     double imagPart = (dividentAlgebImag * divisorAlgebReal - dividentAlgebReal * divisorAlgebImag) / commonDivisor;
@@ -1467,7 +1405,6 @@ MainWindow::COMPLEX_NUMBER_GONIO MainWindow::CalculateReflectionRatio(COMPLEX_NU
     ReflectionRatio.phase_rad = atan(imagPart / realPart);
 
     //qDebug() << ReflectionRatio.magnitude << " " << ReflectionRatio.phase_rad;
-
 
     return ReflectionRatio;
 }
@@ -1606,6 +1543,23 @@ void MainWindow::SetTimerRequests(QModelIndexList &TableSelect, QString sCommand
     }
 }
 
+void MainWindow::ShowSignalsIntoComboBox(SOURCE_STREAM eSourceStream)
+{
+    prepareComboBoxesWithSignals();
+
+
+    if(eSourceStream == RECEIVE_STREAM)
+    {
+        ShowSignalsIfAreReceiving(GENERATOR_SOURCE);
+        ShowSignalsIfAreReceiving(AMPLIFIER_SOURCE);
+    }
+    else if(eSourceStream == LOG_STREAM)
+    {
+        ShowSignalsIfAreLogged(GENERATOR_SOURCE);
+        ShowSignalsIfAreLogged(AMPLIFIER_SOURCE);
+    }
+}
+
 void MainWindow::ShowSignalsIfAreReceiving(MainWindow::SOURCE_DEVICE eSourceStream)
 {
     qint32 dwVolumeItems = (eSourceStream == GENERATOR_SOURCE) ? NMB_ITEMS_TIMERS_GENER : NMB_ITEMS_TIMERS_AMPLF;
@@ -1621,6 +1575,25 @@ void MainWindow::ShowSignalsIfAreReceiving(MainWindow::SOURCE_DEVICE eSourceStre
             ui->comboBox_3->addItems(p_sStringList[row]);
             ui->comboBox_4->addItems(p_sStringList[row]);
             ui->comboBox_5->addItems(p_sStringList[row]);
+        }
+    }
+}
+
+void MainWindow::ShowSignalsIfAreLogged(MainWindow::SOURCE_DEVICE eSourceStream)
+{
+    qint32 dwVolumeItems = (eSourceStream == GENERATOR_SOURCE) ? NMB_ITEMS_TIMERS_GENER : NMB_ITEMS_TIMERS_AMPLF;
+    const QStringList* p_sStringList = (eSourceStream == GENERATOR_SOURCE) ? allAdxSignalsGener : allAdxSignalsAmplf;
+    bool* p_bLogged = (eSourceStream == GENERATOR_SOURCE) ? flagIfSourceIsLoggedGener : flagIfSourceIsLoggedAmplf;
+
+
+    for(qint32 iLoop = 0; iLoop < dwVolumeItems; iLoop++)
+    {
+        if(p_bLogged[iLoop])
+        {
+            ui->comboBox_2->addItems(p_sStringList[iLoop]);
+            ui->comboBox_3->addItems(p_sStringList[iLoop]);
+            ui->comboBox_4->addItems(p_sStringList[iLoop]);
+            ui->comboBox_5->addItems(p_sStringList[iLoop]);
         }
     }
 }
@@ -1664,6 +1637,44 @@ void MainWindow::SetTimerinput(QModelIndexList &TableSelect, QString sCommand, M
                 ui->toolButton_7->setStyleSheet("font:10px");
                 ui->toolButton_8->setStyleSheet("font:10px");
             }
+        }
+    }
+}
+
+void MainWindow::HasTimerRequestsExpired(MainWindow::SOURCE_DEVICE eSourceStream)
+{
+    qint32 dwVolumeItems = (eSourceStream == GENERATOR_SOURCE) ? NMB_ITEMS_TIMERS_GENER : NMB_ITEMS_TIMERS_AMPLF;
+    PERIODIC_REQUEST* p_sRequests = (eSourceStream == GENERATOR_SOURCE) ? eRequestsGenerAdcx : eRequestsAmplifAdcx;
+
+
+    for(qint32 loop = 0; loop < dwVolumeItems; loop++)
+    {
+        if(p_sRequests[loop].timer.bEnable == true)
+        {
+            p_sRequests[loop].timer.CurrentTime_ms++;
+            if(p_sRequests[loop].timer.CurrentTime_ms >= p_sRequests[loop].timer.RequirementTime_ms)
+            {
+                p_sRequests[loop].timer.CurrentTime_ms = 0;
+                //qDebug() << "Timer requests" << loop << "tick";
+                m_CommProt.data()->SendData(m_nDeviceAddress, p_sRequests[loop].assemblyMsq, p_sRequests[loop].respExp);
+            }
+        }
+    }
+}
+
+void MainWindow::HasTimerInputExpired(MainWindow::SOURCE_DEVICE eSourceStream)
+{
+    PERIODIC_REQUEST* p_sRequest = (eSourceStream == GENERATOR_SOURCE) ? &eRequestGenerInput : &eRequestAmplfInput;
+
+
+    if(p_sRequest->timer.bEnable == true)
+    {
+        p_sRequest->timer.CurrentTime_ms++;
+        if(p_sRequest->timer.CurrentTime_ms >= p_sRequest->timer.RequirementTime_ms)
+        {
+            p_sRequest->timer.CurrentTime_ms = 0;
+            //qDebug() << "Timer input tick";
+            m_CommProt.data()->SendData(m_nDeviceAddress, p_sRequest->assemblyMsq, p_sRequest->respExp);
         }
     }
 }
@@ -1824,29 +1835,7 @@ void MainWindow::on_openlogButton_clicked()
         qDebug("sources gener: %d, %d, %d, %d, %d, %d", flagIfSourceIsLoggedGener[0], flagIfSourceIsLoggedGener[1], flagIfSourceIsLoggedGener[2], flagIfSourceIsLoggedGener[3], flagIfSourceIsLoggedGener[4], flagIfSourceIsLoggedGener[5]);
         qDebug("sources amplf: %d, %d, %d, %d", flagIfSourceIsLoggedAmplf[0], flagIfSourceIsLoggedAmplf[1], flagIfSourceIsLoggedAmplf[2], flagIfSourceIsLoggedAmplf[3]);
 
-        prepareComboBoxesWithSignals();
-
-        for(qint32 fillComboBoxSignal = 0; fillComboBoxSignal < NMB_ITEMS_TIMERS_GENER; fillComboBoxSignal++)
-        {
-            if(flagIfSourceIsLoggedGener[fillComboBoxSignal])
-            {
-                ui->comboBox_2->addItems(allAdxSignalsGener[fillComboBoxSignal]);
-                ui->comboBox_3->addItems(allAdxSignalsGener[fillComboBoxSignal]);
-                ui->comboBox_4->addItems(allAdxSignalsGener[fillComboBoxSignal]);
-                ui->comboBox_5->addItems(allAdxSignalsGener[fillComboBoxSignal]);
-            }
-        }
-
-        for(qint32 fillComboBoxSignal = 0; fillComboBoxSignal < NMB_ITEMS_TIMERS_AMPLF; fillComboBoxSignal++)
-        {
-            if(flagIfSourceIsLoggedAmplf[fillComboBoxSignal])
-            {
-                ui->comboBox_2->addItems(allAdxSignalsAmplf[fillComboBoxSignal]);
-                ui->comboBox_3->addItems(allAdxSignalsAmplf[fillComboBoxSignal]);
-                ui->comboBox_4->addItems(allAdxSignalsAmplf[fillComboBoxSignal]);
-                ui->comboBox_5->addItems(allAdxSignalsAmplf[fillComboBoxSignal]);
-            }
-        }
+        ShowSignalsIntoComboBox(LOG_STREAM);
 
         m_logFile.close();
     }

@@ -194,9 +194,13 @@ private:
     void selectedDeviceSetAccordingSaved(quint32 value);
 
     bool GetIndexFromQlist(SOURCE_DEVICE eSourceStream, int &dwAbsIndex, int dwNumberCmbBx, int dwIndexCmbBx);
-    void SetTimerRequests(QModelIndexList &TableSelect, QString sCommand, SOURCE_DEVICE eSourceStream);
+    void ShowSignalsIntoComboBox(SOURCE_STREAM eSourceStream);
     void ShowSignalsIfAreReceiving(SOURCE_DEVICE eSourceStream);
+    void ShowSignalsIfAreLogged(SOURCE_DEVICE eSourceStream);
+    void SetTimerRequests(QModelIndexList &TableSelect, QString sCommand, SOURCE_DEVICE eSourceStream);
     void SetTimerinput(QModelIndexList &TableSelect, QString sCommand, SOURCE_DEVICE eSourceStream);
+    void HasTimerRequestsExpired(SOURCE_DEVICE eSourceStream);
+    void HasTimerInputExpired(SOURCE_DEVICE eSourceStream);
 
 
     double recvItems[nmbCurvesInGraph] = {0, 0, 0, 0};
