@@ -406,58 +406,9 @@ void MainWindow::on_sendButton_clicked()
 
         prepareComboBoxesWithSignals();
 
+        SetTimerRequests(oTableSelection, strCmd, GENERATOR_SOURCE);
+        SetTimerRequests(oTableSelection, strCmd, AMPLIFIER_SOURCE);
 
-        for(qint32 row = 0; row < NMB_ITEMS_TIMERS_GENER; row++)
-        {
-            if(oTableSelection.at(0).data().toInt() == (PID_TIMERS_ADCX_GENER + row))
-            {
-                if(oTableSelection.at(2).data().toInt() == 1)
-                {
-                    m_CommProt.data()->SendData(m_nDeviceAddress, QByteArray::fromHex(strCmd.toStdString().c_str()), true);
-
-                    eRequestsGenerAdcx[row].timer.CurrentTime_ms = 0;
-                    eRequestsGenerAdcx[row].timer.bEnable = true;
-
-                    eRequestsGenerAdcx[row].assemblyMsq = QByteArray::fromHex(strCmd.toStdString().c_str());
-                    eRequestsGenerAdcx[row].respExp = true;
-                }
-                else if(oTableSelection.at(2).data().toInt() == 0)
-                {
-                    m_CommProt.data()->SendData(m_nDeviceAddress, QByteArray::fromHex(strCmd.toStdString().c_str()), false);
-
-                    eRequestsGenerAdcx[row].timer.bEnable = false;
-                    eRequestsGenerAdcx[row].respExp = false;
-                }
-
-                break;
-            }
-        }
-
-        for(qint32 row = 0; row < NMB_ITEMS_TIMERS_AMPLF; row++)
-        {
-            if(oTableSelection.at(0).data().toInt() == (PID_TIMERS_ADCX_AMPLF + row))
-            {
-                if(oTableSelection.at(2).data().toInt() == 1)
-                {
-                    m_CommProt.data()->SendData(m_nDeviceAddress, QByteArray::fromHex(strCmd.toStdString().c_str()), true);
-
-                    eRequestsAmplifAdcx[row].timer.CurrentTime_ms = 0;
-                    eRequestsAmplifAdcx[row].timer.bEnable = true;
-
-                    eRequestsAmplifAdcx[row].assemblyMsq = QByteArray::fromHex(strCmd.toStdString().c_str());
-                    eRequestsAmplifAdcx[row].respExp = true;
-                }
-                else if(oTableSelection.at(2).data().toInt() == 0)
-                {
-                    m_CommProt.data()->SendData(m_nDeviceAddress, QByteArray::fromHex(strCmd.toStdString().c_str()), false);
-
-                    eRequestsAmplifAdcx[row].timer.bEnable = false;
-                    eRequestsAmplifAdcx[row].respExp = false;
-                }
-
-                break;
-            }
-        }
 
         for(qint32 row = 0; row < NMB_ITEMS_TIMERS_GENER; row++)
         {
@@ -1687,6 +1638,40 @@ bool MainWindow::GetIndexFromQlist(SOURCE_DEVICE eSourceStream, int &dwAbsIndex,
         }
     }
     return false;
+}
+
+void MainWindow::SetTimerRequests(QModelIndexList &TableSelect, QString sCommand, MainWindow::SOURCE_DEVICE eSourceStream)
+{
+    qint32 dwVolumeItems = (eSourceStream == GENERATOR_SOURCE) ? NMB_ITEMS_TIMERS_GENER : NMB_ITEMS_TIMERS_AMPLF;
+    qint32 dwPidDevice = (eSourceStream == GENERATOR_SOURCE) ? PID_TIMERS_ADCX_GENER : PID_TIMERS_ADCX_AMPLF;
+    PERIODIC_REQUEST* p_sRequests = (eSourceStream == GENERATOR_SOURCE) ? eRequestsGenerAdcx : eRequestsAmplifAdcx;
+
+
+    for(qint32 row = 0; row < dwVolumeItems; row++)
+    {
+        if(TableSelect.at(0).data().toInt() == (dwPidDevice + row))
+        {
+            if(TableSelect.at(2).data().toInt() == 1)
+            {
+                m_CommProt.data()->SendData(m_nDeviceAddress, QByteArray::fromHex(sCommand.toStdString().c_str()), true);
+
+                p_sRequests[row].timer.CurrentTime_ms = 0;
+                p_sRequests[row].timer.bEnable = true;
+
+                p_sRequests[row].assemblyMsq = QByteArray::fromHex(sCommand.toStdString().c_str());
+                p_sRequests[row].respExp = true;
+            }
+            else if(TableSelect.at(2).data().toInt() == 0)
+            {
+                m_CommProt.data()->SendData(m_nDeviceAddress, QByteArray::fromHex(sCommand.toStdString().c_str()), false);
+
+                p_sRequests[row].timer.bEnable = false;
+                p_sRequests[row].respExp = false;
+            }
+
+            break;
+        }
+    }
 }
 
 void MainWindow::recognizeIfDisplayNewDataAllSignals(QTime timestamp, QStringList* listOfNumbers, int adx)
