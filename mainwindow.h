@@ -127,18 +127,18 @@ private:
     const QString allSignalsBaseOnlyGener[NMB_ITEMS_TIMERS_GENER] = {"g3c", "g3s", "g2c", "g2s", "g1c", "g1s"};
     const QString allSignalsBaseOnlyAmplf[NMB_ITEMS_TIMERS_AMPLF] = {"a3c", "a3s", "a1c", "a1s"};
     const QStringList allAdxSignalsGener[NMB_ITEMS_TIMERS_GENER] = { \
-                                    {"g3c_counter", "ad3c_exec", "ad3c_conv"}, \
+                                    {"g3c_counter", "g3c_exec", "g3c_conv"}, \
                                     {"g3s_counter", "Cooling_ADC1", "Cooling_ADC2", "Cooling_ADC3", "Cooling_ADC4"}, \
-                                    {"g2c_counter", "imp_avg_mag", "imp_avg_phs", "imp_max_mag", "imp_max_phs", "power_average", "power_current", "power_regulator", "regulator_output_prc", "regulator_error_sum", "ad2c_exec", "ad2c_conv"}, \
+                                    {"g2c_counter", "imp_avg_mag", "imp_avg_phs", "imp_max_mag", "imp_max_phs", "power_average", "power_current", "power_regulator", "regulator_output_prc", "regulator_error_sum", "g2c_exec", "g2c_conv"}, \
                                     {"g2s_counter", "Vrf_adc", "I4_adc", "Vforward_adc", "I2_adc", "Vreverse_adc", "I3_adc", "I1_adc"}, \
-                                    {"g1c_counter", "ad1c_exec", "ad1c_conv"}, \
+                                    {"g1c_counter", "g1c_exec", "g1c_conv"}, \
                                     {"g1s_counter", "Apl1_Vcc_Adc", "CQM1_adc", "CQM2_adc", "Vref", "Temperature1", "+24V_adc", "+5V_adc", "temper_mcu_adc", "vrefin_adc"}};
     const QStringList allAdxSignalsAmplf[NMB_ITEMS_TIMERS_AMPLF] = { \
-                                    {"a3c_counter", "ad3c_exec", "ad3c_conv"}, \
+                                    {"a3c_counter", "a3c_exec", "a3c_conv"}, \
                                     {"a3s_counter", "3adc1", "3adc2", "3adc3", "3adc4", "3adc5", "3adc6", "3adc7", "3adc8"}, \
-                                    {"a1c_counter", "ad1c_exec", "ad1c_conv"}, \
+                                    {"a1c_counter", "a1c_exec", "a1c_conv"}, \
                                     {"a1s_counter", "1adc1", "1adc2", "1adc3", "1adc4", "1adc5", "1adc6", "1adc7", "1adc8"}};
-    const QString coeffsOthersName[NMB_COEFFICIENTS_OTHERS] = {"for power", "for phase", "NOT_USED", "NOT_USED", "NOT_USED", "NOT_USED", "NOT_USED", "NOT_USED", "NOT_USED"};
+    const QString coeffsOthersName[NMB_COEFFICIENTS_OTHERS] = {"for power", "for phase (0 - pi/2) [rad]", "NOT_USED", "NOT_USED", "NOT_USED", "NOT_USED", "NOT_USED", "NOT_USED", "NOT_USED"};
     const QString coeffsRegulatorName[3] = {"PROPORCIAL", "INTEGRAL", "DERIVATIVE"};
 
 
@@ -154,7 +154,8 @@ private:
     PERIODIC_REQUEST eRequestGenerInput;
     PERIODIC_REQUEST eRequestAmplfInput;
 
-    bool flagIfSourceIsLogged[NMB_ITEMS_TIMERS_GENER];
+    bool flagIfSourceIsLoggedGener[NMB_ITEMS_TIMERS_GENER];
+    bool flagIfSourceIsLoggedAmplf[NMB_ITEMS_TIMERS_AMPLF];
 
     bool m_bSaveData = true;
     int sourceDataStream = NO_STREAM;
@@ -179,7 +180,7 @@ private:
     COMPLEX_NUMBER_GONIO CalculateReflectionRatio(COMPLEX_NUMBER_GONIO current, COMPLEX_NUMBER_GONIO average);
     void getIndexInQList(int NumberComboBox, int indexInComboBox);
     void recognizeIfDisplayNewDataAllSignals(QTime timestamp, QStringList *listOfNumbers, int adx);
-    void recognizeIfDisplayNewDataInSignal(QTime timestamp, QStringList *listOfNumbers, int indexInSignal);
+    void DisplayNewDataFromSignal(QTime timestamp, QStringList *listOfNumbers, int indexInSignal);
     QString myTimeStamp(QTime time);
     QStringList adjustRowDataIntoOnlyNumber(QString rowData);
     void prepareComboBoxesWithSignals();
