@@ -99,6 +99,12 @@ public:
         bool respExp;
     } PERIODIC_REQUEST;
 
+    typedef enum
+    {
+        GENERATOR_SOURCE,
+        AMPLIFIER_SOURCE
+    } SOURCE_DEVICE;
+
 
     explicit MainWindow(QWidget *parent = 0);
     ~MainWindow();
@@ -178,7 +184,11 @@ private:
     void restoreAllSettings(void);
     void newDataV200(QByteArray aData);
     COMPLEX_NUMBER_GONIO CalculateReflectionRatio(COMPLEX_NUMBER_GONIO current, COMPLEX_NUMBER_GONIO average);
-    void getIndexInQList(int NumberComboBox, int indexInComboBox);
+    void CheckedIfIndexInQlist(int NumberComboBox, int indexInComboBox);
+
+    bool GetIndexFromQlist(SOURCE_DEVICE eSourceStream, int &dwAbsIndex, int dwNumberCmbBx, int dwIndexCmbBx);
+
+
     void recognizeIfDisplayNewDataAllSignals(QTime timestamp, QStringList *listOfNumbers, int adx);
     void DisplayNewDataFromSignal(QTime timestamp, QStringList *listOfNumbers, int indexInSignal);
     QString myTimeStamp(QTime time);
@@ -186,7 +196,6 @@ private:
     void prepareComboBoxesWithSignals();
     void adjustCoefficientSingleStep(QDoubleSpinBox* p_oubleSpinBox, double newValue);
     void selectedDeviceSetAccordingSaved(quint32 value);
-    void ShowSignalFromLog(int dw_NumberComboBox, int dw_IndexInComboBox);
 
 
     double recvItems[nmbCurvesInGraph] = {0, 0, 0, 0};

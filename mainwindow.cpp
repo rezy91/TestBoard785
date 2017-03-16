@@ -150,36 +150,36 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
     connect(ui->comboBox_2,static_cast<void (QComboBox::*)(int)>(&QComboBox::currentIndexChanged),[=](int nValue){
         if(sourceDataStream == LOG_STREAM && nValue >= 0)
         {
-            getIndexInQList(0, 0);//send fake in order to clear history signal
+            CheckedIfIndexInQlist(0, 0);//send fake in order to clear history signal
         }
-        getIndexInQList(0, nValue);
+        CheckedIfIndexInQlist(0, nValue);
         emit SendHighLevel(ui->doubleSpinBox->value(), 0);
         emit SendLowLevel(ui->doubleSpinBox_5->value(), 0);
     });
     connect(ui->comboBox_3,static_cast<void (QComboBox::*)(int)>(&QComboBox::currentIndexChanged),[=](int nValue){
         if(sourceDataStream == LOG_STREAM && nValue >= 0)
         {
-            getIndexInQList(1, 0);//send fake in order to clear history signal
+            CheckedIfIndexInQlist(1, 0);//send fake in order to clear history signal
         }
-        getIndexInQList(1, nValue);
+        CheckedIfIndexInQlist(1, nValue);
         emit SendHighLevel(ui->doubleSpinBox_2->value(), 1);
         emit SendLowLevel(ui->doubleSpinBox_6->value(), 1);
     });
     connect(ui->comboBox_4,static_cast<void (QComboBox::*)(int)>(&QComboBox::currentIndexChanged),[=](int nValue){
         if(sourceDataStream == LOG_STREAM && nValue >= 0)
         {
-            getIndexInQList(2, 0);//send fake in order to clear history signal
+            CheckedIfIndexInQlist(2, 0);//send fake in order to clear history signal
         }
-        getIndexInQList(2, nValue);
+        CheckedIfIndexInQlist(2, nValue);
         emit SendHighLevel(ui->doubleSpinBox_3->value(), 2);
         emit SendLowLevel(ui->doubleSpinBox_7->value(), 2);
     });
     connect(ui->comboBox_5,static_cast<void (QComboBox::*)(int)>(&QComboBox::currentIndexChanged),[=](int nValue){
         if(sourceDataStream == LOG_STREAM && nValue >= 0)
         {
-            getIndexInQList(3, 0);//send fake in order to clear history signal
+            CheckedIfIndexInQlist(3, 0);//send fake in order to clear history signal
         }
-        getIndexInQList(3, nValue);
+        CheckedIfIndexInQlist(3, nValue);
         emit SendHighLevel(ui->doubleSpinBox_4->value(), 3);
         emit SendLowLevel(ui->doubleSpinBox_8->value(), 3);
     });
@@ -607,46 +607,6 @@ void MainWindow::selectedDeviceSetAccordingSaved(quint32 value)
         ui->spinBox_4->setEnabled(false);
         ui->spinBox_5->setEnabled(false);
         ui->spinBox_6->setEnabled(false);
-    }
-}
-
-void MainWindow::ShowSignalFromLog(int dw_NumberComboBox, int dw_IndexInComboBox)
-{
-    if(sourceDataStream == LOG_STREAM)
-    {
-        QFile m_logFile(logPath);
-
-        if(!m_logFile.open(QFile::ReadOnly))
-        {
-            qDebug() << "error: cannot open file";
-        }
-        else
-        {
-            QTextStream fileStream(&m_logFile);
-
-            while (!fileStream.atEnd())
-            {
-                QString newLinereaded = fileStream.readLine();
-                QStringList stringsSplitted = newLinereaded.split(QRegExp("\\s+"));
-
-                //qDebug() << newLinereaded;
-
-
-                if(stringsSplitted[1] == sourceSignText[dw_NumberComboBox])//founded row appeared
-                {
-                    QTime timeLog = QTime::fromString(stringsSplitted[0], "hh:mm:ss,zzz");
-                    QStringList myStringOnlyNumbers = adjustRowDataIntoOnlyNumber(newLinereaded);
-
-                    DisplayNewDataFromSignal(timeLog, &myStringOnlyNumbers, dw_NumberComboBox);
-                }
-
-            }
-
-            //send flag, that has been sending last one
-            emit SendUpdateGraph(QTime(0,0,0), 0, 0, " ", dw_IndexInComboBox, sourceDataStream, 1);
-        }
-
-        m_logFile.close();
     }
 }
 
@@ -1629,62 +1589,21 @@ MainWindow::COMPLEX_NUMBER_GONIO MainWindow::CalculateReflectionRatio(COMPLEX_NU
     return ReflectionRatio;
 }
 
-void MainWindow::getIndexInQList(int NumberComboBox, int indexInComboBox)
+void MainWindow::CheckedIfIndexInQlist(int NumberComboBox, int indexInComboBox)
 {
-    //qDebug() << "NumberComboBox_i" << NumberComboBox << "getIndexInQList_i: " << indexInComboBox;
+    //qDebug() << "NumberComboBox_i" << NumberComboBox << "CheckedIfIndexInQlist_i: " << indexInComboBox;
 
     if(indexInComboBox >= 1)
     {
         recStat[NumberComboBox] = 1;
         int absoluteIndex = indexInComboBox - 1;
 
-        for(qint32 iLoop = 0; iLoop < NMB_ITEMS_TIMERS_GENER; iLoop++)
+        if(GetIndexFromQlist(GENERATOR_SOURCE, absoluteIndex, NumberComboBox, indexInComboBox))
         {
-            if((sourceDataStream == RECEIVE_STREAM && eRequestsGenerAdcx[iLoop].timer.bEnable) || (sourceDataStream == LOG_STREAM && flagIfSourceIsLoggedGener[iLoop]))
-            {
-                if((absoluteIndex - allAdxSignalsGener[iLoop].count()) < 0)
-                {
-                    sourceAd[NumberComboBox] = iLoop;
-                    sourceSignal[NumberComboBox] = absoluteIndex;
-                    sourceSignText[NumberComboBox] = allSignalsBaseOnlyGener[iLoop];
-
-                    //qDebug() << "has been found signal:" << allAdxSignalsGener[iLoop].at(absoluteIndex) << endl;
-                    //qDebug() << sourceSignText[NumberComboBox];
-
-                    if(sourceDataStream == LOG_STREAM)
-                    {
-                        ShowSignalFromLog(NumberComboBox, indexInComboBox);
-                    }
-
-                    return;
-                }
-                absoluteIndex -= allAdxSignalsGener[iLoop].count();
-            }
+            return;
         }
 
-        for(qint32 iLoop = 0; iLoop < NMB_ITEMS_TIMERS_AMPLF; iLoop++)
-        {
-            if((sourceDataStream == RECEIVE_STREAM && eRequestsAmplifAdcx[iLoop].timer.bEnable) || (sourceDataStream == LOG_STREAM && flagIfSourceIsLoggedAmplf[iLoop]))
-            {
-                if((absoluteIndex - allAdxSignalsAmplf[iLoop].count()) < 0)
-                {
-                    sourceAd[NumberComboBox] = NMB_ITEMS_TIMERS_GENER + iLoop;
-                    sourceSignal[NumberComboBox] = absoluteIndex;
-                    sourceSignText[NumberComboBox] = allSignalsBaseOnlyAmplf[iLoop];
-
-                    //qDebug() << "has been found signal:" << allAdxSignalsAmplf[iLoop].at(absoluteIndex) << endl;
-                    //qDebug() << sourceSignText[NumberComboBox];
-
-                    if(sourceDataStream == LOG_STREAM)
-                    {
-                        ShowSignalFromLog(NumberComboBox, indexInComboBox);
-                    }
-
-                    break;
-                }
-                absoluteIndex -= allAdxSignalsAmplf[iLoop].count();
-            }
-        }
+        GetIndexFromQlist(AMPLIFIER_SOURCE, absoluteIndex, NumberComboBox, indexInComboBox);
     }
     else
     {
@@ -1693,6 +1612,81 @@ void MainWindow::getIndexInQList(int NumberComboBox, int indexInComboBox)
         recStat[NumberComboBox] = 0;
         emit SendUpdateGraph(timeCurrent, recvItems[NumberComboBox], recStat[NumberComboBox], sourceSignText[NumberComboBox], NumberComboBox, sourceDataStream, 0);
     }
+}
+
+bool MainWindow::GetIndexFromQlist(SOURCE_DEVICE eSourceStream, int &dwAbsIndex, int dwNumberCmbBx, int dwIndexCmbBx)
+{
+    qint32 dwVolumeItems = (eSourceStream == GENERATOR_SOURCE) ? NMB_ITEMS_TIMERS_GENER : NMB_ITEMS_TIMERS_AMPLF;
+    PERIODIC_REQUEST* p_sRequests = (eSourceStream == GENERATOR_SOURCE) ? eRequestsGenerAdcx : eRequestsAmplifAdcx;
+    bool* p_bLogged = (eSourceStream == GENERATOR_SOURCE) ? flagIfSourceIsLoggedGener : flagIfSourceIsLoggedAmplf;
+    const QStringList* p_sStringList = (eSourceStream == GENERATOR_SOURCE) ? allAdxSignalsGener : allAdxSignalsAmplf;
+    const QString* p_sBaseString = (eSourceStream == GENERATOR_SOURCE) ? allSignalsBaseOnlyGener : allSignalsBaseOnlyAmplf;
+
+
+    for(qint32 iLoop = 0; iLoop < dwVolumeItems; iLoop++)
+    {
+        if((sourceDataStream == RECEIVE_STREAM && p_sRequests[iLoop].timer.bEnable) || (sourceDataStream == LOG_STREAM && p_bLogged[iLoop]))
+        {
+            if((dwAbsIndex - p_sStringList[iLoop].count()) < 0)
+            {
+                sourceAd[dwNumberCmbBx] = (eSourceStream == GENERATOR_SOURCE) ? iLoop : NMB_ITEMS_TIMERS_GENER + iLoop;
+                sourceSignal[dwNumberCmbBx] = dwAbsIndex;
+                sourceSignText[dwNumberCmbBx] = p_sBaseString[iLoop];
+
+                //qDebug() << "has been found signal:" << allAdxSignalsGener[iLoop].at(dwAbsIndex) << endl;
+                //qDebug() << sourceSignText[dwNumberCmbBx];
+
+                if(sourceDataStream == LOG_STREAM)
+                {
+                    QFile m_logFile(logPath);
+
+                    if(!m_logFile.open(QFile::ReadOnly))
+                    {
+                        qDebug() << "error: cannot open file";
+                    }
+                    else
+                    {
+                        QTextStream fileStream(&m_logFile);
+
+                        while (!fileStream.atEnd())
+                        {
+                            QString newLinereaded = fileStream.readLine();
+                            QStringList stringsSplitted = newLinereaded.split(QRegExp("\\s+"));
+
+                            //qDebug() << newLinereaded;
+
+
+                            if(stringsSplitted[1] == sourceSignText[dwNumberCmbBx])//founded row appeared
+                            {
+                                QTime timeLog = QTime::fromString(stringsSplitted[0], "hh:mm:ss,zzz");
+                                QStringList myStringOnlyNumbers = adjustRowDataIntoOnlyNumber(newLinereaded);
+
+                                DisplayNewDataFromSignal(timeLog, &myStringOnlyNumbers, dwNumberCmbBx);
+                            }
+
+                        }
+
+                        //send flag, that has been sending last one
+                        emit SendUpdateGraph(QTime(0,0,0), 0, 0, " ", dwIndexCmbBx, sourceDataStream, 1);
+                    }
+
+                    m_logFile.close();
+                }
+
+                if(eSourceStream == GENERATOR_SOURCE)
+                {
+
+                    return true;
+                }
+                else
+                {
+                    return false;
+                }
+            }
+            dwAbsIndex -= p_sStringList[iLoop].count();
+        }
+    }
+    return false;
 }
 
 void MainWindow::recognizeIfDisplayNewDataAllSignals(QTime timestamp, QStringList* listOfNumbers, int adx)
