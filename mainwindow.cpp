@@ -433,17 +433,6 @@ void MainWindow::on_sendButton_clicked()
             }
         }
 
-        for(qint32 row = 0; row < NMB_ITEMS_TIMERS_GENER; row++)
-        {
-            if(eRequestsGenerAdcx[row].timer.bEnable)
-            {
-                ui->comboBox_2->addItems(allAdxSignalsGener[row]);
-                ui->comboBox_3->addItems(allAdxSignalsGener[row]);
-                ui->comboBox_4->addItems(allAdxSignalsGener[row]);
-                ui->comboBox_5->addItems(allAdxSignalsGener[row]);
-            }
-        }
-
         for(qint32 row = 0; row < NMB_ITEMS_TIMERS_AMPLF; row++)
         {
             if(oTableSelection.at(0).data().toInt() == (PID_TIMERS_ADCX_AMPLF + row))
@@ -467,6 +456,17 @@ void MainWindow::on_sendButton_clicked()
                 }
 
                 break;
+            }
+        }
+
+        for(qint32 row = 0; row < NMB_ITEMS_TIMERS_GENER; row++)
+        {
+            if(eRequestsGenerAdcx[row].timer.bEnable)
+            {
+                ui->comboBox_2->addItems(allAdxSignalsGener[row]);
+                ui->comboBox_3->addItems(allAdxSignalsGener[row]);
+                ui->comboBox_4->addItems(allAdxSignalsGener[row]);
+                ui->comboBox_5->addItems(allAdxSignalsGener[row]);
             }
         }
 
@@ -607,6 +607,46 @@ void MainWindow::selectedDeviceSetAccordingSaved(quint32 value)
         ui->spinBox_4->setEnabled(false);
         ui->spinBox_5->setEnabled(false);
         ui->spinBox_6->setEnabled(false);
+    }
+}
+
+void MainWindow::ShowSignalFromLog(int dw_NumberComboBox, int dw_IndexInComboBox)
+{
+    if(sourceDataStream == LOG_STREAM)
+    {
+        QFile m_logFile(logPath);
+
+        if(!m_logFile.open(QFile::ReadOnly))
+        {
+            qDebug() << "error: cannot open file";
+        }
+        else
+        {
+            QTextStream fileStream(&m_logFile);
+
+            while (!fileStream.atEnd())
+            {
+                QString newLinereaded = fileStream.readLine();
+                QStringList stringsSplitted = newLinereaded.split(QRegExp("\\s+"));
+
+                //qDebug() << newLinereaded;
+
+
+                if(stringsSplitted[1] == sourceSignText[dw_NumberComboBox])//founded row appeared
+                {
+                    QTime timeLog = QTime::fromString(stringsSplitted[0], "hh:mm:ss,zzz");
+                    QStringList myStringOnlyNumbers = adjustRowDataIntoOnlyNumber(newLinereaded);
+
+                    DisplayNewDataFromSignal(timeLog, &myStringOnlyNumbers, dw_NumberComboBox);
+                }
+
+            }
+
+            //send flag, that has been sending last one
+            emit SendUpdateGraph(QTime(0,0,0), 0, 0, " ", dw_IndexInComboBox, sourceDataStream, 1);
+        }
+
+        m_logFile.close();
     }
 }
 
@@ -1591,7 +1631,7 @@ MainWindow::COMPLEX_NUMBER_GONIO MainWindow::CalculateReflectionRatio(COMPLEX_NU
 
 void MainWindow::getIndexInQList(int NumberComboBox, int indexInComboBox)
 {
-    qDebug() << "NumberComboBox_i" << NumberComboBox << "getIndexInQList_i: " << indexInComboBox;
+    //qDebug() << "NumberComboBox_i" << NumberComboBox << "getIndexInQList_i: " << indexInComboBox;
 
     if(indexInComboBox >= 1)
     {
@@ -1608,14 +1648,20 @@ void MainWindow::getIndexInQList(int NumberComboBox, int indexInComboBox)
                     sourceSignal[NumberComboBox] = absoluteIndex;
                     sourceSignText[NumberComboBox] = allSignalsBaseOnlyGener[iLoop];
 
-                    qDebug() << "has been found signal:" << allAdxSignalsGener[iLoop].at(absoluteIndex) << endl;
-                    qDebug() << sourceSignText[NumberComboBox];
+                    //qDebug() << "has been found signal:" << allAdxSignalsGener[iLoop].at(absoluteIndex) << endl;
+                    //qDebug() << sourceSignText[NumberComboBox];
 
-                    break;
+                    if(sourceDataStream == LOG_STREAM)
+                    {
+                        ShowSignalFromLog(NumberComboBox, indexInComboBox);
+                    }
+
+                    return;
                 }
                 absoluteIndex -= allAdxSignalsGener[iLoop].count();
             }
         }
+
         for(qint32 iLoop = 0; iLoop < NMB_ITEMS_TIMERS_AMPLF; iLoop++)
         {
             if((sourceDataStream == RECEIVE_STREAM && eRequestsAmplifAdcx[iLoop].timer.bEnable) || (sourceDataStream == LOG_STREAM && flagIfSourceIsLoggedAmplf[iLoop]))
@@ -1626,53 +1672,19 @@ void MainWindow::getIndexInQList(int NumberComboBox, int indexInComboBox)
                     sourceSignal[NumberComboBox] = absoluteIndex;
                     sourceSignText[NumberComboBox] = allSignalsBaseOnlyAmplf[iLoop];
 
-                    qDebug() << "has been found signal:" << allAdxSignalsAmplf[iLoop].at(absoluteIndex) << endl;
-                    qDebug() << sourceSignText[NumberComboBox];
+                    //qDebug() << "has been found signal:" << allAdxSignalsAmplf[iLoop].at(absoluteIndex) << endl;
+                    //qDebug() << sourceSignText[NumberComboBox];
+
+                    if(sourceDataStream == LOG_STREAM)
+                    {
+                        ShowSignalFromLog(NumberComboBox, indexInComboBox);
+                    }
 
                     break;
                 }
                 absoluteIndex -= allAdxSignalsAmplf[iLoop].count();
             }
         }
-
-        //----------------------------------
-        if(sourceDataStream == LOG_STREAM)
-        {
-            QFile m_logFile(logPath);
-
-            if(!m_logFile.open(QFile::ReadOnly))
-            {
-                qDebug() << "error: cannot open file";
-            }
-            else
-            {
-                QTextStream fileStream(&m_logFile);
-
-                while (!fileStream.atEnd())
-                {
-                    QString newLinereaded = fileStream.readLine();
-                    QStringList stringsSplitted = newLinereaded.split(QRegExp("\\s+"));
-
-                    //qDebug() << newLinereaded;
-
-
-                    if(stringsSplitted[1] == sourceSignText[NumberComboBox])//founded row appeared
-                    {
-                        QTime timeLog = QTime::fromString(stringsSplitted[0], "hh:mm:ss,zzz");
-                        QStringList myStringOnlyNumbers = adjustRowDataIntoOnlyNumber(newLinereaded);
-
-                        DisplayNewDataFromSignal(timeLog, &myStringOnlyNumbers, NumberComboBox);
-                    }
-
-                }
-
-                //send flag, that has been sending last one
-                emit SendUpdateGraph(QTime(0,0,0), 0, 0, " ", indexInComboBox, sourceDataStream, 1);
-            }
-
-            m_logFile.close();
-        }
-        //----------------------------------
     }
     else
     {
@@ -1697,6 +1709,12 @@ void MainWindow::recognizeIfDisplayNewDataAllSignals(QTime timestamp, QStringLis
 
 void MainWindow::DisplayNewDataFromSignal(QTime timestamp, QStringList *listOfNumbers, int indexInSignal)
 {
+    if(sourceSignal[indexInSignal] >= listOfNumbers->count())
+    {
+        qDebug() << "!!!!!!! received messegage isn´t according template";
+        return;
+    }
+
     recvItems[indexInSignal] = listOfNumbers->at(sourceSignal[indexInSignal]).toDouble();
 
     QString textToShow = (sourceAd[indexInSignal] >= NMB_ITEMS_TIMERS_GENER) ? allAdxSignalsAmplf[sourceAd[indexInSignal] - NMB_ITEMS_TIMERS_GENER].at(sourceSignal[indexInSignal]) : allAdxSignalsGener[sourceAd[indexInSignal]].at(sourceSignal[indexInSignal]);

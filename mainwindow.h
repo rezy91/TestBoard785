@@ -186,6 +186,7 @@ private:
     void prepareComboBoxesWithSignals();
     void adjustCoefficientSingleStep(QDoubleSpinBox* p_oubleSpinBox, double newValue);
     void selectedDeviceSetAccordingSaved(quint32 value);
+    void ShowSignalFromLog(int dw_NumberComboBox, int dw_IndexInComboBox);
 
 
     double recvItems[nmbCurvesInGraph] = {0, 0, 0, 0};

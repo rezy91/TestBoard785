@@ -62,7 +62,7 @@ private:
 
     int msPerPixelValue = constMinimalReolution * constLowLevelResolution;
 
-    Qt::GlobalColor colorSignal[nmbCurvesInGraph] = {Qt::blue, Qt::green, Qt::red, Qt::magenta};
+    Qt::GlobalColor colorSignal[nmbCurvesInGraph] = {Qt::blue, Qt::darkGreen, Qt::red, Qt::magenta};
 
     QScrollBar* scBar = new QScrollBar(Qt::Horizontal, this);
     QPushButton* setmaxResolution = new QPushButton(this);
