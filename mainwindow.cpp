@@ -410,79 +410,11 @@ void MainWindow::on_sendButton_clicked()
         SetTimerRequests(oTableSelection, strCmd, AMPLIFIER_SOURCE);
 
 
-        for(qint32 row = 0; row < NMB_ITEMS_TIMERS_GENER; row++)
-        {
-            if(eRequestsGenerAdcx[row].timer.bEnable)
-            {
-                ui->comboBox_2->addItems(allAdxSignalsGener[row]);
-                ui->comboBox_3->addItems(allAdxSignalsGener[row]);
-                ui->comboBox_4->addItems(allAdxSignalsGener[row]);
-                ui->comboBox_5->addItems(allAdxSignalsGener[row]);
-            }
-        }
+        ShowSignalsIfAreReceiving(GENERATOR_SOURCE);
+        ShowSignalsIfAreReceiving(AMPLIFIER_SOURCE);
 
-        for(qint32 row = 0; row < NMB_ITEMS_TIMERS_AMPLF; row++)
-        {
-            if(eRequestsAmplifAdcx[row].timer.bEnable)
-            {
-                ui->comboBox_2->addItems(allAdxSignalsAmplf[row]);
-                ui->comboBox_3->addItems(allAdxSignalsAmplf[row]);
-                ui->comboBox_4->addItems(allAdxSignalsAmplf[row]);
-                ui->comboBox_5->addItems(allAdxSignalsAmplf[row]);
-            }
-        }
-
-        if(oTableSelection.at(0).data().toInt() == PID_TIMER_INPUT_GENER)
-        {
-            if(oTableSelection.at(2).data().toInt() == 1)
-            {
-                m_CommProt.data()->SendData(m_nDeviceAddress, QByteArray::fromHex(strCmd.toStdString().c_str()), true);
-
-                eRequestGenerInput.timer.CurrentTime_ms = 0;
-                eRequestGenerInput.timer.bEnable = true;
-
-                eRequestGenerInput.assemblyMsq = QByteArray::fromHex(strCmd.toStdString().c_str());
-                eRequestGenerInput.respExp = true;
-            }
-            else if(oTableSelection.at(2).data().toInt() == 0)
-            {
-                m_CommProt.data()->SendData(m_nDeviceAddress, QByteArray::fromHex(strCmd.toStdString().c_str()), false);
-
-                eRequestGenerInput.timer.bEnable = false;
-                eRequestGenerInput.respExp = false;
-
-                ui->toolButton->setStyleSheet("font:10px");
-                ui->toolButton_2->setStyleSheet("font:10px");
-            }
-        }
-
-        if(oTableSelection.at(0).data().toInt() == PID_TIMER_INPUT_AMPLF)
-        {
-            if(oTableSelection.at(2).data().toInt() == 1)
-            {
-                m_CommProt.data()->SendData(m_nDeviceAddress, QByteArray::fromHex(strCmd.toStdString().c_str()), true);
-
-                eRequestAmplfInput.timer.CurrentTime_ms = 0;
-                eRequestAmplfInput.timer.bEnable = true;
-
-                eRequestAmplfInput.assemblyMsq = QByteArray::fromHex(strCmd.toStdString().c_str());
-                eRequestAmplfInput.respExp = true;
-            }
-            else if(oTableSelection.at(2).data().toInt() == 0)
-            {
-                m_CommProt.data()->SendData(m_nDeviceAddress, QByteArray::fromHex(strCmd.toStdString().c_str()), false);
-
-                eRequestAmplfInput.timer.bEnable = false;
-                eRequestAmplfInput.respExp = false;
-
-                ui->toolButton_3->setStyleSheet("font:10px");
-                ui->toolButton_4->setStyleSheet("font:10px");
-                ui->toolButton_5->setStyleSheet("font:10px");
-                ui->toolButton_6->setStyleSheet("font:10px");
-                ui->toolButton_7->setStyleSheet("font:10px");
-                ui->toolButton_8->setStyleSheet("font:10px");
-            }
-        }
+        SetTimerinput(oTableSelection, strCmd, GENERATOR_SOURCE);
+        SetTimerinput(oTableSelection, strCmd, AMPLIFIER_SOURCE);
 
         m_CommProt.data()->SendData(m_nDeviceAddress, QByteArray::fromHex(strCmd.toStdString().c_str()), false);
 
@@ -1670,6 +1602,68 @@ void MainWindow::SetTimerRequests(QModelIndexList &TableSelect, QString sCommand
             }
 
             break;
+        }
+    }
+}
+
+void MainWindow::ShowSignalsIfAreReceiving(MainWindow::SOURCE_DEVICE eSourceStream)
+{
+    qint32 dwVolumeItems = (eSourceStream == GENERATOR_SOURCE) ? NMB_ITEMS_TIMERS_GENER : NMB_ITEMS_TIMERS_AMPLF;
+    PERIODIC_REQUEST* p_sRequests = (eSourceStream == GENERATOR_SOURCE) ? eRequestsGenerAdcx : eRequestsAmplifAdcx;
+    const QStringList* p_sStringList = (eSourceStream == GENERATOR_SOURCE) ? allAdxSignalsGener : allAdxSignalsAmplf;
+
+
+    for(qint32 row = 0; row < dwVolumeItems; row++)
+    {
+        if(p_sRequests[row].timer.bEnable)
+        {
+            ui->comboBox_2->addItems(p_sStringList[row]);
+            ui->comboBox_3->addItems(p_sStringList[row]);
+            ui->comboBox_4->addItems(p_sStringList[row]);
+            ui->comboBox_5->addItems(p_sStringList[row]);
+        }
+    }
+}
+
+void MainWindow::SetTimerinput(QModelIndexList &TableSelect, QString sCommand, MainWindow::SOURCE_DEVICE eSourceStream)
+{
+    qint32 dwPidDevice = (eSourceStream == GENERATOR_SOURCE) ? PID_TIMER_INPUT_GENER : PID_TIMER_INPUT_AMPLF;
+    PERIODIC_REQUEST* p_sRequest = (eSourceStream == GENERATOR_SOURCE) ? &eRequestGenerInput : &eRequestAmplfInput;
+
+
+    if(TableSelect.at(0).data().toInt() == dwPidDevice)
+    {
+        if(TableSelect.at(2).data().toInt() == 1)
+        {
+            m_CommProt.data()->SendData(m_nDeviceAddress, QByteArray::fromHex(sCommand.toStdString().c_str()), true);
+
+            p_sRequest->timer.CurrentTime_ms = 0;
+            p_sRequest->timer.bEnable = true;
+
+            p_sRequest->assemblyMsq = QByteArray::fromHex(sCommand.toStdString().c_str());
+            p_sRequest->respExp = true;
+        }
+        else if(TableSelect.at(2).data().toInt() == 0)
+        {
+            m_CommProt.data()->SendData(m_nDeviceAddress, QByteArray::fromHex(sCommand.toStdString().c_str()), false);
+
+            p_sRequest->timer.bEnable = false;
+            p_sRequest->respExp = false;
+
+            if(eSourceStream == GENERATOR_SOURCE)
+            {
+                ui->toolButton->setStyleSheet("font:10px");
+                ui->toolButton_2->setStyleSheet("font:10px");
+            }
+            else
+            {
+                ui->toolButton_3->setStyleSheet("font:10px");
+                ui->toolButton_4->setStyleSheet("font:10px");
+                ui->toolButton_5->setStyleSheet("font:10px");
+                ui->toolButton_6->setStyleSheet("font:10px");
+                ui->toolButton_7->setStyleSheet("font:10px");
+                ui->toolButton_8->setStyleSheet("font:10px");
+            }
         }
     }
 }

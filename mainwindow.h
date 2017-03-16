@@ -195,6 +195,8 @@ private:
 
     bool GetIndexFromQlist(SOURCE_DEVICE eSourceStream, int &dwAbsIndex, int dwNumberCmbBx, int dwIndexCmbBx);
     void SetTimerRequests(QModelIndexList &TableSelect, QString sCommand, SOURCE_DEVICE eSourceStream);
+    void ShowSignalsIfAreReceiving(SOURCE_DEVICE eSourceStream);
+    void SetTimerinput(QModelIndexList &TableSelect, QString sCommand, SOURCE_DEVICE eSourceStream);
 
 
     double recvItems[nmbCurvesInGraph] = {0, 0, 0, 0};
