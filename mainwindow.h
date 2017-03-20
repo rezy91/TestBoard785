@@ -124,14 +124,14 @@ private:
     const quint32 constAmpID = 20;
 
 
-    const int m_NumberOfFilledTablesGenerator = 2 + 2 + 1 + 2 + 6 + 3 + 4 * 2 + 7 * 2 + 9 * 2 + 9 * 2 + 8 + 6 + 3 + 2;
+    const int m_NumberOfFilledTablesGenerator = 3 + 2 + 2 + 2 + 4 * 2 + 7 * 2 + 9 * 4 + 8 + 6 + 4 + 3 + 2 + 2;
     const int m_NumberOfFilledTablesAmplifier = 1 + 1 + 4 + 1 + 6;
     const int m_NumberOfFilledRowsAmplifier = 1 + 1 + 4 + 1 + 1;
 
     const QString allSignalsNameGener[NMB_ITEMS_TIMERS_GENER] = {"NOT_USED_CURRENTLY", "ADC3_RECEIVE_AVERAGE_DATA", "IMPEDANCE_RECEIVE_DATA", "ADC2_RECEIVE_AVERAGE_DATA", "NOT_USED_CURRENTLY", "ADC1_RECEIVE_AVERAGE_DATA"};
-    const QString allSignalsNameAmplf[NMB_ITEMS_TIMERS_AMPLF] = {"NOT_USED_CURRENTLY", "ADC3_RECEIVE_AVERAGE_DATA", "NOT_USED_CURRENTLY", "ADC1_RECEIVE_AVERAGE_DATA"};
+    const QString allSignalsNameAmplf[NMB_ITEMS_TIMERS_AMPLF] = {"TIMERS_RESULTS", "ADC3_RECEIVE_AVERAGE_DATA", "NOT_USED_CURRENTLY", "ADC1_RECEIVE_AVERAGE_DATA"};
     const QString allSignalsBaseOnlyGener[NMB_ITEMS_TIMERS_GENER] = {"g3c", "g3s", "g2c", "g2s", "g1c", "g1s"};
-    const QString allSignalsBaseOnlyAmplf[NMB_ITEMS_TIMERS_AMPLF] = {"a3c", "a3s", "a1c", "a1s"};
+    const QString allSignalsBaseOnlyAmplf[NMB_ITEMS_TIMERS_AMPLF] = {"at", "a3s", "ax", "a1s"};
     const QStringList allAdxSignalsGener[NMB_ITEMS_TIMERS_GENER] = { \
                                     {"g3c_counter", "g3c_exec", "g3c_conv"}, \
                                     {"g3s_counter", "Cooling_ADC1", "Cooling_ADC2", "Cooling_ADC3", "Cooling_ADC4"}, \
@@ -140,10 +140,10 @@ private:
                                     {"g1c_counter", "g1c_exec", "g1c_conv"}, \
                                     {"g1s_counter", "Apl1_Vcc_Adc", "CQM1_adc", "CQM2_adc", "Vref", "Temperature1", "+24V_adc", "+5V_adc", "temper_mcu_adc", "vrefin_adc"}};
     const QStringList allAdxSignalsAmplf[NMB_ITEMS_TIMERS_AMPLF] = { \
-                                    {"a3c_counter", "a3c_exec", "a3c_conv"}, \
-                                    {"a3s_counter", "3adc1", "3adc2", "3adc3", "3adc4", "3adc5", "3adc6", "3adc7", "3adc8"}, \
-                                    {"a1c_counter", "a1c_exec", "a1c_conv"}, \
-                                    {"a1s_counter", "1adc1", "1adc2", "1adc3", "1adc4", "1adc5", "1adc6", "1adc7", "1adc8"}};
+                                    {"at_counter", "Frequency", "/Frequency", "duty_factor_1", "duty_factor_2", "dead_time_1->2", "dead_time_2->1"}, \
+                                    {"a3s_counter", "Temperature_1", "Temperature_2", "Temperature_3", "+24V_adc", "+10V_adc", "Vcheck", "ADC3_14", "ADC3_15"}, \
+                                    {"ax_counter", "ax_exec", "ax_conv"}, \
+                                    {"a1s_counter", "Vfet1Out", "Vfet2Out", "Ifet1Out", "Ifet2Out", "Vgate1Out", "Vgate2Out", "inputVolatge_ADC", "inputCurrent_ADC"}};
     const QString coeffsOthersName[NMB_COEFFICIENTS_OTHERS] = {"for power", "for phase (0 - pi/2) [rad]", "NOT_USED", "NOT_USED", "NOT_USED", "NOT_USED", "NOT_USED", "NOT_USED", "NOT_USED"};
     const QString coeffsRegulatorName[3] = {"PROPORCIAL", "INTEGRAL", "DERIVATIVE"};
 
@@ -203,12 +203,11 @@ private:
     void HasTimerInputExpired(SOURCE_DEVICE eSourceStream);
 
 
-    double recvItems[nmbCurvesInGraph] = {0, 0, 0, 0};
-    int recStat[nmbCurvesInGraph] = {0, 0, 0, 0};
-
-    int sourceSignal[nmbCurvesInGraph] = {0, 0, 0, 0};
-    int sourceAd[nmbCurvesInGraph] = {0, 0, 0, 0};
-    QString sourceSignText[nmbCurvesInGraph] = {"\0", "\0", "\0", "\0"};
+    double recvItems[nmbCurvesInGraph];
+    int recStat[nmbCurvesInGraph];
+    int sourceSignal[nmbCurvesInGraph];
+    int sourceAd[nmbCurvesInGraph];
+    QString sourceSignText[nmbCurvesInGraph];
 
     QTime timeCurrent;
 

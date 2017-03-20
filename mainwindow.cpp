@@ -54,6 +54,15 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
     ui->setupUi(this);
 
 
+    for(int iLoop = 0; iLoop < nmbCurvesInGraph; iLoop++)
+    {
+        recvItems[iLoop] = 0.0;
+        recStat[iLoop] = 0;
+        sourceSignal[iLoop] = 0;
+        sourceAd[iLoop] = 0;
+        sourceSignText[iLoop] = "\0";
+    }
+
     ui->sendButton->setEnabled(false);
     ui->tableWidget->setColumnWidth(1, 250);
 
@@ -96,7 +105,7 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
         HasTimerInputExpired(GENERATOR_SOURCE);
         HasTimerInputExpired(AMPLIFIER_SOURCE);
 
-        if(++mMainTimer >= 100)
+        if(++mMainTimer >= 100)//only for some tests
         {
             mMainTimer = 0;
         }
@@ -972,7 +981,7 @@ void MainWindow::FillCommandTableGenerator()
     ui->tableWidget->setItem(ui->tableWidget->rowCount() - 1, 0, pvalue21PacketID);   // insert item to created row to the first column
 
     // the second column (it has no impact on data to be sent)
-    QTableWidgetItem *pvalue21PacketName = new QTableWidgetItem("REGULATION_POWER");     // readable description
+    QTableWidgetItem *pvalue21PacketName = new QTableWidgetItem("SET_THERAPY_CLASSIC_(X)");     // readable description
     ui->tableWidget->setItem(ui->tableWidget->rowCount() - 1, 1, pvalue21PacketName); // insert item to created row to the second column
 
     // the third column
@@ -980,8 +989,84 @@ void MainWindow::FillCommandTableGenerator()
     pvalue21PacketArg0->setText(b_dataSaved == true ? arrListSaved.at(w_IndexInList++) : ("5"));
     pvalue21PacketArg0->setData(TableRoles::ByteCount, 2);                            // the value is 3 bytes
     pvalue21PacketArg0->setData(TableRoles::NumeralSystem, TableRoles::Decimal);      // packet id is displayed as decimal
-    pvalue21PacketArg0->setData(Qt::ToolTipRole, "[0-300] in W");     // a hint which is displayed when mouse hovers over
+    pvalue21PacketArg0->setData(Qt::ToolTipRole, "(Power) [0 - 300] in W");     // a hint which is displayed when mouse hovers over
     ui->tableWidget->setItem(ui->tableWidget->rowCount() - 1, 2, pvalue21PacketArg0); // insert item to created row to the fourth column
+
+    // the third column
+    QTableWidgetItem *pvalue21PacketArg1 = new QTableWidgetItem();
+    pvalue21PacketArg1->setText(b_dataSaved == true ? arrListSaved.at(w_IndexInList++) : ("50"));
+    pvalue21PacketArg1->setData(TableRoles::ByteCount, 2);                            // the value is 3 bytes
+    pvalue21PacketArg1->setData(TableRoles::NumeralSystem, TableRoles::Decimal);      // packet id is displayed as decimal
+    pvalue21PacketArg1->setData(Qt::ToolTipRole, "(Duty factor) [0 - 100] in %");     // a hint which is displayed when mouse hovers over
+    ui->tableWidget->setItem(ui->tableWidget->rowCount() - 1, 3, pvalue21PacketArg1); // insert item to created row to the fourth column
+
+    // the third column
+    QTableWidgetItem *pvalue21PacketArg2 = new QTableWidgetItem();
+    pvalue21PacketArg2->setText(b_dataSaved == true ? arrListSaved.at(w_IndexInList++) : ("1000000"));
+    pvalue21PacketArg2->setData(TableRoles::ByteCount, 4);                            // the value is 3 bytes
+    pvalue21PacketArg2->setData(TableRoles::NumeralSystem, TableRoles::Decimal);      // packet id is displayed as decimal
+    pvalue21PacketArg2->setData(Qt::ToolTipRole, "(Frequency) [0 - 10 000 000] in Hz");     // a hint which is displayed when mouse hovers over
+    ui->tableWidget->setItem(ui->tableWidget->rowCount() - 1, 4, pvalue21PacketArg2); // insert item to created row to the fourth column
+
+
+    //! set packet
+    // the first column
+    ui->tableWidget->insertRow(ui->tableWidget->rowCount());                            // create new row in table
+    QTableWidgetItem *pvalue22PacketID = new QTableWidgetItem("5C");                  // paket id
+    pvalue22PacketID->setBackground(COLOR_BLUE_LIGHT);
+    pvalue22PacketID->setData(TableRoles::ByteCount, 1);                              // paket id is 1 byte
+    pvalue22PacketID->setData(TableRoles::NumeralSystem, TableRoles::Hex);            // packet id is displayed as hex
+    ui->tableWidget->setItem(ui->tableWidget->rowCount() - 1, 0, pvalue22PacketID);   // insert item to created row to the first column
+
+    // the second column (it has no impact on data to be sent)
+    QTableWidgetItem *pvalue22PacketName = new QTableWidgetItem("SET_THERAPY_TEST_(X)");     // readable description
+    ui->tableWidget->setItem(ui->tableWidget->rowCount() - 1, 1, pvalue22PacketName); // insert item to created row to the second column
+
+    // the third column
+    QTableWidgetItem *pvalue22PacketArg0 = new QTableWidgetItem();
+    pvalue22PacketArg0->setText(b_dataSaved == true ? arrListSaved.at(w_IndexInList++) : ("3"));
+    pvalue22PacketArg0->setData(TableRoles::ByteCount, 2);                            // the value is 3 bytes
+    pvalue22PacketArg0->setData(TableRoles::NumeralSystem, TableRoles::Decimal);      // packet id is displayed as decimal
+    pvalue22PacketArg0->setData(Qt::ToolTipRole, "(Duty factor) [0 - 100] in %");     // a hint which is displayed when mouse hovers over
+    ui->tableWidget->setItem(ui->tableWidget->rowCount() - 1, 2, pvalue22PacketArg0); // insert item to created row to the fourth column
+
+    // the third column
+    QTableWidgetItem *pvalue22PacketArg1 = new QTableWidgetItem();
+    pvalue22PacketArg1->setText(b_dataSaved == true ? arrListSaved.at(w_IndexInList++) : ("1000"));
+    pvalue22PacketArg1->setData(TableRoles::ByteCount, 4);                            // the value is 3 bytes
+    pvalue22PacketArg1->setData(TableRoles::NumeralSystem, TableRoles::Decimal);      // packet id is displayed as decimal
+    pvalue22PacketArg1->setData(Qt::ToolTipRole, "(Frequency) [0 - 10 000] in Hz");     // a hint which is displayed when mouse hovers over
+    ui->tableWidget->setItem(ui->tableWidget->rowCount() - 1, 3, pvalue22PacketArg1); // insert item to created row to the fourth column
+
+
+    //! set packet
+    // the first column
+    ui->tableWidget->insertRow(ui->tableWidget->rowCount());                            // create new row in table
+    QTableWidgetItem *pvalue23PacketID = new QTableWidgetItem("5D");                  // paket id
+    pvalue23PacketID->setBackground(COLOR_BLUE_LIGHT);
+    pvalue23PacketID->setData(TableRoles::ByteCount, 1);                              // paket id is 1 byte
+    pvalue23PacketID->setData(TableRoles::NumeralSystem, TableRoles::Hex);            // packet id is displayed as hex
+    ui->tableWidget->setItem(ui->tableWidget->rowCount() - 1, 0, pvalue23PacketID);   // insert item to created row to the first column
+
+    // the second column (it has no impact on data to be sent)
+    QTableWidgetItem *pvalue23PacketName = new QTableWidgetItem("START/STOP_THERAPY_(X)");     // readable description
+    ui->tableWidget->setItem(ui->tableWidget->rowCount() - 1, 1, pvalue23PacketName); // insert item to created row to the second column
+
+    // the third column
+    QTableWidgetItem *pvalue23PacketArg0 = new QTableWidgetItem();
+    pvalue23PacketArg0->setText(b_dataSaved == true ? arrListSaved.at(w_IndexInList++) : ("0"));
+    pvalue23PacketArg0->setData(TableRoles::ByteCount, 1);                            // the value is 3 bytes
+    pvalue23PacketArg0->setData(TableRoles::NumeralSystem, TableRoles::Decimal);      // packet id is displayed as decimal
+    pvalue23PacketArg0->setData(Qt::ToolTipRole, "(classic) [0-1] stop/start");     // a hint which is displayed when mouse hovers over
+    ui->tableWidget->setItem(ui->tableWidget->rowCount() - 1, 2, pvalue23PacketArg0); // insert item to created row to the fourth column
+
+    // the third column
+    QTableWidgetItem *pvalue23PacketArg1 = new QTableWidgetItem();
+    pvalue23PacketArg1->setText(b_dataSaved == true ? arrListSaved.at(w_IndexInList++) : ("0"));
+    pvalue23PacketArg1->setData(TableRoles::ByteCount, 1);                            // the value is 3 bytes
+    pvalue23PacketArg1->setData(TableRoles::NumeralSystem, TableRoles::Decimal);      // packet id is displayed as decimal
+    pvalue23PacketArg1->setData(Qt::ToolTipRole, "(test) [0-1] stop/start");     // a hint which is displayed when mouse hovers over
+    ui->tableWidget->setItem(ui->tableWidget->rowCount() - 1, 3, pvalue23PacketArg1); // insert item to created row to the fourth column
 }
 
 void MainWindow::FillCommandTableAmplifier()
@@ -1346,7 +1431,7 @@ void MainWindow::newDataV200(QByteArray aData)
     }
     else if(aData.at(0) == 'a')//Amp´s data
     {
-        if(aData.at(1) == '3' && aData.at(2) == 'c')//ADC3 adjusted data
+        if(aData.at(1) == 't')//timers adjusted data
         {
             recognizeIfDisplayNewDataAllSignals(timeShot, &myStringOnlyNumbers, NMB_ITEMS_TIMERS_GENER);
         }
@@ -1354,7 +1439,7 @@ void MainWindow::newDataV200(QByteArray aData)
         {
             recognizeIfDisplayNewDataAllSignals(timeShot, &myStringOnlyNumbers, NMB_ITEMS_TIMERS_GENER + 1);
         }
-        else if(aData.at(1) == '1' && aData.at(2) == 'c')//ADC1 adjusted data
+        else if(aData.at(1) == 'x')//reserve data
         {
             recognizeIfDisplayNewDataAllSignals(timeShot, &myStringOnlyNumbers, NMB_ITEMS_TIMERS_GENER + 2);
         }
