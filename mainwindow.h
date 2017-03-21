@@ -55,6 +55,7 @@ namespace Ui {
 class MainWindow;
 }
 
+
 class TableRoles
 {
 public:

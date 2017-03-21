@@ -339,7 +339,20 @@ void MainWindow::on_sendButton_clicked()
             qint32 nAlignment = oTableSelection.at(nItemIndex).data(TableRoles::ByteCount).toInt() * 2;
             if(oTableSelection.at(nItemIndex).data(TableRoles::NumeralSystem) == TableRoles::Hex)
             {
-                strCmd += oTableSelection.at(nItemIndex).data().toString().rightJustified(nAlignment, '0');
+                if((oTableSelection.at(0).data().toString() == "31") && (nItemIndex == 2))
+                {
+                    uint16_t w_ModifiedParameter = uint16_t((std::numeric_limits<uint16_t>::max() * oTableSelection.at(nItemIndex).data().toDouble()) / 100);
+                    QString s_ModifParInHex = QString::number(w_ModifiedParameter, 16);
+
+                    qDebug() << "voltage send value:" << s_ModifParInHex << w_ModifiedParameter;
+
+                    strCmd += s_ModifParInHex;
+
+                }
+                else
+                {
+                    strCmd += oTableSelection.at(nItemIndex).data().toString().rightJustified(nAlignment, '0');
+                }
             }
             else if(oTableSelection.at(nItemIndex).data(TableRoles::NumeralSystem) == TableRoles::Decimal)
             {
@@ -1123,8 +1136,8 @@ void MainWindow::FillCommandTableAmplifier()
     QTableWidgetItem *pPacketArg0 = new QTableWidgetItem();
     pPacketArg0->setText(b_dataSaved == true ? arrListSaved.at(w_IndexInList++) : ("50.0"));
     pPacketArg0->setData(TableRoles::ByteCount, 2);                                     // the value is 3 bytes
-    pPacketArg0->setData(TableRoles::NumeralSystem, TableRoles::DecimalFloat);          // packet id is displayed as float in decimal
-    pPacketArg0->setData(TableRoles::DivisorPosition, 10);
+    pPacketArg0->setData(TableRoles::NumeralSystem, TableRoles::Hex);                   // packet id is displayed as float in decimal
+    //pPacketArg0->setData(TableRoles::DivisorPosition, 10);
     pPacketArg0->setData(Qt::ToolTipRole, "from 0.0 to 100.0 %");                     // a hint which is displayed when mouse hovers over
     ui->tableWidget->setItem(ui->tableWidget->rowCount() - 1, 2, pPacketArg0);          // insert item to created row to the third column
 
