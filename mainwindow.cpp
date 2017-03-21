@@ -360,14 +360,6 @@ void MainWindow::on_sendButton_clicked()
                 QString strHexNumber = QString::number(strNumber.toInt(), 16);
                 strCmd += strHexNumber.rightJustified(nAlignment, '0');
             }
-            else if(oTableSelection.at(nItemIndex).data(TableRoles::NumeralSystem) == TableRoles::DecimalFloat)
-            {
-                const QVariant& vDisplayText = oTableSelection.at(nItemIndex).data(Qt::DisplayRole);
-                qint32 nNumber = vDisplayText.toDouble() * oTableSelection.at(nItemIndex).data(TableRoles::DivisorPosition).toInt();
-                QString strHexNumber = QString::number(nNumber, 16);
-                strCmd += strHexNumber.rightJustified(nAlignment, '0');
-
-            }
             else if(oTableSelection.at(nItemIndex).data(TableRoles::NumeralSystem) == TableRoles::Float)
             {
                 float f_convertedValue = oTableSelection.at(nItemIndex).data().toFloat();

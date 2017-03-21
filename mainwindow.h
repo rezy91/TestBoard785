@@ -62,13 +62,11 @@ public:
     {
         NumeralSystem = Qt::UserRole + 1,
         ByteCount,
-        DivisorPosition,
     };
 
     enum eNumeralSystem
     {
         Decimal,
-        DecimalFloat,
         Float,
         Hex
     };
