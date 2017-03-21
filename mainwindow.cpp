@@ -652,7 +652,7 @@ void MainWindow::FillCommandTableGenerator()
 
     // the fourth column
     QTableWidgetItem *pvalue6PacketArg0 = new QTableWidgetItem();
-    pvalue6PacketArg0->setText(b_dataSaved == true ? arrListSaved.at(w_IndexInList++) : ("10000"));
+    pvalue6PacketArg0->setText(b_dataSaved == true ? arrListSaved.at(w_IndexInList++) : ("35000"));
     pvalue6PacketArg0->setData(TableRoles::ByteCount, 3);                            // the value is 3 bytes
     pvalue6PacketArg0->setData(TableRoles::NumeralSystem, TableRoles::Decimal);      // packet id is displayed as decimal
     pvalue6PacketArg0->setData(Qt::ToolTipRole, "(1) [1000 - 100000]");     // a hint which is displayed when mouse hovers over
@@ -660,7 +660,7 @@ void MainWindow::FillCommandTableGenerator()
 
     // the fourth column
     QTableWidgetItem *pvalue6PacketArg1 = new QTableWidgetItem();
-    pvalue6PacketArg1->setText(b_dataSaved == true ? arrListSaved.at(w_IndexInList++) : ("5000"));
+    pvalue6PacketArg1->setText(b_dataSaved == true ? arrListSaved.at(w_IndexInList++) : ("35000"));
     pvalue6PacketArg1->setData(TableRoles::ByteCount, 3);                            // the value is 3 bytes
     pvalue6PacketArg1->setData(TableRoles::NumeralSystem, TableRoles::Decimal);      // packet id is displayed as decimal
     pvalue6PacketArg1->setData(Qt::ToolTipRole, "(2) [1000 - 100000]");     // a hint which is displayed when mouse hovers over
@@ -944,7 +944,7 @@ void MainWindow::FillCommandTableGenerator()
 
 
     QTableWidgetItem *pvalue20PacketArg0 = new QTableWidgetItem();
-    pvalue20PacketArg0->setText(b_dataSaved == true ? arrListSaved.at(w_IndexInList++) : ("1.0"));
+    pvalue20PacketArg0->setText(b_dataSaved == true ? arrListSaved.at(w_IndexInList++) : ("0.01"));
     pvalue20PacketArg0->setData(TableRoles::ByteCount, 4);                            // the value is 3 bytes
     pvalue20PacketArg0->setData(TableRoles::NumeralSystem, TableRoles::Float);      // packet id is displayed as decimal
     pvalue20PacketArg0->setData(Qt::ToolTipRole, "PROPORCIAL");     // a hint which is displayed when mouse hovers over
@@ -952,7 +952,7 @@ void MainWindow::FillCommandTableGenerator()
 
 
     QTableWidgetItem *pvalue20PacketArg1 = new QTableWidgetItem();
-    pvalue20PacketArg1->setText(b_dataSaved == true ? arrListSaved.at(w_IndexInList++) : ("1.0"));
+    pvalue20PacketArg1->setText(b_dataSaved == true ? arrListSaved.at(w_IndexInList++) : ("0.01"));
     pvalue20PacketArg1->setData(TableRoles::ByteCount, 4);                            // the value is 3 bytes
     pvalue20PacketArg1->setData(TableRoles::NumeralSystem, TableRoles::Float);      // packet id is displayed as decimal
     pvalue20PacketArg1->setData(Qt::ToolTipRole, "INTEGRAL");     // a hint which is displayed when mouse hovers over
@@ -960,7 +960,7 @@ void MainWindow::FillCommandTableGenerator()
 
 
     QTableWidgetItem *pvalue20PacketArg2 = new QTableWidgetItem();
-    pvalue20PacketArg2->setText(b_dataSaved == true ? arrListSaved.at(w_IndexInList++) : ("1.0"));
+    pvalue20PacketArg2->setText(b_dataSaved == true ? arrListSaved.at(w_IndexInList++) : ("0.01"));
     pvalue20PacketArg2->setData(TableRoles::ByteCount, 4);                            // the value is 3 bytes
     pvalue20PacketArg2->setData(TableRoles::NumeralSystem, TableRoles::Float);      // packet id is displayed as decimal
     pvalue20PacketArg2->setData(Qt::ToolTipRole, "DERIVATIVE");     // a hint which is displayed when mouse hovers over
@@ -968,7 +968,7 @@ void MainWindow::FillCommandTableGenerator()
 
 
     QTableWidgetItem *pvalue20PacketArg3 = new QTableWidgetItem();
-    pvalue20PacketArg3->setText(b_dataSaved == true ? arrListSaved.at(w_IndexInList++) : ("100"));
+    pvalue20PacketArg3->setText(b_dataSaved == true ? arrListSaved.at(w_IndexInList++) : ("10"));
     pvalue20PacketArg3->setData(TableRoles::ByteCount, 2);                            // the value is 3 bytes
     pvalue20PacketArg3->setData(TableRoles::NumeralSystem, TableRoles::Decimal);      // packet id is displayed as decimal
     pvalue20PacketArg3->setData(Qt::ToolTipRole, "Period [10-1000] in ms");     // a hint which is displayed when mouse hovers over
