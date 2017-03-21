@@ -72,8 +72,8 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
 
 
 
-    ui->comboBox_SelectDevice->addItem(QString("Generator (ID = %1d").arg(constGenerID));
-    ui->comboBox_SelectDevice->addItem(QString("Amplifier (ID = %1d").arg(constAmpID));
+    ui->comboBox_SelectDevice->addItem(QString("Generator (ID = %1d)").arg(constGenerID));
+    ui->comboBox_SelectDevice->addItem(QString("Amplifier (ID = %1d)").arg(constAmpID));
 
     for(int iLoop = 0; iLoop < NMB_ITEMS_TIMERS_GENER; iLoop++)
     {
@@ -342,7 +342,7 @@ void MainWindow::on_sendButton_clicked()
                 if((oTableSelection.at(0).data().toString() == "31") && (nItemIndex == 2))
                 {
                     uint16_t w_ModifiedParameter = uint16_t((std::numeric_limits<uint16_t>::max() * oTableSelection.at(nItemIndex).data().toDouble()) / 100);
-                    QString s_ModifParInHex = QString::number(w_ModifiedParameter, 16);
+                    QString s_ModifParInHex = QString::number(w_ModifiedParameter, 16).rightJustified(nAlignment, '0');
 
                     qDebug() << "voltage send value:" << s_ModifParInHex << w_ModifiedParameter;
 

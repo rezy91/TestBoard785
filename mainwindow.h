@@ -55,7 +55,6 @@ namespace Ui {
 class MainWindow;
 }
 
-
 class TableRoles
 {
 public:
@@ -122,7 +121,7 @@ private slots:
 
 private:
     const quint32 constGenerID = 18;
-    const quint32 constAmpID = 20;
+    const quint32 constAmpID = 1;
 
 
     const int m_NumberOfFilledTablesGenerator = 3 + 2 + 2 + 2 + 4 * 2 + 7 * 2 + 9 * 4 + 8 + 6 + 4 + 3 + 2 + 2;
