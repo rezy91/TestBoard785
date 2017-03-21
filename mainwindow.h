@@ -193,7 +193,7 @@ private:
 
     bool GetIndexFromQlist(SOURCE_DEVICE eSourceStream, int &dwAbsIndex, int dwNumberCmbBx, int dwIndexCmbBx);
     void ShowSignalsIntoComboBox(SOURCE_STREAM eSourceStream);
-    void ShowSignalsIfAreReceiving(SOURCE_DEVICE eSourceStream);
+    void ShowSignalsIfAreReceiving(SOURCE_DEVICE eSourceStream, qint32 &dwStartIndex, QColor eBackgrColor);
     void ShowSignalsIfAreLogged(SOURCE_DEVICE eSourceStream);
     void SetTimerRequests(QModelIndexList &TableSelect, QString sCommand, SOURCE_DEVICE eSourceStream);
     void SetTimerinput(QModelIndexList &TableSelect, QString sCommand, SOURCE_DEVICE eSourceStream);

@@ -1640,8 +1640,10 @@ void MainWindow::ShowSignalsIntoComboBox(SOURCE_STREAM eSourceStream)
 
     if(eSourceStream == RECEIVE_STREAM)
     {
-        ShowSignalsIfAreReceiving(GENERATOR_SOURCE);
-        ShowSignalsIfAreReceiving(AMPLIFIER_SOURCE);
+        qint32 dwIndexStart = 1;
+
+        ShowSignalsIfAreReceiving(GENERATOR_SOURCE, dwIndexStart, COLOR_BLUE_DARK);
+        ShowSignalsIfAreReceiving(AMPLIFIER_SOURCE, dwIndexStart, COLOR_BROWN_DARK);
     }
     else if(eSourceStream == LOG_STREAM)
     {
@@ -1650,7 +1652,7 @@ void MainWindow::ShowSignalsIntoComboBox(SOURCE_STREAM eSourceStream)
     }
 }
 
-void MainWindow::ShowSignalsIfAreReceiving(MainWindow::SOURCE_DEVICE eSourceStream)
+void MainWindow::ShowSignalsIfAreReceiving(MainWindow::SOURCE_DEVICE eSourceStream, qint32 &dwStartIndex, QColor eBackgrColor)
 {
     qint32 dwVolumeItems = (eSourceStream == GENERATOR_SOURCE) ? NMB_ITEMS_TIMERS_GENER : NMB_ITEMS_TIMERS_AMPLF;
     PERIODIC_REQUEST* p_sRequests = (eSourceStream == GENERATOR_SOURCE) ? eRequestsGenerAdcx : eRequestsAmplifAdcx;
@@ -1665,6 +1667,20 @@ void MainWindow::ShowSignalsIfAreReceiving(MainWindow::SOURCE_DEVICE eSourceStre
             ui->comboBox_3->addItems(p_sStringList[row]);
             ui->comboBox_4->addItems(p_sStringList[row]);
             ui->comboBox_5->addItems(p_sStringList[row]);
+
+            for(qint32 iLoop = 0; iLoop <= p_sStringList[row].count(); iLoop++)
+            {
+                ui->comboBox_2->setItemData(dwStartIndex + iLoop, QBrush(eBackgrColor), Qt::BackgroundRole);
+                ui->comboBox_2->setItemData(dwStartIndex + iLoop, QBrush(Qt::white), Qt::TextColorRole);
+                ui->comboBox_3->setItemData(dwStartIndex + iLoop, QBrush(eBackgrColor), Qt::BackgroundRole);
+                ui->comboBox_3->setItemData(dwStartIndex + iLoop, QBrush(Qt::white), Qt::TextColorRole);
+                ui->comboBox_4->setItemData(dwStartIndex + iLoop, QBrush(eBackgrColor), Qt::BackgroundRole);
+                ui->comboBox_4->setItemData(dwStartIndex + iLoop, QBrush(Qt::white), Qt::TextColorRole);
+                ui->comboBox_5->setItemData(dwStartIndex + iLoop, QBrush(eBackgrColor), Qt::BackgroundRole);
+                ui->comboBox_5->setItemData(dwStartIndex + iLoop, QBrush(Qt::white), Qt::TextColorRole);
+            }
+
+            dwStartIndex += p_sStringList[row].count();
         }
     }
 }
