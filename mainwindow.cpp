@@ -373,11 +373,15 @@ void MainWindow::on_sendButton_clicked()
         }
         qDebug() << strCmd;
 
-        SetTimerRequests(oTableSelection, strCmd, GENERATOR_SOURCE);
-        SetTimerRequests(oTableSelection, strCmd, AMPLIFIER_SOURCE);
+        int dwPidMessage = oTableSelection.at(0).data().toInt();
 
+        if((dwPidMessage >= PID_TIMERS_ADCX_GENER && dwPidMessage < (PID_TIMERS_ADCX_GENER + NMB_ITEMS_TIMERS_GENER)) || (dwPidMessage >= PID_TIMERS_ADCX_AMPLF && dwPidMessage < (PID_TIMERS_ADCX_AMPLF + NMB_ITEMS_TIMERS_AMPLF)))
+        {
+            SetTimerRequests(oTableSelection, strCmd, GENERATOR_SOURCE);
+            SetTimerRequests(oTableSelection, strCmd, AMPLIFIER_SOURCE);
 
-        ShowSignalsIntoComboBox(RECEIVE_STREAM);
+            ShowSignalsIntoComboBox(RECEIVE_STREAM);
+        }
 
         SetTimerinput(oTableSelection, strCmd, GENERATOR_SOURCE);
         SetTimerinput(oTableSelection, strCmd, AMPLIFIER_SOURCE);
@@ -506,6 +510,7 @@ void MainWindow::FillCommandTableGenerator()
 
         // the second column (it has no impact on data to be sent)
         QTableWidgetItem *pvalueXPacketName = new QTableWidgetItem(allSignalsNameGener[iLoop]);     // readable description
+        pvalueXPacketName->setBackground(COLOR_UNSAVED_GREY);
         ui->tableWidget->setItem(ui->tableWidget->rowCount() - 1, 1, pvalueXPacketName); // insert item to created row to the second column
 
         QTableWidgetItem *pvalueXPacketArg0 = new QTableWidgetItem();
@@ -529,6 +534,7 @@ void MainWindow::FillCommandTableGenerator()
 
     // the second column (it has no impact on data to be sent)
     QTableWidgetItem *pvalue4PacketName = new QTableWidgetItem("READ INPUT");     // readable description
+    pvalue4PacketName->setBackground(COLOR_UNSAVED_GREY);
     ui->tableWidget->setItem(ui->tableWidget->rowCount() - 1, 1, pvalue4PacketName); // insert item to created row to the second column
 
     // the fourth column
@@ -553,6 +559,7 @@ void MainWindow::FillCommandTableGenerator()
 
     // the second column (it has no impact on data to be sent)
     QTableWidgetItem *pvalue14PacketName = new QTableWidgetItem("ADC(X)_RECEIVE_RAW_DATA");     // readable description
+    pvalue14PacketName->setBackground(COLOR_UNSAVED_GREY);
     ui->tableWidget->setItem(ui->tableWidget->rowCount() - 1, 1, pvalue14PacketName); // insert item to created row to the second column
 
     QTableWidgetItem *pvalue14PacketArg0 = new QTableWidgetItem();
@@ -588,6 +595,7 @@ void MainWindow::FillCommandTableGenerator()
 
     // the second column (it has no impact on data to be sent)
     QTableWidgetItem *pvalue1PacketName = new QTableWidgetItem("SET_PWM_COOL_(X)_DUTY");     // readable description
+    pvalue1PacketName->setBackground(COLOR_UNSAVED_GREY);
     ui->tableWidget->setItem(ui->tableWidget->rowCount() - 1, 1, pvalue1PacketName); // insert item to created row to the second column
 
     // the third column
@@ -618,6 +626,7 @@ void MainWindow::FillCommandTableGenerator()
 
     // the second column (it has no impact on data to be sent)
     QTableWidgetItem *pvalue3PacketName = new QTableWidgetItem("SET_DAC_(X)");     // readable description
+    pvalue3PacketName->setBackground(COLOR_UNSAVED_GREY);
     ui->tableWidget->setItem(ui->tableWidget->rowCount() - 1, 1, pvalue3PacketName); // insert item to created row to the second column
 
     // the fourth column
@@ -648,6 +657,7 @@ void MainWindow::FillCommandTableGenerator()
 
     // the second column (it has no impact on data to be sent)
     QTableWidgetItem *pvalue6PacketName = new QTableWidgetItem("SET_PWM_CQM_(X)_FREQ");     // readable description
+    pvalue6PacketName->setBackground(COLOR_SAVED_GREEN);
     ui->tableWidget->setItem(ui->tableWidget->rowCount() - 1, 1, pvalue6PacketName); // insert item to created row to the second column
 
     // the fourth column
@@ -681,6 +691,7 @@ void MainWindow::FillCommandTableGenerator()
 
         // the second column (it has no impact on data to be sent)
         QTableWidgetItem *pvalueADCCoeffsPacketName = new QTableWidgetItem();
+        pvalueADCCoeffsPacketName->setBackground(COLOR_SAVED_GREEN);
         QString textDescriptionPID;
         int iNmbChannels;
 
@@ -754,6 +765,7 @@ void MainWindow::FillCommandTableGenerator()
 
         // the second column (it has no impact on data to be sent)
         QTableWidgetItem *pvalueOthersCoeffsPacketName = new QTableWidgetItem();
+        pvalueOthersCoeffsPacketName->setBackground(COLOR_SAVED_GREEN);
         QString textDescriptionPID;
 
         if(!(iLoop % 2))
@@ -810,6 +822,7 @@ void MainWindow::FillCommandTableGenerator()
 
     // the second column (it has no impact on data to be sent)
     QTableWidgetItem *pvalue18PacketName = new QTableWidgetItem("(RE)SET OUTPUT (X)");     // readable description
+    pvalue18PacketName->setBackground(COLOR_UNSAVED_GREY);
     ui->tableWidget->setItem(ui->tableWidget->rowCount() - 1, 1, pvalue18PacketName); // insert item to created row to the second column
 
     // the fourth column
@@ -882,6 +895,7 @@ void MainWindow::FillCommandTableGenerator()
 
     // the second column (it has no impact on data to be sent)
     QTableWidgetItem *pvalue19PacketName = new QTableWidgetItem("apl_(X)");     // readable description
+    pvalue19PacketName->setBackground(COLOR_UNSAVED_GREY);
     ui->tableWidget->setItem(ui->tableWidget->rowCount() - 1, 1, pvalue19PacketName); // insert item to created row to the second column
 
     QTableWidgetItem *pvalue19PacketArg0 = new QTableWidgetItem();
@@ -939,6 +953,7 @@ void MainWindow::FillCommandTableGenerator()
 
     // the second column (it has no impact on data to be sent)
     QTableWidgetItem *pvalue20PacketName = new QTableWidgetItem("REGULATOR_SETTINGS_(X)");     // readable description
+    pvalue20PacketName->setBackground(COLOR_SAVED_GREEN);
     ui->tableWidget->setItem(ui->tableWidget->rowCount() - 1, 1, pvalue20PacketName); // insert item to created row to the second column
 
 
@@ -987,6 +1002,7 @@ void MainWindow::FillCommandTableGenerator()
 
     // the second column (it has no impact on data to be sent)
     QTableWidgetItem *pvalue21PacketName = new QTableWidgetItem("SET_THERAPY_CLASSIC_(X)");     // readable description
+    pvalue21PacketName->setBackground(COLOR_UNSAVED_GREY);
     ui->tableWidget->setItem(ui->tableWidget->rowCount() - 1, 1, pvalue21PacketName); // insert item to created row to the second column
 
     // the third column
@@ -1025,6 +1041,7 @@ void MainWindow::FillCommandTableGenerator()
 
     // the second column (it has no impact on data to be sent)
     QTableWidgetItem *pvalue22PacketName = new QTableWidgetItem("SET_THERAPY_TEST_(X)");     // readable description
+    pvalue22PacketName->setBackground(COLOR_SAVED_GREEN);
     ui->tableWidget->setItem(ui->tableWidget->rowCount() - 1, 1, pvalue22PacketName); // insert item to created row to the second column
 
     // the third column
@@ -1055,6 +1072,7 @@ void MainWindow::FillCommandTableGenerator()
 
     // the second column (it has no impact on data to be sent)
     QTableWidgetItem *pvalue23PacketName = new QTableWidgetItem("START/STOP_THERAPY_(X)");     // readable description
+    pvalue23PacketName->setBackground(COLOR_UNSAVED_GREY);
     ui->tableWidget->setItem(ui->tableWidget->rowCount() - 1, 1, pvalue23PacketName); // insert item to created row to the second column
 
     // the third column
@@ -1099,6 +1117,7 @@ void MainWindow::FillCommandTableAmplifier()
 
     // the second column (it has no impact on data to be sent)
     QTableWidgetItem *pFrequencyPacketName = new QTableWidgetItem("SET_FREQUENCY");     // readable description
+    pFrequencyPacketName->setBackground(COLOR_UNSAVED_GREY);
     ui->tableWidget->setItem(ui->tableWidget->rowCount() - 1, 1, pFrequencyPacketName); // insert item to created row to the second column
 
     // the fourth column
@@ -1121,6 +1140,7 @@ void MainWindow::FillCommandTableAmplifier()
 
     // the second column (it has no impact on data to be sent)
     QTableWidgetItem *pPacketName = new QTableWidgetItem("SET_VOLTAGE");                    // readable description
+    pPacketName->setBackground(COLOR_UNSAVED_GREY);
     ui->tableWidget->setItem(ui->tableWidget->rowCount() - 1, 1, pPacketName);          // insert item to created row to the second column
 
 
@@ -1145,6 +1165,7 @@ void MainWindow::FillCommandTableAmplifier()
 
         // the second column (it has no impact on data to be sent)
         QTableWidgetItem *pvalueYPacketName = new QTableWidgetItem(allSignalsNameAmplf[iLoop]);     // readable description
+        pvalueYPacketName->setBackground(COLOR_UNSAVED_GREY);
         ui->tableWidget->setItem(ui->tableWidget->rowCount() - 1, 1, pvalueYPacketName); // insert item to created row to the second column
 
         QTableWidgetItem *pvalueYPacketArg0 = new QTableWidgetItem();
@@ -1167,6 +1188,7 @@ void MainWindow::FillCommandTableAmplifier()
 
     // the second column (it has no impact on data to be sent)
     QTableWidgetItem *pvalue4PacketName = new QTableWidgetItem("READ INPUT");     // readable description
+    pvalue4PacketName->setBackground(COLOR_UNSAVED_GREY);
     ui->tableWidget->setItem(ui->tableWidget->rowCount() - 1, 1, pvalue4PacketName); // insert item to created row to the second column
 
     // the fourth column
@@ -1192,6 +1214,7 @@ void MainWindow::FillCommandTableAmplifier()
 
     // the second column (it has no impact on data to be sent)
     QTableWidgetItem *pvalue18PacketName = new QTableWidgetItem("(RE)SET OUTPUT (X)");     // readable description
+    pvalue18PacketName->setBackground(COLOR_UNSAVED_GREY);
     ui->tableWidget->setItem(ui->tableWidget->rowCount() - 1, 1, pvalue18PacketName); // insert item to created row to the second column
 
     // the fourth column
@@ -1199,7 +1222,7 @@ void MainWindow::FillCommandTableAmplifier()
     pvalue18PacketArg0->setText(b_dataSaved == true ? arrListSaved.at(w_IndexInList++) : ("0"));
     pvalue18PacketArg0->setData(TableRoles::ByteCount, 1);                            // the value is 3 bytes
     pvalue18PacketArg0->setData(TableRoles::NumeralSystem, TableRoles::Decimal);      // packet id is displayed as decimal
-    pvalue18PacketArg0->setData(Qt::ToolTipRole, "(REL_OUT_1) [0-1] disable/enable");     // a hint which is displayed when mouse hovers over
+    pvalue18PacketArg0->setData(Qt::ToolTipRole, "(PWR_Source_ON) [0-1] disable/enable");     // a hint which is displayed when mouse hovers over
     ui->tableWidget->setItem(ui->tableWidget->rowCount() - 1, 2, pvalue18PacketArg0); // insert item to created row to the fourth column
 
     // the fourth column
@@ -1207,35 +1230,35 @@ void MainWindow::FillCommandTableAmplifier()
     pvalue18PacketArg1->setText(b_dataSaved == true ? arrListSaved.at(w_IndexInList++) : ("0"));
     pvalue18PacketArg1->setData(TableRoles::ByteCount, 1);                            // the value is 3 bytes
     pvalue18PacketArg1->setData(TableRoles::NumeralSystem, TableRoles::Decimal);      // packet id is displayed as decimal
-    pvalue18PacketArg1->setData(Qt::ToolTipRole, "(REL_OUT_2) [0-1] disable/enable");     // a hint which is displayed when mouse hovers over
+    pvalue18PacketArg1->setData(Qt::ToolTipRole, "(PWR_Source_Decharge) [0-1] disable/enable");     // a hint which is displayed when mouse hovers over
     ui->tableWidget->setItem(ui->tableWidget->rowCount() - 1, 3, pvalue18PacketArg1); // insert item to created row to the fourth column
 
     QTableWidgetItem *pvalue18PacketArg2 = new QTableWidgetItem();
     pvalue18PacketArg2->setText(b_dataSaved == true ? arrListSaved.at(w_IndexInList++) : ("0"));
     pvalue18PacketArg2->setData(TableRoles::ByteCount, 1);                            // the value is 3 bytes
     pvalue18PacketArg2->setData(TableRoles::NumeralSystem, TableRoles::Decimal);      // packet id is displayed as decimal
-    pvalue18PacketArg2->setData(Qt::ToolTipRole, "(REL_OUT_3) [0-1] disable/enable");     // a hint which is displayed when mouse hovers over
+    pvalue18PacketArg2->setData(Qt::ToolTipRole, "(ResetErr) [0-1] disable/enable");     // a hint which is displayed when mouse hovers over
     ui->tableWidget->setItem(ui->tableWidget->rowCount() - 1, 4, pvalue18PacketArg2); // insert item to created row to the fourth column
 
     QTableWidgetItem *pvalue18PacketArg4 = new QTableWidgetItem();
     pvalue18PacketArg4->setText(b_dataSaved == true ? arrListSaved.at(w_IndexInList++) : ("0"));
     pvalue18PacketArg4->setData(TableRoles::ByteCount, 1);                            // the value is 3 bytes
     pvalue18PacketArg4->setData(TableRoles::NumeralSystem, TableRoles::Decimal);      // packet id is displayed as decimal
-    pvalue18PacketArg4->setData(Qt::ToolTipRole, "(REL_OUT_4) [0-1] disable/enable");     // a hint which is displayed when mouse hovers over
+    pvalue18PacketArg4->setData(Qt::ToolTipRole, "(RESERVE_1) [0-1] disable/enable");     // a hint which is displayed when mouse hovers over
     ui->tableWidget->setItem(ui->tableWidget->rowCount() - 1, 5, pvalue18PacketArg4); // insert item to created row to the fourth column
 
     QTableWidgetItem *pvalue18PacketArg5 = new QTableWidgetItem();
     pvalue18PacketArg5->setText(b_dataSaved == true ? arrListSaved.at(w_IndexInList++) : ("0"));
     pvalue18PacketArg5->setData(TableRoles::ByteCount, 1);                            // the value is 3 bytes
     pvalue18PacketArg5->setData(TableRoles::NumeralSystem, TableRoles::Decimal);      // packet id is displayed as decimal
-    pvalue18PacketArg5->setData(Qt::ToolTipRole, "(REL_OUT_5) [0-1] disable/enable");     // a hint which is displayed when mouse hovers over
+    pvalue18PacketArg5->setData(Qt::ToolTipRole, "(RESERVE_2) [0-1] disable/enable");     // a hint which is displayed when mouse hovers over
     ui->tableWidget->setItem(ui->tableWidget->rowCount() - 1, 6, pvalue18PacketArg5); // insert item to created row to the fourth column
 
     QTableWidgetItem *pvalue18PacketArg6 = new QTableWidgetItem();
     pvalue18PacketArg6->setText(b_dataSaved == true ? arrListSaved.at(w_IndexInList++) : ("0"));
     pvalue18PacketArg6->setData(TableRoles::ByteCount, 1);                            // the value is 3 bytes
     pvalue18PacketArg6->setData(TableRoles::NumeralSystem, TableRoles::Decimal);      // packet id is displayed as decimal
-    pvalue18PacketArg6->setData(Qt::ToolTipRole, "(REL_OUT_6) [0-1] disable/enable");     // a hint which is displayed when mouse hovers over
+    pvalue18PacketArg6->setData(Qt::ToolTipRole, "(RESERVE_3) [0-1] disable/enable");     // a hint which is displayed when mouse hovers over
     ui->tableWidget->setItem(ui->tableWidget->rowCount() - 1, 7, pvalue18PacketArg6); // insert item to created row to the fourth column
 
 }
@@ -1431,7 +1454,7 @@ void MainWindow::newDataV200(QByteArray aData)
         else if(aData.at(1) == 'i')//Digital input readed
         {
             ui->toolButton->setStyleSheet(myStringOnlyNumbers.at(0) == "0" ? "background-color:red;color:black;font:10px" : "background-color:green;color:black;font:10px");
-            ui->toolButton_2->setStyleSheet(myStringOnlyNumbers.at(1) == "0" ? "background-color:red;color:black;font:10px" : "background-color:green;color:black;font:10px");
+            ui->toolButton_2->setStyleSheet(myStringOnlyNumbers.at(1) == "0" ? "background-color:grey;color:black;font:10px" : "background-color:grey;color:black;font:10px");
         }
     }
     else if(aData.at(0) == 'a')//Amp´s data
@@ -1459,7 +1482,7 @@ void MainWindow::newDataV200(QByteArray aData)
             ui->toolButton_5->setStyleSheet(myStringOnlyNumbers.at(2) == "0" ? "background-color:green;color:black;font:10px" : "background-color:red;color:black;font:10px");
             ui->toolButton_6->setStyleSheet(myStringOnlyNumbers.at(3) == "0" ? "background-color:green;color:black;font:10px" : "background-color:red;color:black;font:10px");
             ui->toolButton_7->setStyleSheet(myStringOnlyNumbers.at(4) == "0" ? "background-color:green;color:black;font:10px" : "background-color:red;color:black;font:10px");
-            ui->toolButton_8->setStyleSheet(myStringOnlyNumbers.at(5) == "0" ? "background-color:green;color:black;font:10px" : "background-color:red;color:black;font:10px");
+            ui->toolButton_8->setStyleSheet(myStringOnlyNumbers.at(5) == "0" ? "background-color:grey;color:black;font:10px" : "background-color:blue;color:black;font:10px");
         }
     }
 
@@ -1637,31 +1660,23 @@ void MainWindow::ShowSignalsIntoComboBox(SOURCE_STREAM eSourceStream)
 {
     prepareComboBoxesWithSignals();
 
+    qint32 dwIndexStart = 1;
 
-    if(eSourceStream == RECEIVE_STREAM)
-    {
-        qint32 dwIndexStart = 1;
-
-        ShowSignalsIfAreReceiving(GENERATOR_SOURCE, dwIndexStart, COLOR_BLUE_DARK);
-        ShowSignalsIfAreReceiving(AMPLIFIER_SOURCE, dwIndexStart, COLOR_BROWN_DARK);
-    }
-    else if(eSourceStream == LOG_STREAM)
-    {
-        ShowSignalsIfAreLogged(GENERATOR_SOURCE);
-        ShowSignalsIfAreLogged(AMPLIFIER_SOURCE);
-    }
+    ShowSignalsIfShould(eSourceStream, GENERATOR_SOURCE, dwIndexStart, COLOR_BLUE_DARK);
+    ShowSignalsIfShould(eSourceStream, AMPLIFIER_SOURCE, dwIndexStart, COLOR_BROWN_DARK);
 }
 
-void MainWindow::ShowSignalsIfAreReceiving(MainWindow::SOURCE_DEVICE eSourceStream, qint32 &dwStartIndex, QColor eBackgrColor)
+void MainWindow::ShowSignalsIfShould(SOURCE_STREAM eSourceStream, MainWindow::SOURCE_DEVICE eSourceDevice, qint32 &dwStartIndex, QColor eBackgrColor)
 {
-    qint32 dwVolumeItems = (eSourceStream == GENERATOR_SOURCE) ? NMB_ITEMS_TIMERS_GENER : NMB_ITEMS_TIMERS_AMPLF;
-    PERIODIC_REQUEST* p_sRequests = (eSourceStream == GENERATOR_SOURCE) ? eRequestsGenerAdcx : eRequestsAmplifAdcx;
-    const QStringList* p_sStringList = (eSourceStream == GENERATOR_SOURCE) ? allAdxSignalsGener : allAdxSignalsAmplf;
+    qint32 dwVolumeItems = (eSourceDevice == GENERATOR_SOURCE) ? NMB_ITEMS_TIMERS_GENER : NMB_ITEMS_TIMERS_AMPLF;
+    const QStringList* p_sStringList = (eSourceDevice == GENERATOR_SOURCE) ? allAdxSignalsGener : allAdxSignalsAmplf;
+    bool* p_bLogged = (eSourceDevice == GENERATOR_SOURCE) ? flagIfSourceIsLoggedGener : flagIfSourceIsLoggedAmplf;
+    PERIODIC_REQUEST* p_sRequests = (eSourceDevice == GENERATOR_SOURCE) ? eRequestsGenerAdcx : eRequestsAmplifAdcx;
 
 
     for(qint32 row = 0; row < dwVolumeItems; row++)
     {
-        if(p_sRequests[row].timer.bEnable)
+        if(((eSourceStream == LOG_STREAM) && p_bLogged[row]) || ((eSourceStream == RECEIVE_STREAM) && p_sRequests[row].timer.bEnable))
         {
             ui->comboBox_2->addItems(p_sStringList[row]);
             ui->comboBox_3->addItems(p_sStringList[row]);
@@ -1681,25 +1696,6 @@ void MainWindow::ShowSignalsIfAreReceiving(MainWindow::SOURCE_DEVICE eSourceStre
             }
 
             dwStartIndex += p_sStringList[row].count();
-        }
-    }
-}
-
-void MainWindow::ShowSignalsIfAreLogged(MainWindow::SOURCE_DEVICE eSourceStream)
-{
-    qint32 dwVolumeItems = (eSourceStream == GENERATOR_SOURCE) ? NMB_ITEMS_TIMERS_GENER : NMB_ITEMS_TIMERS_AMPLF;
-    const QStringList* p_sStringList = (eSourceStream == GENERATOR_SOURCE) ? allAdxSignalsGener : allAdxSignalsAmplf;
-    bool* p_bLogged = (eSourceStream == GENERATOR_SOURCE) ? flagIfSourceIsLoggedGener : flagIfSourceIsLoggedAmplf;
-
-
-    for(qint32 iLoop = 0; iLoop < dwVolumeItems; iLoop++)
-    {
-        if(p_bLogged[iLoop])
-        {
-            ui->comboBox_2->addItems(p_sStringList[iLoop]);
-            ui->comboBox_3->addItems(p_sStringList[iLoop]);
-            ui->comboBox_4->addItems(p_sStringList[iLoop]);
-            ui->comboBox_5->addItems(p_sStringList[iLoop]);
         }
     }
 }

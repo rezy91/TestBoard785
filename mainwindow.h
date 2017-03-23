@@ -51,6 +51,9 @@
 #define COLOR_BROWN_LIGHT       QColor(200,149,121)
 #define COLOR_BROWN_DARK        QColor(124,78,52)
 
+#define COLOR_SAVED_GREEN       QColor(98,251,89)
+#define COLOR_UNSAVED_GREY      QColor(207,207,207)
+
 namespace Ui {
 class MainWindow;
 }
@@ -122,7 +125,7 @@ private:
     const quint32 constAmpID = 1;
 
 
-    const int m_NumberOfFilledTablesGenerator = 3 + 2 + 2 + 2 + 4 * 2 + 7 * 2 + 9 * 4 + 8 + 6 + 4 + 3 + 2 + 2;
+    const int m_NumberOfFilledTablesGenerator = 6 + 1 + 3 + 2 + 2 + 2 + 4 * 2 + 7 * 2 + 9 * 4 + 8 + 6 + 4 + 3 + 2 + 2;
     const int m_NumberOfFilledTablesAmplifier = 1 + 1 + 4 + 1 + 6;
     const int m_NumberOfFilledRowsAmplifier = 1 + 1 + 4 + 1 + 1;
 
@@ -193,8 +196,7 @@ private:
 
     bool GetIndexFromQlist(SOURCE_DEVICE eSourceStream, int &dwAbsIndex, int dwNumberCmbBx, int dwIndexCmbBx);
     void ShowSignalsIntoComboBox(SOURCE_STREAM eSourceStream);
-    void ShowSignalsIfAreReceiving(SOURCE_DEVICE eSourceStream, qint32 &dwStartIndex, QColor eBackgrColor);
-    void ShowSignalsIfAreLogged(SOURCE_DEVICE eSourceStream);
+    void ShowSignalsIfShould(SOURCE_STREAM eSourceStream, SOURCE_DEVICE eSourceDevice, qint32 &dwStartIndex, QColor eBackgrColor);
     void SetTimerRequests(QModelIndexList &TableSelect, QString sCommand, SOURCE_DEVICE eSourceStream);
     void SetTimerinput(QModelIndexList &TableSelect, QString sCommand, SOURCE_DEVICE eSourceStream);
     void HasTimerRequestsExpired(SOURCE_DEVICE eSourceStream);
