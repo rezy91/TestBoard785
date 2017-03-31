@@ -789,19 +789,29 @@ void MainWindow::FillCommandTableGenerator()
             if(b_dataSaved)
             {
                 pvalueOthersCoeffsPacketArg->setText(arrListSaved.at(w_IndexInList++));
+
+                if(iLoop % 2)
+                {
+                    pvalueOthersCoeffsPacketArg->setData(Qt::ToolTipRole, QString("%1").arg(coeffsOthersNameAdditive[jLoop]));
+                }
+                else
+                {
+                    pvalueOthersCoeffsPacketArg->setData(Qt::ToolTipRole, QString("%1").arg(coeffsOthersNameMultiple[jLoop]));
+                }
             }
             else
             {
                 if(iLoop % 2)
                 {
                     pvalueOthersCoeffsPacketArg->setText("0.0");
+                    pvalueOthersCoeffsPacketArg->setData(Qt::ToolTipRole, QString("%1").arg(coeffsOthersNameAdditive[jLoop]));
                 }
                 else
                 {
                     pvalueOthersCoeffsPacketArg->setText("1.0");
+                    pvalueOthersCoeffsPacketArg->setData(Qt::ToolTipRole, QString("%1").arg(coeffsOthersNameMultiple[jLoop]));
                 }
             }
-            pvalueOthersCoeffsPacketArg->setData(Qt::ToolTipRole, QString("%1").arg(coeffsOthersName[jLoop]));
 
 
 
@@ -1841,6 +1851,15 @@ void MainWindow::on_disconnectButton_clicked()
     ui->checkBox->setEnabled(true);
     ui->comboBox_SelectDevice->setEnabled(true);
     ui->comboBox->setEnabled(true);
+
+    ui->toolButton->setStyleSheet("font:10px");
+    ui->toolButton_2->setStyleSheet("font:10px");
+    ui->toolButton_3->setStyleSheet("font:10px");
+    ui->toolButton_4->setStyleSheet("font:10px");
+    ui->toolButton_5->setStyleSheet("font:10px");
+    ui->toolButton_6->setStyleSheet("font:10px");
+    ui->toolButton_7->setStyleSheet("font:10px");
+    ui->toolButton_8->setStyleSheet("font:10px");
 
     m_CommProt.data()->SetTargetMedium("");
 
