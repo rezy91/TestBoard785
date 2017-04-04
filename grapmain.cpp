@@ -337,8 +337,22 @@ void Grapmain::refreshGraph(QTime currTime, double ssignal, int recStat, QString
     {
         if(flags == 1)//all history loaded
         {
-            findMinAndMaxTimeInLog();
-            findPreciousTime();
+            int nmbSignalsOn = 0;
+
+            for(int iLoop = 0; iLoop < nmbCurvesInGraph; iLoop++)
+            {
+                if(flagSignalRecord[iLoop])
+                {
+                    nmbSignalsOn++;
+                }
+            }
+
+            if(!(nmbSignalsOn > 1))
+            {
+                findMinAndMaxTimeInLog();
+                findPreciousTime();
+            }
+
             refrGr("srcDataStream - LOG_STREAM");
         }
         else//loading
@@ -352,15 +366,6 @@ void Grapmain::refreshGraph(QTime currTime, double ssignal, int recStat, QString
             else
             {
                 (isNoSignalDisplayed() == true) ? clearAllVariables() : clearSignalHistory(sourceSig);
-
-                /*if(isNoSignalDisplayed())
-                {
-                    clearAllVariables();
-                }
-                else
-                {
-                    clearSignalHistory(sourceSig);
-                }*/
                 refrGr("srcDataStream - LOG_STREAM");
             }
         }
@@ -469,48 +474,47 @@ void Grapmain::paintEvent(QPaintEvent*)
             int offsetAxis;
             double maxValue = mHighLevelAxis_y[iLoop] - mHistoryLowLevelAxis_y;
 
-            if(maxValue >= 1)// can not be divided by zero value
+
+            if(iLoop == 0)
             {
-                if(iLoop == 0)
-                {
-                    offsetAxis = constLeftLimit - 15;
-                }
-                else if(iLoop == 1)
-                {
-                    offsetAxis = constLeftLimit - 65;
-                }
-                else if(iLoop == 2)
-                {
-                    offsetAxis = currentWidth - constRightLimit + 20;
-                }
-                else if(iLoop == 3)
-                {
-                    offsetAxis = currentWidth - constRightLimit + 70;
-                }
-
-                painterMain.setPen(colorSignal[iLoop]);
-                painterMain.drawLine(QPoint(offsetAxis, currentHeight - constBottomLimit),QPoint(offsetAxis, constTopLimit - 20));
-                painterMain.drawLine(QPoint(offsetAxis, constTopLimit - 20),QPoint( - 10 + offsetAxis, constTopLimit - 20 + 10));
-                painterMain.drawLine(QPoint(offsetAxis, constTopLimit - 20),QPoint(10 + offsetAxis, constTopLimit - 20 + 10));
-                painterMain.drawText(QPoint( - 20 + offsetAxis, constTopLimit - 20 - 5), mLegendItems[iLoop]);
-                painterMain.drawText(QPoint( - 20 + offsetAxis, constTopLimit - 40 - 5), QString::number(mSignalHistory[iLoop].value.last()));
-
-
-                for(int kLoop = 0; kLoop < (nmbHorizLines + 1); kLoop++)
-                {
-                    painterMain.setPen(colorSignal[iLoop]);
-                    if(iLoop == 0 || iLoop == 1)
-                    {
-                        painterMain.drawText(QPoint(offsetAxis - 40, currentHeight - constBottomLimit - constDistanceHorizontalLines_pxs * kLoop), QString("%1").arg(((maxValue /  nmbHorizLines) * kLoop) + mHistoryLowLevelAxis_y));
-                    }
-                    else
-                    {
-                        painterMain.drawText(QPoint(offsetAxis + 5, currentHeight - constBottomLimit - constDistanceHorizontalLines_pxs * kLoop), QString("%1").arg(((maxValue /  nmbHorizLines) * kLoop) + mHistoryLowLevelAxis_y));
-                    }
-                    painterMain.setPen(QPen(Qt::lightGray));
-                    painterMain.drawLine(QPoint(constLeftLimit, currentHeight - constBottomLimit - constDistanceHorizontalLines_pxs * kLoop), QPoint(currentWidth - constRightLimit, currentHeight - constBottomLimit - constDistanceHorizontalLines_pxs * kLoop));
-                }
+                offsetAxis = constLeftLimit - 15;
             }
+            else if(iLoop == 1)
+            {
+                offsetAxis = constLeftLimit - 65;
+            }
+            else if(iLoop == 2)
+            {
+                offsetAxis = currentWidth - constRightLimit + 20;
+            }
+            else if(iLoop == 3)
+            {
+                offsetAxis = currentWidth - constRightLimit + 70;
+            }
+
+            painterMain.setPen(colorSignal[iLoop]);
+            painterMain.drawLine(QPoint(offsetAxis, currentHeight - constBottomLimit),QPoint(offsetAxis, constTopLimit - 20));
+            painterMain.drawLine(QPoint(offsetAxis, constTopLimit - 20),QPoint( - 10 + offsetAxis, constTopLimit - 20 + 10));
+            painterMain.drawLine(QPoint(offsetAxis, constTopLimit - 20),QPoint(10 + offsetAxis, constTopLimit - 20 + 10));
+            painterMain.drawText(QPoint( - 20 + offsetAxis, constTopLimit - 20 - 5), mLegendItems[iLoop]);
+            painterMain.drawText(QPoint( - 20 + offsetAxis, constTopLimit - 40 - 5), QString::number(mSignalHistory[iLoop].value.last()));
+
+
+            for(int kLoop = 0; kLoop < (nmbHorizLines + 1); kLoop++)
+            {
+                painterMain.setPen(colorSignal[iLoop]);
+                if(iLoop == 0 || iLoop == 1)
+                {
+                    painterMain.drawText(QPoint(offsetAxis - 40, currentHeight - constBottomLimit - constDistanceHorizontalLines_pxs * kLoop), QString("%1").arg(((maxValue /  nmbHorizLines) * kLoop) + mHistoryLowLevelAxis_y));
+                }
+                else
+                {
+                    painterMain.drawText(QPoint(offsetAxis + 5, currentHeight - constBottomLimit - constDistanceHorizontalLines_pxs * kLoop), QString("%1").arg(((maxValue /  nmbHorizLines) * kLoop) + mHistoryLowLevelAxis_y));
+                }
+                painterMain.setPen(QPen(Qt::lightGray));
+                painterMain.drawLine(QPoint(constLeftLimit, currentHeight - constBottomLimit - constDistanceHorizontalLines_pxs * kLoop), QPoint(currentWidth - constRightLimit, currentHeight - constBottomLimit - constDistanceHorizontalLines_pxs * kLoop));
+            }
+
         }
     }
 
