@@ -42,7 +42,7 @@
 
 #define PID_TIMERS_ADCX_GENER              40
 #define PID_TIMER_INPUT_GENER              (PID_TIMERS_ADCX_GENER + NMB_ITEMS_TIMERS_GENER)
-#define PID_TIMERS_ADCX_AMPLF              32
+#define PID_TIMERS_ADCX_AMPLF              30
 #define PID_TIMER_INPUT_AMPLF              (PID_TIMERS_ADCX_AMPLF + NMB_ITEMS_TIMERS_AMPLF)
 
 
@@ -126,8 +126,8 @@ private:
 
 
     const int m_NumberOfFilledTablesGenerator = 6 + 1 + 3 + 2 + 2 + 2 + 4 * 2 + 7 * 2 + 9 * 4 + 8 + 6 + 4 + 3 + 2 + 2;
-    const int m_NumberOfFilledTablesAmplifier = 1 + 1 + 4 + 1 + 6;
-    const int m_NumberOfFilledRowsAmplifier = 1 + 1 + 4 + 1 + 1;
+    const int m_NumberOfFilledTablesAmplifier = 1 + 1 + 4 + 1 + 6 + 8 * 4;
+    const int m_NumberOfFilledRowsAmplifier = 1 + 1 + 4 + 1 + 1 + 4;
 
     const QString allSignalsNameGener[NMB_ITEMS_TIMERS_GENER] = {"NOT_USED_CURRENTLY", "ADC3_RECEIVE_AVERAGE_DATA", "IMPEDANCE_RECEIVE_DATA", "ADC2_RECEIVE_AVERAGE_DATA", "NOT_USED_CURRENTLY", "ADC1_RECEIVE_AVERAGE_DATA"};
     const QString allSignalsNameAmplf[NMB_ITEMS_TIMERS_AMPLF] = {"TIMERS_RESULTS", "ADC3_RECEIVE_AVERAGE_DATA", "NOT_USED_CURRENTLY", "ADC1_RECEIVE_AVERAGE_DATA"};
