@@ -473,30 +473,35 @@ void Grapmain::paintEvent(QPaintEvent*)
             //Draw y-axes
             int offsetAxis;
             double maxValue = mHighLevelAxis_y[iLoop] - mHistoryLowLevelAxis_y;
+            int offsetTop;
 
 
             if(iLoop == 0)
             {
                 offsetAxis = constLeftLimit - 15;
+                offsetTop = 10;
             }
             else if(iLoop == 1)
             {
                 offsetAxis = constLeftLimit - 65;
+                offsetTop = 20;
             }
             else if(iLoop == 2)
             {
                 offsetAxis = currentWidth - constRightLimit + 20;
+                offsetTop = 20;
             }
             else if(iLoop == 3)
             {
                 offsetAxis = currentWidth - constRightLimit + 70;
+                offsetTop = 10;
             }
 
             painterMain.setPen(colorSignal[iLoop]);
-            painterMain.drawLine(QPoint(offsetAxis, currentHeight - constBottomLimit),QPoint(offsetAxis, constTopLimit - 20));
-            painterMain.drawLine(QPoint(offsetAxis, constTopLimit - 20),QPoint( - 10 + offsetAxis, constTopLimit - 20 + 10));
-            painterMain.drawLine(QPoint(offsetAxis, constTopLimit - 20),QPoint(10 + offsetAxis, constTopLimit - 20 + 10));
-            painterMain.drawText(QPoint( - 20 + offsetAxis, constTopLimit - 20 - 5), mLegendItems[iLoop]);
+            painterMain.drawLine(QPoint(offsetAxis, currentHeight - constBottomLimit),QPoint(offsetAxis, constTopLimit - offsetTop));
+            painterMain.drawLine(QPoint(offsetAxis, constTopLimit - offsetTop),QPoint( - 10 + offsetAxis, constTopLimit - offsetTop + 10));
+            painterMain.drawLine(QPoint(offsetAxis, constTopLimit - offsetTop),QPoint(10 + offsetAxis, constTopLimit - offsetTop + 10));
+            painterMain.drawText(QPoint( - offsetTop + offsetAxis, constTopLimit - offsetTop - 5), mLegendItems[iLoop]);
             painterMain.drawText(QPoint( - 20 + offsetAxis, constTopLimit - 40 - 5), QString::number(mSignalHistory[iLoop].value.last()));
 
 
@@ -514,7 +519,6 @@ void Grapmain::paintEvent(QPaintEvent*)
                 painterMain.setPen(QPen(Qt::lightGray));
                 painterMain.drawLine(QPoint(constLeftLimit, currentHeight - constBottomLimit - constDistanceHorizontalLines_pxs * kLoop), QPoint(currentWidth - constRightLimit, currentHeight - constBottomLimit - constDistanceHorizontalLines_pxs * kLoop));
             }
-
         }
     }
 
@@ -529,9 +533,9 @@ void Grapmain::paintEvent(QPaintEvent*)
         painterMain.drawText(QPoint(currentWidth + 5 - 40, currentHeight - constBottomLimit), "t");
 
         //y-axis
-        painterMain.drawLine(QPoint(constLeftLimit, currentHeight - constBottomLimit),QPoint(constLeftLimit, constTopLimit - 20));
-        painterMain.drawLine(QPoint(constLeftLimit, constTopLimit - 20),QPoint(constLeftLimit - 10, constTopLimit - 20 + 10));
-        painterMain.drawLine(QPoint(constLeftLimit, constTopLimit - 20),QPoint(constLeftLimit + 10, constTopLimit - 20 + 10));
+        painterMain.drawLine(QPoint(constLeftLimit, currentHeight - constBottomLimit),QPoint(constLeftLimit, constTopLimit - 10));
+        painterMain.drawLine(QPoint(constLeftLimit, constTopLimit - 10),QPoint(constLeftLimit - 10, constTopLimit));
+        painterMain.drawLine(QPoint(constLeftLimit, constTopLimit - 10),QPoint(constLeftLimit + 10, constTopLimit));
 
 
         painterMain.drawText(QPoint(constLeftLimit, currentHeight - constBottomLimit + 20), lowLevel.toString());
@@ -544,7 +548,6 @@ void Grapmain::paintEvent(QPaintEvent*)
 
         painterMain.drawText(QPoint(currentWidth / 2, currentHeight - constBottomLimit + 20), diffTime.toString());
     }
-
 }
 
 bool Grapmain::eventFilter(QObject *, QEvent *event)
