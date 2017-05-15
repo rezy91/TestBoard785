@@ -68,7 +68,6 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
 
     SetAvaiblePorts();
     SetLastPort();
-    TmrMstr.start(1);
 
 
 
@@ -105,9 +104,12 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
         HasTimerInputExpired(GENERATOR_SOURCE);
         HasTimerInputExpired(AMPLIFIER_SOURCE);
 
-        if(++mMainTimer >= 100)//only for some tests
+        if(++mMainTimer >= 500)//only for some tests
         {
             mMainTimer = 0;
+
+            QString p_sGetStatus = "0A";
+            m_CommProt.data()->SendData(m_nDeviceAddress, QByteArray::fromHex(p_sGetStatus.toStdString().c_str()), true);
         }
     });
 
@@ -289,6 +291,7 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
         case CommProtInterface::Disabled:
             ui->statusBar->showMessage("Communication status: Disabled");
             ui->sendButton->setEnabled(false);
+            TmrMstr.stop();
             qDebug() << "Disabled";
             break;
         case CommProtInterface::Connected:
@@ -300,6 +303,7 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
         case CommProtInterface::Enabled:
             ui->statusBar->showMessage("Communication status: Enabled");
             ui->sendButton->setEnabled(true);
+            TmrMstr.start(1);
             qDebug() << "Enabled";
             break;
         case CommProtInterface::Detecting:
@@ -1459,10 +1463,6 @@ void MainWindow::newDataV200(QByteArray aData)
     QTime timeShot(timeCurrent);
 
     ui->statusBar->showMessage("Data received: " + QString(aData.toHex()));
-    AppendText(timeShot, QString(aData));
-
-
-
     QStringList myStringOnlyNumbers = adjustRowDataIntoOnlyNumber(aData);
 
     if(aData.at(0) == 'g')//Gener´s data
@@ -1550,10 +1550,15 @@ void MainWindow::newDataV200(QByteArray aData)
         }
     }
 
-    if(m_bSaveData)
+    if(aData.at(0) != 0x1A)
     {
-        m_oFile.write(myTimeStamp(timeShot).toUtf8() + "\t" + QString(aData).simplified().toUtf8() + "\r\n");
-        m_oFile.flush();
+        AppendText(timeShot, QString(aData));
+
+        if(m_bSaveData)
+        {
+            m_oFile.write(myTimeStamp(timeShot).toUtf8() + "\t" + QString(aData).simplified().toUtf8() + "\r\n");
+            m_oFile.flush();
+        }
     }
 }
 
