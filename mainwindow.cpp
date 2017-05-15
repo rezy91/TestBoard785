@@ -1008,7 +1008,7 @@ void MainWindow::FillCommandTableGenerator()
     //! set packet
     // the first column
     ui->tableWidget->insertRow(ui->tableWidget->rowCount());                            // create new row in table
-    QTableWidgetItem *pvalue21PacketID = new QTableWidgetItem("5B");                  // paket id
+    QTableWidgetItem *pvalue21PacketID = new QTableWidgetItem("23");                  // paket id
     pvalue21PacketID->setBackground(COLOR_BLUE_LIGHT);
     pvalue21PacketID->setData(TableRoles::ByteCount, 1);                              // paket id is 1 byte
     pvalue21PacketID->setData(TableRoles::NumeralSystem, TableRoles::Hex);            // packet id is displayed as hex
@@ -1029,25 +1029,25 @@ void MainWindow::FillCommandTableGenerator()
 
     // the third column
     QTableWidgetItem *pvalue21PacketArg1 = new QTableWidgetItem();
-    pvalue21PacketArg1->setText(b_dataSaved == true ? arrListSaved.at(w_IndexInList++) : ("50"));
-    pvalue21PacketArg1->setData(TableRoles::ByteCount, 2);                            // the value is 3 bytes
+    pvalue21PacketArg1->setText(b_dataSaved == true ? arrListSaved.at(w_IndexInList++) : ("100"));
+    pvalue21PacketArg1->setData(TableRoles::ByteCount, 1);                            // the value is 3 bytes
     pvalue21PacketArg1->setData(TableRoles::NumeralSystem, TableRoles::Decimal);      // packet id is displayed as decimal
-    pvalue21PacketArg1->setData(Qt::ToolTipRole, "(Duty factor) [0 - 100] in %");     // a hint which is displayed when mouse hovers over
+    pvalue21PacketArg1->setData(Qt::ToolTipRole, "(Duty factor) [20 - 100] in %");     // a hint which is displayed when mouse hovers over
     ui->tableWidget->setItem(ui->tableWidget->rowCount() - 1, 3, pvalue21PacketArg1); // insert item to created row to the fourth column
 
     // the third column
     QTableWidgetItem *pvalue21PacketArg2 = new QTableWidgetItem();
-    pvalue21PacketArg2->setText(b_dataSaved == true ? arrListSaved.at(w_IndexInList++) : ("1000000"));
-    pvalue21PacketArg2->setData(TableRoles::ByteCount, 4);                            // the value is 3 bytes
+    pvalue21PacketArg2->setText(b_dataSaved == true ? arrListSaved.at(w_IndexInList++) : ("100"));
+    pvalue21PacketArg2->setData(TableRoles::ByteCount, 1);                            // the value is 3 bytes
     pvalue21PacketArg2->setData(TableRoles::NumeralSystem, TableRoles::Decimal);      // packet id is displayed as decimal
-    pvalue21PacketArg2->setData(Qt::ToolTipRole, "(Frequency) [0 - 10 000 000] in Hz");     // a hint which is displayed when mouse hovers over
+    pvalue21PacketArg2->setData(Qt::ToolTipRole, "(Frequency) [25 - 200] in Hz");     // a hint which is displayed when mouse hovers over
     ui->tableWidget->setItem(ui->tableWidget->rowCount() - 1, 4, pvalue21PacketArg2); // insert item to created row to the fourth column
 
 
     //! set packet
     // the first column
     ui->tableWidget->insertRow(ui->tableWidget->rowCount());                            // create new row in table
-    QTableWidgetItem *pvalue22PacketID = new QTableWidgetItem("5C");                  // paket id
+    QTableWidgetItem *pvalue22PacketID = new QTableWidgetItem("5B");                  // paket id
     pvalue22PacketID->setBackground(COLOR_BLUE_LIGHT);
     pvalue22PacketID->setData(TableRoles::ByteCount, 1);                              // paket id is 1 byte
     pvalue22PacketID->setData(TableRoles::NumeralSystem, TableRoles::Hex);            // packet id is displayed as hex
@@ -1061,24 +1061,24 @@ void MainWindow::FillCommandTableGenerator()
     // the third column
     QTableWidgetItem *pvalue22PacketArg0 = new QTableWidgetItem();
     pvalue22PacketArg0->setText(b_dataSaved == true ? arrListSaved.at(w_IndexInList++) : ("3"));
-    pvalue22PacketArg0->setData(TableRoles::ByteCount, 2);                            // the value is 3 bytes
+    pvalue22PacketArg0->setData(TableRoles::ByteCount, 1);                            // the value is 3 bytes
     pvalue22PacketArg0->setData(TableRoles::NumeralSystem, TableRoles::Decimal);      // packet id is displayed as decimal
     pvalue22PacketArg0->setData(Qt::ToolTipRole, "(Duty factor) [0 - 100] in %");     // a hint which is displayed when mouse hovers over
     ui->tableWidget->setItem(ui->tableWidget->rowCount() - 1, 2, pvalue22PacketArg0); // insert item to created row to the fourth column
 
     // the third column
     QTableWidgetItem *pvalue22PacketArg1 = new QTableWidgetItem();
-    pvalue22PacketArg1->setText(b_dataSaved == true ? arrListSaved.at(w_IndexInList++) : ("1000"));
-    pvalue22PacketArg1->setData(TableRoles::ByteCount, 4);                            // the value is 3 bytes
+    pvalue22PacketArg1->setText(b_dataSaved == true ? arrListSaved.at(w_IndexInList++) : ("100"));
+    pvalue22PacketArg1->setData(TableRoles::ByteCount, 1);                            // the value is 3 bytes
     pvalue22PacketArg1->setData(TableRoles::NumeralSystem, TableRoles::Decimal);      // packet id is displayed as decimal
-    pvalue22PacketArg1->setData(Qt::ToolTipRole, "(Frequency) [0 - 10 000] in Hz");     // a hint which is displayed when mouse hovers over
+    pvalue22PacketArg1->setData(Qt::ToolTipRole, "(Frequency) [0 - 200] in Hz");     // a hint which is displayed when mouse hovers over
     ui->tableWidget->setItem(ui->tableWidget->rowCount() - 1, 3, pvalue22PacketArg1); // insert item to created row to the fourth column
 
 
     //! set packet
     // the first column
     ui->tableWidget->insertRow(ui->tableWidget->rowCount());                            // create new row in table
-    QTableWidgetItem *pvalue23PacketID = new QTableWidgetItem("5D");                  // paket id
+    QTableWidgetItem *pvalue23PacketID = new QTableWidgetItem("5C");                  // paket id
     pvalue23PacketID->setBackground(COLOR_BLUE_LIGHT);
     pvalue23PacketID->setData(TableRoles::ByteCount, 1);                              // paket id is 1 byte
     pvalue23PacketID->setData(TableRoles::NumeralSystem, TableRoles::Hex);            // packet id is displayed as hex
