@@ -24,15 +24,16 @@ CONFIG += c++11
 
 SOURCES += main.cpp\
     mainwindow.cpp \
-    settings.cpp \
-    smithmain.cpp \
-    grapmain.cpp
+    testpaint.cpp \
+    widgetone.cpp \
+    widgettwo.cpp \
+    widgetthree.cpp
 
 HEADERS  += mainwindow.h \
-    settings.h \
-    smithmain.h \
-    grapmain.h \
-    common.h
+    testpaint.h \
+    widgetone.h \
+    widgettwo.h \
+    widgetthree.h
 
 FORMS    += mainwindow.ui
 
