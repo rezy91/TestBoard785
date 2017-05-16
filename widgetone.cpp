@@ -11,6 +11,6 @@ void widgetOne::paintEvent(QPaintEvent* e)
 
     QPainter painter(this);
 
-    painter.drawText(QPoint(10, 10), QString("One"));
+    painter.drawLine(QPointF(0,0),QPointF(currSize.width(),currSize.height()));
 
 }

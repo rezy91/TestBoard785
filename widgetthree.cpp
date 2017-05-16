@@ -11,8 +11,6 @@ void widgetThree::paintEvent(QPaintEvent* e)
 
     QPainter painter(this);
 
-    painter.drawText(QPoint(10, 10), QString("Three"));
+    painter.drawLine(QPointF(currSize.width()/2,0),QPointF(currSize.width()/2,currSize.height()));
 
-
-    //painter.drawPixmap(0, 0, QPixmap("smith.png").scaled(size()));
 }

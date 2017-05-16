@@ -17,35 +17,23 @@
 
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
-#include "widgetone.h"
-#include "widgettwo.h"
-#include "widgetthree.h"
 
 
 MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWindow)
 {
     static int mMainTimer = 0;
 
-    ui->setupUi(this);
+    installEventFilter(this);
 
+    ui->setupUi(this);
     ui->statusBar->showMessage("Start app");
 
     qDebug() << "Start of application.";
 
 
-    widgetOne *p_WidgetConfig = new widgetOne(this);
-    widgetTwo *p_WidgetReading = new widgetTwo(this);
-    widgetThree *p_WidgetSettings = new widgetThree(this);
-
-
-    //ui->horizontalLayout_3->setGeometry(QRect(0,0,500,400));
-    //p_WidgetSettings->setGeometry(QRect(0,0,500,400));
-
-
     ui->horizontalLayout_1->layout()->addWidget(p_WidgetConfig);
     ui->horizontalLayout_2->layout()->addWidget(p_WidgetReading);
     ui->horizontalLayout_3->layout()->addWidget(p_WidgetSettings);
-
 
 
     connect(ui->tabWidget, &QTabWidget::currentChanged, this, &MainWindow::changed_table);
@@ -109,6 +97,8 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
             break;
         }
     });
+
+
 }
 
 MainWindow::~MainWindow()
@@ -118,7 +108,9 @@ MainWindow::~MainWindow()
 
 void MainWindow::changed_table(int index)
 {
-    qDebug() << "current index:" << index;
+    Q_UNUSED(index);
+
+    refreshPlot();
 }
 
 void MainWindow::newDataV200(QByteArray aData)
@@ -127,5 +119,51 @@ void MainWindow::newDataV200(QByteArray aData)
     //actualize time
     timeCurrent.elapsed();
     timeCurrent.start();
+}
+
+void MainWindow::refreshPlot()
+{
+    int currentTab = ui->tabWidget->currentIndex();
+    QSize currentSize = ui->tabWidget->size();
+
+
+    if(currentTab == 0)
+    {
+        p_WidgetConfig->setFixedSize(currentSize);
+        p_WidgetConfig->SetQSize(currentSize);
+        p_WidgetConfig->repaint();
+    }
+    else if(currentTab == 1)
+    {
+        p_WidgetReading->setFixedSize(currentSize);
+        p_WidgetReading->SetQSize(currentSize);
+        p_WidgetReading->repaint();
+    }
+    else if(currentTab == 2)
+    {
+        p_WidgetSettings->setFixedSize(currentSize);
+        p_WidgetSettings->SetQSize(currentSize);
+        p_WidgetSettings->repaint();
+    }
+}
+
+bool MainWindow::eventFilter(QObject *object, QEvent *event)
+{
+    Q_UNUSED(object);
+
+    bool retVal;
+
+    if(event->type() == QEvent::Show || event->type() == QEvent::Resize)
+    {
+        refreshPlot();
+
+        retVal = true;
+    }
+    else
+    {
+        retVal = false;
+    }
+
+    return retVal;
 }
 

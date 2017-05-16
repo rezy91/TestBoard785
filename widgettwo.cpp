@@ -11,6 +11,6 @@ void widgetTwo::paintEvent(QPaintEvent* e)
 
     QPainter painter(this);
 
-    painter.drawText(QPoint(10, 10), QString("Two"));
+    painter.drawLine(QPointF(0,currSize.height()),QPointF(currSize.width(),0));
 
 }

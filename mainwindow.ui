@@ -29,13 +29,13 @@
          <rect>
           <x>0</x>
           <y>0</y>
-          <width>61</width>
-          <height>101</height>
+          <width>151</width>
+          <height>51</height>
          </rect>
         </property>
         <layout class="QHBoxLayout" name="horizontalLayout_1">
          <property name="sizeConstraint">
-          <enum>QLayout::SetMaximumSize</enum>
+          <enum>QLayout::SetMinAndMaxSize</enum>
          </property>
         </layout>
        </widget>
@@ -49,13 +49,13 @@
          <rect>
           <x>0</x>
           <y>0</y>
-          <width>361</width>
-          <height>81</height>
+          <width>160</width>
+          <height>80</height>
          </rect>
         </property>
         <layout class="QHBoxLayout" name="horizontalLayout_2">
          <property name="sizeConstraint">
-          <enum>QLayout::SetMaximumSize</enum>
+          <enum>QLayout::SetMinAndMaxSize</enum>
          </property>
         </layout>
        </widget>
@@ -69,13 +69,13 @@
          <rect>
           <x>0</x>
           <y>0</y>
-          <width>191</width>
-          <height>81</height>
+          <width>160</width>
+          <height>80</height>
          </rect>
         </property>
         <layout class="QHBoxLayout" name="horizontalLayout_3">
          <property name="sizeConstraint">
-          <enum>QLayout::SetNoConstraint</enum>
+          <enum>QLayout::SetMinAndMaxSize</enum>
          </property>
         </layout>
        </widget>

@@ -24,13 +24,11 @@ CONFIG += c++11
 
 SOURCES += main.cpp\
     mainwindow.cpp \
-    testpaint.cpp \
     widgetone.cpp \
     widgettwo.cpp \
     widgetthree.cpp
 
 HEADERS  += mainwindow.h \
-    testpaint.h \
     widgetone.h \
     widgettwo.h \
     widgetthree.h

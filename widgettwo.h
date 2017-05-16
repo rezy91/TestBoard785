@@ -10,10 +10,14 @@ class widgetTwo : public QWidget
     Q_OBJECT
 public:
     explicit widgetTwo(QWidget *parent = 0);
+    void SetQSize(QSize value) {currSize = value;}
 
 signals:
 
 public slots:
+
+private:
+    QSize currSize;
 
 protected:
     virtual void paintEvent(QPaintEvent*e);

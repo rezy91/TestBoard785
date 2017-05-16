@@ -32,6 +32,11 @@
 #include <QPushButton>
 
 
+#include "widgetone.h"
+#include "widgettwo.h"
+#include "widgetthree.h"
+
+
 
 namespace Ui {
 class MainWindow;
@@ -58,7 +63,20 @@ private:
     QTimer TmrMstr;
     QTime timeCurrent;
 
+
+
+    widgetOne *p_WidgetConfig = new widgetOne(this);
+    widgetTwo *p_WidgetReading = new widgetTwo(this);
+    widgetThree *p_WidgetSettings = new widgetThree(this);
+
+
     void newDataV200(QByteArray aData);
+    void refreshPlot(void);
+
+
+
+protected:
+    bool eventFilter(QObject *object, QEvent *event);
 };
 
 #endif // MAINWINDOW_H
