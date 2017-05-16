@@ -43,18 +43,6 @@ win32 {
     RC_FILE = app.rc
 }
 
-#win32:CONFIG(debug, debug|release) {
-#    LIBS += -L$$PWD/../../../Applications/088/build-CommProtV200-win32-Debug/debug/ -lCommProtV200
-#}
-
-#win32:CONFIG(release, debug|release) {
-#    LIBS += -L$$PWD/../../../Applications/088/build-CommProtV200-win32-Release/release/ -lCommProtV200
-#}
-
-#linux:!android:!yocto:CONFIG(debug, debug|release) {
-#    LIBS += -L$$PWD/../../../Applications/088/build-CommProtV200-imx6-Debug -lCommProtV200
-#}
-
 RESOURCES += \
     resources.qrc
 
