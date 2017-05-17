@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>1132</width>
-    <height>451</height>
+    <height>604</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -52,6 +52,37 @@
       </item>
      </layout>
     </item>
+    <item row="1" column="0">
+     <widget class="QTextBrowser" name="textBrowser">
+      <property name="sizePolicy">
+       <sizepolicy hsizetype="Expanding" vsizetype="Maximum">
+        <horstretch>0</horstretch>
+        <verstretch>0</verstretch>
+       </sizepolicy>
+      </property>
+     </widget>
+    </item>
+    <item row="3" column="0">
+     <layout class="QHBoxLayout" name="horizontalLayout_2">
+      <property name="bottomMargin">
+       <number>0</number>
+      </property>
+      <item>
+       <widget class="QPushButton" name="openlogButton">
+        <property name="text">
+         <string>open log</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QPushButton" name="clearButton">
+        <property name="text">
+         <string>clear log</string>
+        </property>
+       </widget>
+      </item>
+     </layout>
+    </item>
     <item row="0" column="0">
      <widget class="QTabWidget" name="tabWidget">
       <property name="currentIndex">
@@ -61,21 +92,21 @@
        <attribute name="title">
         <string>Configuration</string>
        </attribute>
-       <widget class="QWidget" name="horizontalLayoutWidget">
+       <widget class="QWidget" name="verticalLayoutWidget_2">
         <property name="geometry">
          <rect>
-          <x>0</x>
-          <y>0</y>
-          <width>768</width>
-          <height>91</height>
+          <x>170</x>
+          <y>40</y>
+          <width>160</width>
+          <height>191</height>
          </rect>
         </property>
-        <layout class="QHBoxLayout" name="horizontalLayout_3">
-         <property name="sizeConstraint">
-          <enum>QLayout::SetDefaultConstraint</enum>
-         </property>
+        <layout class="QVBoxLayout" name="verticalLayout">
          <item>
           <widget class="QCheckBox" name="checkBox_2">
+           <property name="enabled">
+            <bool>false</bool>
+           </property>
            <property name="text">
             <string>NOT_USED</string>
            </property>
@@ -104,6 +135,9 @@
          </item>
          <item>
           <widget class="QCheckBox" name="checkBox_6">
+           <property name="enabled">
+            <bool>false</bool>
+           </property>
            <property name="text">
             <string>NOT_USED</string>
            </property>
@@ -124,6 +158,82 @@
           </widget>
          </item>
         </layout>
+       </widget>
+       <widget class="QWidget" name="verticalLayoutWidget_4">
+        <property name="geometry">
+         <rect>
+          <x>0</x>
+          <y>40</y>
+          <width>161</width>
+          <height>131</height>
+         </rect>
+        </property>
+        <layout class="QVBoxLayout" name="verticalLayout_4">
+         <item>
+          <widget class="QCheckBox" name="checkBox_9">
+           <property name="text">
+            <string>TIMERS_RESULTS</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QCheckBox" name="checkBox_10">
+           <property name="text">
+            <string>ADC3_AVERAGE_DATA</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QCheckBox" name="checkBox_11">
+           <property name="enabled">
+            <bool>false</bool>
+           </property>
+           <property name="text">
+            <string>NOT_USED</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QCheckBox" name="checkBox_12">
+           <property name="text">
+            <string>ADC1_AVERAGE_DATA</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QCheckBox" name="checkBox_13">
+           <property name="text">
+            <string>INPUTS</string>
+           </property>
+          </widget>
+         </item>
+        </layout>
+       </widget>
+       <widget class="QLabel" name="label">
+        <property name="geometry">
+         <rect>
+          <x>50</x>
+          <y>20</y>
+          <width>47</width>
+          <height>13</height>
+         </rect>
+        </property>
+        <property name="text">
+         <string>Amplifier</string>
+        </property>
+       </widget>
+       <widget class="QLabel" name="label_2">
+        <property name="geometry">
+         <rect>
+          <x>220</x>
+          <y>20</y>
+          <width>47</width>
+          <height>13</height>
+         </rect>
+        </property>
+        <property name="text">
+         <string>Generator</string>
+        </property>
        </widget>
       </widget>
       <widget class="QWidget" name="Reading">
@@ -167,37 +277,6 @@
        </widget>
       </widget>
      </widget>
-    </item>
-    <item row="1" column="0">
-     <widget class="QTextBrowser" name="textBrowser">
-      <property name="sizePolicy">
-       <sizepolicy hsizetype="Expanding" vsizetype="Maximum">
-        <horstretch>0</horstretch>
-        <verstretch>0</verstretch>
-       </sizepolicy>
-      </property>
-     </widget>
-    </item>
-    <item row="3" column="0">
-     <layout class="QHBoxLayout" name="horizontalLayout_2">
-      <property name="bottomMargin">
-       <number>0</number>
-      </property>
-      <item>
-       <widget class="QPushButton" name="openlogButton">
-        <property name="text">
-         <string>open log</string>
-        </property>
-       </widget>
-      </item>
-      <item>
-       <widget class="QPushButton" name="clearButton">
-        <property name="text">
-         <string>clear log</string>
-        </property>
-       </widget>
-      </item>
-     </layout>
     </item>
    </layout>
   </widget>

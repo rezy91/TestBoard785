@@ -52,19 +52,19 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
         {
             mMainTimer = 0;
 
-            QString p_sGetStatus = "0A";
-            m_CommProt.data()->SendData(m_nDeviceAddress, QByteArray::fromHex(p_sGetStatus.toStdString().c_str()), true);
+            //QString p_sGetStatus = "0A";
+            //m_CommProt.data()->SendData(m_nDeviceAddress, QByteArray::fromHex(p_sGetStatus.toStdString().c_str()), true);
 
         }
     });
 
     connect(ui->comboBox_1,static_cast<void (QComboBox::*)(int)>(&QComboBox::currentIndexChanged),[=](int nValue){
-            selectedDeviceSetAccordingSaved(nValue);
+        selectedDeviceSetAccordingSaved(nValue);
 
-            //-m_pSettingStrorage->StoreSelectedDevice(ui->comboBox_SelectDevice->currentIndex());
-            //-FillTableContent();
+        //-m_pSettingStrorage->StoreSelectedDevice(ui->comboBox_SelectDevice->currentIndex());
+        //-FillTableContent();
 
-        });
+    });
 
 
 
@@ -156,6 +156,83 @@ void MainWindow::on_clearButton_clicked()
     ui->textBrowser->clear();
 }
 
+void MainWindow::on_checkBox_clicked()
+{
+
+}
+
+void MainWindow::on_checkBox_2_clicked()
+{
+    universalRequestMessageProtocol(ui->checkBox_2->checkState(), 40);
+}
+
+void MainWindow::on_checkBox_3_clicked()
+{
+    universalRequestMessageProtocol(ui->checkBox_3->checkState(), 41);
+    universalRequestMessageProtocol(ui->checkBox_3->checkState(), 41);
+}
+
+void MainWindow::on_checkBox_4_clicked()
+{
+    universalRequestMessageProtocol(ui->checkBox_4->checkState(), 42);
+}
+
+void MainWindow::on_checkBox_5_clicked()
+{
+    universalRequestMessageProtocol(ui->checkBox_5->checkState(), 43);
+    universalRequestMessageProtocol(ui->checkBox_5->checkState(), 43);
+}
+
+void MainWindow::on_checkBox_6_clicked()
+{
+    universalRequestMessageProtocol(ui->checkBox_6->checkState(), 44);
+}
+
+void MainWindow::on_checkBox_7_clicked()
+{
+    universalRequestMessageProtocol(ui->checkBox_7->checkState(), 45);
+}
+
+void MainWindow::on_checkBox_8_clicked()
+{
+    universalRequestMessageProtocol(ui->checkBox_8->checkState(), 46);
+}
+
+void MainWindow::universalRequestMessageProtocol(Qt::CheckState eState, int wIndex)
+{
+    QString strCmd = QString("%1").arg(wIndex);
+    strCmd += QString("0%1").arg(eState == Qt::Unchecked ? "0" : "1");
+
+    qDebug() << strCmd;
+
+    m_CommProt.data()->SendData(m_nDeviceAddress, QByteArray::fromHex(strCmd.toStdString().c_str()), eState == Qt::Unchecked ? false : true);
+}
+
+void MainWindow::on_checkBox_9_clicked()
+{
+    universalRequestMessageProtocol(ui->checkBox_9->checkState(), 30);
+}
+
+void MainWindow::on_checkBox_10_clicked()
+{
+    universalRequestMessageProtocol(ui->checkBox_10->checkState(), 31);
+}
+
+void MainWindow::on_checkBox_11_clicked()
+{
+    universalRequestMessageProtocol(ui->checkBox_11->checkState(), 32);
+}
+
+void MainWindow::on_checkBox_12_clicked()
+{
+    universalRequestMessageProtocol(ui->checkBox_12->checkState(), 33);
+}
+
+void MainWindow::on_checkBox_13_clicked()
+{
+    universalRequestMessageProtocol(ui->checkBox_13->checkState(), 34);
+}
+
 void MainWindow::newDataV200(QByteArray aData)
 {
     Q_UNUSED(aData);
@@ -235,23 +312,21 @@ void MainWindow::selectedDeviceSetAccordingSaved(quint32 value)
     {
         m_nDeviceAddress = constGenerID;
 
-        /*ui->spinBox->setEnabled(true);
-        ui->spinBox_2->setEnabled(true);
-        ui->spinBox_3->setEnabled(true);
-        ui->spinBox_4->setEnabled(true);
-        ui->spinBox_5->setEnabled(true);
-        ui->spinBox_6->setEnabled(true);*/
+        ui->checkBox_3->setEnabled(true);
+        ui->checkBox_4->setEnabled(true);
+        ui->checkBox_5->setEnabled(true);
+        ui->checkBox_7->setEnabled(true);
+        ui->checkBox_8->setEnabled(true);
     }
     else if(value == AMPLIFIER_SOURCE)
     {
         m_nDeviceAddress = constAmpID;
 
-        /*ui->spinBox->setEnabled(false);
-        ui->spinBox_2->setEnabled(false);
-        ui->spinBox_3->setEnabled(false);
-        ui->spinBox_4->setEnabled(false);
-        ui->spinBox_5->setEnabled(false);
-        ui->spinBox_6->setEnabled(false);*/
+        ui->checkBox_3->setEnabled(false);
+        ui->checkBox_4->setEnabled(false);
+        ui->checkBox_5->setEnabled(false);
+        ui->checkBox_7->setEnabled(false);
+        ui->checkBox_8->setEnabled(false);
     }
 }
 

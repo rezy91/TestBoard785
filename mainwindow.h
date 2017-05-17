@@ -83,6 +83,21 @@ private slots:
     void on_disconnectButton_clicked();
     void on_clearButton_clicked();
 
+    void on_checkBox_clicked();
+    void on_checkBox_2_clicked();
+    void on_checkBox_3_clicked();
+    void on_checkBox_4_clicked();
+    void on_checkBox_5_clicked();
+    void on_checkBox_6_clicked();
+    void on_checkBox_7_clicked();
+    void on_checkBox_8_clicked();
+    void on_checkBox_9_clicked();
+    void on_checkBox_10_clicked();
+    void on_checkBox_11_clicked();
+    void on_checkBox_12_clicked();
+    void on_checkBox_13_clicked();
+
+
 private:
     const quint32 constGenerID = 18;
     const quint32 constAmpID = 1;
@@ -107,6 +122,7 @@ private:
 
     void SetAvaiblePorts();
     void selectedDeviceSetAccordingSaved(quint32 value);
+    void universalRequestMessageProtocol(Qt::CheckState eState, int wIndex);
 
 
 protected:
