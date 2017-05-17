@@ -31,6 +31,13 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
     qDebug() << "Start of application.";
 
 
+    SetAvaiblePorts();
+
+    ui->comboBox_1->addItem(QString("Generator (ID = %1d)").arg(constGenerID));
+    ui->comboBox_1->addItem(QString("Amplifier (ID = %1d)").arg(constAmpID));
+
+    timeCurrent.start();
+
     ui->verticalLayout_1->layout()->addWidget(p_WidgetConfig);
     ui->verticalLayout_2->layout()->addWidget(p_WidgetReading);
     ui->verticalLayout_3->layout()->addWidget(p_WidgetGraph);
@@ -45,8 +52,19 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
         {
             mMainTimer = 0;
 
+            QString p_sGetStatus = "0A";
+            m_CommProt.data()->SendData(m_nDeviceAddress, QByteArray::fromHex(p_sGetStatus.toStdString().c_str()), true);
+
         }
     });
+
+    connect(ui->comboBox_1,static_cast<void (QComboBox::*)(int)>(&QComboBox::currentIndexChanged),[=](int nValue){
+            selectedDeviceSetAccordingSaved(nValue);
+
+            //-m_pSettingStrorage->StoreSelectedDevice(ui->comboBox_SelectDevice->currentIndex());
+            //-FillTableContent();
+
+        });
 
 
 
@@ -74,7 +92,7 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
         Q_UNUSED(oErrorTime);
 
         qDebug() << "Communication error:" << strError;
-
+        ui->statusBar->showMessage("Communication error: " + strError);
     });
 
     connect(m_CommProt.data(), &CommProtV200::StateChanged, [this](CommProtInterface::CommProtState eState) {
@@ -86,6 +104,7 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
             break;
         case CommProtInterface::Connected:
             qDebug() << "Connected";
+            m_CommProt.data()->SetEnabled(true);
             break;
         case CommProtInterface::Enabled:
             TmrMstr.start(1);
@@ -114,12 +133,38 @@ void MainWindow::changed_table(int index)
     refreshPlot();
 }
 
+void MainWindow::on_connectButton_clicked()
+{
+    ui->checkBox->setEnabled(false);
+    ui->comboBox->setEnabled(false);
+    ui->comboBox_1->setEnabled(false);
+
+    m_CommProt.data()->SetTargetMedium(ui->comboBox->currentText());
+}
+
+void MainWindow::on_disconnectButton_clicked()
+{
+    ui->checkBox->setEnabled(true);
+    ui->comboBox->setEnabled(true);
+    ui->comboBox_1->setEnabled(true);
+
+    m_CommProt.data()->SetTargetMedium("");
+}
+
+void MainWindow::on_clearButton_clicked()
+{
+    ui->textBrowser->clear();
+}
+
 void MainWindow::newDataV200(QByteArray aData)
 {
     Q_UNUSED(aData);
     //actualize time
-    timeCurrent.elapsed();
-    timeCurrent.start();
+    timeCurrent.restart();
+
+    ui->statusBar->showMessage("Data received: " + QString(aData.toHex()));
+
+    AppendText(timeCurrent, QString(aData));
 }
 
 void MainWindow::refreshPlot()
@@ -154,6 +199,59 @@ void MainWindow::refreshPlot()
 
         p_WidgetGraph->setFixedSize(QSize(currentSize.width(), currentSize.height() / 2));
         p_WidgetGraph->repaint();
+    }
+}
+
+void MainWindow::AppendText(QTime timestamp, QString strText)
+{
+    ui->textBrowser->append(myTimeStamp(timestamp) + "\t" + strText);
+}
+
+QString MainWindow::myTimeStamp(QTime time)
+{
+    return QString("%1:%2:%3,%4").arg(time.hour(), 2, 10, QChar('0')).arg(time.minute(), 2, 10, QChar('0')).arg(time.second(), 2, 10, QChar('0')).arg(time.msec(), 3, 10, QChar('0'));
+}
+
+void MainWindow::SetAvaiblePorts()
+{
+    ui->comboBox->clear();
+
+    //QString strLastPortName = m_pSettingStrorage->RestorePortName();
+
+    for(auto comPort : QSerialPortInfo::availablePorts())
+    {
+        ui->comboBox->addItem(comPort.portName());
+
+        /*if(comPort.portName() == strLastPortName)
+        {
+            ui->comboBox->setCurrentText(strLastPortName);
+        }*/
+    }
+}
+
+void MainWindow::selectedDeviceSetAccordingSaved(quint32 value)
+{
+    if(value == GENERATOR_SOURCE)
+    {
+        m_nDeviceAddress = constGenerID;
+
+        /*ui->spinBox->setEnabled(true);
+        ui->spinBox_2->setEnabled(true);
+        ui->spinBox_3->setEnabled(true);
+        ui->spinBox_4->setEnabled(true);
+        ui->spinBox_5->setEnabled(true);
+        ui->spinBox_6->setEnabled(true);*/
+    }
+    else if(value == AMPLIFIER_SOURCE)
+    {
+        m_nDeviceAddress = constAmpID;
+
+        /*ui->spinBox->setEnabled(false);
+        ui->spinBox_2->setEnabled(false);
+        ui->spinBox_3->setEnabled(false);
+        ui->spinBox_4->setEnabled(false);
+        ui->spinBox_5->setEnabled(false);
+        ui->spinBox_6->setEnabled(false);*/
     }
 }
 

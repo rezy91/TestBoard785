@@ -48,15 +48,44 @@ class MainWindow : public QMainWindow
     Q_OBJECT
 
 public:
+    typedef struct
+    {
+        float magnitude;
+        float phase_rad;
+    } COMPLEX_NUMBER_GONIO;
 
+    typedef struct
+    {
+        quint32 RequirementTime_ms;
+        quint32 CurrentTime_ms;
+        bool bEnable;
+    } APP_TIMER;
+
+    typedef struct
+    {
+        APP_TIMER timer;
+        QByteArray assemblyMsq;
+        bool respExp;
+    } PERIODIC_REQUEST;
+
+    typedef enum
+    {
+        GENERATOR_SOURCE,
+        AMPLIFIER_SOURCE
+    } SOURCE_DEVICE;
 
     explicit MainWindow(QWidget *parent = 0);
     ~MainWindow();
 
 private slots:
     void changed_table(int index);
+    void on_connectButton_clicked();
+    void on_disconnectButton_clicked();
+    void on_clearButton_clicked();
 
 private:
+    const quint32 constGenerID = 18;
+    const quint32 constAmpID = 1;
 
     Ui::MainWindow *ui;
     QSharedPointer<CommProtV200> m_CommProt;
@@ -73,6 +102,11 @@ private:
 
     void newDataV200(QByteArray aData);
     void refreshPlot(void);
+    void AppendText(QTime timestamp, QString strText);
+    QString myTimeStamp(QTime time);
+
+    void SetAvaiblePorts();
+    void selectedDeviceSetAccordingSaved(quint32 value);
 
 
 protected:
