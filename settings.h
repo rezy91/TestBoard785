@@ -8,7 +8,7 @@
 
 class settings : public QObject
 {
-    QSettings* m_pAppSettings = new QSettings("settings.ini", QSettings::IniFormat);
+    QSettings* m_pAppSettings = new QSettings(QString("%1/%2").arg(QCoreApplication::applicationDirPath()).arg("settings.ini"), QSettings::IniFormat);
     void StoreValue(const QString& strKey, const QVariant& vValue);
     QVariant RestoreValue(const QString &strKey, const QVariant &vDefaultValue = QVariant()) const;
 

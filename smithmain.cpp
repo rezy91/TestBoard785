@@ -93,7 +93,9 @@ void SmithMain::paintEvent(QPaintEvent*)
     nmbDisplayedSamples->setGeometry(width() / 2, height() - 25, 50, 20);
 
 
-    painterMain.drawPixmap(0, 0, QPixmap("smith.png").scaled(size()));
+    QString pathToFile = QString("%1/%2").arg(QCoreApplication::applicationDirPath()).arg("smith.png");
+
+    painterMain.drawPixmap(0, 0, QPixmap(pathToFile).scaled(size()));
 
     for(int jLoop = 0; jLoop < 3; jLoop++)
     {
