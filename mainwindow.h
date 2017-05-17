@@ -38,6 +38,14 @@
 #include "widgetsmith.h"
 
 
+#define NMB_ITEMS_TIMERS_GENER              6
+#define NMB_ITEMS_TIMERS_AMPLF              4
+#define NMB_COEFFICIENTS_OTHERS             9
+
+#define PID_TIMERS_ADCX_GENER              40
+#define PID_TIMER_INPUT_GENER              (PID_TIMERS_ADCX_GENER + NMB_ITEMS_TIMERS_GENER)
+#define PID_TIMERS_ADCX_AMPLF              30
+#define PID_TIMER_INPUT_AMPLF              (PID_TIMERS_ADCX_AMPLF + NMB_ITEMS_TIMERS_AMPLF)
 
 namespace Ui {
 class MainWindow;
@@ -66,6 +74,7 @@ public:
         APP_TIMER timer;
         QByteArray assemblyMsq;
         bool respExp;
+        bool isInProgress;
     } PERIODIC_REQUEST;
 
     typedef enum
@@ -115,6 +124,15 @@ private:
     widgetSmith *p_WidgetGraph = new widgetSmith(this);
 
 
+    PERIODIC_REQUEST eRequestsAmplifAdcx[NMB_ITEMS_TIMERS_AMPLF];
+    PERIODIC_REQUEST eRequestsGenerAdcx[NMB_ITEMS_TIMERS_GENER];
+    PERIODIC_REQUEST eRequestGenerInput;
+    PERIODIC_REQUEST eRequestAmplfInput;
+
+    bool flagIfSourceIsLoggedGener[NMB_ITEMS_TIMERS_GENER];
+    bool flagIfSourceIsLoggedAmplf[NMB_ITEMS_TIMERS_AMPLF];
+
+
     void newDataV200(QByteArray aData);
     void refreshPlot(void);
     void AppendText(QTime timestamp, QString strText);
@@ -123,6 +141,11 @@ private:
     void SetAvaiblePorts();
     void selectedDeviceSetAccordingSaved(quint32 value);
     void universalRequestMessageProtocol(Qt::CheckState eState, int wIndex);
+
+    void SetTimerRequests(int wIndex, bool bOnOff, QString sCommand, SOURCE_DEVICE eSourceStream);
+    void SetTimerinput(bool bOnOff, QString sCommand, SOURCE_DEVICE eSourceStream);
+    void HasTimerRequestsExpired(SOURCE_DEVICE eSourceStream);
+    void HasTimerInputExpired(SOURCE_DEVICE eSourceStream);
 
 
 protected:

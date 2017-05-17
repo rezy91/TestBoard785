@@ -38,6 +38,29 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
 
     timeCurrent.start();
 
+    for(int iLoop = 0; iLoop < NMB_ITEMS_TIMERS_GENER; iLoop++)
+    {
+        eRequestsGenerAdcx[iLoop].timer.CurrentTime_ms = 0;
+        eRequestsGenerAdcx[iLoop].timer.bEnable = false;
+        eRequestsGenerAdcx[iLoop].timer.RequirementTime_ms = 500;
+    }
+
+    for(int iLoop = 0; iLoop < NMB_ITEMS_TIMERS_AMPLF; iLoop++)
+    {
+        eRequestsAmplifAdcx[iLoop].timer.CurrentTime_ms = 0;
+        eRequestsAmplifAdcx[iLoop].timer.bEnable = false;
+        eRequestsAmplifAdcx[iLoop].timer.RequirementTime_ms = 500;
+    }
+
+
+    eRequestGenerInput.timer.CurrentTime_ms = 0;
+    eRequestGenerInput.timer.bEnable = false;
+    eRequestGenerInput.timer.RequirementTime_ms = 500;
+
+    eRequestAmplfInput.timer.CurrentTime_ms = 0;
+    eRequestAmplfInput.timer.bEnable = false;
+    eRequestAmplfInput.timer.RequirementTime_ms = 500;
+
     //ui->horizontalLayout_3->addWidget(p_WidgetConfig);
     ui->verticalLayout_2->addWidget(p_WidgetReading);
     ui->verticalLayout_3->addWidget(p_WidgetGraph);
@@ -47,6 +70,12 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
     connect(ui->tabWidget, &QTabWidget::currentChanged, this, &MainWindow::changed_table);
 
     connect(&TmrMstr,&QTimer::timeout,[this](){
+
+        HasTimerRequestsExpired(GENERATOR_SOURCE);
+        HasTimerRequestsExpired(AMPLIFIER_SOURCE);
+
+        HasTimerInputExpired(GENERATOR_SOURCE);
+        HasTimerInputExpired(AMPLIFIER_SOURCE);
 
         if(++mMainTimer >= 500)//only for some tests
         {
@@ -149,6 +178,19 @@ void MainWindow::on_disconnectButton_clicked()
     ui->comboBox_1->setEnabled(true);
 
     m_CommProt.data()->SetTargetMedium("");
+
+    for(qint32 loop = 0; loop < NMB_ITEMS_TIMERS_GENER; loop++)
+    {
+        eRequestsGenerAdcx[loop].timer.bEnable = false;
+    }
+
+    for(qint32 loop = 0; loop < NMB_ITEMS_TIMERS_AMPLF; loop++)
+    {
+        eRequestsAmplifAdcx[loop].timer.bEnable = false;
+    }
+
+    eRequestGenerInput.timer.bEnable = false;
+    eRequestAmplfInput.timer.bEnable = false;
 }
 
 void MainWindow::on_clearButton_clicked()
@@ -163,39 +205,37 @@ void MainWindow::on_checkBox_clicked()
 
 void MainWindow::on_checkBox_2_clicked()
 {
-    universalRequestMessageProtocol(ui->checkBox_2->checkState(), 40);
+    universalRequestMessageProtocol(ui->checkBox_2->checkState(), PID_TIMERS_ADCX_GENER + 0);
 }
 
 void MainWindow::on_checkBox_3_clicked()
 {
-    universalRequestMessageProtocol(ui->checkBox_3->checkState(), 41);
-    universalRequestMessageProtocol(ui->checkBox_3->checkState(), 41);
+    universalRequestMessageProtocol(ui->checkBox_3->checkState(), PID_TIMERS_ADCX_GENER + 1);
 }
 
 void MainWindow::on_checkBox_4_clicked()
 {
-    universalRequestMessageProtocol(ui->checkBox_4->checkState(), 42);
+    universalRequestMessageProtocol(ui->checkBox_4->checkState(), PID_TIMERS_ADCX_GENER + 2);
 }
 
 void MainWindow::on_checkBox_5_clicked()
 {
-    universalRequestMessageProtocol(ui->checkBox_5->checkState(), 43);
-    universalRequestMessageProtocol(ui->checkBox_5->checkState(), 43);
+    universalRequestMessageProtocol(ui->checkBox_5->checkState(), PID_TIMERS_ADCX_GENER + 3);
 }
 
 void MainWindow::on_checkBox_6_clicked()
 {
-    universalRequestMessageProtocol(ui->checkBox_6->checkState(), 44);
+    universalRequestMessageProtocol(ui->checkBox_6->checkState(), PID_TIMERS_ADCX_GENER + 4);
 }
 
 void MainWindow::on_checkBox_7_clicked()
 {
-    universalRequestMessageProtocol(ui->checkBox_7->checkState(), 45);
+    universalRequestMessageProtocol(ui->checkBox_7->checkState(), PID_TIMERS_ADCX_GENER + 5);
 }
 
 void MainWindow::on_checkBox_8_clicked()
 {
-    universalRequestMessageProtocol(ui->checkBox_8->checkState(), 46);
+    universalRequestMessageProtocol(ui->checkBox_8->checkState(), PID_TIMERS_ADCX_GENER + 6);
 }
 
 void MainWindow::universalRequestMessageProtocol(Qt::CheckState eState, int wIndex)
@@ -205,32 +245,44 @@ void MainWindow::universalRequestMessageProtocol(Qt::CheckState eState, int wInd
 
     qDebug() << strCmd;
 
-    m_CommProt.data()->SendData(m_nDeviceAddress, QByteArray::fromHex(strCmd.toStdString().c_str()), eState == Qt::Unchecked ? false : true);
+    if(wIndex == PID_TIMER_INPUT_GENER)
+    {
+        SetTimerinput(eState == Qt::Unchecked ? false : true, strCmd, GENERATOR_SOURCE);
+    }
+    else if(wIndex == PID_TIMER_INPUT_AMPLF)
+    {
+        SetTimerinput(eState == Qt::Unchecked ? false : true, strCmd, AMPLIFIER_SOURCE);
+    }
+    else
+    {
+        SetTimerRequests(wIndex, eState == Qt::Unchecked ? false : true, strCmd, GENERATOR_SOURCE);
+        SetTimerRequests(wIndex, eState == Qt::Unchecked ? false : true, strCmd, AMPLIFIER_SOURCE);
+    }
 }
 
 void MainWindow::on_checkBox_9_clicked()
 {
-    universalRequestMessageProtocol(ui->checkBox_9->checkState(), 30);
+    universalRequestMessageProtocol(ui->checkBox_9->checkState(), PID_TIMERS_ADCX_AMPLF + 0);
 }
 
 void MainWindow::on_checkBox_10_clicked()
 {
-    universalRequestMessageProtocol(ui->checkBox_10->checkState(), 31);
+    universalRequestMessageProtocol(ui->checkBox_10->checkState(), PID_TIMERS_ADCX_AMPLF + 1);
 }
 
 void MainWindow::on_checkBox_11_clicked()
 {
-    universalRequestMessageProtocol(ui->checkBox_11->checkState(), 32);
+    universalRequestMessageProtocol(ui->checkBox_11->checkState(), PID_TIMERS_ADCX_AMPLF + 2);
 }
 
 void MainWindow::on_checkBox_12_clicked()
 {
-    universalRequestMessageProtocol(ui->checkBox_12->checkState(), 33);
+    universalRequestMessageProtocol(ui->checkBox_12->checkState(), PID_TIMERS_ADCX_AMPLF + 3);
 }
 
 void MainWindow::on_checkBox_13_clicked()
 {
-    universalRequestMessageProtocol(ui->checkBox_13->checkState(), 34);
+    universalRequestMessageProtocol(ui->checkBox_13->checkState(), PID_TIMERS_ADCX_AMPLF + 4);
 }
 
 void MainWindow::newDataV200(QByteArray aData)
@@ -327,6 +379,99 @@ void MainWindow::selectedDeviceSetAccordingSaved(quint32 value)
         ui->checkBox_5->setEnabled(false);
         ui->checkBox_7->setEnabled(false);
         ui->checkBox_8->setEnabled(false);
+    }
+}
+
+void MainWindow::SetTimerRequests(int wIndex, bool bOnOff, QString sCommand, MainWindow::SOURCE_DEVICE eSourceStream)
+{
+    qint32 dwPidItems = (eSourceStream == GENERATOR_SOURCE) ? PID_TIMERS_ADCX_GENER : PID_TIMERS_ADCX_AMPLF;
+    qint32 dwVolumeItems = (eSourceStream == GENERATOR_SOURCE) ? NMB_ITEMS_TIMERS_GENER : NMB_ITEMS_TIMERS_AMPLF;
+    PERIODIC_REQUEST* p_sRequests = (eSourceStream == GENERATOR_SOURCE) ? eRequestsGenerAdcx : eRequestsAmplifAdcx;
+
+
+    for(qint32 row = 0; row < dwVolumeItems; row++)
+    {
+        if(dwPidItems + row == wIndex)
+        {
+            if(bOnOff == true)
+            {
+                p_sRequests[row].timer.CurrentTime_ms = 0;
+                p_sRequests[row].timer.bEnable = true;
+
+                p_sRequests[row].assemblyMsq = QByteArray::fromHex(sCommand.toStdString().c_str());
+                p_sRequests[row].respExp = true;
+            }
+            else
+            {
+                p_sRequests[row].timer.bEnable = false;
+                p_sRequests[row].respExp = false;
+            }
+
+
+            m_CommProt.data()->SendData(m_nDeviceAddress, QByteArray::fromHex(sCommand.toStdString().c_str()), bOnOff);
+
+            break;
+        }
+    }
+}
+
+void MainWindow::SetTimerinput(bool bOnOff, QString sCommand, MainWindow::SOURCE_DEVICE eSourceStream)
+{
+    PERIODIC_REQUEST* p_sRequest = (eSourceStream == GENERATOR_SOURCE) ? &eRequestGenerInput : &eRequestAmplfInput;
+
+
+    if(bOnOff == true)
+    {
+        p_sRequest->timer.CurrentTime_ms = 0;
+        p_sRequest->timer.bEnable = true;
+
+        p_sRequest->assemblyMsq = QByteArray::fromHex(sCommand.toStdString().c_str());
+        p_sRequest->respExp = true;
+    }
+    else
+    {
+        p_sRequest->timer.bEnable = false;
+        p_sRequest->respExp = false;
+    }
+
+    m_CommProt.data()->SendData(m_nDeviceAddress, QByteArray::fromHex(sCommand.toStdString().c_str()), bOnOff);
+}
+
+void MainWindow::HasTimerRequestsExpired(MainWindow::SOURCE_DEVICE eSourceStream)
+{
+    qint32 dwVolumeItems = (eSourceStream == GENERATOR_SOURCE) ? NMB_ITEMS_TIMERS_GENER : NMB_ITEMS_TIMERS_AMPLF;
+    PERIODIC_REQUEST* p_sRequests = (eSourceStream == GENERATOR_SOURCE) ? eRequestsGenerAdcx : eRequestsAmplifAdcx;
+
+
+    for(qint32 loop = 0; loop < dwVolumeItems; loop++)
+    {
+        if(p_sRequests[loop].timer.bEnable == true)
+        {
+            p_sRequests[loop].timer.CurrentTime_ms++;
+            if(p_sRequests[loop].timer.CurrentTime_ms >= p_sRequests[loop].timer.RequirementTime_ms)
+            {
+                p_sRequests[loop].timer.CurrentTime_ms = 0;
+                //qDebug() << "Timer requests" << loop << "tick";
+                m_CommProt.data()->SendData(m_nDeviceAddress, p_sRequests[loop].assemblyMsq, p_sRequests[loop].respExp);
+            }
+        }
+    }
+}
+
+void MainWindow::HasTimerInputExpired(MainWindow::SOURCE_DEVICE eSourceStream)
+{
+    PERIODIC_REQUEST* p_sRequest = (eSourceStream == GENERATOR_SOURCE) ? &eRequestGenerInput : &eRequestAmplfInput;
+
+
+    if(p_sRequest->timer.bEnable == true)
+    {
+        p_sRequest->timer.CurrentTime_ms++;
+        if(p_sRequest->timer.CurrentTime_ms >= p_sRequest->timer.RequirementTime_ms)
+        {
+            p_sRequest->timer.CurrentTime_ms = 0;
+            //qDebug() << "Timer input tick";
+            m_CommProt.data()->SendData(m_nDeviceAddress, p_sRequest->assemblyMsq, p_sRequest->respExp);
+        }
     }
 }
 
