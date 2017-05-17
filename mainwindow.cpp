@@ -31,10 +31,10 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
     qDebug() << "Start of application.";
 
 
-    ui->horizontalLayout_1->layout()->addWidget(p_WidgetConfig);
-    ui->horizontalLayout_2->layout()->addWidget(p_WidgetReading);
-    ui->verticalLayout_1->layout()->addWidget(p_WidgetGraph);
-    ui->verticalLayout_1->layout()->addWidget(p_WidgetSmith);
+    ui->verticalLayout_1->layout()->addWidget(p_WidgetConfig);
+    ui->verticalLayout_2->layout()->addWidget(p_WidgetReading);
+    ui->verticalLayout_3->layout()->addWidget(p_WidgetGraph);
+    ui->verticalLayout_3->layout()->addWidget(p_WidgetSmith);
 
 
     connect(ui->tabWidget, &QTabWidget::currentChanged, this, &MainWindow::changed_table);
