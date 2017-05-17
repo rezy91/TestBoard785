@@ -94,7 +94,7 @@ private:
     QTime timeCurrent;
 
 
-    widgetConfig *p_WidgetConfig = new widgetConfig(this);
+    //widgetConfig *p_WidgetConfig = new widgetConfig(this);
     widgetReading *p_WidgetReading = new widgetReading(this);
     widgetGraph *p_WidgetSmith = new widgetGraph(this);
     widgetSmith *p_WidgetGraph = new widgetSmith(this);
