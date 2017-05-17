@@ -1,11 +1,11 @@
-#include "widgettwo.h"
+#include "widgetreading.h"
 
-widgetTwo::widgetTwo(QWidget *parent) : QWidget(parent)
+widgetReading::widgetReading(QWidget *parent) : QWidget(parent)
 {
 
 }
 
-void widgetTwo::paintEvent(QPaintEvent* e)
+void widgetReading::paintEvent(QPaintEvent* e)
 {
     Q_UNUSED(e);
 

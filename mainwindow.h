@@ -32,9 +32,10 @@
 #include <QPushButton>
 
 
-#include "widgetone.h"
-#include "widgettwo.h"
-#include "widgetthree.h"
+#include "widgetconfig.h"
+#include "widgetreading.h"
+#include "widgetgraph.h"
+#include "widgetsmith.h"
 
 
 
@@ -64,15 +65,14 @@ private:
     QTime timeCurrent;
 
 
-
-    widgetOne *p_WidgetConfig = new widgetOne(this);
-    widgetTwo *p_WidgetReading = new widgetTwo(this);
-    widgetThree *p_WidgetSettings = new widgetThree(this);
+    widgetConfig *p_WidgetConfig = new widgetConfig(this);
+    widgetReading *p_WidgetReading = new widgetReading(this);
+    widgetGraph *p_WidgetSmith = new widgetGraph(this);
+    widgetSmith *p_WidgetGraph = new widgetSmith(this);
 
 
     void newDataV200(QByteArray aData);
     void refreshPlot(void);
-
 
 
 protected:

@@ -1,15 +1,16 @@
-#ifndef WIDGETTHREE_H
-#define WIDGETTHREE_H
+#ifndef widgetConfig_H
+#define widgetConfig_H
 
 #include <QObject>
 #include <QWidget>
 #include <QPainter>
+#include <QDebug>
 
-class widgetThree : public QWidget
+class widgetConfig : public QWidget
 {
     Q_OBJECT
 public:
-    explicit widgetThree(QWidget *parent = 0);
+    explicit widgetConfig(QWidget *parent = 0);
     void SetQSize(QSize value) {currSize = value;}
 
 signals:
@@ -23,4 +24,4 @@ protected:
     virtual void paintEvent(QPaintEvent*e);
 };
 
-#endif // WIDGETTHREE_H
+#endif // widgetConfig_H

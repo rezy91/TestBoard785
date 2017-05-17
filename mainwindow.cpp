@@ -33,7 +33,8 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
 
     ui->horizontalLayout_1->layout()->addWidget(p_WidgetConfig);
     ui->horizontalLayout_2->layout()->addWidget(p_WidgetReading);
-    ui->horizontalLayout_3->layout()->addWidget(p_WidgetSettings);
+    ui->verticalLayout_1->layout()->addWidget(p_WidgetGraph);
+    ui->verticalLayout_1->layout()->addWidget(p_WidgetSmith);
 
 
     connect(ui->tabWidget, &QTabWidget::currentChanged, this, &MainWindow::changed_table);
@@ -124,26 +125,35 @@ void MainWindow::newDataV200(QByteArray aData)
 void MainWindow::refreshPlot()
 {
     int currentTab = ui->tabWidget->currentIndex();
-    QSize currentSize = ui->tabWidget->size();
-
+    QSize currentSize;
 
     if(currentTab == 0)
     {
+        currentSize = ui->Configuration->size();
+
         p_WidgetConfig->setFixedSize(currentSize);
         p_WidgetConfig->SetQSize(currentSize);
         p_WidgetConfig->repaint();
     }
     else if(currentTab == 1)
     {
+        currentSize = ui->Reading->size();
+
         p_WidgetReading->setFixedSize(currentSize);
         p_WidgetReading->SetQSize(currentSize);
         p_WidgetReading->repaint();
     }
     else if(currentTab == 2)
     {
-        p_WidgetSettings->setFixedSize(currentSize);
-        p_WidgetSettings->SetQSize(currentSize);
-        p_WidgetSettings->repaint();
+        currentSize = ui->Graph->size();
+
+        p_WidgetSmith->setFixedSize(QSize(currentSize.width(), currentSize.height() / 2));
+        p_WidgetSmith->SetQStart(QSize(0,0));
+        p_WidgetSmith->SetQSize(QSize(currentSize.width(), currentSize.height() / 2));
+        p_WidgetSmith->repaint();
+
+        p_WidgetGraph->setFixedSize(QSize(currentSize.width(), currentSize.height() / 2));
+        p_WidgetGraph->repaint();
     }
 }
 

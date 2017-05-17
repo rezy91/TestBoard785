@@ -24,14 +24,16 @@ CONFIG += c++11
 
 SOURCES += main.cpp\
     mainwindow.cpp \
-    widgetone.cpp \
-    widgettwo.cpp \
-    widgetthree.cpp
+    widgetconfig.cpp \
+    widgetreading.cpp \
+    widgetgraph.cpp \
+    widgetsmith.cpp
 
 HEADERS  += mainwindow.h \
-    widgetone.h \
-    widgettwo.h \
-    widgetthree.h
+    widgetconfig.h \
+    widgetreading.h \
+    widgetgraph.h \
+    widgetsmith.h
 
 FORMS    += mainwindow.ui
 

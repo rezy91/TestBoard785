@@ -1,16 +1,18 @@
-#ifndef WIDGETONE_H
-#define WIDGETONE_H
+#ifndef widgetGraph_H
+#define widgetGraph_H
 
 #include <QObject>
 #include <QWidget>
 #include <QPainter>
+#include <QDebug>
 
-class widgetOne : public QWidget
+class widgetGraph : public QWidget
 {
     Q_OBJECT
 public:
-    explicit widgetOne(QWidget *parent = 0);
+    explicit widgetGraph(QWidget *parent = 0);
     void SetQSize(QSize value) {currSize = value;}
+    void SetQStart(QSize value) {currStart = value;}
 
 signals:
 
@@ -18,9 +20,10 @@ public slots:
 
 private:
     QSize currSize;
+    QSize currStart;
 
 protected:
     virtual void paintEvent(QPaintEvent*e);
 };
 
-#endif // WIDGETONE_H
+#endif // widgetGraph_H

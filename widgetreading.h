@@ -1,15 +1,16 @@
-#ifndef WIDGETTWO_H
-#define WIDGETTWO_H
+#ifndef widgetReading_H
+#define widgetReading_H
 
 #include <QObject>
 #include <QWidget>
 #include <QPainter>
+#include <QDebug>
 
-class widgetTwo : public QWidget
+class widgetReading : public QWidget
 {
     Q_OBJECT
 public:
-    explicit widgetTwo(QWidget *parent = 0);
+    explicit widgetReading(QWidget *parent = 0);
     void SetQSize(QSize value) {currSize = value;}
 
 signals:
@@ -23,4 +24,4 @@ protected:
     virtual void paintEvent(QPaintEvent*e);
 };
 
-#endif // WIDGETTWO_H
+#endif // widgetReading_H
