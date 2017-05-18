@@ -75,6 +75,8 @@ public:
         QByteArray assemblyMsq;
         bool respExp;
         bool isInProgress;
+        int internalIdClass;
+
     } PERIODIC_REQUEST;
 
     typedef enum
@@ -146,7 +148,6 @@ private:
     void SetTimerinput(bool bOnOff, QString sCommand, SOURCE_DEVICE eSourceStream);
     void HasTimerRequestsExpired(SOURCE_DEVICE eSourceStream);
     void HasTimerInputExpired(SOURCE_DEVICE eSourceStream);
-
 
 protected:
     bool eventFilter(QObject *object, QEvent *event);
