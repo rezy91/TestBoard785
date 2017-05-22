@@ -88,9 +88,9 @@
       <property name="currentIndex">
        <number>0</number>
       </property>
-      <widget class="QWidget" name="Configuration">
+      <widget class="QWidget" name="Reading">
        <attribute name="title">
-        <string>Configuration</string>
+        <string>Reading</string>
        </attribute>
        <widget class="QWidget" name="verticalLayoutWidget_2">
         <property name="geometry">
@@ -236,9 +236,9 @@
         </property>
        </widget>
       </widget>
-      <widget class="QWidget" name="Reading">
+      <widget class="QWidget" name="Configuration">
        <attribute name="title">
-        <string>Reading</string>
+        <string>Configuration</string>
        </attribute>
        <widget class="QWidget" name="verticalLayoutWidget_3">
         <property name="geometry">

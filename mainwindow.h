@@ -115,9 +115,11 @@ private:
 
     Ui::MainWindow *ui;
     QSharedPointer<CommProtV200> m_CommProt;
-    quint32 m_nDeviceAddress;
+    quint32 m_nDeviceAddress = constGenerID;
     QTimer TmrMstr;
     QTime timeCurrent;
+    bool m_bSaveData = false;
+    QFile m_oFile;
 
 
     //widgetConfig *p_WidgetConfig = new widgetConfig(this);

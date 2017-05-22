@@ -201,6 +201,16 @@ void MainWindow::on_connectButton_clicked()
     ui->comboBox_1->setEnabled(false);
 
     m_CommProt.data()->SetTargetMedium(ui->comboBox->currentText());
+
+    if(m_bSaveData)
+    {
+        m_oFile.setFileName(QString("SavedData_%1.log").arg(QDateTime::currentDateTime().toTime_t()));
+        if(!m_oFile.open(QFile::WriteOnly))
+        {
+            qDebug() << "error: cannot open file";
+            return;
+        }
+    }
 }
 
 void MainWindow::on_disconnectButton_clicked()
@@ -225,6 +235,29 @@ void MainWindow::on_disconnectButton_clicked()
 
     eRequestGenerInput.timer.bEnable = false;
     eRequestAmplfInput.timer.bEnable = false;
+
+    ui->checkBox_2->setChecked(false);
+    ui->checkBox_3->setChecked(false);
+    ui->checkBox_4->setChecked(false);
+    ui->checkBox_5->setChecked(false);
+    ui->checkBox_6->setChecked(false);
+    ui->checkBox_7->setChecked(false);
+    ui->checkBox_8->setChecked(false);
+    ui->checkBox_9->setChecked(false);
+    ui->checkBox_10->setChecked(false);
+    ui->checkBox_11->setChecked(false);
+    ui->checkBox_12->setChecked(false);
+    ui->checkBox_13->setChecked(false);
+
+    if(m_oFile.isOpen())
+    {
+        m_oFile.close();
+        QFileInfo oFileInfo(m_oFile);
+        AppendText(timeCurrent, QString("Data saved to <a href=\"%1\">%1</a>, file size is %2 kB").arg(oFileInfo.absoluteFilePath()).arg(static_cast<double>(oFileInfo.size()) / 1024, 0, 'f', 2));
+
+        qDebug() << "Data saved";
+
+    }
 }
 
 void MainWindow::on_clearButton_clicked()
@@ -234,7 +267,7 @@ void MainWindow::on_clearButton_clicked()
 
 void MainWindow::on_checkBox_clicked()
 {
-
+    m_bSaveData = ui->checkBox->isChecked();
 }
 
 void MainWindow::on_checkBox_2_clicked()
@@ -434,11 +467,11 @@ void MainWindow::newDataV200(QByteArray aData)
     {
         AppendText(timeCurrent, QString(aData));
 
-        /*if(m_bSaveData)
+        if(m_bSaveData)
         {
-            m_oFile.write(myTimeStamp(timeShot).toUtf8() + "\t" + QString(aData).simplified().toUtf8() + "\r\n");
+            m_oFile.write(myTimeStamp(timeCurrent).toUtf8() + "\t" + QString(aData).simplified().toUtf8() + "\r\n");
             m_oFile.flush();
-        }*/
+        }
     }
 
 
