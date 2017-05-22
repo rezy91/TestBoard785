@@ -33,7 +33,8 @@ HEADERS  += mainwindow.h \
     widgetconfig.h \
     widgetreading.h \
     widgetgraph.h \
-    widgetsmith.h
+    widgetsmith.h \
+    common.h
 
 FORMS    += mainwindow.ui
 
