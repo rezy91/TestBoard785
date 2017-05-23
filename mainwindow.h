@@ -26,7 +26,6 @@
 #include "../../../Applications/088/CommProtV200/commprotv200_global.h"
 #include <QSettings>
 #include <QDesktopServices>
-#include <QTimer>
 
 #include "common.h"
 
@@ -144,7 +143,6 @@ private:
     Ui::MainWindow *ui;
     QSharedPointer<CommProtV200> m_CommProt;
     quint32 m_nDeviceAddress = constGenerID;
-    QSettings* m_pAppSettings = new QSettings(QCoreApplication::organizationName(), QCoreApplication::applicationName(), this);
     QTimer TmrMstr;
 
 
@@ -214,6 +212,7 @@ signals:
     void SendLowLevel(double coef, int src);
 
 protected:
+    void closeEvent(QCloseEvent *event) override;
     bool eventFilter(QObject *object, QEvent *event);
 };
 

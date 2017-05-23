@@ -25,10 +25,12 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
 {
     static int mMainTimer = 0;
 
+    ui->setupUi(this);
+
     installEventFilter(this);
 
-    ui->setupUi(this);
     ui->statusBar->showMessage("Start app");
+    qDebug() << "Start of application.";
 
 
     connect(this, &MainWindow::SendNewImpedanceData, p_WidgetSmith, &widgetSmith::ReceivedNewData);
@@ -36,8 +38,6 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
     connect(this, &MainWindow::SendLowLevel, p_WidgetGraph, &widgetGraph::refreshLowLevel);
     connect(this, &MainWindow::SendUpdateGraph, p_WidgetGraph, &widgetGraph::refreshGraph);
 
-
-    qDebug() << "Start of application.";
 
     for(int iLoop = 0; iLoop < nmbCurvesInGraph; iLoop++)
     {
@@ -53,7 +53,6 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
     ui->comboBox_1->addItem(QString("Generator (ID = %1d)").arg(constGenerID));
     ui->comboBox_1->addItem(QString("Amplifier (ID = %1d)").arg(constAmpID));
 
-    timeCurrent.start();
 
     for(int iLoop = 0; iLoop < NMB_ITEMS_TIMERS_GENER; iLoop++)
     {
@@ -87,6 +86,7 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
     ui->verticalLayout_3->addWidget(p_WidgetGraph);
     ui->verticalLayout_3->addWidget(p_WidgetSmith);
 
+    timeCurrent.start();
 
     connect(ui->tabWidget, &QTabWidget::currentChanged, this, &MainWindow::changed_table);
 
@@ -247,86 +247,6 @@ void MainWindow::changed_table(int index)
     refreshPlot();
 }
 
-void MainWindow::on_connectButton_clicked()
-{
-    ui->checkBox->setEnabled(false);
-    ui->comboBox->setEnabled(false);
-    ui->comboBox_1->setEnabled(false);
-
-    sourceDataStream = RECEIVE_STREAM;
-
-    m_CommProt.data()->SetTargetMedium(ui->comboBox->currentText());
-
-    if(m_bSaveData)
-    {
-        m_oFile.setFileName(QString("SavedData_%1.log").arg(QDateTime::currentDateTime().toTime_t()));
-        if(!m_oFile.open(QFile::WriteOnly))
-        {
-            qDebug() << "error: cannot open file";
-            return;
-        }
-    }
-}
-
-void MainWindow::on_disconnectButton_clicked()
-{
-    ui->checkBox->setEnabled(true);
-    ui->comboBox->setEnabled(true);
-    ui->comboBox_1->setEnabled(true);
-
-    m_CommProt.data()->SetTargetMedium("");
-
-    for(qint32 loop = 0; loop < NMB_ITEMS_TIMERS_GENER; loop++)
-    {
-        eRequestsGenerAdcx[loop].timer.bEnable = false;
-        eRequestsGenerAdcx[loop].isInProgress = false;
-    }
-
-    for(qint32 loop = 0; loop < NMB_ITEMS_TIMERS_AMPLF; loop++)
-    {
-        eRequestsAmplifAdcx[loop].timer.bEnable = false;
-        eRequestsAmplifAdcx[loop].isInProgress = false;
-    }
-
-    eRequestGenerInput.timer.bEnable = false;
-    eRequestAmplfInput.timer.bEnable = false;
-
-    ui->checkBox_2->setChecked(false);
-    ui->checkBox_3->setChecked(false);
-    ui->checkBox_4->setChecked(false);
-    ui->checkBox_5->setChecked(false);
-    ui->checkBox_6->setChecked(false);
-    ui->checkBox_7->setChecked(false);
-    ui->checkBox_8->setChecked(false);
-    ui->checkBox_9->setChecked(false);
-    ui->checkBox_10->setChecked(false);
-    ui->checkBox_11->setChecked(false);
-    ui->checkBox_12->setChecked(false);
-    ui->checkBox_13->setChecked(false);
-
-    if(m_oFile.isOpen())
-    {
-        m_oFile.close();
-        QFileInfo oFileInfo(m_oFile);
-        AppendText(timeCurrent, QString("Data saved to <a href=\"%1\">%1</a>, file size is %2 kB").arg(oFileInfo.absoluteFilePath()).arg(static_cast<double>(oFileInfo.size()) / 1024, 0, 'f', 2));
-
-        qDebug() << "Data saved";
-
-    }
-
-    sourceDataStream = NO_STREAM;
-}
-
-void MainWindow::on_clearButton_clicked()
-{
-    ui->textBrowser->clear();
-}
-
-void MainWindow::on_checkBox_clicked()
-{
-    m_bSaveData = ui->checkBox->isChecked();
-}
-
 void MainWindow::on_checkBox_2_clicked()
 {
     universalRequestMessageProtocol(ui->checkBox_2->checkState(), PID_TIMERS_ADCX_GENER + 0);
@@ -362,59 +282,6 @@ void MainWindow::on_checkBox_8_clicked()
     universalRequestMessageProtocol(ui->checkBox_8->checkState(), PID_TIMERS_ADCX_GENER + 6);
 }
 
-void MainWindow::universalRequestMessageProtocol(Qt::CheckState eState, int wIndex)
-{
-    QString strCmd = QString("%1").arg(wIndex);
-    strCmd += QString("0%1").arg(eState == Qt::Unchecked ? "0" : "1");
-
-    qDebug() << strCmd;
-
-    if(wIndex == PID_TIMER_INPUT_GENER)
-    {
-        SetTimerinput(eState == Qt::Unchecked ? false : true, strCmd, GENERATOR_SOURCE);
-    }
-    else if(wIndex == PID_TIMER_INPUT_AMPLF)
-    {
-        SetTimerinput(eState == Qt::Unchecked ? false : true, strCmd, AMPLIFIER_SOURCE);
-    }
-    else
-    {
-        SetTimerRequests(wIndex, eState == Qt::Unchecked ? false : true, strCmd, GENERATOR_SOURCE);
-        SetTimerRequests(wIndex, eState == Qt::Unchecked ? false : true, strCmd, AMPLIFIER_SOURCE);
-
-        ShowSignalsIntoComboBox(RECEIVE_STREAM);
-    }
-}
-
-MainWindow::COMPLEX_NUMBER_GONIO MainWindow::CalculateReflectionRatio(MainWindow::COMPLEX_NUMBER_GONIO current, MainWindow::COMPLEX_NUMBER_GONIO average)
-{
-    COMPLEX_NUMBER_GONIO ReflectionRatio;
-
-    double averageAlgebReal = average.magnitude * cos(average.phase_rad);
-    double averageAlgebImag = average.magnitude * sin(average.phase_rad);
-
-    double recentAlgebReal = current.magnitude * cos(current.phase_rad);
-    double recentAlgebImag = current.magnitude * sin(current.phase_rad);
-
-    double dividentAlgebReal = recentAlgebReal - averageAlgebReal;
-    double dividentAlgebImag = recentAlgebImag - averageAlgebImag;
-
-    double divisorAlgebReal = recentAlgebReal + averageAlgebReal;
-    double divisorAlgebImag = recentAlgebImag + averageAlgebImag;
-
-
-    double commonDivisor = divisorAlgebReal * divisorAlgebReal + divisorAlgebImag * divisorAlgebImag;
-    double realPart = (dividentAlgebReal * divisorAlgebReal + dividentAlgebImag * divisorAlgebImag) / commonDivisor;
-    double imagPart = (dividentAlgebImag * divisorAlgebReal - dividentAlgebReal * divisorAlgebImag) / commonDivisor;
-
-    ReflectionRatio.magnitude = sqrt(realPart * realPart + imagPart * imagPart);
-    ReflectionRatio.phase_rad = atan(imagPart / realPart);
-
-    //qDebug() << ReflectionRatio.magnitude << " " << ReflectionRatio.phase_rad;
-
-    return ReflectionRatio;
-}
-
 void MainWindow::on_checkBox_9_clicked()
 {
     universalRequestMessageProtocol(ui->checkBox_9->checkState(), PID_TIMERS_ADCX_AMPLF + 0);
@@ -440,27 +307,76 @@ void MainWindow::on_checkBox_13_clicked()
     universalRequestMessageProtocol(ui->checkBox_13->checkState(), PID_TIMERS_ADCX_AMPLF + 4);
 }
 
-QStringList MainWindow::adjustRowDataIntoOnlyNumber(QString rowData)
+void MainWindow::selectedDeviceSetAccordingSaved(quint32 value)
 {
-    QStringList stringsSplitted = rowData.split(QRegExp("(\\s+| |=)"));
-    QStringList stringsNumbers;
-
-
-    for(int iLoop = 0; iLoop < stringsSplitted.count(); iLoop++)
+    if(value == GENERATOR_SOURCE)
     {
-        //qDebug() << "all: " + stringsSplitted.at(iLoop) << endl;
+        m_nDeviceAddress = constGenerID;
 
-        bool isNumber;
-        stringsSplitted.at(iLoop).toFloat(&isNumber);
+        ui->checkBox_3->setEnabled(true);
+        ui->checkBox_4->setEnabled(true);
+        ui->checkBox_5->setEnabled(true);
+        ui->checkBox_7->setEnabled(true);
+        ui->checkBox_8->setEnabled(true);
+    }
+    else if(value == AMPLIFIER_SOURCE)
+    {
+        m_nDeviceAddress = constAmpID;
 
-        if(isNumber)
+        ui->checkBox_3->setEnabled(false);
+        ui->checkBox_4->setEnabled(false);
+        ui->checkBox_5->setEnabled(false);
+        ui->checkBox_7->setEnabled(false);
+        ui->checkBox_8->setEnabled(false);
+    }
+}
+
+void MainWindow::AppendText(QTime timestamp, QString strText)
+{
+    ui->textBrowser->append(myTimeStamp(timestamp) + "\t" + strText);
+}
+
+void MainWindow::on_clearButton_clicked()
+{
+    ui->textBrowser->clear();
+}
+
+void MainWindow::on_connectButton_clicked()
+{
+    ui->checkBox->setEnabled(false);
+    ui->comboBox->setEnabled(false);
+    ui->comboBox_1->setEnabled(false);
+
+    sourceDataStream = RECEIVE_STREAM;
+
+    m_CommProt.data()->SetTargetMedium(ui->comboBox->currentText());
+
+    if(m_bSaveData)
+    {
+        m_oFile.setFileName(QString("SavedData_%1.log").arg(QDateTime::currentDateTime().toTime_t()));
+        if(!m_oFile.open(QFile::WriteOnly))
         {
-            stringsNumbers.append(stringsSplitted.at(iLoop));
-            //qDebug() << "number: " + stringsSplitted.at(iLoop) << endl;
+            qDebug() << "error: cannot open file";
+            return;
         }
     }
+}
 
-    return stringsNumbers;
+void MainWindow::SetAvaiblePorts()
+{
+    ui->comboBox->clear();
+
+    //QString strLastPortName = m_pSettingStrorage->RestorePortName();
+
+    for(auto comPort : QSerialPortInfo::availablePorts())
+    {
+        ui->comboBox->addItem(comPort.portName());
+
+        /*if(comPort.portName() == strLastPortName)
+        {
+            ui->comboBox->setCurrentText(strLastPortName);
+        }*/
+    }
 }
 
 void MainWindow::newDataV200(QByteArray aData)
@@ -612,197 +528,33 @@ void MainWindow::newDataV200(QByteArray aData)
 
 }
 
-void MainWindow::refreshPlot()
+MainWindow::COMPLEX_NUMBER_GONIO MainWindow::CalculateReflectionRatio(MainWindow::COMPLEX_NUMBER_GONIO current, MainWindow::COMPLEX_NUMBER_GONIO average)
 {
-    int currentTab = ui->tabWidget->currentIndex();
-    QSize currentSize;
+    COMPLEX_NUMBER_GONIO ReflectionRatio;
 
-    if(currentTab == 0)
-    {
-        currentSize = ui->Configuration->size();
+    double averageAlgebReal = average.magnitude * cos(average.phase_rad);
+    double averageAlgebImag = average.magnitude * sin(average.phase_rad);
 
-        /*p_WidgetConfig->setFixedSize(currentSize);
-        p_WidgetConfig->SetQSize(currentSize);
-        p_WidgetConfig->repaint();*/
-    }
-    else if(currentTab == 1)
-    {
-        currentSize = ui->Reading->size();
+    double recentAlgebReal = current.magnitude * cos(current.phase_rad);
+    double recentAlgebImag = current.magnitude * sin(current.phase_rad);
 
-        p_WidgetReading->setFixedSize(currentSize);
-        p_WidgetReading->SetQSize(currentSize);
-        p_WidgetReading->repaint();
-    }
-    else if(currentTab == 2)
-    {
-        currentSize = ui->Graph->size();
+    double dividentAlgebReal = recentAlgebReal - averageAlgebReal;
+    double dividentAlgebImag = recentAlgebImag - averageAlgebImag;
 
-        p_WidgetGraph->setFixedSize(QSize(currentSize.width(), (currentSize.height() / 10) * 7));
-        p_WidgetGraph->repaint();
-
-        p_WidgetSmith->setFixedSize(QSize(currentSize.width(), (currentSize.height() / 10) * 3));
-        p_WidgetSmith->repaint();
-    }
-}
-
-void MainWindow::AppendText(QTime timestamp, QString strText)
-{
-    ui->textBrowser->append(myTimeStamp(timestamp) + "\t" + strText);
-}
-
-QString MainWindow::myTimeStamp(QTime time)
-{
-    return QString("%1:%2:%3,%4").arg(time.hour(), 2, 10, QChar('0')).arg(time.minute(), 2, 10, QChar('0')).arg(time.second(), 2, 10, QChar('0')).arg(time.msec(), 3, 10, QChar('0'));
-}
-
-void MainWindow::SetAvaiblePorts()
-{
-    ui->comboBox->clear();
-
-    //QString strLastPortName = m_pSettingStrorage->RestorePortName();
-
-    for(auto comPort : QSerialPortInfo::availablePorts())
-    {
-        ui->comboBox->addItem(comPort.portName());
-
-        /*if(comPort.portName() == strLastPortName)
-        {
-            ui->comboBox->setCurrentText(strLastPortName);
-        }*/
-    }
-}
-
-void MainWindow::selectedDeviceSetAccordingSaved(quint32 value)
-{
-    if(value == GENERATOR_SOURCE)
-    {
-        m_nDeviceAddress = constGenerID;
-
-        ui->checkBox_3->setEnabled(true);
-        ui->checkBox_4->setEnabled(true);
-        ui->checkBox_5->setEnabled(true);
-        ui->checkBox_7->setEnabled(true);
-        ui->checkBox_8->setEnabled(true);
-    }
-    else if(value == AMPLIFIER_SOURCE)
-    {
-        m_nDeviceAddress = constAmpID;
-
-        ui->checkBox_3->setEnabled(false);
-        ui->checkBox_4->setEnabled(false);
-        ui->checkBox_5->setEnabled(false);
-        ui->checkBox_7->setEnabled(false);
-        ui->checkBox_8->setEnabled(false);
-    }
-}
-
-void MainWindow::SetTimerRequests(int wIndex, bool bOnOff, QString sCommand, MainWindow::SOURCE_DEVICE eSourceStream)
-{
-    qint32 dwPidItems = (eSourceStream == GENERATOR_SOURCE) ? PID_TIMERS_ADCX_GENER : PID_TIMERS_ADCX_AMPLF;
-    qint32 dwVolumeItems = (eSourceStream == GENERATOR_SOURCE) ? NMB_ITEMS_TIMERS_GENER : NMB_ITEMS_TIMERS_AMPLF;
-    PERIODIC_REQUEST* p_sRequests = (eSourceStream == GENERATOR_SOURCE) ? eRequestsGenerAdcx : eRequestsAmplifAdcx;
+    double divisorAlgebReal = recentAlgebReal + averageAlgebReal;
+    double divisorAlgebImag = recentAlgebImag + averageAlgebImag;
 
 
-    for(qint32 row = 0; row < dwVolumeItems; row++)
-    {
-        if(dwPidItems + row == wIndex)
-        {
-            if(bOnOff == true)
-            {
-                p_sRequests[row].timer.CurrentTime_ms = p_sRequests[row].timer.RequirementTime_ms;
-                p_sRequests[row].timer.bEnable = true;
+    double commonDivisor = divisorAlgebReal * divisorAlgebReal + divisorAlgebImag * divisorAlgebImag;
+    double realPart = (dividentAlgebReal * divisorAlgebReal + dividentAlgebImag * divisorAlgebImag) / commonDivisor;
+    double imagPart = (dividentAlgebImag * divisorAlgebReal - dividentAlgebReal * divisorAlgebImag) / commonDivisor;
 
-                p_sRequests[row].assemblyMsq = QByteArray::fromHex(sCommand.toStdString().c_str());
-                p_sRequests[row].respExp = true;
-            }
-            else
-            {
-                p_sRequests[row].timer.bEnable = false;
-                p_sRequests[row].respExp = false;
-            }
+    ReflectionRatio.magnitude = sqrt(realPart * realPart + imagPart * imagPart);
+    ReflectionRatio.phase_rad = atan(imagPart / realPart);
 
-            break;
-        }
-    }
-}
+    //qDebug() << ReflectionRatio.magnitude << " " << ReflectionRatio.phase_rad;
 
-void MainWindow::recognizeIfDisplayNewDataAllSignals(QTime timestamp, QStringList* listOfNumbers, int adx)
-{
-    for(int iLoop = 0; iLoop < nmbCurvesInGraph; iLoop++)
-    {
-        if((sourceAd[iLoop] == adx) && (sourceSignal[iLoop] >= 0))
-        {
-            //qDebug() << "recognizing adx:" << adx << "at signal:" << iLoop;
-            DisplayNewDataFromSignal(timestamp, listOfNumbers, iLoop);
-        }
-    }
-}
-
-void MainWindow::ShowSignalsIntoComboBox(SOURCE_STREAM eSourceStream)
-{
-    ui->comboBox_2->clear();
-    ui->comboBox_3->clear();
-    ui->comboBox_4->clear();
-    ui->comboBox_5->clear();
-
-    ui->comboBox_2->addItem("-");
-    ui->comboBox_3->addItem("-");
-    ui->comboBox_4->addItem("-");
-    ui->comboBox_5->addItem("-");
-
-    qint32 dwIndexStart = 1;
-
-    ShowSignalsIfShould(eSourceStream, GENERATOR_SOURCE, dwIndexStart, COLOR_BLUE_DARK);
-    ShowSignalsIfShould(eSourceStream, AMPLIFIER_SOURCE, dwIndexStart, COLOR_BROWN_DARK);
-}
-
-void MainWindow::DisplayNewDataFromSignal(QTime timestamp, QStringList *listOfNumbers, int indexInSignal)
-{
-    if(sourceSignal[indexInSignal] >= listOfNumbers->count())
-    {
-        qDebug() << "!!!!!!! received messegage isn´t according template";
-        return;
-    }
-
-    recvItems[indexInSignal] = listOfNumbers->at(sourceSignal[indexInSignal]).toDouble();
-
-    QString textToShow = (sourceAd[indexInSignal] >= NMB_ITEMS_TIMERS_GENER) ? allAdxSignalsAmplf[sourceAd[indexInSignal] - NMB_ITEMS_TIMERS_GENER].at(sourceSignal[indexInSignal]) : allAdxSignalsGener[sourceAd[indexInSignal]].at(sourceSignal[indexInSignal]);
-
-    emit SendUpdateGraph(timestamp, recvItems[indexInSignal], recStat[indexInSignal], textToShow, indexInSignal, sourceDataStream, 0);
-}
-
-void MainWindow::ShowSignalsIfShould(SOURCE_STREAM eSourceStream, MainWindow::SOURCE_DEVICE eSourceDevice, qint32 &dwStartIndex, QColor eBackgrColor)
-{
-    qint32 dwVolumeItems = (eSourceDevice == GENERATOR_SOURCE) ? NMB_ITEMS_TIMERS_GENER : NMB_ITEMS_TIMERS_AMPLF;
-    const QStringList* p_sStringList = (eSourceDevice == GENERATOR_SOURCE) ? allAdxSignalsGener : allAdxSignalsAmplf;
-    bool* p_bLogged = (eSourceDevice == GENERATOR_SOURCE) ? flagIfSourceIsLoggedGener : flagIfSourceIsLoggedAmplf;
-    PERIODIC_REQUEST* p_sRequests = (eSourceDevice == GENERATOR_SOURCE) ? eRequestsGenerAdcx : eRequestsAmplifAdcx;
-
-
-    for(qint32 row = 0; row < dwVolumeItems; row++)
-    {
-        if(((eSourceStream == LOG_STREAM) && p_bLogged[row]) || ((eSourceStream == RECEIVE_STREAM) && p_sRequests[row].timer.bEnable))
-        {
-            ui->comboBox_2->addItems(p_sStringList[row]);
-            ui->comboBox_3->addItems(p_sStringList[row]);
-            ui->comboBox_4->addItems(p_sStringList[row]);
-            ui->comboBox_5->addItems(p_sStringList[row]);
-
-            for(qint32 iLoop = 0; iLoop <= p_sStringList[row].count(); iLoop++)
-            {
-                ui->comboBox_2->setItemData(dwStartIndex + iLoop, QBrush(eBackgrColor), Qt::BackgroundRole);
-                ui->comboBox_2->setItemData(dwStartIndex + iLoop, QBrush(Qt::white), Qt::TextColorRole);
-                ui->comboBox_3->setItemData(dwStartIndex + iLoop, QBrush(eBackgrColor), Qt::BackgroundRole);
-                ui->comboBox_3->setItemData(dwStartIndex + iLoop, QBrush(Qt::white), Qt::TextColorRole);
-                ui->comboBox_4->setItemData(dwStartIndex + iLoop, QBrush(eBackgrColor), Qt::BackgroundRole);
-                ui->comboBox_4->setItemData(dwStartIndex + iLoop, QBrush(Qt::white), Qt::TextColorRole);
-                ui->comboBox_5->setItemData(dwStartIndex + iLoop, QBrush(eBackgrColor), Qt::BackgroundRole);
-                ui->comboBox_5->setItemData(dwStartIndex + iLoop, QBrush(Qt::white), Qt::TextColorRole);
-            }
-
-            dwStartIndex += p_sStringList[row].count();
-        }
-    }
+    return ReflectionRatio;
 }
 
 void MainWindow::CheckedIfIndexInQlist(int NumberComboBox, int indexInComboBox)
@@ -905,6 +657,88 @@ bool MainWindow::GetIndexFromQlist(MainWindow::SOURCE_DEVICE eSourceStream, int 
     return false;
 }
 
+void MainWindow::SetTimerRequests(int wIndex, bool bOnOff, QString sCommand, MainWindow::SOURCE_DEVICE eSourceStream)
+{
+    qint32 dwPidItems = (eSourceStream == GENERATOR_SOURCE) ? PID_TIMERS_ADCX_GENER : PID_TIMERS_ADCX_AMPLF;
+    qint32 dwVolumeItems = (eSourceStream == GENERATOR_SOURCE) ? NMB_ITEMS_TIMERS_GENER : NMB_ITEMS_TIMERS_AMPLF;
+    PERIODIC_REQUEST* p_sRequests = (eSourceStream == GENERATOR_SOURCE) ? eRequestsGenerAdcx : eRequestsAmplifAdcx;
+
+
+    for(qint32 row = 0; row < dwVolumeItems; row++)
+    {
+        if(dwPidItems + row == wIndex)
+        {
+            if(bOnOff == true)
+            {
+                p_sRequests[row].timer.CurrentTime_ms = p_sRequests[row].timer.RequirementTime_ms;
+                p_sRequests[row].timer.bEnable = true;
+
+                p_sRequests[row].assemblyMsq = QByteArray::fromHex(sCommand.toStdString().c_str());
+                p_sRequests[row].respExp = true;
+            }
+            else
+            {
+                p_sRequests[row].timer.bEnable = false;
+                p_sRequests[row].respExp = false;
+            }
+
+            break;
+        }
+    }
+}
+
+void MainWindow::ShowSignalsIntoComboBox(SOURCE_STREAM eSourceStream)
+{
+    ui->comboBox_2->clear();
+    ui->comboBox_3->clear();
+    ui->comboBox_4->clear();
+    ui->comboBox_5->clear();
+
+    ui->comboBox_2->addItem("-");
+    ui->comboBox_3->addItem("-");
+    ui->comboBox_4->addItem("-");
+    ui->comboBox_5->addItem("-");
+
+    qint32 dwIndexStart = 1;
+
+    ShowSignalsIfShould(eSourceStream, GENERATOR_SOURCE, dwIndexStart, COLOR_BLUE_DARK);
+    ShowSignalsIfShould(eSourceStream, AMPLIFIER_SOURCE, dwIndexStart, COLOR_BROWN_DARK);
+}
+
+void MainWindow::ShowSignalsIfShould(SOURCE_STREAM eSourceStream, MainWindow::SOURCE_DEVICE eSourceDevice, qint32 &dwStartIndex, QColor eBackgrColor)
+{
+    qint32 dwVolumeItems = (eSourceDevice == GENERATOR_SOURCE) ? NMB_ITEMS_TIMERS_GENER : NMB_ITEMS_TIMERS_AMPLF;
+    const QStringList* p_sStringList = (eSourceDevice == GENERATOR_SOURCE) ? allAdxSignalsGener : allAdxSignalsAmplf;
+    bool* p_bLogged = (eSourceDevice == GENERATOR_SOURCE) ? flagIfSourceIsLoggedGener : flagIfSourceIsLoggedAmplf;
+    PERIODIC_REQUEST* p_sRequests = (eSourceDevice == GENERATOR_SOURCE) ? eRequestsGenerAdcx : eRequestsAmplifAdcx;
+
+
+    for(qint32 row = 0; row < dwVolumeItems; row++)
+    {
+        if(((eSourceStream == LOG_STREAM) && p_bLogged[row]) || ((eSourceStream == RECEIVE_STREAM) && p_sRequests[row].timer.bEnable))
+        {
+            ui->comboBox_2->addItems(p_sStringList[row]);
+            ui->comboBox_3->addItems(p_sStringList[row]);
+            ui->comboBox_4->addItems(p_sStringList[row]);
+            ui->comboBox_5->addItems(p_sStringList[row]);
+
+            for(qint32 iLoop = 0; iLoop <= p_sStringList[row].count(); iLoop++)
+            {
+                ui->comboBox_2->setItemData(dwStartIndex + iLoop, QBrush(eBackgrColor), Qt::BackgroundRole);
+                ui->comboBox_2->setItemData(dwStartIndex + iLoop, QBrush(Qt::white), Qt::TextColorRole);
+                ui->comboBox_3->setItemData(dwStartIndex + iLoop, QBrush(eBackgrColor), Qt::BackgroundRole);
+                ui->comboBox_3->setItemData(dwStartIndex + iLoop, QBrush(Qt::white), Qt::TextColorRole);
+                ui->comboBox_4->setItemData(dwStartIndex + iLoop, QBrush(eBackgrColor), Qt::BackgroundRole);
+                ui->comboBox_4->setItemData(dwStartIndex + iLoop, QBrush(Qt::white), Qt::TextColorRole);
+                ui->comboBox_5->setItemData(dwStartIndex + iLoop, QBrush(eBackgrColor), Qt::BackgroundRole);
+                ui->comboBox_5->setItemData(dwStartIndex + iLoop, QBrush(Qt::white), Qt::TextColorRole);
+            }
+
+            dwStartIndex += p_sStringList[row].count();
+        }
+    }
+}
+
 void MainWindow::SetTimerinput(bool bOnOff, QString sCommand, MainWindow::SOURCE_DEVICE eSourceStream)
 {
     PERIODIC_REQUEST* p_sRequest = (eSourceStream == GENERATOR_SOURCE) ? &eRequestGenerInput : &eRequestAmplfInput;
@@ -955,6 +789,149 @@ void MainWindow::HasTimerRequestsExpired(MainWindow::SOURCE_DEVICE eSourceStream
     }
 }
 
+void MainWindow::HasTimerInputExpired(MainWindow::SOURCE_DEVICE eSourceStream)
+{
+    PERIODIC_REQUEST* p_sRequest = (eSourceStream == GENERATOR_SOURCE) ? &eRequestGenerInput : &eRequestAmplfInput;
+
+
+    if(p_sRequest->timer.bEnable == true)
+    {
+        p_sRequest->timer.CurrentTime_ms++;
+        if(p_sRequest->timer.CurrentTime_ms >= p_sRequest->timer.RequirementTime_ms)
+        {
+            //qDebug() << "Timer input" << eSourceStream << "tick";
+            if(p_sRequest->isInProgress == true)
+            {
+                //qDebug() << "Timer input" << eSourceStream << "busy";
+            }
+            else
+            {
+                //qDebug() << "Timer input" << eSourceStream << "again";
+                p_sRequest->isInProgress = true;
+                p_sRequest->timer.CurrentTime_ms = 0;
+                p_sRequest->internalIdClass = m_CommProt.data()->SendData(m_nDeviceAddress, p_sRequest->assemblyMsq, p_sRequest->respExp);
+            }
+        }
+    }
+}
+
+void MainWindow::recognizeIfDisplayNewDataAllSignals(QTime timestamp, QStringList* listOfNumbers, int adx)
+{
+    for(int iLoop = 0; iLoop < nmbCurvesInGraph; iLoop++)
+    {
+        if((sourceAd[iLoop] == adx) && (sourceSignal[iLoop] >= 0))
+        {
+            //qDebug() << "recognizing adx:" << adx << "at signal:" << iLoop;
+            DisplayNewDataFromSignal(timestamp, listOfNumbers, iLoop);
+        }
+    }
+}
+
+void MainWindow::DisplayNewDataFromSignal(QTime timestamp, QStringList *listOfNumbers, int indexInSignal)
+{
+    if(sourceSignal[indexInSignal] >= listOfNumbers->count())
+    {
+        qDebug() << "!!!!!!! received messegage isn´t according template";
+        return;
+    }
+
+    recvItems[indexInSignal] = listOfNumbers->at(sourceSignal[indexInSignal]).toDouble();
+
+    QString textToShow = (sourceAd[indexInSignal] >= NMB_ITEMS_TIMERS_GENER) ? allAdxSignalsAmplf[sourceAd[indexInSignal] - NMB_ITEMS_TIMERS_GENER].at(sourceSignal[indexInSignal]) : allAdxSignalsGener[sourceAd[indexInSignal]].at(sourceSignal[indexInSignal]);
+
+    emit SendUpdateGraph(timestamp, recvItems[indexInSignal], recStat[indexInSignal], textToShow, indexInSignal, sourceDataStream, 0);
+}
+
+QString MainWindow::myTimeStamp(QTime time)
+{
+    return QString("%1:%2:%3,%4").arg(time.hour(), 2, 10, QChar('0')).arg(time.minute(), 2, 10, QChar('0')).arg(time.second(), 2, 10, QChar('0')).arg(time.msec(), 3, 10, QChar('0'));
+}
+
+QStringList MainWindow::adjustRowDataIntoOnlyNumber(QString rowData)
+{
+    QStringList stringsSplitted = rowData.split(QRegExp("(\\s+| |=)"));
+    QStringList stringsNumbers;
+
+
+    for(int iLoop = 0; iLoop < stringsSplitted.count(); iLoop++)
+    {
+        //qDebug() << "all: " + stringsSplitted.at(iLoop) << endl;
+
+        bool isNumber;
+        stringsSplitted.at(iLoop).toFloat(&isNumber);
+
+        if(isNumber)
+        {
+            stringsNumbers.append(stringsSplitted.at(iLoop));
+            //qDebug() << "number: " + stringsSplitted.at(iLoop) << endl;
+        }
+    }
+
+    return stringsNumbers;
+}
+
+void MainWindow::on_disconnectButton_clicked()
+{
+    ui->checkBox->setEnabled(true);
+    ui->comboBox->setEnabled(true);
+    ui->comboBox_1->setEnabled(true);
+
+    m_CommProt.data()->SetTargetMedium("");
+
+    SetAvaiblePorts();
+
+    for(qint32 loop = 0; loop < NMB_ITEMS_TIMERS_GENER; loop++)
+    {
+        eRequestsGenerAdcx[loop].timer.bEnable = false;
+        eRequestsGenerAdcx[loop].isInProgress = false;
+    }
+
+    for(qint32 loop = 0; loop < NMB_ITEMS_TIMERS_AMPLF; loop++)
+    {
+        eRequestsAmplifAdcx[loop].timer.bEnable = false;
+        eRequestsAmplifAdcx[loop].isInProgress = false;
+    }
+
+    eRequestGenerInput.timer.bEnable = false;
+    eRequestAmplfInput.timer.bEnable = false;
+
+    ui->checkBox_2->setChecked(false);
+    ui->checkBox_3->setChecked(false);
+    ui->checkBox_4->setChecked(false);
+    ui->checkBox_5->setChecked(false);
+    ui->checkBox_6->setChecked(false);
+    ui->checkBox_7->setChecked(false);
+    ui->checkBox_8->setChecked(false);
+    ui->checkBox_9->setChecked(false);
+    ui->checkBox_10->setChecked(false);
+    ui->checkBox_11->setChecked(false);
+    ui->checkBox_12->setChecked(false);
+    ui->checkBox_13->setChecked(false);
+
+    if(m_oFile.isOpen())
+    {
+        m_oFile.close();
+        QFileInfo oFileInfo(m_oFile);
+        AppendText(timeCurrent, QString("Data saved to <a href=\"%1\">%1</a>, file size is %2 kB").arg(oFileInfo.absoluteFilePath()).arg(static_cast<double>(oFileInfo.size()) / 1024, 0, 'f', 2));
+
+        qDebug() << "Data saved";
+
+    }
+
+    ui->comboBox_2->clear();
+    ui->comboBox_3->clear();
+    ui->comboBox_4->clear();
+    ui->comboBox_5->clear();
+
+    sourceDataStream = NO_STREAM;
+}
+
+
+void MainWindow::on_checkBox_clicked()
+{
+    m_bSaveData = ui->checkBox->isChecked();
+}
+
 void MainWindow::on_openlogButton_clicked()
 {
     sourceDataStream = LOG_STREAM;
@@ -981,8 +958,6 @@ void MainWindow::on_openlogButton_clicked()
     }
     else
     {
-        qDebug() << "file opened :)";
-
         QTextStream fileStream(&m_logFile);
 
         while (!fileStream.atEnd())
@@ -1021,29 +996,61 @@ void MainWindow::on_textBrowser_anchorClicked(const QUrl &arg1)
     QDesktopServices::openUrl(arg1);
 }
 
-void MainWindow::HasTimerInputExpired(MainWindow::SOURCE_DEVICE eSourceStream)
+
+void MainWindow::refreshPlot()
 {
-    PERIODIC_REQUEST* p_sRequest = (eSourceStream == GENERATOR_SOURCE) ? &eRequestGenerInput : &eRequestAmplfInput;
+    int currentTab = ui->tabWidget->currentIndex();
+    QSize currentSize;
 
-
-    if(p_sRequest->timer.bEnable == true)
+    if(currentTab == 0)
     {
-        p_sRequest->timer.CurrentTime_ms++;
-        if(p_sRequest->timer.CurrentTime_ms >= p_sRequest->timer.RequirementTime_ms)
-        {
-            //qDebug() << "Timer input" << eSourceStream << "tick";
-            if(p_sRequest->isInProgress == true)
-            {
-                //qDebug() << "Timer input" << eSourceStream << "busy";
-            }
-            else
-            {
-                //qDebug() << "Timer input" << eSourceStream << "again";
-                p_sRequest->isInProgress = true;
-                p_sRequest->timer.CurrentTime_ms = 0;
-                p_sRequest->internalIdClass = m_CommProt.data()->SendData(m_nDeviceAddress, p_sRequest->assemblyMsq, p_sRequest->respExp);
-            }
-        }
+        currentSize = ui->Configuration->size();
+
+        /*p_WidgetConfig->setFixedSize(currentSize);
+        p_WidgetConfig->SetQSize(currentSize);
+        p_WidgetConfig->repaint();*/
+    }
+    else if(currentTab == 1)
+    {
+        currentSize = ui->Reading->size();
+
+        p_WidgetReading->setFixedSize(currentSize);
+        p_WidgetReading->SetQSize(currentSize);
+        p_WidgetReading->repaint();
+    }
+    else if(currentTab == 2)
+    {
+        currentSize = ui->Graph->size();
+
+        p_WidgetGraph->setFixedSize(QSize(currentSize.width(), (currentSize.height() / 10) * 7));
+        p_WidgetGraph->repaint();
+
+        p_WidgetSmith->setFixedSize(QSize(currentSize.width(), (currentSize.height() / 10) * 3));
+        p_WidgetSmith->repaint();
+    }
+}
+
+void MainWindow::universalRequestMessageProtocol(Qt::CheckState eState, int wIndex)
+{
+    QString strCmd = QString("%1").arg(wIndex);
+    strCmd += QString("0%1").arg(eState == Qt::Unchecked ? "0" : "1");
+
+    qDebug() << strCmd;
+
+    if(wIndex == PID_TIMER_INPUT_GENER)
+    {
+        SetTimerinput(eState == Qt::Unchecked ? false : true, strCmd, GENERATOR_SOURCE);
+    }
+    else if(wIndex == PID_TIMER_INPUT_AMPLF)
+    {
+        SetTimerinput(eState == Qt::Unchecked ? false : true, strCmd, AMPLIFIER_SOURCE);
+    }
+    else
+    {
+        SetTimerRequests(wIndex, eState == Qt::Unchecked ? false : true, strCmd, GENERATOR_SOURCE);
+        SetTimerRequests(wIndex, eState == Qt::Unchecked ? false : true, strCmd, AMPLIFIER_SOURCE);
+
+        ShowSignalsIntoComboBox(RECEIVE_STREAM);
     }
 }
 
@@ -1067,3 +1074,7 @@ bool MainWindow::eventFilter(QObject *object, QEvent *event)
     return retVal;
 }
 
+void MainWindow::closeEvent(QCloseEvent *event)
+{
+    Q_UNUSED(event);
+}
