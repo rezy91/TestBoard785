@@ -11,14 +11,12 @@ class widgetConfig : public QWidget
     Q_OBJECT
 public:
     explicit widgetConfig(QWidget *parent = 0);
-    void SetQSize(QSize value) {currSize = value;}
 
 signals:
 
 public slots:
 
 private:
-    QSize currSize;
 
 protected:
     virtual void paintEvent(QPaintEvent*e);

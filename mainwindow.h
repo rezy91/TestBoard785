@@ -32,6 +32,7 @@
 #include "widgetreading.h"
 #include "widgetgraph.h"
 #include "widgetsmith.h"
+#include "widgettherapy.h"
 
 
 #define NMB_ITEMS_TIMERS_GENER              6
@@ -150,6 +151,7 @@ private:
     widgetConfig *p_WidgetConfig = new widgetConfig(this);
     widgetSmith *p_WidgetSmith = new widgetSmith(this);
     widgetGraph *p_WidgetGraph = new widgetGraph(this);
+    widgetTherapy *p_WidgetTherapy = new widgetTherapy(this);
 
     void AppendText(QTime timestamp, QString strText);
     void FillTableContent();

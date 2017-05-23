@@ -27,14 +27,16 @@ SOURCES += main.cpp\
     widgetconfig.cpp \
     widgetreading.cpp \
     widgetgraph.cpp \
-    widgetsmith.cpp
+    widgetsmith.cpp \
+    widgettherapy.cpp
 
 HEADERS  += mainwindow.h \
     widgetconfig.h \
     widgetreading.h \
     widgetgraph.h \
     widgetsmith.h \
-    common.h
+    common.h \
+    widgettherapy.h
 
 FORMS    += mainwindow.ui
 

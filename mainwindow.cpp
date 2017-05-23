@@ -87,6 +87,7 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
     ui->verticalLayout_2->addWidget(p_WidgetConfig);
     ui->verticalLayout_3->addWidget(p_WidgetGraph);
     ui->verticalLayout_3->addWidget(p_WidgetSmith);
+    ui->verticalLayout_3->addWidget(p_WidgetTherapy);
 
     timeCurrent.start();
 
@@ -937,18 +938,20 @@ void MainWindow::refreshPlot()
         currentSize = ui->Configuration->size();
 
         p_WidgetConfig->setFixedSize(currentSize);
-        p_WidgetConfig->SetQSize(currentSize);
         p_WidgetConfig->repaint();
     }
     else if(currentTab == 2)
     {
         currentSize = ui->Graph->size();
 
-        p_WidgetGraph->setFixedSize(QSize(currentSize.width(), (currentSize.height() / 10) * 7));
+        p_WidgetGraph->setFixedSize(QSize(currentSize.width(), (currentSize.height() / 10) * 6));
         p_WidgetGraph->repaint();
 
-        p_WidgetSmith->setFixedSize(QSize(currentSize.width(), (currentSize.height() / 10) * 3));
+        p_WidgetSmith->setFixedSize(QSize(currentSize.width(), (currentSize.height() / 10) * 2));
         p_WidgetSmith->repaint();
+
+        p_WidgetTherapy->setFixedSize(QSize(currentSize.width(), (currentSize.height() / 10) * 2));
+        p_WidgetTherapy->repaint();
     }
 }
 
