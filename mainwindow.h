@@ -154,7 +154,7 @@ private:
     bool flagIfSourceIsLoggedGener[NMB_ITEMS_TIMERS_GENER];
     bool flagIfSourceIsLoggedAmplf[NMB_ITEMS_TIMERS_AMPLF];
 
-    bool m_bSaveData = true;
+    bool m_bSaveData = false;
     int sourceDataStream = NO_STREAM;
 
     QFile m_oFile;
@@ -182,7 +182,6 @@ private:
     QString myTimeStamp(QTime time);
     QStringList adjustRowDataIntoOnlyNumber(QString rowData);
     void prepareComboBoxesWithSignals();
-    void adjustCoefficientSingleStep(QDoubleSpinBox* p_oubleSpinBox, double newValue);
     void selectedDeviceSetAccordingSaved(quint32 value);
 
     bool GetIndexFromQlist(SOURCE_DEVICE eSourceStream, int &dwAbsIndex, int dwNumberCmbBx, int dwIndexCmbBx);
@@ -208,8 +207,6 @@ private:
 signals:
     void SendNewImpedanceData(qreal magnitudeCurr2Avg, qreal phaseCurr2Avg, qreal magnitudeCurr250, qreal phaseCurr250, qreal magnitudeAvg250, qreal phaseAvg250);
     void SendUpdateGraph(QTime timestamp, double receivedValue, int recordState, QString nameSignals, int src, int srStr, int flgs);
-    void SendHighLevel(double coef, int src);
-    void SendLowLevel(double coef, int src);
 
 protected:
     void closeEvent(QCloseEvent *event) override;

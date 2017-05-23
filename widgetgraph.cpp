@@ -26,6 +26,21 @@ void widgetGraph::paintEvent(QPaintEvent* e)
 
 widgetGraph::widgetGraph(QWidget *parent) : QWidget(parent)
 {
+    for(int iLoop = 0; iLoop < nmbCurvesInGraph; iLoop++)
+    {
+        maxLimitLevel[iLoop] = new QDoubleSpinBox(this);
+        minLimitLevel[iLoop] = new QDoubleSpinBox(this);
+
+        maxLimitLevel[iLoop]->setMaximum(99999);
+        minLimitLevel[iLoop]->setMaximum(99999);
+
+        mHighLevelAxis_y[iLoop] = 100;
+        mLowLevelAxis_y[iLoop] = 0;
+
+        maxLimitLevel[iLoop]->setValue(mHighLevelAxis_y[iLoop]);
+        minLimitLevel[iLoop]->setValue(mLowLevelAxis_y[iLoop]);
+    }
+
     installEventFilter(this);
 
     scBar->setMinimum(0);
@@ -39,6 +54,27 @@ widgetGraph::widgetGraph(QWidget *parent) : QWidget(parent)
     changeResolutionDown->setText("Down");
     setminResolution->setText("Min");
     resolutionValue->setText(QString::number(msPerPixelValue));
+
+
+    for(int iLoop = 0; iLoop < nmbCurvesInGraph; iLoop++)
+    {
+        connect(maxLimitLevel[iLoop],static_cast<void (QDoubleSpinBox::*)(double)>(&QDoubleSpinBox::valueChanged),[=](double nValue){
+
+            //qDebug() << " max spin box:" << iLoop << "new value:" << nValue;
+            adjustCoefficientSingleStep(maxLimitLevel[iLoop], nValue);
+            mHighLevelAxis_y[iLoop] = nValue;
+            refrGr("new high level");
+        });
+
+        connect(minLimitLevel[iLoop],static_cast<void (QDoubleSpinBox::*)(double)>(&QDoubleSpinBox::valueChanged),[=](double nValue){
+
+            //qDebug() << " min spin box:" << iLoop << "new value:" << nValue;
+            adjustCoefficientSingleStep(minLimitLevel[iLoop], nValue);
+            mLowLevelAxis_y[iLoop] = nValue;
+            refrGr("new low level");
+        });
+    }
+
 
     connect(scBar, &QScrollBar::valueChanged, [this](){
 
@@ -391,16 +427,32 @@ void widgetGraph::refreshGraph(QTime currTime, double ssignal, int recStat, QStr
     }
 }
 
-void widgetGraph::refreshHighLevel(double level, int source)
+void widgetGraph::adjustCoefficientSingleStep(QDoubleSpinBox *p_oubleSpinBox, double newValue)
 {
-    mHighLevelAxis_y[source] = level;
-    refrGr("new high level");
-}
-
-void widgetGraph::refreshLowLevel(double level, int source)
-{
-    mLowLevelAxis_y[source] = level;
-    refrGr("new low level");
+    if(abs(newValue) >= 10000)
+    {
+        p_oubleSpinBox->setSingleStep(1000.0);
+    }
+    else if(abs(newValue) >= 1000)
+    {
+        p_oubleSpinBox->setSingleStep(100.0);
+    }
+    else if(abs(newValue) >= 100)
+    {
+        p_oubleSpinBox->setSingleStep(10.0);
+    }
+    else if(abs(newValue) >= 10)
+    {
+        p_oubleSpinBox->setSingleStep(1.0);
+    }
+    else if(abs(newValue) >= 1)
+    {
+        p_oubleSpinBox->setSingleStep(0.1);
+    }
+    else if(abs(newValue) >= 0.1)
+    {
+        p_oubleSpinBox->setSingleStep(0.01);
+    }
 }
 
 void widgetGraph::paintEvent(QPaintEvent*)
@@ -413,9 +465,15 @@ void widgetGraph::paintEvent(QPaintEvent*)
     changeResolutionDown->setGeometry(currentWidth - 40, 0 + 50 + 25, 40, 20);
     setminResolution->setGeometry(currentWidth - 40, 0 + 50 + 50, 40, 20);
     startStopDisplay->setGeometry(currentWidth - 40, 0 + 50 + 50 + 25, 40, 20);
-    scBar->setGeometry(constLeftLimit - 20, currentHeight - 30, usedWidth + 40, 20);
+    scBar->setGeometry(constLeftLimit - 20, currentHeight - constBottomLimit + 25, usedWidth + 40, 20);
 
-    //qDebug() << "PaintEvent occurs";
+    for(int iLoop = 0; iLoop < nmbCurvesInGraph; iLoop++)
+    {
+        maxLimitLevel[iLoop]->setGeometry((currentWidth / nmbCurvesInGraph) * iLoop, currentHeight - 25 - 25, currentWidth / nmbCurvesInGraph - 10, 20);
+        minLimitLevel[iLoop]->setGeometry((currentWidth / nmbCurvesInGraph) * iLoop, currentHeight - 25, currentWidth / nmbCurvesInGraph - 10, 20);
+    }
+
+    //qDebug() << "PaintEvent occurs";0
 
     for(int iLoop = 0; iLoop < nmbCurvesInGraph; iLoop++)
     {

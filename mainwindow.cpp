@@ -34,8 +34,6 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
 
 
     connect(this, &MainWindow::SendNewImpedanceData, p_WidgetSmith, &widgetSmith::ReceivedNewData);
-    connect(this, &MainWindow::SendHighLevel, p_WidgetGraph, &widgetGraph::refreshHighLevel);
-    connect(this, &MainWindow::SendLowLevel, p_WidgetGraph, &widgetGraph::refreshLowLevel);
     connect(this, &MainWindow::SendUpdateGraph, p_WidgetGraph, &widgetGraph::refreshGraph);
 
 
@@ -113,8 +111,6 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
             CheckedIfIndexInQlist(0, 0);//send fake in order to clear history signal
         }
         CheckedIfIndexInQlist(0, nValue);
-        //emit SendHighLevel(ui->doubleSpinBox->value(), 0);
-        //emit SendLowLevel(ui->doubleSpinBox_5->value(), 0);
     });
     connect(ui->comboBox_3,static_cast<void (QComboBox::*)(int)>(&QComboBox::currentIndexChanged),[=](int nValue){
         if(sourceDataStream == LOG_STREAM && nValue >= 0)
@@ -122,8 +118,6 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
             CheckedIfIndexInQlist(1, 0);//send fake in order to clear history signal
         }
         CheckedIfIndexInQlist(1, nValue);
-        //emit SendHighLevel(ui->doubleSpinBox_2->value(), 1);
-        //emit SendLowLevel(ui->doubleSpinBox_6->value(), 1);
     });
     connect(ui->comboBox_4,static_cast<void (QComboBox::*)(int)>(&QComboBox::currentIndexChanged),[=](int nValue){
         if(sourceDataStream == LOG_STREAM && nValue >= 0)
@@ -131,8 +125,6 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
             CheckedIfIndexInQlist(2, 0);//send fake in order to clear history signal
         }
         CheckedIfIndexInQlist(2, nValue);
-        //emit SendHighLevel(ui->doubleSpinBox_3->value(), 2);
-        //emit SendLowLevel(ui->doubleSpinBox_7->value(), 2);
     });
     connect(ui->comboBox_5,static_cast<void (QComboBox::*)(int)>(&QComboBox::currentIndexChanged),[=](int nValue){
         if(sourceDataStream == LOG_STREAM && nValue >= 0)
@@ -140,8 +132,6 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
             CheckedIfIndexInQlist(3, 0);//send fake in order to clear history signal
         }
         CheckedIfIndexInQlist(3, nValue);
-        //emit SendHighLevel(ui->doubleSpinBox_4->value(), 3);
-        //emit SendLowLevel(ui->doubleSpinBox_8->value(), 3);
     });
     connect(ui->comboBox_1,static_cast<void (QComboBox::*)(int)>(&QComboBox::currentIndexChanged),[=](int nValue){
         selectedDeviceSetAccordingSaved(nValue);

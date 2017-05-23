@@ -47,6 +47,8 @@ protected:
 #include <QPushButton>
 #include <QLabel>
 
+#include <QDoubleSpinBox>
+
 #include "common.h"
 
 class widgetGraph : public QWidget
@@ -72,6 +74,9 @@ public:
     void findPreciousTime(void);
     void refrGr(QString nameEvent);
 
+
+    void adjustCoefficientSingleStep(QDoubleSpinBox* p_oubleSpinBox, double newValue);
+
     QTime findMinTime(void);
     QTime findMaxTime(void);
 
@@ -81,7 +86,7 @@ private:
     const int constSamples = 10;
     const int constVolumePoint = 3;
 
-    const int constBottomLimit = 50;
+    const int constBottomLimit = 100;
     const int constTopLimit = 75;
     const int constLeftLimit = 150;
     const int constRightLimit = 170;
@@ -105,6 +110,8 @@ private:
     QPushButton* setminResolution = new QPushButton(this);
     QPushButton* startStopDisplay = new QPushButton(this);
     QLabel* resolutionValue = new QLabel(this);
+    QDoubleSpinBox* maxLimitLevel[nmbCurvesInGraph];
+    QDoubleSpinBox* minLimitLevel[nmbCurvesInGraph];
 
     //min & max time of all signals
     QTime lowAbsolute;
@@ -132,9 +139,6 @@ private:
 
 public slots:
     void refreshGraph(QTime currTime, double ssignal, int recStat, QString signalText, int sourceSig, int sourceStream, int flags);
-    void refreshHighLevel(double level, int source);
-    void refreshLowLevel(double level, int source);
-
 protected:
     void paintEvent(QPaintEvent*);
     bool eventFilter(QObject *object, QEvent *event);
