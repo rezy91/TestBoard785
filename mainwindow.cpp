@@ -35,6 +35,9 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
 
     connect(this, &MainWindow::SendNewImpedanceData, p_WidgetSmith, &widgetSmith::ReceivedNewData);
     connect(this, &MainWindow::SendUpdateGraph, p_WidgetGraph, &widgetGraph::refreshGraph);
+    connect(this, &MainWindow::SendTextIntoLog, p_WidgetReading, &widgetReading::showTextLog);
+
+    connect(p_WidgetReading, &widgetReading::SendV200Requirement, this, &MainWindow::onNewMsgReqReceived);
 
 
     for(int iLoop = 0; iLoop < nmbCurvesInGraph; iLoop++)
@@ -79,7 +82,7 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
     eRequestAmplfInput.timer.RequirementTime_ms = 50;
     eRequestAmplfInput.isInProgress = false;
 
-    //ui->verticalLayout_2->addWidget(p_WidgetReading);
+    ui->verticalLayout->addWidget(p_WidgetReading);
     ui->verticalLayout_2->addWidget(p_WidgetConfig);
     ui->verticalLayout_3->addWidget(p_WidgetGraph);
     ui->verticalLayout_3->addWidget(p_WidgetSmith);
@@ -237,64 +240,17 @@ void MainWindow::changed_table(int index)
     refreshPlot();
 }
 
-void MainWindow::on_checkBox_2_clicked()
+void MainWindow::onNewMsgReqReceived(Qt::CheckState m_newState, int m_device, int m_indexMsg)
 {
-    universalRequestMessageProtocol(ui->checkBox_2->checkState(), PID_TIMERS_ADCX_GENER + 0);
-}
-
-void MainWindow::on_checkBox_3_clicked()
-{
-    universalRequestMessageProtocol(ui->checkBox_3->checkState(), PID_TIMERS_ADCX_GENER + 1);
-}
-
-void MainWindow::on_checkBox_4_clicked()
-{
-    universalRequestMessageProtocol(ui->checkBox_4->checkState(), PID_TIMERS_ADCX_GENER + 2);
-}
-
-void MainWindow::on_checkBox_5_clicked()
-{
-    universalRequestMessageProtocol(ui->checkBox_5->checkState(), PID_TIMERS_ADCX_GENER + 3);
-}
-
-void MainWindow::on_checkBox_6_clicked()
-{
-    universalRequestMessageProtocol(ui->checkBox_6->checkState(), PID_TIMERS_ADCX_GENER + 4);
-}
-
-void MainWindow::on_checkBox_7_clicked()
-{
-    universalRequestMessageProtocol(ui->checkBox_7->checkState(), PID_TIMERS_ADCX_GENER + 5);
-}
-
-void MainWindow::on_checkBox_8_clicked()
-{
-    universalRequestMessageProtocol(ui->checkBox_8->checkState(), PID_TIMERS_ADCX_GENER + 6);
-}
-
-void MainWindow::on_checkBox_9_clicked()
-{
-    universalRequestMessageProtocol(ui->checkBox_9->checkState(), PID_TIMERS_ADCX_AMPLF + 0);
-}
-
-void MainWindow::on_checkBox_10_clicked()
-{
-    universalRequestMessageProtocol(ui->checkBox_10->checkState(), PID_TIMERS_ADCX_AMPLF + 1);
-}
-
-void MainWindow::on_checkBox_11_clicked()
-{
-    universalRequestMessageProtocol(ui->checkBox_11->checkState(), PID_TIMERS_ADCX_AMPLF + 2);
-}
-
-void MainWindow::on_checkBox_12_clicked()
-{
-    universalRequestMessageProtocol(ui->checkBox_12->checkState(), PID_TIMERS_ADCX_AMPLF + 3);
-}
-
-void MainWindow::on_checkBox_13_clicked()
-{
-    universalRequestMessageProtocol(ui->checkBox_13->checkState(), PID_TIMERS_ADCX_AMPLF + 4);
+    if(m_device == 0)
+    {
+        universalRequestMessageProtocol(m_newState, PID_TIMERS_ADCX_AMPLF + m_indexMsg);
+    }
+    else if(m_device == 1)
+    {
+        universalRequestMessageProtocol(m_newState, PID_TIMERS_ADCX_GENER + m_indexMsg);
+    }
+    //qDebug() << "slot occours";
 }
 
 void MainWindow::selectedDeviceSetAccordingSaved(quint32 value)
@@ -302,33 +258,16 @@ void MainWindow::selectedDeviceSetAccordingSaved(quint32 value)
     if(value == GENERATOR_SOURCE)
     {
         m_nDeviceAddress = constGenerID;
-
-        ui->checkBox_3->setEnabled(true);
-        ui->checkBox_4->setEnabled(true);
-        ui->checkBox_5->setEnabled(true);
-        ui->checkBox_7->setEnabled(true);
-        ui->checkBox_8->setEnabled(true);
     }
     else if(value == AMPLIFIER_SOURCE)
     {
         m_nDeviceAddress = constAmpID;
-
-        ui->checkBox_3->setEnabled(false);
-        ui->checkBox_4->setEnabled(false);
-        ui->checkBox_5->setEnabled(false);
-        ui->checkBox_7->setEnabled(false);
-        ui->checkBox_8->setEnabled(false);
     }
 }
 
 void MainWindow::AppendText(QTime timestamp, QString strText)
 {
-    ui->textBrowser->append(myTimeStamp(timestamp) + "\t" + strText);
-}
-
-void MainWindow::on_clearButton_clicked()
-{
-    ui->textBrowser->clear();
+    emit SendTextIntoLog(myTimeStamp(timestamp) + "\t" + strText);
 }
 
 void MainWindow::on_connectButton_clicked()
@@ -885,19 +824,6 @@ void MainWindow::on_disconnectButton_clicked()
     eRequestGenerInput.timer.bEnable = false;
     eRequestAmplfInput.timer.bEnable = false;
 
-    ui->checkBox_2->setChecked(false);
-    ui->checkBox_3->setChecked(false);
-    ui->checkBox_4->setChecked(false);
-    ui->checkBox_5->setChecked(false);
-    ui->checkBox_6->setChecked(false);
-    ui->checkBox_7->setChecked(false);
-    ui->checkBox_8->setChecked(false);
-    ui->checkBox_9->setChecked(false);
-    ui->checkBox_10->setChecked(false);
-    ui->checkBox_11->setChecked(false);
-    ui->checkBox_12->setChecked(false);
-    ui->checkBox_13->setChecked(false);
-
     if(m_oFile.isOpen())
     {
         m_oFile.close();
@@ -981,12 +907,6 @@ void MainWindow::on_openlogButton_clicked()
     }
 }
 
-void MainWindow::on_textBrowser_anchorClicked(const QUrl &arg1)
-{
-    QDesktopServices::openUrl(arg1);
-}
-
-
 void MainWindow::refreshPlot()
 {
     int currentTab = ui->tabWidget->currentIndex();
@@ -995,6 +915,9 @@ void MainWindow::refreshPlot()
     if(currentTab == 0)
     {
         currentSize = ui->Reading->size();
+
+        p_WidgetReading->setFixedSize(currentSize);
+        //p_WidgetReading->repaint();
     }
     else if(currentTab == 1)
     {

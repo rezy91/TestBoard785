@@ -52,16 +52,6 @@
       </item>
      </layout>
     </item>
-    <item row="2" column="0">
-     <widget class="QTextBrowser" name="textBrowser">
-      <property name="sizePolicy">
-       <sizepolicy hsizetype="Expanding" vsizetype="Maximum">
-        <horstretch>0</horstretch>
-        <verstretch>0</verstretch>
-       </sizepolicy>
-      </property>
-     </widget>
-    </item>
     <item row="4" column="0">
      <layout class="QHBoxLayout" name="horizontalLayout_2">
       <property name="bottomMargin">
@@ -74,12 +64,24 @@
         </property>
        </widget>
       </item>
+     </layout>
+    </item>
+    <item row="5" column="0">
+     <layout class="QHBoxLayout" name="horizontalLayout_3">
+      <property name="bottomMargin">
+       <number>0</number>
+      </property>
       <item>
-       <widget class="QPushButton" name="clearButton">
-        <property name="text">
-         <string>clear log</string>
-        </property>
-       </widget>
+       <widget class="QComboBox" name="comboBox_2"/>
+      </item>
+      <item>
+       <widget class="QComboBox" name="comboBox_3"/>
+      </item>
+      <item>
+       <widget class="QComboBox" name="comboBox_4"/>
+      </item>
+      <item>
+       <widget class="QComboBox" name="comboBox_5"/>
       </item>
      </layout>
     </item>
@@ -95,145 +97,17 @@
        <widget class="QWidget" name="verticalLayoutWidget_2">
         <property name="geometry">
          <rect>
-          <x>170</x>
-          <y>40</y>
-          <width>160</width>
-          <height>191</height>
+          <x>0</x>
+          <y>0</y>
+          <width>121</width>
+          <height>71</height>
          </rect>
         </property>
         <layout class="QVBoxLayout" name="verticalLayout">
-         <item>
-          <widget class="QCheckBox" name="checkBox_2">
-           <property name="enabled">
-            <bool>false</bool>
-           </property>
-           <property name="text">
-            <string>NOT_USED</string>
-           </property>
-          </widget>
-         </item>
-         <item>
-          <widget class="QCheckBox" name="checkBox_3">
-           <property name="text">
-            <string>ADC3_AVERAGE_DATA</string>
-           </property>
-          </widget>
-         </item>
-         <item>
-          <widget class="QCheckBox" name="checkBox_4">
-           <property name="text">
-            <string>IMPEDANCE_DATA</string>
-           </property>
-          </widget>
-         </item>
-         <item>
-          <widget class="QCheckBox" name="checkBox_5">
-           <property name="text">
-            <string>ADC2_AVERAGE_DATA</string>
-           </property>
-          </widget>
-         </item>
-         <item>
-          <widget class="QCheckBox" name="checkBox_6">
-           <property name="enabled">
-            <bool>false</bool>
-           </property>
-           <property name="text">
-            <string>NOT_USED</string>
-           </property>
-          </widget>
-         </item>
-         <item>
-          <widget class="QCheckBox" name="checkBox_7">
-           <property name="text">
-            <string>ADC1_AVERAGE_DATA</string>
-           </property>
-          </widget>
-         </item>
-         <item>
-          <widget class="QCheckBox" name="checkBox_8">
-           <property name="text">
-            <string>INPUTS</string>
-           </property>
-          </widget>
-         </item>
+         <property name="sizeConstraint">
+          <enum>QLayout::SetMinAndMaxSize</enum>
+         </property>
         </layout>
-       </widget>
-       <widget class="QWidget" name="verticalLayoutWidget_4">
-        <property name="geometry">
-         <rect>
-          <x>0</x>
-          <y>40</y>
-          <width>161</width>
-          <height>131</height>
-         </rect>
-        </property>
-        <layout class="QVBoxLayout" name="verticalLayout_4">
-         <item>
-          <widget class="QCheckBox" name="checkBox_9">
-           <property name="text">
-            <string>TIMERS_RESULTS</string>
-           </property>
-          </widget>
-         </item>
-         <item>
-          <widget class="QCheckBox" name="checkBox_10">
-           <property name="text">
-            <string>ADC3_AVERAGE_DATA</string>
-           </property>
-          </widget>
-         </item>
-         <item>
-          <widget class="QCheckBox" name="checkBox_11">
-           <property name="enabled">
-            <bool>false</bool>
-           </property>
-           <property name="text">
-            <string>NOT_USED</string>
-           </property>
-          </widget>
-         </item>
-         <item>
-          <widget class="QCheckBox" name="checkBox_12">
-           <property name="text">
-            <string>ADC1_AVERAGE_DATA</string>
-           </property>
-          </widget>
-         </item>
-         <item>
-          <widget class="QCheckBox" name="checkBox_13">
-           <property name="text">
-            <string>INPUTS</string>
-           </property>
-          </widget>
-         </item>
-        </layout>
-       </widget>
-       <widget class="QLabel" name="label">
-        <property name="geometry">
-         <rect>
-          <x>50</x>
-          <y>20</y>
-          <width>47</width>
-          <height>13</height>
-         </rect>
-        </property>
-        <property name="text">
-         <string>Amplifier</string>
-        </property>
-       </widget>
-       <widget class="QLabel" name="label_2">
-        <property name="geometry">
-         <rect>
-          <x>220</x>
-          <y>20</y>
-          <width>47</width>
-          <height>13</height>
-         </rect>
-        </property>
-        <property name="text">
-         <string>Generator</string>
-        </property>
        </widget>
       </widget>
       <widget class="QWidget" name="Configuration">
@@ -277,25 +151,6 @@
        </widget>
       </widget>
      </widget>
-    </item>
-    <item row="5" column="0">
-     <layout class="QHBoxLayout" name="horizontalLayout_3">
-      <property name="bottomMargin">
-       <number>0</number>
-      </property>
-      <item>
-       <widget class="QComboBox" name="comboBox_2"/>
-      </item>
-      <item>
-       <widget class="QComboBox" name="comboBox_3"/>
-      </item>
-      <item>
-       <widget class="QComboBox" name="comboBox_4"/>
-      </item>
-      <item>
-       <widget class="QComboBox" name="comboBox_5"/>
-      </item>
-     </layout>
     </item>
    </layout>
   </widget>

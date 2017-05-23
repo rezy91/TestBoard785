@@ -25,7 +25,6 @@
 #include <QtSerialPort>
 #include "../../../Applications/088/CommProtV200/commprotv200_global.h"
 #include <QSettings>
-#include <QDesktopServices>
 
 #include "common.h"
 
@@ -95,27 +94,13 @@ public:
 
 private slots:
     void changed_table(int index);
-    void on_clearButton_clicked();
     void on_connectButton_clicked();
     void on_disconnectButton_clicked();
     void on_openlogButton_clicked();
-
-    void on_textBrowser_anchorClicked(const QUrl &arg1);
-
     void on_checkBox_clicked();
-    void on_checkBox_2_clicked();
-    void on_checkBox_3_clicked();
-    void on_checkBox_4_clicked();
-    void on_checkBox_5_clicked();
-    void on_checkBox_6_clicked();
-    void on_checkBox_7_clicked();
-    void on_checkBox_8_clicked();
-    void on_checkBox_9_clicked();
-    void on_checkBox_10_clicked();
-    void on_checkBox_11_clicked();
-    void on_checkBox_12_clicked();
-    void on_checkBox_13_clicked();
 
+public slots:
+    void onNewMsgReqReceived(Qt::CheckState m_newState, int m_device, int m_indexMsg);
 
 private:
     const quint32 constGenerID = 18;
@@ -207,6 +192,7 @@ private:
 signals:
     void SendNewImpedanceData(qreal magnitudeCurr2Avg, qreal phaseCurr2Avg, qreal magnitudeCurr250, qreal phaseCurr250, qreal magnitudeAvg250, qreal phaseAvg250);
     void SendUpdateGraph(QTime timestamp, double receivedValue, int recordState, QString nameSignals, int src, int srStr, int flgs);
+    void SendTextIntoLog(QString text);
 
 protected:
     void closeEvent(QCloseEvent *event) override;
