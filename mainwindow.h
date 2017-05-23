@@ -160,8 +160,8 @@ private:
     QFile m_oFile;
     QString logPath;
 
-    //widgetConfig *p_WidgetConfig = new widgetConfig(this);
     widgetReading *p_WidgetReading = new widgetReading(this);
+    widgetConfig *p_WidgetConfig = new widgetConfig(this);
     widgetSmith *p_WidgetSmith = new widgetSmith(this);
     widgetGraph *p_WidgetGraph = new widgetGraph(this);
 

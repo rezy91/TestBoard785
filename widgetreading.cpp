@@ -11,6 +11,4 @@ void widgetReading::paintEvent(QPaintEvent* e)
 
     QPainter painter(this);
 
-    painter.drawLine(QPointF(0,currSize.height()),QPointF(currSize.width(),0));
-
 }

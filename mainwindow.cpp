@@ -79,8 +79,8 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
     eRequestAmplfInput.timer.RequirementTime_ms = 50;
     eRequestAmplfInput.isInProgress = false;
 
-    //ui->horizontalLayout_3->addWidget(p_WidgetConfig);
-    ui->verticalLayout_2->addWidget(p_WidgetReading);
+    //ui->verticalLayout_2->addWidget(p_WidgetReading);
+    ui->verticalLayout_2->addWidget(p_WidgetConfig);
     ui->verticalLayout_3->addWidget(p_WidgetGraph);
     ui->verticalLayout_3->addWidget(p_WidgetSmith);
 
@@ -994,19 +994,15 @@ void MainWindow::refreshPlot()
 
     if(currentTab == 0)
     {
-        currentSize = ui->Configuration->size();
-
-        /*p_WidgetConfig->setFixedSize(currentSize);
-        p_WidgetConfig->SetQSize(currentSize);
-        p_WidgetConfig->repaint();*/
+        currentSize = ui->Reading->size();
     }
     else if(currentTab == 1)
     {
-        currentSize = ui->Reading->size();
+        currentSize = ui->Configuration->size();
 
-        p_WidgetReading->setFixedSize(currentSize);
-        p_WidgetReading->SetQSize(currentSize);
-        p_WidgetReading->repaint();
+        p_WidgetConfig->setFixedSize(currentSize);
+        p_WidgetConfig->SetQSize(currentSize);
+        p_WidgetConfig->repaint();
     }
     else if(currentTab == 2)
     {
