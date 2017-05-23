@@ -15,6 +15,20 @@
   </property>
   <widget class="QWidget" name="centralWidget">
    <layout class="QGridLayout" name="gridLayout">
+    <item row="4" column="0">
+     <layout class="QHBoxLayout" name="horizontalLayout_2">
+      <property name="bottomMargin">
+       <number>0</number>
+      </property>
+      <item>
+       <widget class="QPushButton" name="openlogButton">
+        <property name="text">
+         <string>open log</string>
+        </property>
+       </widget>
+      </item>
+     </layout>
+    </item>
     <item row="3" column="0">
      <layout class="QHBoxLayout" name="horizontalLayout">
       <property name="topMargin">
@@ -47,20 +61,6 @@
        <widget class="QPushButton" name="disconnectButton">
         <property name="text">
          <string>Disconnect</string>
-        </property>
-       </widget>
-      </item>
-     </layout>
-    </item>
-    <item row="4" column="0">
-     <layout class="QHBoxLayout" name="horizontalLayout_2">
-      <property name="bottomMargin">
-       <number>0</number>
-      </property>
-      <item>
-       <widget class="QPushButton" name="openlogButton">
-        <property name="text">
-         <string>open log</string>
         </property>
        </widget>
       </item>

@@ -38,6 +38,7 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
     connect(this, &MainWindow::SendTextIntoLog, p_WidgetReading, &widgetReading::showTextLog);
 
     connect(p_WidgetReading, &widgetReading::SendV200Requirement, this, &MainWindow::onNewMsgReqReceived);
+    connect(p_WidgetReading, &widgetReading::SendNewTime, this, &MainWindow::onNewTimeRequest);
 
 
     for(int iLoop = 0; iLoop < nmbCurvesInGraph; iLoop++)
@@ -251,6 +252,18 @@ void MainWindow::onNewMsgReqReceived(Qt::CheckState m_newState, int m_device, in
         universalRequestMessageProtocol(m_newState, PID_TIMERS_ADCX_GENER + m_indexMsg);
     }
     //qDebug() << "slot occours";
+}
+
+void MainWindow::onNewTimeRequest(int valueTime, int m_device, int m_indexMsg)
+{
+    if(m_device == 0)
+    {
+        eRequestsAmplifAdcx[m_indexMsg].timer.RequirementTime_ms = valueTime;
+    }
+    else if(m_device == 1)
+    {
+        eRequestsGenerAdcx[m_indexMsg].timer.RequirementTime_ms = valueTime;
+    }
 }
 
 void MainWindow::selectedDeviceSetAccordingSaved(quint32 value)

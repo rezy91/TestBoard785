@@ -10,9 +10,9 @@
 #include <QPushButton>
 #include <QVBoxLayout>
 #include <QHBoxLayout>
-#include <QFormLayout>
+#include <QGridLayout>
 #include <QCheckBox>
-#include <QDoubleSpinBox>
+#include <QSpinBox>
 
 #include "common.h"
 
@@ -25,14 +25,14 @@ public:
 
 signals:
     void SendV200Requirement(Qt::CheckState newState, int device, int indexMsg);
+    void SendNewTime(int timeValue, int device, int indexMsg);
 
 public slots:
     void showTextLog(QString showText);
 
 private:
-    enum{NMB_TIMERS = 6};
-    enum{NMB_AMP_MSGS = NMB_TIMERS - 2};
-    enum{NMB_GEN_MSGS = NMB_TIMERS};
+    enum{NMB_AMP_MSGS = 4};
+    enum{NMB_GEN_MSGS = 6};
 
 
     const QString allNamesAmp[NMB_AMP_MSGS] = {"AMP ADC3 adjusted [ms]", "AMP ADC3 average [ms]", "AMP ADC1 adjusted [ms]", "AMP ADC1 average [ms]"};
@@ -45,10 +45,10 @@ private:
     QPushButton* buttClear = new QPushButton("clear log", this);
     QHBoxLayout* hBoxForSpinGen = new QHBoxLayout(this);
     QHBoxLayout* hBoxForSpinAmp = new QHBoxLayout(this);
-    QDoubleSpinBox* generTimes[NMB_TIMERS];
-    QDoubleSpinBox* amplfTimes[NMB_TIMERS];
+    QSpinBox* generTimes[NMB_GEN_MSGS];
+    QSpinBox* amplfTimes[NMB_AMP_MSGS];
 
-    QFormLayout* qFrmLyout = new QFormLayout(this);
+    QGridLayout* qGridLyout = new QGridLayout(this);
     QCheckBox* chBoxAmp[NMB_AMP_MSGS];
     QCheckBox* chBoxGen[NMB_GEN_MSGS];
 
