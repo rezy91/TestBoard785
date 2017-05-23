@@ -18,6 +18,8 @@
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
 
+#include <QFileDialog>
+#include <QTextStream>
 
 MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWindow)
 {
@@ -852,8 +854,7 @@ bool MainWindow::GetIndexFromQlist(MainWindow::SOURCE_DEVICE eSourceStream, int 
 
                 if(sourceDataStream == LOG_STREAM)
                 {
-                    QFile m_logFile;
-                    //QFile m_logFile(logPath);
+                    QFile m_logFile(logPath);
 
                     if(!m_logFile.open(QFile::ReadOnly))
                     {
@@ -952,6 +953,72 @@ void MainWindow::HasTimerRequestsExpired(MainWindow::SOURCE_DEVICE eSourceStream
             }
         }
     }
+}
+
+void MainWindow::on_openlogButton_clicked()
+{
+    sourceDataStream = LOG_STREAM;
+
+    for(int iLoop = 0; iLoop < NMB_ITEMS_TIMERS_GENER; iLoop++)
+    {
+        flagIfSourceIsLoggedGener[iLoop] = false;
+    }
+
+    for(int iLoop = 0; iLoop < NMB_ITEMS_TIMERS_AMPLF; iLoop++)
+    {
+        flagIfSourceIsLoggedAmplf[iLoop] = false;
+    }
+
+    //QString savedPath = m_pSettingStrorage->RestorePathLog();
+    logPath = QFileDialog::getOpenFileName(this, "Open log file", QString("%1/").arg(QCoreApplication::applicationDirPath()), "Log File (*.log)");
+    //m_pSettingStrorage->StorePathLog(logPath);
+
+    QFile m_logFile(logPath);
+
+    if(!m_logFile.open(QFile::ReadOnly))
+    {
+        qDebug() << "error: cannot open file";
+    }
+    else
+    {
+        qDebug() << "file opened :)";
+
+        QTextStream fileStream(&m_logFile);
+
+        while (!fileStream.atEnd())
+        {
+            QString newLinereaded = fileStream.readLine();
+            QStringList stringsSplitted = newLinereaded.split(QRegExp("\\s+"));
+
+            for(int iLoop = 0; iLoop < NMB_ITEMS_TIMERS_GENER; iLoop++)
+            {
+                if(stringsSplitted[1] == allSignalsBaseOnlyGener[iLoop])
+                {
+                    flagIfSourceIsLoggedGener[iLoop] = true;
+                }
+            }
+
+            for(int iLoop = 0; iLoop < NMB_ITEMS_TIMERS_AMPLF; iLoop++)
+            {
+                if(stringsSplitted[1] == allSignalsBaseOnlyAmplf[iLoop])
+                {
+                    flagIfSourceIsLoggedAmplf[iLoop] = true;
+                }
+            }
+        }
+
+        //qDebug("sources gener: %d, %d, %d, %d, %d, %d", flagIfSourceIsLoggedGener[0], flagIfSourceIsLoggedGener[1], flagIfSourceIsLoggedGener[2], flagIfSourceIsLoggedGener[3], flagIfSourceIsLoggedGener[4], flagIfSourceIsLoggedGener[5]);
+        //qDebug("sources amplf: %d, %d, %d, %d", flagIfSourceIsLoggedAmplf[0], flagIfSourceIsLoggedAmplf[1], flagIfSourceIsLoggedAmplf[2], flagIfSourceIsLoggedAmplf[3]);
+
+        ShowSignalsIntoComboBox(LOG_STREAM);
+
+        m_logFile.close();
+    }
+}
+
+void MainWindow::on_textBrowser_anchorClicked(const QUrl &arg1)
+{
+    QDesktopServices::openUrl(arg1);
 }
 
 void MainWindow::HasTimerInputExpired(MainWindow::SOURCE_DEVICE eSourceStream)
