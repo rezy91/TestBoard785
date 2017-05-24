@@ -65,7 +65,7 @@ widgetSmith::widgetSmith(QWidget *parent) : QWidget(parent)
         }
 
         currentNmbPoint = newValue;
-        qDebug() << "value changed:" << newValue;
+        //qDebug() << "value changed:" << newValue;
 
 
     });

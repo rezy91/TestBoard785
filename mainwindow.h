@@ -103,6 +103,7 @@ private slots:
 public slots:
     void onNewMsgReqReceived(Qt::CheckState m_newState, int m_device, int m_indexMsg);
     void onNewTimeRequest(int valueTime, int m_device, int m_indexMsg);
+    void specificMessageProtocol(QString message);
 
 private:
     const quint32 constGenerID = 18;

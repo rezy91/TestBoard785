@@ -88,11 +88,11 @@
     <item row="0" column="0">
      <widget class="QTabWidget" name="tabWidget">
       <property name="currentIndex">
-       <number>0</number>
+       <number>1</number>
       </property>
       <widget class="QWidget" name="Reading">
        <attribute name="title">
-        <string>Reading</string>
+        <string>Receiving</string>
        </attribute>
        <widget class="QWidget" name="verticalLayoutWidget_2">
         <property name="geometry">
@@ -112,7 +112,7 @@
       </widget>
       <widget class="QWidget" name="Configuration">
        <attribute name="title">
-        <string>Configuration</string>
+        <string>Configuration/Settings</string>
        </attribute>
        <widget class="QWidget" name="verticalLayoutWidget_3">
         <property name="geometry">
@@ -132,7 +132,7 @@
       </widget>
       <widget class="QWidget" name="Graph">
        <attribute name="title">
-        <string>Graph</string>
+        <string>Visualization/Therapy</string>
        </attribute>
        <widget class="QWidget" name="verticalLayoutWidget">
         <property name="geometry">

@@ -7,6 +7,7 @@
 #include <QDebug>
 #include <QSlider>
 #include <QLabel>
+#include <QPushButton>
 
 class widgetTherapy : public QWidget
 {
@@ -15,15 +16,32 @@ public:
     explicit widgetTherapy(QWidget *parent = 0);
 
 private:
-    QLabel* PoweranceLabel = new QLabel(this);
-    QLabel* DutyCycleLabel = new QLabel(this);
-    QLabel* FrequencyLabel = new QLabel(this);
+    enum parameters{
+      E_POWER,
+      E_DUTYCYCLE,
+      E_FREQUENCY,
+      E_PARAMS_NMB
+    };
 
-    QSlider* sliderPowerance = new QSlider(this);
-    QSlider* sliderDutyCycle = new QSlider(this);
-    QSlider* sliderFrequency = new QSlider(this);
+    struct paramTherapy{
+        QLabel* name;
+        QLabel* value;
+        QSlider* slider;
+    };
+
+    const QString namesParams[E_PARAMS_NMB] = {"Power", "Duty cycle", "Frequency"};
+    const QString unitParams[E_PARAMS_NMB] = {"[W]", "[%]", "[Hz]"};
+    const int maxSlider[E_PARAMS_NMB] = {50, 100, 200};
+    const int minSlider[E_PARAMS_NMB] = {0, 20, 25};
+    const int stepSlider[E_PARAMS_NMB] = {1, 20, 5};
+
+    paramTherapy therapyParams[E_PARAMS_NMB];
+
+    QPushButton* startButton = new QPushButton(this);
+    QPushButton* stopButton = new QPushButton(this);
 
 signals:
+    void SendV200specific(QString msg);
 
 public slots:
 

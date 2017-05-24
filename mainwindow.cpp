@@ -39,6 +39,7 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
 
     connect(p_WidgetReading, &widgetReading::SendV200Requirement, this, &MainWindow::onNewMsgReqReceived);
     connect(p_WidgetReading, &widgetReading::SendNewTime, this, &MainWindow::onNewTimeRequest);
+    connect(p_WidgetTherapy, &widgetTherapy::SendV200specific, this, &MainWindow::specificMessageProtocol);
 
 
     for(int iLoop = 0; iLoop < nmbCurvesInGraph; iLoop++)
@@ -977,6 +978,11 @@ void MainWindow::universalRequestMessageProtocol(Qt::CheckState eState, int wInd
 
         ShowSignalsIntoComboBox(RECEIVE_STREAM);
     }
+}
+
+void MainWindow::specificMessageProtocol(QString message)
+{
+    m_CommProt.data()->SendData(m_nDeviceAddress, QByteArray::fromHex(message.toStdString().c_str()), false);
 }
 
 bool MainWindow::eventFilter(QObject *object, QEvent *event)
