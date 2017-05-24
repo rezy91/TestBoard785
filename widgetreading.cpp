@@ -35,8 +35,6 @@ widgetReading::widgetReading(QWidget *parent) : QWidget(parent)
 
 
     vBox->addLayout(qGridLyout);
-    vBox->addLayout(hBoxForSpinGen);
-    vBox->addLayout(hBoxForSpinAmp);
     vBox->addWidget(textBrowser);
     vBox->addWidget(buttClear);
 

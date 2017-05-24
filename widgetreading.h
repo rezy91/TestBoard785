@@ -43,8 +43,6 @@ private:
     QVBoxLayout* vBox = new QVBoxLayout(this);
     QTextBrowser* textBrowser = new QTextBrowser(this);
     QPushButton* buttClear = new QPushButton("clear log", this);
-    QHBoxLayout* hBoxForSpinGen = new QHBoxLayout(this);
-    QHBoxLayout* hBoxForSpinAmp = new QHBoxLayout(this);
     QSpinBox* generTimes[NMB_GEN_MSGS];
     QSpinBox* amplfTimes[NMB_AMP_MSGS];
 

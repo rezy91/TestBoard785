@@ -81,6 +81,6 @@ void widgetTherapy::paintEvent(QPaintEvent *e)
        therapyParams[iLoop].name->setGeometry(width() / 15 * iLoop, height() - 35, width() / 15, 30);
     }
 
-    startButton->setGeometry(width() / 4, height() / 2, 60, 30);
-    stopButton->setGeometry(width() / 3, height() / 2, 60, 30);
+    startButton->setGeometry(width() / 4, height() / 4, width() / 4, height() / 2);
+    stopButton->setGeometry(width() / 2, height() / 4, width() / 4, height() / 2);
 }
