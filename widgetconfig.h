@@ -12,6 +12,7 @@
 #include <QPushButton>
 #include <QLabel>
 #include <QLineEdit>
+#include <QCheckBox>
 
 class widgetConfig : public QWidget
 {
@@ -30,9 +31,15 @@ private:
     enum {E_NMB_GEN_OTHERS = 9};
     enum {E_NMB_GEN_REGULATOR = 4};
     enum {E_NMB_GEN_TESTTHERAPY = 2};
+    enum {E_NMB_GEN_PWM_COOL = 2};
+    enum {E_NMB_GEN_DAC = 2};
+    enum {E_NMB_GEN_RAW_RECEIVING = 3};
+    enum {E_NMB_GEN_OUTPUTS = 8};
+    enum {E_NMB_GEN_APLx = 5};
 
     enum {E_NMB_AMP_ADC1 = 8};
     enum {E_NMB_AMP_ADC3 = 8};
+    enum {E_NMB_AMP_OUTPUTS = 6};
 
     enum GEN_ADC_X
     {
@@ -49,6 +56,12 @@ private:
         E_AMP_ADC_3,
         E_AMP_ADC_NMB
     };
+
+    const int c_dw_SizeCheckBox = 30;
+
+    const QString c_nameAmpOutputs[E_NMB_AMP_OUTPUTS] = {"PWR_Source_ON", "PWR_Source_Decharge", "ResetErr", "RESERVE_1", "RESERVE_2", "RESERVE_3"};
+    const QString c_nameGenOutputs[E_NMB_GEN_OUTPUTS] = {"REL_OUT_1", "REL_OUT_2", "REL_OUT_3", "REL_OUT_4", "nAMP_RESET", "Amp_PWR_ON", "nGenErr_uP", "Fraction/Exilis"};
+    const QString c_nameGenAplX[E_NMB_GEN_APLx] = {"apl_1", "apl_1_PWR_ON", "apl_2", "apl_3", "apl_4"};
 
 
     QVBoxLayout* MainLayout = new QVBoxLayout(this);
@@ -67,6 +80,30 @@ private:
     QLineEdit *lineInputAmpAddAdcx[E_AMP_ADC_NMB][E_NMB_AMP_ADC3];
     QPushButton* buttSendAmpMulAdcx[E_AMP_ADC_NMB];
     QPushButton* buttSendAmpAddAdcx[E_AMP_ADC_NMB];
+
+    QLineEdit *lineInputAmpFreq;
+    QLineEdit *lineInputAmpPwm;
+    QPushButton* buttSendAmpFreq;
+    QPushButton* buttSendAmpPwm;
+
+    QCheckBox* checkAmpOutput[E_NMB_AMP_OUTPUTS];
+
+    QLineEdit *lineInputGenPwmCool[E_NMB_GEN_PWM_COOL];
+    QPushButton* buttSendGenPwmCool;
+
+    QLineEdit *lineInputGenDac[E_NMB_GEN_DAC];
+    QPushButton* buttSendGenDac;
+
+    QLineEdit *lineInputGenPwrReset;
+    QPushButton* buttSendGenPwrReset;
+
+    QCheckBox* checkGenRawData[E_NMB_GEN_RAW_RECEIVING];
+
+    QCheckBox* checkGenOutputs[E_NMB_GEN_OUTPUTS];
+
+    QCheckBox* checkGenAplX[E_NMB_GEN_APLx];
+
+    QCheckBox* checkGenTestTherapy;
 
 
     QLabel *createNewLabel(const QString &text);
