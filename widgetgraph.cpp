@@ -57,7 +57,7 @@ widgetGraph::widgetGraph(QWidget *parent) : QWidget(parent)
     setminResolution->setText("Min");
     resolutionValue->setText(QString::number(msPerPixelValue));
 
-    connect(openLogButton, &QPushButton::clicked, dynamic_cast<MainWindow *> (this->parentWidget()), &MainWindow::on_openlogButton_clicked);
+    connect(openLogButton, &QPushButton::clicked, dynamic_cast<MainWindow *> (this->parentWidget()), &MainWindow::openlogButtonPressed);
 
     for(int iLoop = 0; iLoop < nmbCurvesInGraph; iLoop++)
     {

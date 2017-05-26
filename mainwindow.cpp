@@ -31,6 +31,7 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
 
     ui->statusBar->showMessage("Start app");
     qDebug() << "Start of application.";
+    qDebug() << "current width:" << width() << ", current height:" << height();
 
 
     connect(this, &MainWindow::SendNewImpedanceData, p_WidgetSmith, &widgetSmith::ReceivedNewData);
@@ -112,7 +113,7 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
         }
     });
 
-    connect(p_WidgetGraph, widgetGraph::FlagSignalChoosed,[=](int signalIndex, int value){
+    connect(p_WidgetGraph, static_cast<void (widgetGraph::*)(int, int)>(&widgetGraph::FlagSignalChoosed),[=](int signalIndex, int value){
 
         if(sourceDataStream == LOG_STREAM && value >= 0)
         {
@@ -824,7 +825,7 @@ void MainWindow::on_checkBox_clicked()
     m_bSaveData = ui->checkBox->isChecked();
 }
 
-void MainWindow::on_openlogButton_clicked()
+void MainWindow::openlogButtonPressed()
 {
     sourceDataStream = LOG_STREAM;
 

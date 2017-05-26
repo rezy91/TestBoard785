@@ -97,7 +97,7 @@ private slots:
     void on_checkBox_clicked();
 
 public slots:
-    void on_openlogButton_clicked();
+    void openlogButtonPressed();
     void onNewMsgReqReceived(Qt::CheckState m_newState, int m_device, int m_indexMsg);
     void onNewTimeRequest(int valueTime, int m_device, int m_indexMsg);
     void specificMessageProtocol(QString message);
