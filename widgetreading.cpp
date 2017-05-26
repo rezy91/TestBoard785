@@ -8,8 +8,8 @@ widgetReading::widgetReading(QWidget *parent) : QWidget(parent)
     {
         chBoxGen[iLoop] = new QCheckBox(allNamesGen[iLoop], this);
         generTimes[iLoop] = new QSpinBox(this);
-        qGridLyout->addWidget(chBoxGen[iLoop], iLoop, 2);
-        qGridLyout->addWidget(generTimes[iLoop], iLoop, 3);
+        qGridLyout->addWidget(chBoxGen[iLoop], iLoop, 2, Qt::AlignRight);
+        qGridLyout->addWidget(generTimes[iLoop], iLoop, 3, Qt::AlignLeft);
 
         generTimes[iLoop]->setMaximum(1000);
         generTimes[iLoop]->setSingleStep(10);
@@ -19,8 +19,8 @@ widgetReading::widgetReading(QWidget *parent) : QWidget(parent)
         {
             chBoxAmp[iLoop] = new QCheckBox(allNamesAmp[iLoop], this);
             amplfTimes[iLoop] = new QSpinBox(this);
-            qGridLyout->addWidget(chBoxAmp[iLoop], iLoop, 0);
-            qGridLyout->addWidget(amplfTimes[iLoop], iLoop, 1);
+            qGridLyout->addWidget(chBoxAmp[iLoop], iLoop, 0, Qt::AlignRight);
+            qGridLyout->addWidget(amplfTimes[iLoop], iLoop, 1, Qt::AlignLeft);
 
             amplfTimes[iLoop]->setMaximum(1000);
             amplfTimes[iLoop]->setSingleStep(10);

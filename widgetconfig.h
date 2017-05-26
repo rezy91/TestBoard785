@@ -31,6 +31,7 @@ private:
     enum {E_NMB_GEN_OTHERS = 9};
     enum {E_NMB_GEN_REGULATOR = 4};
     enum {E_NMB_GEN_TESTTHERAPY = 2};
+    enum {E_NMB_GEN_PWM_CQM = 2};
     enum {E_NMB_GEN_PWM_COOL = 2};
     enum {E_NMB_GEN_DAC = 2};
     enum {E_NMB_GEN_RAW_RECEIVING = 3};
@@ -62,6 +63,9 @@ private:
     const QString c_nameAmpOutputs[E_NMB_AMP_OUTPUTS] = {"PWR_Source_ON", "PWR_Source_Decharge", "ResetErr", "RESERVE_1", "RESERVE_2", "RESERVE_3"};
     const QString c_nameGenOutputs[E_NMB_GEN_OUTPUTS] = {"REL_OUT_1", "REL_OUT_2", "REL_OUT_3", "REL_OUT_4", "nAMP_RESET", "Amp_PWR_ON", "nGenErr_uP", "Fraction/Exilis"};
     const QString c_nameGenAplX[E_NMB_GEN_APLx] = {"apl_1", "apl_1_PWR_ON", "apl_2", "apl_3", "apl_4"};
+    const QString c_nameGenRegulator[E_NMB_GEN_REGULATOR] = {"PROPORCIAL", "INTEGRAL", "DERIVATIVE", "Period (10 - 1000 ms)"};
+    const QString c_nameGenTestTherapy[E_NMB_GEN_TESTTHERAPY] = {"Duty factor (20 - 100 %)", "Frequency (25 - 200 Hz)"};
+    const QString c_nameGenCQM[E_NMB_GEN_PWM_CQM] = {"ch_1 (1000 - 100000 Hz)", "ch_2 (1000 - 100000 Hz)"};
 
 
     QVBoxLayout* MainLayout = new QVBoxLayout(this);
@@ -88,6 +92,9 @@ private:
 
     QCheckBox* checkAmpOutput[E_NMB_AMP_OUTPUTS];
 
+    QLineEdit *lineInputGenPwmCqm[E_NMB_GEN_PWM_CQM];
+    QPushButton* buttSendGenPwmCqm;
+
     QLineEdit *lineInputGenPwmCool[E_NMB_GEN_PWM_COOL];
     QPushButton* buttSendGenPwmCool;
 
@@ -113,6 +120,11 @@ private:
     QGroupBox *createConfigGenGroup();
     QGroupBox *createSettingsAmpGroup();
     QGroupBox *createSettingsGenGroup();
+
+    void AssemblyAplxAndPwrResetPacket(bool source);
+
+signals:
+    void SendV200specific(QString msg);
 
 protected:
     virtual void paintEvent(QPaintEvent*e);

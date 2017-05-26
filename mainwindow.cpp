@@ -40,6 +40,7 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
     connect(p_WidgetReading, &widgetReading::SendV200Requirement, this, &MainWindow::onNewMsgReqReceived);
     connect(p_WidgetReading, &widgetReading::SendNewTime, this, &MainWindow::onNewTimeRequest);
     connect(p_WidgetTherapy, &widgetTherapy::SendV200specific, this, &MainWindow::specificMessageProtocol);
+    connect(p_WidgetConfig, &widgetConfig::SendV200specific, this, &MainWindow::specificMessageProtocol);
 
 
     for(int iLoop = 0; iLoop < nmbCurvesInGraph; iLoop++)

@@ -1,4 +1,5 @@
 #include "widgettherapy.h"
+#include "common.h"
 
 widgetTherapy::widgetTherapy(QWidget *parent) : QWidget(parent)
 {
@@ -40,17 +41,16 @@ widgetTherapy::widgetTherapy(QWidget *parent) : QWidget(parent)
            therapyParams[iLoop].slider->setEnabled(false);
         }
 
-        QString msgTherapy = QString("23");
+        QString msgTherapy = QString("%1").arg(QString::number(PID_SET_THERAPY_SETTINGS, 16));
         msgTherapy += QString::number(QString("%1").arg(therapyParams[E_POWER].slider->value()).toInt(), 16).rightJustified(4, '0');
         msgTherapy += QString::number(QString("%1").arg(therapyParams[E_DUTYCYCLE].slider->value()).toInt(), 16).rightJustified(2, '0');
         msgTherapy += QString::number(QString("%1").arg(therapyParams[E_FREQUENCY].slider->value()).toInt(), 16).rightJustified(2, '0');
 
-        qDebug() << msgTherapy;
-
-
         emit SendV200specific(msgTherapy);
 
-        QString msgRun = QString("5C0100");
+        QString msgRun = QString("%1").arg(QString::number(PID_START_STOP_THERAPY, 16));
+        msgRun += QString("0100");
+
         emit SendV200specific(msgRun);
     });
 
@@ -64,7 +64,9 @@ widgetTherapy::widgetTherapy(QWidget *parent) : QWidget(parent)
            therapyParams[iLoop].slider->setEnabled(true);
         }
 
-        QString msgRun = QString("5C0000");
+        QString msgRun = QString("%1").arg(QString::number(PID_START_STOP_THERAPY, 16));
+        msgRun += QString("0000");
+
         emit SendV200specific(msgRun);
     });
 }
