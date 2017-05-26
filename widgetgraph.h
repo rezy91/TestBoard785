@@ -145,6 +145,8 @@ private:
     int mRefreshTime_ms[nmbCurvesInGraph] = {std::numeric_limits<int>::max(), std::numeric_limits<int>::max(), std::numeric_limits<int>::max(), std::numeric_limits<int>::max()};
     int flagSignalRecord[nmbCurvesInGraph] = {0, 0, 0, 0};
 
+    int dw_LogTime_ms = 0;
+
 signals:
     void FlagSignalChoosed(int signalIndex, int value);
 

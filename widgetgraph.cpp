@@ -46,7 +46,6 @@ widgetGraph::widgetGraph(QWidget *parent) : QWidget(parent)
     installEventFilter(this);
 
     openLogButton->setText("open log");
-    scBar->setMinimum(0);
 
     startStopDisplay->setCheckable(true);
     startStopDisplay->setChecked(false);
@@ -208,8 +207,11 @@ int widgetGraph::findMinAndMaxTimeInLog()
     highAbsolute = findMaxTime();
 
     int diffTimeInMsec = QTime(lowAbsolute).msecsTo(highAbsolute);
+    int diffTimeInSec = QTime(lowAbsolute).secsTo(highAbsolute);
 
-    scBar->setMaximum(diffTimeInMsec);
+    dw_LogTime_ms = diffTimeInMsec;
+
+    scBar->setMaximum(diffTimeInSec);
     scBar->setValue(scBar->maximum());
 
     return diffTimeInMsec;
@@ -236,14 +238,13 @@ bool widgetGraph::isNoSignalDisplayed()
 
 void widgetGraph::findPreciousTime()
 {
-
     int showedWidth = usedWidth * msPerPixelValue;
     int showedHalfWidth = showedWidth / 2;
     int msFromLeft = 0;
     int msFromRight = 0;
-    int actualValueBar = scBar->value();
+    int actualValueBar = scBar->value() * 1000;
 
-    if(((actualValueBar - showedHalfWidth) >= 0) && ((actualValueBar + showedHalfWidth) <= scBar->maximum()))
+    if(((actualValueBar - showedHalfWidth) >= 0) && ((actualValueBar + showedHalfWidth) <= dw_LogTime_ms))
     {
         msFromLeft = actualValueBar - showedHalfWidth;
         msFromRight = actualValueBar + showedHalfWidth;
@@ -259,15 +260,15 @@ void widgetGraph::findPreciousTime()
         lowLevel = lowAbsolute;
         highLevel = lowAbsolute.addMSecs(showedWidth);
     }
-    else if((actualValueBar + showedHalfWidth) > scBar->maximum())
+    else if((actualValueBar + showedHalfWidth) > dw_LogTime_ms)
     {
-        msFromLeft = scBar->maximum() - showedWidth;
+        msFromLeft = dw_LogTime_ms - showedWidth;
         if(msFromLeft < 0)//in case when is displaying online and all points don´t cover all range of 'showedWidth'
         {
             msFromLeft = 0;
         }
 
-        msFromRight = scBar->maximum();
+        msFromRight = dw_LogTime_ms;
 
         lowLevel = lowAbsolute.addMSecs(msFromLeft);
         highLevel = highAbsolute;
