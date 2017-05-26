@@ -19,7 +19,7 @@ void widgetGraph::paintEvent(QPaintEvent* e)
 */
 
 #include "widgetgraph.h"
-
+#include "mainwindow.h"
 #include <QtGui>
 #include <QtCore>
 
@@ -30,6 +30,7 @@ widgetGraph::widgetGraph(QWidget *parent) : QWidget(parent)
     {
         maxLimitLevel[iLoop] = new QDoubleSpinBox(this);
         minLimitLevel[iLoop] = new QDoubleSpinBox(this);
+        signalsChoosing[iLoop] = new QComboBox(this);
 
         maxLimitLevel[iLoop]->setMaximum(99999);
         minLimitLevel[iLoop]->setMaximum(99999);
@@ -39,10 +40,12 @@ widgetGraph::widgetGraph(QWidget *parent) : QWidget(parent)
 
         maxLimitLevel[iLoop]->setValue(mHighLevelAxis_y[iLoop]);
         minLimitLevel[iLoop]->setValue(mLowLevelAxis_y[iLoop]);
+        signalsChoosing[iLoop]->clear();
     }
 
     installEventFilter(this);
 
+    openLogButton->setText("open log");
     scBar->setMinimum(0);
 
     startStopDisplay->setCheckable(true);
@@ -55,6 +58,7 @@ widgetGraph::widgetGraph(QWidget *parent) : QWidget(parent)
     setminResolution->setText("Min");
     resolutionValue->setText(QString::number(msPerPixelValue));
 
+    connect(openLogButton, &QPushButton::clicked, dynamic_cast<MainWindow *> (this->parentWidget()), &MainWindow::on_openlogButton_clicked);
 
     for(int iLoop = 0; iLoop < nmbCurvesInGraph; iLoop++)
     {
@@ -72,6 +76,11 @@ widgetGraph::widgetGraph(QWidget *parent) : QWidget(parent)
             adjustCoefficientSingleStep(minLimitLevel[iLoop], nValue);
             mLowLevelAxis_y[iLoop] = nValue;
             refrGr("new low level");
+        });
+
+        connect(signalsChoosing[iLoop],static_cast<void (QComboBox::*)(int)>(&QComboBox::currentIndexChanged),[=](int nValue){
+
+            emit FlagSignalChoosed(iLoop, nValue);
         });
     }
 
@@ -455,6 +464,38 @@ void widgetGraph::adjustCoefficientSingleStep(QDoubleSpinBox *p_oubleSpinBox, do
     }
 }
 
+void widgetGraph::clearAll()
+{
+    for(int iLoop = 0; iLoop < nmbCurvesInGraph; iLoop++)
+    {
+        signalsChoosing[iLoop]->clear();
+    }
+}
+
+void widgetGraph::addDashAll()
+{
+    for(int iLoop = 0; iLoop < nmbCurvesInGraph; iLoop++)
+    {
+        signalsChoosing[iLoop]->addItem("-");
+    }
+}
+
+void widgetGraph::addItems(const QStringList &texts)
+{
+    for(int iLoop = 0; iLoop < nmbCurvesInGraph; iLoop++)
+    {
+        signalsChoosing[iLoop]->addItems(texts);
+    }
+}
+
+void widgetGraph::setItemData(int index, const QVariant &value, int role)
+{
+    for(int iLoop = 0; iLoop < nmbCurvesInGraph; iLoop++)
+    {
+        signalsChoosing[iLoop]->setItemData(index, value, role);
+    }
+}
+
 void widgetGraph::paintEvent(QPaintEvent*)
 {
     QPainter painterMain(this);
@@ -466,11 +507,13 @@ void widgetGraph::paintEvent(QPaintEvent*)
     setminResolution->setGeometry(currentWidth - 40, 0 + 50 + 50, 40, 20);
     startStopDisplay->setGeometry(currentWidth - 40, 0 + 50 + 50 + 25, 40, 20);
     scBar->setGeometry(constLeftLimit - 20, currentHeight - constBottomLimit + 25, usedWidth + 40, 20);
+    openLogButton->setGeometry(0 , currentHeight - 25 - 25 - 25 - 25, currentWidth - 5, 23);
 
     for(int iLoop = 0; iLoop < nmbCurvesInGraph; iLoop++)
     {
-        maxLimitLevel[iLoop]->setGeometry((currentWidth / nmbCurvesInGraph) * iLoop, currentHeight - 25 - 25, currentWidth / nmbCurvesInGraph - 10, 20);
-        minLimitLevel[iLoop]->setGeometry((currentWidth / nmbCurvesInGraph) * iLoop, currentHeight - 25, currentWidth / nmbCurvesInGraph - 10, 20);
+        maxLimitLevel[iLoop]->setGeometry((currentWidth / nmbCurvesInGraph) * iLoop, currentHeight - 25 - 25 - 25, currentWidth / nmbCurvesInGraph - 5, 23);
+        minLimitLevel[iLoop]->setGeometry((currentWidth / nmbCurvesInGraph) * iLoop, currentHeight - 25 - 25, currentWidth / nmbCurvesInGraph - 5, 23);
+        signalsChoosing[iLoop]->setGeometry((currentWidth / nmbCurvesInGraph) * iLoop, currentHeight - 25, currentWidth / nmbCurvesInGraph - 5, 23);
     }
 
     //qDebug() << "PaintEvent occurs";0

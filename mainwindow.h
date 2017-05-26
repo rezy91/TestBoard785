@@ -94,10 +94,10 @@ private slots:
     void changed_table(int index);
     void on_connectButton_clicked();
     void on_disconnectButton_clicked();
-    void on_openlogButton_clicked();
     void on_checkBox_clicked();
 
 public slots:
+    void on_openlogButton_clicked();
     void onNewMsgReqReceived(Qt::CheckState m_newState, int m_device, int m_indexMsg);
     void onNewTimeRequest(int valueTime, int m_device, int m_indexMsg);
     void specificMessageProtocol(QString message);

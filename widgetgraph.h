@@ -48,6 +48,7 @@ protected:
 #include <QLabel>
 
 #include <QDoubleSpinBox>
+#include <QComboBox>
 
 #include "common.h"
 
@@ -77,6 +78,11 @@ public:
 
     void adjustCoefficientSingleStep(QDoubleSpinBox* p_oubleSpinBox, double newValue);
 
+    void clearAll(void);
+    void addDashAll(void);
+    void addItems(const QStringList &texts);
+    void setItemData(int index, const QVariant &value, int role = Qt::UserRole);
+
     QTime findMinTime(void);
     QTime findMaxTime(void);
 
@@ -86,7 +92,7 @@ private:
     const int constSamples = 10;
     const int constVolumePoint = 3;
 
-    const int constBottomLimit = 100;
+    const int constBottomLimit = 150;
     const int constTopLimit = 75;
     const int constLeftLimit = 150;
     const int constRightLimit = 170;
@@ -103,6 +109,7 @@ private:
 
     Qt::GlobalColor colorSignal[nmbCurvesInGraph] = {Qt::blue, Qt::darkGreen, Qt::red, Qt::magenta};
 
+    QPushButton* openLogButton = new QPushButton(this);
     QScrollBar* scBar = new QScrollBar(Qt::Horizontal, this);
     QPushButton* setmaxResolution = new QPushButton(this);
     QPushButton* changeResolutionUp = new QPushButton(this);
@@ -112,6 +119,7 @@ private:
     QLabel* resolutionValue = new QLabel(this);
     QDoubleSpinBox* maxLimitLevel[nmbCurvesInGraph];
     QDoubleSpinBox* minLimitLevel[nmbCurvesInGraph];
+    QComboBox* signalsChoosing[nmbCurvesInGraph];
 
     //min & max time of all signals
     QTime lowAbsolute;
@@ -136,6 +144,9 @@ private:
     double mLowLevelAxis_y[nmbCurvesInGraph];
     int mRefreshTime_ms[nmbCurvesInGraph] = {std::numeric_limits<int>::max(), std::numeric_limits<int>::max(), std::numeric_limits<int>::max(), std::numeric_limits<int>::max()};
     int flagSignalRecord[nmbCurvesInGraph] = {0, 0, 0, 0};
+
+signals:
+    void FlagSignalChoosed(int signalIndex, int value);
 
 public slots:
     void refreshGraph(QTime currTime, double ssignal, int recStat, QString signalText, int sourceSig, int sourceStream, int flags);

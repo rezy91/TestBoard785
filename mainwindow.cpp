@@ -112,34 +112,15 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
         }
     });
 
-    connect(ui->comboBox_2,static_cast<void (QComboBox::*)(int)>(&QComboBox::currentIndexChanged),[=](int nValue){
-        if(sourceDataStream == LOG_STREAM && nValue >= 0)
+    connect(p_WidgetGraph, widgetGraph::FlagSignalChoosed,[=](int signalIndex, int value){
+
+        if(sourceDataStream == LOG_STREAM && value >= 0)
         {
-            CheckedIfIndexInQlist(0, 0);//send fake in order to clear history signal
+            CheckedIfIndexInQlist(signalIndex, 0);//send fake in order to clear history signal
         }
-        CheckedIfIndexInQlist(0, nValue);
+        CheckedIfIndexInQlist(signalIndex, value);
     });
-    connect(ui->comboBox_3,static_cast<void (QComboBox::*)(int)>(&QComboBox::currentIndexChanged),[=](int nValue){
-        if(sourceDataStream == LOG_STREAM && nValue >= 0)
-        {
-            CheckedIfIndexInQlist(1, 0);//send fake in order to clear history signal
-        }
-        CheckedIfIndexInQlist(1, nValue);
-    });
-    connect(ui->comboBox_4,static_cast<void (QComboBox::*)(int)>(&QComboBox::currentIndexChanged),[=](int nValue){
-        if(sourceDataStream == LOG_STREAM && nValue >= 0)
-        {
-            CheckedIfIndexInQlist(2, 0);//send fake in order to clear history signal
-        }
-        CheckedIfIndexInQlist(2, nValue);
-    });
-    connect(ui->comboBox_5,static_cast<void (QComboBox::*)(int)>(&QComboBox::currentIndexChanged),[=](int nValue){
-        if(sourceDataStream == LOG_STREAM && nValue >= 0)
-        {
-            CheckedIfIndexInQlist(3, 0);//send fake in order to clear history signal
-        }
-        CheckedIfIndexInQlist(3, nValue);
-    });
+
     connect(ui->comboBox_1,static_cast<void (QComboBox::*)(int)>(&QComboBox::currentIndexChanged),[=](int nValue){
         selectedDeviceSetAccordingSaved(nValue);
 
@@ -147,7 +128,6 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
         //-FillTableContent();
 
     });
-
 
 
     m_CommProt.reset(CommProtV200_Create(this));
@@ -634,15 +614,8 @@ void MainWindow::SetTimerRequests(int wIndex, bool bOnOff, QString sCommand, Mai
 
 void MainWindow::ShowSignalsIntoComboBox(SOURCE_STREAM eSourceStream)
 {
-    ui->comboBox_2->clear();
-    ui->comboBox_3->clear();
-    ui->comboBox_4->clear();
-    ui->comboBox_5->clear();
-
-    ui->comboBox_2->addItem("-");
-    ui->comboBox_3->addItem("-");
-    ui->comboBox_4->addItem("-");
-    ui->comboBox_5->addItem("-");
+    p_WidgetGraph->clearAll();
+    p_WidgetGraph->addDashAll();
 
     qint32 dwIndexStart = 1;
 
@@ -662,21 +635,12 @@ void MainWindow::ShowSignalsIfShould(SOURCE_STREAM eSourceStream, MainWindow::SO
     {
         if(((eSourceStream == LOG_STREAM) && p_bLogged[row]) || ((eSourceStream == RECEIVE_STREAM) && p_sRequests[row].timer.bEnable))
         {
-            ui->comboBox_2->addItems(p_sStringList[row]);
-            ui->comboBox_3->addItems(p_sStringList[row]);
-            ui->comboBox_4->addItems(p_sStringList[row]);
-            ui->comboBox_5->addItems(p_sStringList[row]);
+            p_WidgetGraph->addItems(p_sStringList[row]);
 
             for(qint32 iLoop = 0; iLoop <= p_sStringList[row].count(); iLoop++)
             {
-                ui->comboBox_2->setItemData(dwStartIndex + iLoop, QBrush(eBackgrColor), Qt::BackgroundRole);
-                ui->comboBox_2->setItemData(dwStartIndex + iLoop, QBrush(Qt::white), Qt::TextColorRole);
-                ui->comboBox_3->setItemData(dwStartIndex + iLoop, QBrush(eBackgrColor), Qt::BackgroundRole);
-                ui->comboBox_3->setItemData(dwStartIndex + iLoop, QBrush(Qt::white), Qt::TextColorRole);
-                ui->comboBox_4->setItemData(dwStartIndex + iLoop, QBrush(eBackgrColor), Qt::BackgroundRole);
-                ui->comboBox_4->setItemData(dwStartIndex + iLoop, QBrush(Qt::white), Qt::TextColorRole);
-                ui->comboBox_5->setItemData(dwStartIndex + iLoop, QBrush(eBackgrColor), Qt::BackgroundRole);
-                ui->comboBox_5->setItemData(dwStartIndex + iLoop, QBrush(Qt::white), Qt::TextColorRole);
+                p_WidgetGraph->setItemData(dwStartIndex + iLoop, QBrush(eBackgrColor), Qt::BackgroundRole);
+                p_WidgetGraph->setItemData(dwStartIndex + iLoop, QBrush(Qt::white), Qt::TextColorRole);
             }
 
             dwStartIndex += p_sStringList[row].count();
@@ -850,11 +814,7 @@ void MainWindow::on_disconnectButton_clicked()
 
     }
 
-    ui->comboBox_2->clear();
-    ui->comboBox_3->clear();
-    ui->comboBox_4->clear();
-    ui->comboBox_5->clear();
-
+    p_WidgetGraph->clearAll();
     sourceDataStream = NO_STREAM;
 }
 
