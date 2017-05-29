@@ -35,11 +35,6 @@ widgetGraph::widgetGraph(QWidget *parent) : QWidget(parent)
         maxLimitLevel[iLoop]->setMaximum(99999);
         minLimitLevel[iLoop]->setMaximum(99999);
 
-        mHighLevelAxis_y[iLoop] = 100;
-        mLowLevelAxis_y[iLoop] = 0;
-
-        maxLimitLevel[iLoop]->setValue(mHighLevelAxis_y[iLoop]);
-        minLimitLevel[iLoop]->setValue(mLowLevelAxis_y[iLoop]);
         signalsChoosing[iLoop]->clear();
     }
 
@@ -66,6 +61,7 @@ widgetGraph::widgetGraph(QWidget *parent) : QWidget(parent)
             //qDebug() << " max spin box:" << iLoop << "new value:" << nValue;
             adjustCoefficientSingleStep(maxLimitLevel[iLoop], nValue);
             mHighLevelAxis_y[iLoop] = nValue;
+            emit SaveAxisRangeHigh(iLoop, nValue);
             refrGr("new high level");
         });
 
@@ -74,6 +70,7 @@ widgetGraph::widgetGraph(QWidget *parent) : QWidget(parent)
             //qDebug() << " min spin box:" << iLoop << "new value:" << nValue;
             adjustCoefficientSingleStep(minLimitLevel[iLoop], nValue);
             mLowLevelAxis_y[iLoop] = nValue;
+            emit SaveAxisRangeLow(iLoop, nValue);
             refrGr("new low level");
         });
 
@@ -435,6 +432,18 @@ void widgetGraph::refreshGraph(QTime currTime, double ssignal, int recStat, QStr
             }
         }
     }
+}
+
+void widgetGraph::readAxisHigh(int index, double value)
+{
+    mHighLevelAxis_y[index] = value;
+    maxLimitLevel[index]->setValue(mHighLevelAxis_y[index]);
+}
+
+void widgetGraph::readAxisLow(int index, double value)
+{
+    mLowLevelAxis_y[index] = value;
+    minLimitLevel[index]->setValue(mLowLevelAxis_y[index]);
 }
 
 void widgetGraph::adjustCoefficientSingleStep(QDoubleSpinBox *p_oubleSpinBox, double newValue)

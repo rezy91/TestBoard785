@@ -43,6 +43,27 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
     connect(p_WidgetTherapy, &widgetTherapy::SendV200specific, this, &MainWindow::specificMessageProtocol);
     connect(p_WidgetConfig, &widgetConfig::SendV200specific, this, &MainWindow::specificMessageProtocol);
 
+    connect(p_WidgetSmith, &widgetSmith::SaveData, appSettings, &settings::StoreSmithPoints);
+    connect(this, &MainWindow::SendSmithPoints, p_WidgetSmith, &widgetSmith::ReadData);
+
+    connect(this, &MainWindow::SendTimeRequests, p_WidgetReading, &widgetReading::ReadTimeRequests);
+
+    connect(p_WidgetGraph, &widgetGraph::SaveAxisRangeHigh, appSettings, &settings::StoreHighValueSignal);
+    connect(p_WidgetGraph, &widgetGraph::SaveAxisRangeLow, appSettings, &settings::StoreLowValueSignal);
+    connect(this, &MainWindow::SendAxisHigh, p_WidgetGraph, &widgetGraph::readAxisHigh);
+    connect(this, &MainWindow::SendAxisLow, p_WidgetGraph, &widgetGraph::readAxisLow);
+
+    ui->comboBox_1->addItem(QString("Generator (ID = %1d)").arg(constGenerID));
+    ui->comboBox_1->addItem(QString("Amplifier (ID = %1d)").arg(constAmpID));
+
+
+    restoreGeometry(appSettings->RestoreGeometryMain());
+    SetAvaiblePorts();
+    m_bSaveData = appSettings->RestoreSaveDataBox();
+    ui->checkBox->setChecked(m_bSaveData);
+    ui->comboBox_1->setCurrentIndex(appSettings->RestoreSelectedDevice());
+    emit SendSmithPoints(appSettings->RestoreSmithPoints());
+
 
     for(int iLoop = 0; iLoop < nmbCurvesInGraph; iLoop++)
     {
@@ -51,13 +72,10 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
         sourceSignal[iLoop] = 0;
         sourceAd[iLoop] = 0;
         sourceSignText[iLoop] = "\0";
+
+        emit SendAxisHigh(iLoop, appSettings->RestoreHighValueSignal(iLoop));
+        emit SendAxisLow(iLoop, appSettings->RestoreLowValueSignal(iLoop));
     }
-
-    SetAvaiblePorts();
-
-    ui->comboBox_1->addItem(QString("Generator (ID = %1d)").arg(constGenerID));
-    ui->comboBox_1->addItem(QString("Amplifier (ID = %1d)").arg(constAmpID));
-
 
     for(int iLoop = 0; iLoop < NMB_ITEMS_TIMERS_GENER; iLoop++)
     {
@@ -65,6 +83,8 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
         eRequestsGenerAdcx[iLoop].timer.bEnable = false;
         eRequestsGenerAdcx[iLoop].timer.RequirementTime_ms = 50;
         eRequestsGenerAdcx[iLoop].isInProgress = false;
+
+        emit SendTimeRequests(1, iLoop, appSettings->RestoreRefreshGener(iLoop));
     }
 
     for(int iLoop = 0; iLoop < NMB_ITEMS_TIMERS_AMPLF; iLoop++)
@@ -73,6 +93,8 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
         eRequestsAmplifAdcx[iLoop].timer.bEnable = false;
         eRequestsAmplifAdcx[iLoop].timer.RequirementTime_ms = 50;
         eRequestsAmplifAdcx[iLoop].isInProgress = false;;
+
+        emit SendTimeRequests(0, iLoop, appSettings->RestoreRefreshAmplif(iLoop));
     }
 
 
@@ -125,7 +147,7 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
     connect(ui->comboBox_1,static_cast<void (QComboBox::*)(int)>(&QComboBox::currentIndexChanged),[=](int nValue){
         selectedDeviceSetAccordingSaved(nValue);
 
-        //-m_pSettingStrorage->StoreSelectedDevice(ui->comboBox_SelectDevice->currentIndex());
+        appSettings->StoreSelectedDevice(ui->comboBox_1->currentIndex());
         //-FillTableContent();
 
     });
@@ -242,10 +264,12 @@ void MainWindow::onNewTimeRequest(int valueTime, int m_device, int m_indexMsg)
 {
     if(m_device == 0)
     {
+        appSettings->StoreRefreshAmplif(m_indexMsg, valueTime);
         eRequestsAmplifAdcx[m_indexMsg].timer.RequirementTime_ms = valueTime;
     }
     else if(m_device == 1)
     {
+        appSettings->StoreRefreshGener(m_indexMsg, valueTime);
         eRequestsGenerAdcx[m_indexMsg].timer.RequirementTime_ms = valueTime;
     }
 }
@@ -276,6 +300,7 @@ void MainWindow::on_connectButton_clicked()
     sourceDataStream = RECEIVE_STREAM;
 
     m_CommProt.data()->SetTargetMedium(ui->comboBox->currentText());
+    appSettings->StorePortName(ui->comboBox->currentText());
 
     if(m_bSaveData)
     {
@@ -292,16 +317,16 @@ void MainWindow::SetAvaiblePorts()
 {
     ui->comboBox->clear();
 
-    //QString strLastPortName = m_pSettingStrorage->RestorePortName();
+    QString strLastPortName = appSettings->RestorePortName();
 
     for(auto comPort : QSerialPortInfo::availablePorts())
     {
         ui->comboBox->addItem(comPort.portName());
 
-        /*if(comPort.portName() == strLastPortName)
+        if(comPort.portName() == strLastPortName)
         {
             ui->comboBox->setCurrentText(strLastPortName);
-        }*/
+        }
     }
 }
 
@@ -823,6 +848,7 @@ void MainWindow::on_disconnectButton_clicked()
 void MainWindow::on_checkBox_clicked()
 {
     m_bSaveData = ui->checkBox->isChecked();
+    appSettings->StoreSaveDataBox(m_bSaveData);
 }
 
 void MainWindow::openlogButtonPressed()
@@ -901,6 +927,7 @@ void MainWindow::refreshPlot()
         currentSize = ui->Configuration->size();
 
         p_WidgetConfig->setFixedSize(currentSize);
+        p_WidgetConfig->setCurrentSize(currentSize);
         p_WidgetConfig->repaint();
     }
     else if(currentTab == 2)
@@ -970,4 +997,6 @@ bool MainWindow::eventFilter(QObject *object, QEvent *event)
 void MainWindow::closeEvent(QCloseEvent *event)
 {
     Q_UNUSED(event);
+
+    appSettings->StoreGeometryMain(saveGeometry());
 }

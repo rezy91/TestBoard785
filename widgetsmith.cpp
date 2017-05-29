@@ -35,9 +35,7 @@ widgetSmith::widgetSmith(QWidget *parent) : QWidget(parent)
     clearButton->setText("Clear");
     nmbDisplayedSamples->setMinimum(1);
     nmbDisplayedSamples->setMaximum(9999);
-    nmbDisplayedSamples->setValue(100);
     currentNmbPoint = nmbDisplayedSamples->value();
-
 
     connect(clearButton, &QPushButton::clicked, [this](){
 
@@ -65,6 +63,8 @@ widgetSmith::widgetSmith(QWidget *parent) : QWidget(parent)
         }
 
         currentNmbPoint = newValue;
+
+        emit SaveData(newValue);
         //qDebug() << "value changed:" << newValue;
 
 
@@ -91,6 +91,18 @@ void widgetSmith::ReceivedNewData(qreal magnitudeCurrAvg, qreal phaseCurrAvg, qr
     axis[2].append(QPointF(magnitudeCurrAvg, phaseCurrAvg));
 
     repaint();
+}
+
+void widgetSmith::ReadData(quint32 readedVal)
+{
+    if(readedVal)
+    {
+        nmbDisplayedSamples->setValue(readedVal);
+    }
+    else
+    {
+        nmbDisplayedSamples->setValue(100);
+    }
 }
 
 bool widgetSmith::eventFilter(QObject *, QEvent *event)

@@ -1,0 +1,58 @@
+#ifndef SETTINGS_H
+#define SETTINGS_H
+
+#include <QtCore>
+#include <QObject>
+#include <QWidget>
+
+class settings : public QObject
+{
+public:
+    explicit settings(QObject *parent = 0);
+
+    void StorePortName(const QString& strPortName);
+    QString RestorePortName() const;
+
+    void StoreGeometryMain(const QByteArray& arrGeometry);
+    QByteArray RestoreGeometryMain() const;
+
+    void StoreSaveDataBox(const bool& bSaveDataBox);
+    bool RestoreSaveDataBox() const;
+
+    void StoreSelectedDevice(const quint32& nDevice);
+    quint32 RestoreSelectedDevice() const;
+
+    void StoreSmithPoints(const quint32& nPoints);
+    quint32 RestoreSmithPoints() const;
+
+    void StoreRefreshGener(const int nIndexTimer, const int nPeriod_ms);
+    int RestoreRefreshGener(const int nIndexTimer) const;
+
+    void StoreRefreshAmplif(const int nIndexTimer, const int nPeriod_ms);
+    int RestoreRefreshAmplif(const int nIndexTimer) const;
+
+    void StoreHighValueSignal(const int nIndexTimer, const double value);
+    double RestoreHighValueSignal(const int nIndexTimer) const;
+
+    void StoreLowValueSignal(const int nIndexTimer, const double value);
+    double RestoreLowValueSignal(const int nIndexTimer) const;
+
+
+    void StoreRowItemGener(const QString& strValue);
+    QString RestoreRowItemGener() const;
+
+    void StoreRowItemAmp(const QString& strValue);
+    QString RestoreRowItemAmp() const;
+
+private:
+    QSettings* m_pAppSettings = new QSettings("settingsNew.ini", QSettings::IniFormat);
+
+    void StoreValue(const QString& strKey, const QVariant& vValue);
+    QVariant RestoreValue(const QString &strKey, const QVariant &vDefaultValue = QVariant()) const;
+
+signals:
+
+public slots:
+};
+
+#endif // SETTINGS_H

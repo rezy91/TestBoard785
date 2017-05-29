@@ -37,6 +37,8 @@ protected:
 #include <QSpinBox>
 #include <QPainter>
 
+#include "settings.h"
+
 class widgetSmith : public QWidget
 {
     Q_OBJECT
@@ -48,6 +50,7 @@ public:
 
 public slots:
     void ReceivedNewData(qreal magnitudeCurrAvg, qreal phaseCurrAvg, qreal magnitudeCurr50, qreal phaseCurr50, qreal magnitudeAvg50, qreal phaseAvg50);
+    void ReadData(quint32 readedVal);
 
 private:
     QList<QPointF> axis[3];
@@ -56,6 +59,9 @@ private:
     QSpinBox* nmbDisplayedSamples = new QSpinBox(this);
 
     quint32 currentNmbPoint;
+
+signals:
+    void SaveData(const quint32& nPoints);
 
 protected:
     void paintEvent(QPaintEvent*);

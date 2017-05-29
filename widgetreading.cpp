@@ -4,7 +4,7 @@
 
 widgetReading::widgetReading(QWidget *parent) : QWidget(parent)
 {
-    for(int iLoop = 0; iLoop < NMB_GEN_MSGS; iLoop++)
+    for(int iLoop = 0; iLoop < NMB_ITEMS_TIMERS_GENER; iLoop++)
     {
         chBoxGen[iLoop] = new QCheckBox(allNamesGen[iLoop], this);
         generTimes[iLoop] = new QSpinBox(this);
@@ -13,9 +13,8 @@ widgetReading::widgetReading(QWidget *parent) : QWidget(parent)
 
         generTimes[iLoop]->setMaximum(1000);
         generTimes[iLoop]->setSingleStep(10);
-        generTimes[iLoop]->setValue(100);
 
-        if(iLoop < NMB_AMP_MSGS)
+        if(iLoop < NMB_ITEMS_TIMERS_AMPLF)
         {
             chBoxAmp[iLoop] = new QCheckBox(allNamesAmp[iLoop], this);
             amplfTimes[iLoop] = new QSpinBox(this);
@@ -24,7 +23,6 @@ widgetReading::widgetReading(QWidget *parent) : QWidget(parent)
 
             amplfTimes[iLoop]->setMaximum(1000);
             amplfTimes[iLoop]->setSingleStep(10);
-            amplfTimes[iLoop]->setValue(100);
         }
     }
 
@@ -49,7 +47,7 @@ widgetReading::widgetReading(QWidget *parent) : QWidget(parent)
         QDesktopServices::openUrl(arg1);
     });
 
-    for(int iLoop = 0; iLoop < NMB_AMP_MSGS; iLoop++)
+    for(int iLoop = 0; iLoop < NMB_ITEMS_TIMERS_AMPLF; iLoop++)
     {
         connect(chBoxAmp[iLoop],&QCheckBox::clicked,[=](bool clicked){
 
@@ -64,7 +62,7 @@ widgetReading::widgetReading(QWidget *parent) : QWidget(parent)
         });
     }
 
-    for(int iLoop = 0; iLoop < NMB_GEN_MSGS; iLoop++)
+    for(int iLoop = 0; iLoop < NMB_ITEMS_TIMERS_GENER; iLoop++)
     {
         connect(chBoxGen[iLoop],&QCheckBox::clicked,[=](bool clicked){
 
@@ -84,6 +82,18 @@ widgetReading::widgetReading(QWidget *parent) : QWidget(parent)
 void widgetReading::showTextLog(QString showText)
 {
     textBrowser->append(showText);
+}
+
+void widgetReading::ReadTimeRequests(bool device, int index, int value)
+{
+    if(device == 0)
+    {
+        amplfTimes[index]->setValue(value);
+    }
+    else
+    {
+        generTimes[index]->setValue(value);
+    }
 }
 
 void widgetReading::paintEvent(QPaintEvent* e)

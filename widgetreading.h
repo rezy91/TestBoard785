@@ -29,26 +29,23 @@ signals:
 
 public slots:
     void showTextLog(QString showText);
+    void ReadTimeRequests(bool device, int index, int value);
 
 private:
-    enum{NMB_AMP_MSGS = 4};
-    enum{NMB_GEN_MSGS = 6};
-
-
-    const QString allNamesAmp[NMB_AMP_MSGS] = {"AMP ADC3 adjusted [ms]", "AMP ADC3 average [ms]", "AMP ADC1 adjusted [ms]", "AMP ADC1 average [ms]"};
-    const QString allNamesGen[NMB_GEN_MSGS] = {"GEN ADC3 adjusted [ms]", "GEN ADC3 average [ms]", "GEN ADC2 adjusted [ms]", "GEN ADC2 average [ms]", "GEN ADC1 adjusted [ms]", "GEN ADC1 average [ms]"};
+    const QString allNamesAmp[NMB_ITEMS_TIMERS_AMPLF] = {"AMP ADC3 adjusted [ms]", "AMP ADC3 average [ms]", "AMP ADC1 adjusted [ms]", "AMP ADC1 average [ms]"};
+    const QString allNamesGen[NMB_ITEMS_TIMERS_GENER] = {"GEN ADC3 adjusted [ms]", "GEN ADC3 average [ms]", "GEN ADC2 adjusted [ms]", "GEN ADC2 average [ms]", "GEN ADC1 adjusted [ms]", "GEN ADC1 average [ms]"};
 
     QSize currSize;
 
     QVBoxLayout* vBox = new QVBoxLayout(this);
     QTextBrowser* textBrowser = new QTextBrowser(this);
     QPushButton* buttClear = new QPushButton("clear log", this);
-    QSpinBox* generTimes[NMB_GEN_MSGS];
-    QSpinBox* amplfTimes[NMB_AMP_MSGS];
+    QSpinBox* generTimes[NMB_ITEMS_TIMERS_GENER];
+    QSpinBox* amplfTimes[NMB_ITEMS_TIMERS_AMPLF];
 
     QGridLayout* qGridLyout = new QGridLayout(this);
-    QCheckBox* chBoxAmp[NMB_AMP_MSGS];
-    QCheckBox* chBoxGen[NMB_GEN_MSGS];
+    QCheckBox* chBoxAmp[NMB_ITEMS_TIMERS_AMPLF];
+    QCheckBox* chBoxGen[NMB_ITEMS_TIMERS_GENER];
 
 protected:
     virtual void paintEvent(QPaintEvent*e);

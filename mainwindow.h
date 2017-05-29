@@ -27,7 +27,7 @@
 #include <QSettings>
 
 #include "common.h"
-
+#include "settings.h"
 #include "widgetconfig.h"
 #include "widgetreading.h"
 #include "widgetgraph.h"
@@ -136,6 +136,7 @@ private:
     widgetSmith *p_WidgetSmith = new widgetSmith(this);
     widgetGraph *p_WidgetGraph = new widgetGraph(this);
     widgetTherapy *p_WidgetTherapy = new widgetTherapy(this);
+    settings* appSettings = new settings(this);
 
     void AppendText(QTime timestamp, QString strText);
     void FillTableContent();
@@ -180,6 +181,10 @@ signals:
     void SendNewImpedanceData(qreal magnitudeCurr2Avg, qreal phaseCurr2Avg, qreal magnitudeCurr250, qreal phaseCurr250, qreal magnitudeAvg250, qreal phaseAvg250);
     void SendUpdateGraph(QTime timestamp, double receivedValue, int recordState, QString nameSignals, int src, int srStr, int flgs);
     void SendTextIntoLog(QString text);
+    void SendSmithPoints(int value);
+    void SendTimeRequests(bool device, int index, int value);
+    void SendAxisHigh(int index, double value);
+    void SendAxisLow(int index, double value);
 
 protected:
     void closeEvent(QCloseEvent *event) override;

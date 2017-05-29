@@ -149,9 +149,14 @@ private:
 
 signals:
     void FlagSignalChoosed(int signalIndex, int value);
+    void SaveAxisRangeHigh(int index, double value);
+    void SaveAxisRangeLow(int index, double value);
 
 public slots:
     void refreshGraph(QTime currTime, double ssignal, int recStat, QString signalText, int sourceSig, int sourceStream, int flags);
+    void readAxisHigh(int index, double value);
+    void readAxisLow(int index, double value);
+
 protected:
     void paintEvent(QPaintEvent*);
     bool eventFilter(QObject *object, QEvent *event);
