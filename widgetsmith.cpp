@@ -117,11 +117,7 @@ void widgetSmith::paintEvent(QPaintEvent*)
     clearButton->setGeometry(width() / 2, height() - 50, 50, 20);
     nmbDisplayedSamples->setGeometry(width() / 2, height() - 25, 50, 20);
 
-
-    QString pathToFile = QString("%1/").arg(QCoreApplication::applicationDirPath());
-    pathToFile += "smith.png";
-
-    painterMain.drawPixmap(0, 0, QPixmap(pathToFile).scaled(size()));
+    painterMain.drawPixmap(0, 0, QPixmap(QString(":/smith.png")).scaled(size()));
 
     for(int jLoop = 0; jLoop < 3; jLoop++)
     {
