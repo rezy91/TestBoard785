@@ -43,6 +43,12 @@ private:
     const QString c_nameGenOutputs[E_NMB_GEN_OUTPUTS] = {"REL_OUT_1", "REL_OUT_2", "REL_OUT_3", "REL_OUT_4", "nAMP_RESET", "Amp_PWR_ON", "nGenErr_uP", "Fraction/Exilis"};
     const QString c_nameGenAplX[E_NMB_GEN_APLx] = {"apl_1", "apl_1_PWR_ON", "apl_2", "apl_3", "apl_4"};
 
+    const QString c_defaultValueAmpFreq = "32000";
+    const QString c_defaultValueAmpPwm = "10.0";
+    const QString c_defaultValueGenPwm[E_NMB_GEN_PWM_COOL] = {"15", "50"};
+    const QString c_defaultValueGenDac[E_NMB_GEN_DAC] = {"200", "2000"};
+    const QString c_defaultValueGenPwr = "10";
+
 
     QVBoxLayout* MainLayout = new QVBoxLayout(this);
 

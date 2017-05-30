@@ -27,7 +27,7 @@ widgetSettings::widgetSettings(QWidget *parent) : QWidget(parent)
         QString strCmd = QString("%1").arg(QString::number(PID_SEND_AMP_SET_PWM, 16));
         uint16_t w_ModifiedParameter = uint16_t((std::numeric_limits<uint16_t>::max() * lineInputAmpPwm->text().toDouble()) / 100);
         strCmd += QString::number(w_ModifiedParameter, 16).rightJustified(2 * 2, '0');
-        SaveData.append(QString("%1").arg(QString::number(lineInputAmpPwm->text().toInt())) + " ");
+        SaveData.append(QString("%1").arg(QString::number(lineInputAmpPwm->text().toDouble())) + " ");
 
         emit SaveAmpPwm(SaveData);
         emit SendV200specific(strCmd);
@@ -199,7 +199,7 @@ void widgetSettings::ReadAmpFreq(QString data)
     }
     else
     {
-
+        lineInputAmpFreq->setText(c_defaultValueAmpFreq);
     }
 }
 
@@ -214,7 +214,7 @@ void widgetSettings::ReadAmpPwm(QString data)
     }
     else
     {
-
+        lineInputAmpPwm->setText(c_defaultValueAmpPwm);
     }
 }
 
@@ -232,7 +232,10 @@ void widgetSettings::ReadGenPwm(QString data)
     }
     else
     {
-
+        for(int iLoop = 0; iLoop < E_NMB_GEN_PWM_COOL; iLoop++)
+        {
+            lineInputGenPwmCool[iLoop]->setText(c_defaultValueGenPwm[iLoop]);
+        }
     }
 }
 
@@ -250,7 +253,10 @@ void widgetSettings::ReadGenDac(QString data)
     }
     else
     {
-
+        for(int iLoop = 0; iLoop < E_NMB_GEN_DAC; iLoop++)
+        {
+            lineInputGenDac[iLoop]->setText(c_defaultValueGenDac[iLoop]);
+        }
     }
 }
 
@@ -265,7 +271,7 @@ void widgetSettings::ReadGenPwr(QString data)
     }
     else
     {
-
+        lineInputGenPwrReset->setText(c_defaultValueGenPwr);
     }
 }
 

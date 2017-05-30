@@ -290,14 +290,36 @@ void widgetConfig::ReadAdcData(QString type, QString device, int index, QString 
                     lineInputAmpMulAdcx[index][iChannel]->setText(arrListSaved.at(iChannel));
                 }
             }
-
         }
     }
     else
     {
-
+        for(int iChannel = 0; iChannel < dw_nmbChannels; iChannel++)
+        {
+            if(device == c_nameGen)
+            {
+                if(type == c_nameAdd)
+                {
+                    lineInputGenAddAdcx[index][iChannel]->setText(c_defaultValueGenAdcAdd[index][iChannel]);
+                }
+                else if(type == c_nameMul)
+                {
+                    lineInputGenMulAdcx[index][iChannel]->setText(c_defaultValueGenAdcMul[index][iChannel]);
+                }
+            }
+            else if(device == c_nameAmp)
+            {
+                if(type == c_nameAdd)
+                {
+                    lineInputAmpAddAdcx[index][iChannel]->setText(c_defaultValueAmpAdcAdd[index][iChannel]);
+                }
+                else if(type == c_nameMul)
+                {
+                    lineInputAmpMulAdcx[index][iChannel]->setText(c_defaultValueAmpAdcMul[index][iChannel]);
+                }
+            }
+        }
     }
-
 }
 
 void widgetConfig::ReadRegulator(QString data)
@@ -316,7 +338,10 @@ void widgetConfig::ReadRegulator(QString data)
     }
     else
     {
-
+        for(int iLoop = 0; iLoop < E_NMB_GEN_REGULATOR; iLoop++)
+        {
+            lineInputGenRegulator[iLoop]->setText(c_defaultRegulator[iLoop]);
+        }
     }
 }
 
@@ -334,7 +359,10 @@ void widgetConfig::ReadTestTherapy(QString data)
     }
     else
     {
-
+        for(int iLoop = 0; iLoop < E_NMB_GEN_TESTTHERAPY; iLoop++)
+        {
+            lineInputGenTestTherapy[iLoop]->setText(c_defaultTestTherapy[iLoop]);
+        }
     }
 }
 
@@ -352,7 +380,10 @@ void widgetConfig::ReadTestCqmFreq(QString data)
     }
     else
     {
-
+        for(int iLoop = 0; iLoop < E_NMB_GEN_PWM_CQM; iLoop++)
+        {
+            lineInputGenPwmCqm[iLoop]->setText(c_defaultValuePwmCqm[iLoop]);
+        }
     }
 }
 
@@ -377,13 +408,13 @@ QGroupBox *widgetConfig::createConfigAmpGroup()
     {
         if(iDevice == E_AMP_ADC_3)
         {
-            childLayout->addWidget(createNewLabel("AMP_ADC_3 multiple"), 3 * iDevice + 1, 0, Qt::AlignCenter);
-            childLayout->addWidget(createNewLabel("AMP_ADC_3 additive"), 3 * iDevice + 2, 0, Qt::AlignCenter);
+            childLayout->addWidget(createNewLabel("ADC_3 multiple"), 3 * iDevice + 1, 0, Qt::AlignCenter);
+            childLayout->addWidget(createNewLabel("ADC_3 additive"), 3 * iDevice + 2, 0, Qt::AlignCenter);
         }
         else
         {
-            childLayout->addWidget(createNewLabel("AMP_ADC_1 multiple"), 3 * iDevice + 1, 0, Qt::AlignCenter);
-            childLayout->addWidget(createNewLabel("AMP_ADC_1 additive"), 3 * iDevice + 2, 0, Qt::AlignCenter);
+            childLayout->addWidget(createNewLabel("ADC_1 multiple"), 3 * iDevice + 1, 0, Qt::AlignCenter);
+            childLayout->addWidget(createNewLabel("ADC_1 additive"), 3 * iDevice + 2, 0, Qt::AlignCenter);
         }
 
         int nmbChannels;
@@ -444,8 +475,8 @@ QGroupBox *widgetConfig::createConfigGenGroup()
         }
         else
         {
-            childLayout->addWidget(createNewLabel(QString("GEN_ADC_%1 multiple").arg(QString::number(iDevice + 1))), 3 * iDevice + 1, 0, Qt::AlignCenter);
-            childLayout->addWidget(createNewLabel(QString("GEN_ADC_%1 additive").arg(QString::number(iDevice + 1))), 3 * iDevice + 2, 0, Qt::AlignCenter);
+            childLayout->addWidget(createNewLabel(QString("ADC_%1 multiple").arg(QString::number(iDevice + 1))), 3 * iDevice + 1, 0, Qt::AlignCenter);
+            childLayout->addWidget(createNewLabel(QString("ADC_%1 additive").arg(QString::number(iDevice + 1))), 3 * iDevice + 2, 0, Qt::AlignCenter);
         }
 
         int nmbChannels;
