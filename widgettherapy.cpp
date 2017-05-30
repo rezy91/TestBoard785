@@ -78,11 +78,11 @@ void widgetTherapy::paintEvent(QPaintEvent *e)
 
     for(int iLoop = 0; iLoop < E_PARAMS_NMB; iLoop++)
     {
-       therapyParams[iLoop].value->setGeometry(width() / 15 * iLoop, 0, width() / 15, 30);
-       therapyParams[iLoop].slider->setGeometry(width() / 15 * iLoop, 30, width() / 20, height() - 60);
-       therapyParams[iLoop].name->setGeometry(width() / 15 * iLoop, height() - 35, width() / 15, 30);
+       therapyParams[iLoop].value->setGeometry(width() / 10 * iLoop, 0, width() / 15, 30);
+       therapyParams[iLoop].slider->setGeometry(width() / 10 * iLoop, 30, width() / 15, height() - 60);
+       therapyParams[iLoop].name->setGeometry(width() / 10 * iLoop, height() - 35, width() / 15, 30);
     }
 
-    startButton->setGeometry(width() / 4, height() / 4, width() / 4, height() / 2);
-    stopButton->setGeometry(width() / 2, height() / 4, width() / 4, height() / 2);
+    startButton->setGeometry((width() / 4) * 2, height() / 4, width() / 4, height() / 2);
+    stopButton->setGeometry((width() / 4) * 3, height() / 4, width() / 4, height() / 2);
 }

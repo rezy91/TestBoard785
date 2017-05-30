@@ -104,7 +104,7 @@ public slots:
     void specificMessageProtocol(QString message);
 
 private:
-    const quint32 constGenerID = 18;
+    const quint32 constGenerID = 21;
     const quint32 constAmpID = 1;
 
     const QString allSignalsNameGener[NMB_ITEMS_TIMERS_GENER] = {"NOT_USED_CURRENTLY", "ADC3_RECEIVE_AVERAGE_DATA", "IMPEDANCE_RECEIVE_DATA", "ADC2_RECEIVE_AVERAGE_DATA", "NOT_USED_CURRENTLY", "ADC1_RECEIVE_AVERAGE_DATA"};

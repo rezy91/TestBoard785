@@ -55,7 +55,6 @@ public:
     void StoreAmpPwm(const QString strValue);
     QString RestoreAmpPwm(void) const;
 
-
     void StoreGenPwm(const QString strValue);
     QString RestoreGenPwm(void) const;
 
@@ -66,7 +65,7 @@ public:
     QString RestoreGenPwr(void) const;
 
 private:
-    QSettings* m_pAppSettings = new QSettings("settingsNew.ini", QSettings::IniFormat);
+    QSettings* m_pAppSettings = new QSettings("settingsV1.ini", QSettings::IniFormat);
 
     void StoreValue(const QString& strKey, const QVariant& vValue);
     QVariant RestoreValue(const QString &strKey, const QVariant &vDefaultValue = QVariant()) const;

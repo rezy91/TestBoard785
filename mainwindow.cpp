@@ -20,6 +20,7 @@
 
 #include <QFileDialog>
 #include <QTextStream>
+#include <QDesktopWidget>
 
 MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWindow)
 {
@@ -31,7 +32,7 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
 
     ui->statusBar->showMessage("Start app");
     qDebug() << "Start of application.";
-    qDebug() << "current width:" << width() << ", current height:" << height();
+    qDebug() << "screen width:" << QApplication::desktop()->screenGeometry().width() << ", screen height:" << QApplication::desktop()->screenGeometry().height();
 
 
     connect(this, &MainWindow::SendNewImpedanceData, p_WidgetSmith, &widgetSmith::ReceivedNewData);
