@@ -109,9 +109,28 @@ typedef enum
   LOG_STREAM
 } SOURCE_STREAM;
 
+enum GEN_ADC_X
+{
+    E_GEN_ADC_1,
+    E_GEN_ADC_2,
+    E_GEN_ADC_3,
+    E_GEN_ADC_OTH,
+    E_GEN_ADC_NMB
+};
+
+enum AMP_ADC_X
+{
+    E_AMP_ADC_1,
+    E_AMP_ADC_3,
+    E_AMP_ADC_NMB
+};
 
 enum{nmbCurvesInGraph = 4};
 
+const QString c_nameGen = "Gen";
+const QString c_nameAmp = "Amp";
+const QString c_nameMul = "Mul";
+const QString c_nameAdd = "Add";
 
 const QStringList allAdxSignalsGener[NMB_ITEMS_TIMERS_GENER] = { \
     {"g3c_counter", "g3c_exec", "g3c_conv"}, \

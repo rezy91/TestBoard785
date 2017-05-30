@@ -29,6 +29,7 @@
 #include "common.h"
 #include "settings.h"
 #include "widgetconfig.h"
+#include "widgetsettings.h"
 #include "widgetreading.h"
 #include "widgetgraph.h"
 #include "widgetsmith.h"
@@ -133,6 +134,7 @@ private:
 
     widgetReading *p_WidgetReading = new widgetReading(this);
     widgetConfig *p_WidgetConfig = new widgetConfig(this);
+    widgetSettings *p_widgetSettings = new(widgetSettings);
     widgetSmith *p_WidgetSmith = new widgetSmith(this);
     widgetGraph *p_WidgetGraph = new widgetGraph(this);
     widgetTherapy *p_WidgetTherapy = new widgetTherapy(this);
@@ -185,6 +187,15 @@ signals:
     void SendTimeRequests(bool device, int index, int value);
     void SendAxisHigh(int index, double value);
     void SendAxisLow(int index, double value);
+    void SendAdcData(QString type, QString device, int index, QString values);
+    void SendRegulator(QString values);
+    void SendTestTherapy(QString values);
+    void SendTestCqmFreq(QString values);
+    void SendAmpFreq(QString values);
+    void SendAmpPwm(QString values);
+    void SendGenPwm(QString values);
+    void SendGenDac(QString values);
+    void SendGenPwr(QString values);
 
 protected:
     void closeEvent(QCloseEvent *event) override;

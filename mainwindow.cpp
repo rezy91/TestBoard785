@@ -42,6 +42,7 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
     connect(p_WidgetReading, &widgetReading::SendNewTime, this, &MainWindow::onNewTimeRequest);
     connect(p_WidgetTherapy, &widgetTherapy::SendV200specific, this, &MainWindow::specificMessageProtocol);
     connect(p_WidgetConfig, &widgetConfig::SendV200specific, this, &MainWindow::specificMessageProtocol);
+    connect(p_widgetSettings, &widgetSettings::SendV200specific, this, &MainWindow::specificMessageProtocol);
 
     connect(p_WidgetSmith, &widgetSmith::SaveData, appSettings, &settings::StoreSmithPoints);
     connect(this, &MainWindow::SendSmithPoints, p_WidgetSmith, &widgetSmith::ReadData);
@@ -52,6 +53,28 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
     connect(p_WidgetGraph, &widgetGraph::SaveAxisRangeLow, appSettings, &settings::StoreLowValueSignal);
     connect(this, &MainWindow::SendAxisHigh, p_WidgetGraph, &widgetGraph::readAxisHigh);
     connect(this, &MainWindow::SendAxisLow, p_WidgetGraph, &widgetGraph::readAxisLow);
+
+    connect(p_WidgetConfig, &widgetConfig::SaveAdcData, appSettings, &settings::StoreAdcData);
+    connect(this, &MainWindow::SendAdcData, p_WidgetConfig, &widgetConfig::ReadAdcData);
+    connect(p_WidgetConfig, &widgetConfig::SaveRegulator, appSettings, &settings::StoreRegulator);
+    connect(this, &MainWindow::SendRegulator, p_WidgetConfig, &widgetConfig::ReadRegulator);
+    connect(p_WidgetConfig, &widgetConfig::SaveTestTherapy, appSettings, &settings::StoreTestTherapy);
+    connect(this, &MainWindow::SendTestTherapy, p_WidgetConfig, &widgetConfig::ReadTestTherapy);
+    connect(p_WidgetConfig, &widgetConfig::SaveTestCqmFreq, appSettings, &settings::StoreCqmFreq);
+    connect(this, &MainWindow::SendTestCqmFreq, p_WidgetConfig, &widgetConfig::ReadTestCqmFreq);
+
+
+    connect(p_widgetSettings, &widgetSettings::SaveAmpFreq, appSettings, &settings::StoreAmpFreq);
+    connect(this, &MainWindow::SendAmpFreq, p_widgetSettings, &widgetSettings::ReadAmpFreq);
+    connect(p_widgetSettings, &widgetSettings::SaveAmpPwm, appSettings, &settings::StoreAmpPwm);
+    connect(this, &MainWindow::SendAmpPwm, p_widgetSettings, &widgetSettings::ReadAmpPwm);
+    connect(p_widgetSettings, &widgetSettings::SaveGenPwm, appSettings, &settings::StoreGenPwm);
+    connect(this, &MainWindow::SendGenPwm, p_widgetSettings, &widgetSettings::ReadGenPwm);
+    connect(p_widgetSettings, &widgetSettings::SaveGenDac, appSettings, &settings::StoreGenDac);
+    connect(this, &MainWindow::SendGenDac, p_widgetSettings, &widgetSettings::ReadGenDac);
+    connect(p_widgetSettings, &widgetSettings::SaveGenPwr, appSettings, &settings::StoreGenPwr);
+    connect(this, &MainWindow::SendGenPwr, p_widgetSettings, &widgetSettings::ReadGenPwr);
+
 
     ui->comboBox_1->addItem(QString("Generator (ID = %1d)").arg(constGenerID));
     ui->comboBox_1->addItem(QString("Amplifier (ID = %1d)").arg(constAmpID));
@@ -64,6 +87,27 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
     ui->comboBox_1->setCurrentIndex(appSettings->RestoreSelectedDevice());
     emit SendSmithPoints(appSettings->RestoreSmithPoints());
 
+
+    emit SendRegulator(appSettings->RestoreRegulator());
+    emit SendTestTherapy(appSettings->RestoreTestTherapy());
+    emit SendTestCqmFreq(appSettings->RestoreCqmFreq());
+    emit SendAmpFreq(appSettings->RestoreAmpFreq());
+    emit SendAmpPwm(appSettings->RestoreAmpPwm());
+    emit SendGenPwm(appSettings->RestoreGenPwm());
+    emit SendGenDac(appSettings->RestoreGenDac());
+    emit SendGenPwr(appSettings->RestoreGenPwr());
+
+    for(int iLoop = 0; iLoop < E_GEN_ADC_NMB; iLoop++)
+    {
+        emit SendAdcData(QString(c_nameAdd), QString(c_nameGen), iLoop, appSettings->RestoreAdcData(QString(c_nameAdd), QString(c_nameGen), iLoop + 1));
+        emit SendAdcData(QString(c_nameMul), QString(c_nameGen), iLoop, appSettings->RestoreAdcData(QString(c_nameMul), QString(c_nameGen), iLoop + 1));
+    }
+
+    for(int iLoop = 0; iLoop < E_AMP_ADC_NMB; iLoop++)
+    {
+        emit SendAdcData(QString(c_nameAdd), QString(c_nameAmp), iLoop, appSettings->RestoreAdcData(QString(c_nameAdd), QString(c_nameAmp), iLoop + 1));
+        emit SendAdcData(QString(c_nameMul), QString(c_nameAmp), iLoop, appSettings->RestoreAdcData(QString(c_nameMul), QString(c_nameAmp), iLoop + 1));
+    }
 
     for(int iLoop = 0; iLoop < nmbCurvesInGraph; iLoop++)
     {
@@ -110,6 +154,7 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
 
     ui->verticalLayout->addWidget(p_WidgetReading);
     ui->verticalLayout_2->addWidget(p_WidgetConfig);
+    ui->verticalLayout_4->addWidget(p_widgetSettings);
     ui->verticalLayout_3->addWidget(p_WidgetGraph);
     ui->verticalLayout_3->addWidget(p_WidgetSmith);
     ui->verticalLayout_3->addWidget(p_WidgetTherapy);
@@ -927,10 +972,16 @@ void MainWindow::refreshPlot()
         currentSize = ui->Configuration->size();
 
         p_WidgetConfig->setFixedSize(currentSize);
-        p_WidgetConfig->setCurrentSize(currentSize);
         p_WidgetConfig->repaint();
     }
     else if(currentTab == 2)
+    {
+        currentSize = ui->Settings->size();
+
+        p_widgetSettings->setFixedSize(currentSize);
+        p_widgetSettings->repaint();
+    }
+    else if(currentTab == 3)
     {
         currentSize = ui->Graph->size();
 

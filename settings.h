@@ -37,12 +37,33 @@ public:
     void StoreLowValueSignal(const int nIndexTimer, const double value);
     double RestoreLowValueSignal(const int nIndexTimer) const;
 
+    void StoreAdcData(const QString type, const QString device, const int nIndexAdc, const QString strValue);
+    QString RestoreAdcData(const QString type, const QString device, const int nIndexAdc) const;
 
-    void StoreRowItemGener(const QString& strValue);
-    QString RestoreRowItemGener() const;
+    void StoreRegulator(const QString strValue);
+    QString RestoreRegulator(void) const;
 
-    void StoreRowItemAmp(const QString& strValue);
-    QString RestoreRowItemAmp() const;
+    void StoreTestTherapy(const QString strValue);
+    QString RestoreTestTherapy(void) const;
+
+    void StoreCqmFreq(const QString strValue);
+    QString RestoreCqmFreq(void) const;
+
+    void StoreAmpFreq(const QString strValue);
+    QString RestoreAmpFreq(void) const;
+
+    void StoreAmpPwm(const QString strValue);
+    QString RestoreAmpPwm(void) const;
+
+
+    void StoreGenPwm(const QString strValue);
+    QString RestoreGenPwm(void) const;
+
+    void StoreGenDac(const QString strValue);
+    QString RestoreGenDac(void) const;
+
+    void StoreGenPwr(const QString strValue);
+    QString RestoreGenPwr(void) const;
 
 private:
     QSettings* m_pAppSettings = new QSettings("settingsNew.ini", QSettings::IniFormat);

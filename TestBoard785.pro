@@ -29,7 +29,8 @@ SOURCES += main.cpp\
     widgetgraph.cpp \
     widgetsmith.cpp \
     widgettherapy.cpp \
-    settings.cpp
+    settings.cpp \
+    widgetsettings.cpp
 
 HEADERS  += mainwindow.h \
     widgetconfig.h \
@@ -38,7 +39,8 @@ HEADERS  += mainwindow.h \
     widgetsmith.h \
     common.h \
     widgettherapy.h \
-    settings.h
+    settings.h \
+    widgetsettings.h
 
 FORMS    += mainwindow.ui
 
