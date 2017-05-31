@@ -13,7 +13,6 @@ TEMPLATE = app
 APPNAME = Master_785_simulator
 MYVERSION = 0.1.1
 
-TARGET = Master_785_simulator#"$$APPNAME $$MYVERSION"
 
 CONFIG += c++11
 
@@ -47,18 +46,19 @@ FORMS    += mainwindow.ui
 INCLUDEPATH += $$PWD/../../../Applications/088
 DEPENDPATH += $$PWD/../../../Applications/088
 
-win32 {
-    RC_FILE = app.rc
-}
-
 RESOURCES += \
     resources.qrc
 
+win32 {
+    RC_FILE = app.rc
+    TARGET = "$$APPNAME $$MYVERSION"
+}
+
 unix {
+    TARGET = Master_785_simulator
     target.path = /opt/btl
     INSTALLS += target
 }
-
 
 U_LIBS += CommProtV200
 U_LIB_DIR_PREFIX += ../../../Applications/088/build-CommProtV200

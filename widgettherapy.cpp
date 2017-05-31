@@ -18,6 +18,11 @@ widgetTherapy::widgetTherapy(QWidget *parent) : QWidget(parent)
         therapyParams[iLoop].value->setText(QString("%1 %2").arg(therapyParams[iLoop].slider->value()).arg(unitParams[iLoop]));
     }
 
+
+    //temporary, until this function be available in generator
+    therapyParams[E_DUTYCYCLE].slider->setEnabled(false);
+    therapyParams[E_FREQUENCY].slider->setEnabled(false);
+
     listOfChannels->addItem("Select channel");
 
     for(int iLoop = 0; iLoop < nmbChannelsAppls; iLoop++)
@@ -60,7 +65,7 @@ widgetTherapy::widgetTherapy(QWidget *parent) : QWidget(parent)
         startButton->setEnabled(false);
         stopButton->setEnabled(true);
 
-        for(int iLoop = 0; iLoop < E_PARAMS_NMB; iLoop++)
+        for(int iLoop = 0; iLoop < E_POWER + 1; iLoop++)
         {
            therapyParams[iLoop].slider->setEnabled(false);
         }
@@ -83,7 +88,7 @@ widgetTherapy::widgetTherapy(QWidget *parent) : QWidget(parent)
         startButton->setEnabled(true);
         stopButton->setEnabled(false);
 
-        for(int iLoop = 0; iLoop < E_PARAMS_NMB; iLoop++)
+        for(int iLoop = 0; iLoop < E_POWER + 1; iLoop++)
         {
            therapyParams[iLoop].slider->setEnabled(true);
         }

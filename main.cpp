@@ -11,13 +11,6 @@
 **
 ****************************************************************************/
 
-/*!
-  \file   main.cpp
-  \author Pavel Hübner
-  \date   22. 2. 2016
-  \brief  main vytvářející GUI TestEncoder088
-*/
-
 #include "mainwindow.h"
 #include <QFontDatabase>
 #include <QApplication>

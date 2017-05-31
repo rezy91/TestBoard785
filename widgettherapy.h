@@ -34,7 +34,7 @@ private:
 
     const QString namesParams[E_PARAMS_NMB] = {"Power", "Duty cycle", "Frequency"};
     const QString unitParams[E_PARAMS_NMB] = {"[W]", "[%]", "[Hz]"};
-    const int maxSlider[E_PARAMS_NMB] = {50, 100, 200};
+    const int maxSlider[E_PARAMS_NMB] = {100, 100, 200};
     const int minSlider[E_PARAMS_NMB] = {0, 20, 25};
     const int stepSlider[E_PARAMS_NMB] = {1, 20, 5};
 
