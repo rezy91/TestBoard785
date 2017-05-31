@@ -196,6 +196,7 @@ signals:
     void SendGenPwm(QString values);
     void SendGenDac(QString values);
     void SendGenPwr(QString values);
+    void SendStatusReg(unsigned char value);
 
 protected:
     void closeEvent(QCloseEvent *event) override;

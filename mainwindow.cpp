@@ -76,6 +76,8 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
     connect(p_widgetSettings, &widgetSettings::SaveGenPwr, appSettings, &settings::StoreGenPwr);
     connect(this, &MainWindow::SendGenPwr, p_widgetSettings, &widgetSettings::ReadGenPwr);
 
+    connect(this, &MainWindow::SendStatusReg, p_WidgetTherapy, &widgetTherapy::ReceivePartStatusReg);
+
 
     ui->comboBox_1->addItem(QString("Generator (ID = %1d)").arg(constGenerID));
     ui->comboBox_1->addItem(QString("Amplifier (ID = %1d)").arg(constAmpID));
@@ -176,8 +178,8 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
         {
             mMainTimer = 0;
 
-            QString p_sGetStatus = "0A";
-            m_CommProt.data()->SendData(m_nDeviceAddress, QByteArray::fromHex(p_sGetStatus.toStdString().c_str()), true);
+            QString strCmd = QString("%1").arg(QString::number(PID_SEND_STATUS_REGISTER, 16));
+            m_CommProt.data()->SendData(m_nDeviceAddress, QByteArray::fromHex(strCmd.toStdString().c_str()), true);
         }
     });
 
@@ -511,7 +513,7 @@ void MainWindow::newDataV200(QByteArray aData)
     }
 
 
-    if(aData.at(0) != 0x1A)
+    if(aData.at(0) != PID_REPLY_SEND_STATUS_REGISTER)
     {
         AppendText(timeCurrent, QString(aData));
 
@@ -521,8 +523,14 @@ void MainWindow::newDataV200(QByteArray aData)
             m_oFile.flush();
         }
     }
+    else
+    {
+       unsigned int dwStatusReg = (aData.at(1) << 24) + (aData.at(2) << 16) + (aData.at(3) << 8) + aData.at(4);
 
+       //qDebug() << "status" << dwStatusReg;
 
+       emit SendStatusReg(aData.at(2));
+    }
 }
 
 MainWindow::COMPLEX_NUMBER_GONIO MainWindow::CalculateReflectionRatio(MainWindow::COMPLEX_NUMBER_GONIO current, MainWindow::COMPLEX_NUMBER_GONIO average)
