@@ -67,6 +67,12 @@ public:
 
     typedef struct
     {
+        float real;
+        float imag;
+    } COMPLEX_NUMBER_ALGEB;
+
+    typedef struct
+    {
         quint32 RequirementTime_ms;
         quint32 CurrentTime_ms;
         bool bEnable;

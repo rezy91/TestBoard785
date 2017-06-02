@@ -164,6 +164,8 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
 
     timeCurrent.start();
 
+
+
     connect(ui->tabWidget, &QTabWidget::currentChanged, this, &MainWindow::changed_table);
 
     connect(&TmrMstr,&QTimer::timeout,[this](){
@@ -525,7 +527,7 @@ void MainWindow::newDataV200(QByteArray aData)
     }
     else
     {
-       unsigned int dwStatusReg = (aData.at(1) << 24) + (aData.at(2) << 16) + (aData.at(3) << 8) + aData.at(4);
+       //unsigned int dwStatusReg = (aData.at(1) << 24) + (aData.at(2) << 16) + (aData.at(3) << 8) + aData.at(4);
 
        //qDebug() << "status" << dwStatusReg;
 

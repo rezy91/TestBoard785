@@ -53,12 +53,31 @@ public slots:
     void ReadData(quint32 readedVal);
 
 private:
+
+    enum {NMB_PHASES = 180};
+
+    typedef struct
+    {
+        float magnitude;
+        float phase_rad;
+    } COMPLEX_NUMBER_GONIO;
+
+    typedef struct
+    {
+        float real;
+        float imag;
+    } COMPLEX_NUMBER_ALGEB;
+
     QList<QPointF> axis[3];
 
     QPushButton* clearButton = new QPushButton(this);
     QSpinBox* nmbDisplayedSamples = new QSpinBox(this);
 
     quint32 currentNmbPoint;
+
+    COMPLEX_NUMBER_ALGEB reflFinishAlg[NMB_PHASES];
+
+    COMPLEX_NUMBER_GONIO CalculateReflectionRatio(COMPLEX_NUMBER_GONIO current, COMPLEX_NUMBER_GONIO average);
 
 signals:
     void SaveData(const quint32& nPoints);
