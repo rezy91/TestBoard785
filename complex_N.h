@@ -17,9 +17,6 @@ public:
     void ConvertToGonio(complex_N &m_c);
     void ConvertToAlgeb(complex_N &m_c);
 
-    void SetPhase(float value) {phase = value;}
-
-
     float GetPhase(void);
     float GetMagni(void);
     float GetReal(void);

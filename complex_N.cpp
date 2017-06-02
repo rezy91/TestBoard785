@@ -49,28 +49,28 @@ float complex_N::GetPhase()
 {
     ConvertToGonio(*this);
 
-    return this->phase;
+    return phase;
 }
 
 float complex_N::GetMagni()
 {
     ConvertToGonio(*this);
 
-    return this->magni;
+    return magni;
 }
 
 float complex_N::GetReal()
 {
     ConvertToAlgeb(*this);
 
-    return this->real;
+    return real;
 }
 
 float complex_N::GetImag()
 {
     ConvertToAlgeb(*this);
 
-    return this->imag;
+    return imag;
 }
 
 complex_N complex_N::operator+(complex_N m_c)
@@ -81,13 +81,13 @@ complex_N complex_N::operator+(complex_N m_c)
     {
         ConvertToAlgeb(m_c);
     }
-    if(this->shape == GONIO)
+    if(shape == GONIO)
     {
         ConvertToAlgeb(*this);
     }
 
-    result.real = this->real + m_c.real;
-    result.imag = this->imag + m_c.imag;
+    result.real = real + m_c.real;
+    result.imag = imag + m_c.imag;
 
     return result;
 }
@@ -100,13 +100,13 @@ complex_N complex_N::operator-(complex_N m_c)
     {
         ConvertToAlgeb(m_c);
     }
-    if(this->shape == GONIO)
+    if(shape == GONIO)
     {
         ConvertToAlgeb(*this);
     }
 
-    result.real = this->real - m_c.real;
-    result.imag = this->imag - m_c.imag;
+    result.real = real - m_c.real;
+    result.imag = imag - m_c.imag;
 
     return result;
 }
@@ -119,13 +119,13 @@ complex_N complex_N::operator*(complex_N m_c)
     {
         ConvertToAlgeb(m_c);
     }
-    if(this->shape == GONIO)
+    if(shape == GONIO)
     {
         ConvertToAlgeb(*this);
     }
 
-    result.real = this->real * m_c.real - this->imag * m_c.imag;
-    result.imag = this->real * m_c.imag + this->imag * m_c.real;
+    result.real = real * m_c.real - imag * m_c.imag;
+    result.imag = real * m_c.imag + imag * m_c.real;
 
     return result;
 }
@@ -138,15 +138,15 @@ complex_N complex_N::operator/(complex_N m_c)
     {
         ConvertToAlgeb(m_c);
     }
-    if(this->shape == GONIO)
+    if(shape == GONIO)
     {
         ConvertToAlgeb(*this);
     }
 
     float div = (m_c.real * m_c.real) + (m_c.imag * m_c.imag);
-    result.real = (this->real * m_c.real) + (this->imag * m_c.imag);
+    result.real = (real * m_c.real) + (imag * m_c.imag);
     result.real /= div;
-    result.imag = (this->imag * m_c.real) - (this->real * m_c.imag);
+    result.imag = (imag * m_c.real) - (real * m_c.imag);
     result.imag /= div;
 
     return result;

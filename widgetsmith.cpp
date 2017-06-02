@@ -146,8 +146,8 @@ void widgetSmith::paintEvent(QPaintEvent*)
     painterMain.drawPixmap(0, 0, QPixmap(QString(":/smith.png")).scaled(size()));
 
 
-    painterMain.setPen(QPen(Qt::blue));
-    painterMain.setBrush(QBrush(Qt::blue));
+    painterMain.setPen(QPen(Qt::darkGray));
+    painterMain.setBrush(QBrush(Qt::darkGray));
 
     for(int iLoop = 0; iLoop < NMB_PHASES; iLoop++)
     {
@@ -155,7 +155,7 @@ void widgetSmith::paintEvent(QPaintEvent*)
         qreal ySave = reflFinishAlg[iLoop].GetImag();
 
         QPointF adjustSize((width() / 4) + (xSave * width() * 7 / (4 * 9)), (height() / 2) - (ySave * height() * 7 / (2 * 9)));
-        painterMain.drawEllipse(adjustSize,3,3);
+        painterMain.drawEllipse(adjustSize, 2, 2);
     }
 
 
