@@ -10,18 +10,25 @@ public:
     {
         ALGEB,
         GONIO,
-        NONE,
     } SHAPE_MATH;
 
-    complex_N(float f_rOrMag = 0, float f_iOrP = 0, SHAPE_MATH e_s = NONE);
+    complex_N(SHAPE_MATH e_s = ALGEB, float f_rOrMag = 0, float f_iOrP = 0);
 
     void ConvertToGonio(complex_N &m_c);
     void ConvertToAlgeb(complex_N &m_c);
 
-    complex_N operator+(const complex_N m_c);
-    complex_N operator-(const complex_N m_c);
-    complex_N operator*(const complex_N m_c);
-    complex_N operator/(const complex_N m_c);
+    void SetPhase(float value) {phase = value;}
+
+
+    float GetPhase(void);
+    float GetMagni(void);
+    float GetReal(void);
+    float GetImag(void);
+
+    complex_N operator+(complex_N m_c);
+    complex_N operator-(complex_N m_c);
+    complex_N operator*(complex_N m_c);
+    complex_N operator/(complex_N m_c);
 
 private:
     float real;

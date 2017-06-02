@@ -38,6 +38,7 @@ protected:
 #include <QPainter>
 
 #include "settings.h"
+#include "complex_N.h"
 
 class widgetSmith : public QWidget
 {
@@ -75,9 +76,9 @@ private:
 
     quint32 currentNmbPoint;
 
-    COMPLEX_NUMBER_ALGEB reflFinishAlg[NMB_PHASES];
+    complex_N reflFinishAlg[NMB_PHASES];
 
-    COMPLEX_NUMBER_GONIO CalculateReflectionRatio(COMPLEX_NUMBER_GONIO current, COMPLEX_NUMBER_GONIO average);
+    complex_N CalculateReflectionRatio(complex_N current, complex_N average);
 
 signals:
     void SaveData(const quint32& nPoints);
