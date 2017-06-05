@@ -22,6 +22,8 @@ public:
     float GetReal(void);
     float GetImag(void);
 
+    bool operator==(complex_N m_c);
+    void operator=(complex_N m_c);
     complex_N operator+(complex_N m_c);
     complex_N operator-(complex_N m_c);
     complex_N operator*(complex_N m_c);

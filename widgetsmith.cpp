@@ -37,15 +37,6 @@ widgetSmith::widgetSmith(QWidget *parent) : QWidget(parent)
     nmbDisplayedSamples->setMaximum(9999);
 
 
-    for(int iLoop = 0; iLoop < NMB_PHASES; iLoop++)
-    {
-        complex_N o_ReflRatio(complex_N::GONIO, 0.8, ((2 * 3.14159265358) / NMB_PHASES) * iLoop);
-        complex_N o_Fraction = (complex_N(complex_N::ALGEB, 1, 0) + o_ReflRatio) / (complex_N(complex_N::ALGEB, 1, 0) - o_ReflRatio);
-        complex_N o_Result = complex_N(complex_N::GONIO, 50, 0) * o_Fraction;
-        reflFinishAlg[iLoop] = CalculateReflectionRatio(o_Result, complex_N(complex_N::GONIO, 50, 0));
-    }
-
-
     connect(clearButton, &QPushButton::clicked, [this](){
 
         for(int jLoop = 0; jLoop < 3; jLoop++)
@@ -114,6 +105,13 @@ void widgetSmith::ReadData(quint32 readedVal)
     }
 }
 
+void widgetSmith::ReadReferenceImpedance(float magnitude, float phase, float maxReflRatioRef, float maxReflRatioCur)
+{
+    m_ReferenceImpedance = complex_N(complex_N::GONIO, magnitude, phase);
+    f_MaxReflRatioReference = maxReflRatioRef;
+    f_MaxReflRatioCurrent = maxReflRatioCur;
+}
+
 complex_N widgetSmith::CalculateReflectionRatio(complex_N current, complex_N average)
 {
     return ((current - average) / (current + average));
@@ -145,6 +143,13 @@ void widgetSmith::paintEvent(QPaintEvent*)
 
     painterMain.drawPixmap(0, 0, QPixmap(QString(":/smith.png")).scaled(size()));
 
+    for(int iLoop = 0; iLoop < NMB_PHASES; iLoop++)
+    {
+        complex_N o_ReflRatio(complex_N::GONIO, f_MaxReflRatioReference, ((2 * 3.14159265358) / NMB_PHASES) * iLoop);
+        complex_N o_Fraction = (complex_N(complex_N::ALGEB, 1, 0) + o_ReflRatio) / (complex_N(complex_N::ALGEB, 1, 0) - o_ReflRatio);
+        complex_N o_Result = m_ReferenceImpedance * o_Fraction;
+        reflFinishAlg[iLoop] = CalculateReflectionRatio(o_Result, complex_N(complex_N::GONIO, 50, 0));
+    }
 
     painterMain.setPen(QPen(Qt::darkGray));
     painterMain.setBrush(QBrush(Qt::darkGray));

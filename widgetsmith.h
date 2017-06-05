@@ -52,6 +52,7 @@ public:
 public slots:
     void ReceivedNewData(qreal magnitudeCurrAvg, qreal phaseCurrAvg, qreal magnitudeCurr50, qreal phaseCurr50, qreal magnitudeAvg50, qreal phaseAvg50);
     void ReadData(quint32 readedVal);
+    void ReadReferenceImpedance(float magnitude, float phase, float maxReflRatioRef, float maxReflRatioCur);
 
 private:
 
@@ -77,6 +78,9 @@ private:
     quint32 currentNmbPoint;
 
     complex_N reflFinishAlg[NMB_PHASES];
+    complex_N m_ReferenceImpedance;
+    float f_MaxReflRatioReference;
+    float f_MaxReflRatioCurrent;
 
     complex_N CalculateReflectionRatio(complex_N current, complex_N average);
 

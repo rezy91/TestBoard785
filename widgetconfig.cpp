@@ -94,6 +94,11 @@ widgetConfig::widgetConfig(QWidget *parent) : QWidget(parent)
 
             emit SaveAdcData(QString(c_nameAdd), QString(c_nameGen), iDevice + 1, AdcData);
             emit SendV200specific(strCmd);
+
+            if(iDevice == E_GEN_ADC_OTH)
+            {
+                emit SendReferenceImpedance(lineInputGenAddAdcx[iDevice][5]->text().toFloat(), lineInputGenAddAdcx[iDevice][6]->text().toFloat(), lineInputGenAddAdcx[iDevice][7]->text().toFloat(), lineInputGenAddAdcx[iDevice][2]->text().toFloat());
+            }
         });
     }
 
@@ -319,6 +324,11 @@ void widgetConfig::ReadAdcData(QString type, QString device, int index, QString 
                 }
             }
         }
+    }
+
+    if(device == c_nameGen && index == E_GEN_ADC_OTH && type == c_nameAdd)
+    {
+        emit SendReferenceImpedance(lineInputGenAddAdcx[index][5]->text().toFloat(), lineInputGenAddAdcx[index][6]->text().toFloat(), lineInputGenAddAdcx[index][7]->text().toFloat(), lineInputGenAddAdcx[index][2]->text().toFloat());
     }
 }
 

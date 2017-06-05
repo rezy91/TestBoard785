@@ -73,6 +73,38 @@ float complex_N::GetImag()
     return imag;
 }
 
+bool complex_N::operator==(complex_N m_c)
+{
+    bool b_RetValue;
+
+    if(shape == GONIO)
+    {
+        b_RetValue = (magni == m_c.magni && phase == m_c.phase) ? true : false;
+    }
+    else
+    {
+        b_RetValue = (real == m_c.real && imag == m_c.imag) ? true : false;
+    }
+
+    return b_RetValue;
+}
+
+void complex_N::operator=(complex_N m_c)
+{
+    shape = m_c.shape;
+
+    if(shape == GONIO)
+    {
+        magni = m_c.magni;
+        phase = m_c.phase;
+    }
+    else
+    {
+        real = m_c.real;
+        imag = m_c.imag;
+    }
+}
+
 complex_N complex_N::operator+(complex_N m_c)
 {
     complex_N result;

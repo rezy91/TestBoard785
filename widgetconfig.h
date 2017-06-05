@@ -100,6 +100,8 @@ signals:
     void SaveTestTherapy(QString data);
     void SaveTestCqmFreq(QString data);
 
+    void SendReferenceImpedance(float mag, float phase, float ratioRef, float ratioCur);
+
 protected:
     virtual void paintEvent(QPaintEvent*e);
 };
