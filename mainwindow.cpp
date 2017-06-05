@@ -418,28 +418,7 @@ void MainWindow::newDataV200(QByteArray aData)
 
             recognizeIfDisplayNewDataAllSignals(timeCurrent, &myStringOnlyNumbers, 2);
 
-            COMPLEX_NUMBER_GONIO currentData, averageData, const50Data;
-            COMPLEX_NUMBER_GONIO reflRatioCurrVsAvg, reflRatioCurrVs50, reflRatioAvgVs50;
-
-            averageData.magnitude = myStringOnlyNumbers.at(1).toFloat();
-            averageData.phase_rad = myStringOnlyNumbers.at(2).toFloat();
-            currentData.magnitude = myStringOnlyNumbers.at(3).toFloat();
-            currentData.phase_rad = myStringOnlyNumbers.at(4).toFloat();
-            const50Data.magnitude = 50;
-            const50Data.phase_rad = 0;
-
-            /*COMPLEX_NUMBER_GONIO test;
-            COMPLEX_NUMBER_GONIO reflret;
-
-            test.magnitude = 110;
-            test.phase_rad = 1.57;
-
-            reflret = CalculateReflectionRatio(test,const50Data);*/
-
-            reflRatioCurrVsAvg = CalculateReflectionRatio(currentData, averageData);
-            reflRatioCurrVs50 = CalculateReflectionRatio(currentData, const50Data);
-            reflRatioAvgVs50 = CalculateReflectionRatio(averageData, const50Data);
-            emit SendNewImpedanceData(qreal(reflRatioCurrVsAvg.magnitude), qreal(reflRatioCurrVsAvg.phase_rad),qreal(reflRatioCurrVs50.magnitude), qreal(reflRatioCurrVs50.phase_rad), qreal(reflRatioAvgVs50.magnitude), qreal(reflRatioAvgVs50.phase_rad));
+            emit SendNewImpedanceData(qreal(myStringOnlyNumbers.at(1).toFloat()), qreal(myStringOnlyNumbers.at(2).toFloat()),qreal(myStringOnlyNumbers.at(3).toFloat()), qreal(myStringOnlyNumbers.at(4).toFloat()));
         }
         else if(aData.at(1) == '2' && aData.at(2) == 's')//ADC2 average data
         {
@@ -535,35 +514,6 @@ void MainWindow::newDataV200(QByteArray aData)
 
        emit SendStatusReg(aData.at(2));
     }
-}
-
-MainWindow::COMPLEX_NUMBER_GONIO MainWindow::CalculateReflectionRatio(MainWindow::COMPLEX_NUMBER_GONIO current, MainWindow::COMPLEX_NUMBER_GONIO average)
-{
-    COMPLEX_NUMBER_GONIO ReflectionRatio;
-
-    double averageAlgebReal = average.magnitude * cos(average.phase_rad);
-    double averageAlgebImag = average.magnitude * sin(average.phase_rad);
-
-    double recentAlgebReal = current.magnitude * cos(current.phase_rad);
-    double recentAlgebImag = current.magnitude * sin(current.phase_rad);
-
-    double dividentAlgebReal = recentAlgebReal - averageAlgebReal;
-    double dividentAlgebImag = recentAlgebImag - averageAlgebImag;
-
-    double divisorAlgebReal = recentAlgebReal + averageAlgebReal;
-    double divisorAlgebImag = recentAlgebImag + averageAlgebImag;
-
-
-    double commonDivisor = divisorAlgebReal * divisorAlgebReal + divisorAlgebImag * divisorAlgebImag;
-    double realPart = (dividentAlgebReal * divisorAlgebReal + dividentAlgebImag * divisorAlgebImag) / commonDivisor;
-    double imagPart = (dividentAlgebImag * divisorAlgebReal - dividentAlgebReal * divisorAlgebImag) / commonDivisor;
-
-    ReflectionRatio.magnitude = sqrt(realPart * realPart + imagPart * imagPart);
-    ReflectionRatio.phase_rad = atan(imagPart / realPart);
-
-    //qDebug() << ReflectionRatio.magnitude << " " << ReflectionRatio.phase_rad;
-
-    return ReflectionRatio;
 }
 
 void MainWindow::CheckedIfIndexInQlist(int NumberComboBox, int indexInComboBox)

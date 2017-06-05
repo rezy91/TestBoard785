@@ -84,11 +84,23 @@ void widgetSmith::SetNmbPoints(quint32 value)
     currentNmbPoint = value;
 }
 
-void widgetSmith::ReceivedNewData(qreal magnitudeCurrAvg, qreal phaseCurrAvg, qreal magnitudeCurr50, qreal phaseCurr50, qreal magnitudeAvg50, qreal phaseAvg50)
+void widgetSmith::ReceivedNewData(qreal magnitudeCurrAvg, qreal phaseCurrAvg, qreal magnitudeCurr50, qreal phaseCurr50)
 {
-    axis[0].append(QPointF(magnitudeAvg50, phaseAvg50));
-    axis[1].append(QPointF(magnitudeCurr50, phaseCurr50));
-    axis[2].append(QPointF(magnitudeCurrAvg, phaseCurrAvg));
+    complex_N m_ImpAverage(complex_N::GONIO, magnitudeCurrAvg, phaseCurrAvg);
+    complex_N m_ImpCurrent(complex_N::GONIO, magnitudeCurr50, phaseCurr50);
+    complex_N m_Imp50Ohm(complex_N::ALGEB, 50, 0);
+
+    axis[0].append(CalculateReflectionRatio(m_ImpAverage, m_Imp50Ohm));
+    axis[1].append(CalculateReflectionRatio(m_ImpCurrent, m_Imp50Ohm));
+    axis[2].append(CalculateReflectionRatio(m_ImpCurrent, m_ImpAverage));
+
+    for(int iLoop = 0; iLoop < NMB_PHASES; iLoop++)
+    {
+        complex_N o_ReflRatio(complex_N::GONIO, f_MaxReflRatioReference, ((2 * 3.14159265358) / NMB_PHASES) * iLoop);
+        complex_N o_Fraction = (complex_N(complex_N::ALGEB, 1, 0) + o_ReflRatio) / (complex_N(complex_N::ALGEB, 1, 0) - o_ReflRatio);
+        complex_N o_Result = m_ReferenceImpedance * o_Fraction;
+        reflFinishAlg[iLoop] = CalculateReflectionRatio(o_Result, complex_N(complex_N::GONIO, 50, 0));
+    }
 
     repaint();
 }
@@ -142,27 +154,14 @@ void widgetSmith::paintEvent(QPaintEvent*)
     nmbDisplayedSamples->setGeometry(width() / 2, height() - 25, 50, 20);
 
     painterMain.drawPixmap(0, 0, QPixmap(QString(":/smith.png")).scaled(size()));
-
-    for(int iLoop = 0; iLoop < NMB_PHASES; iLoop++)
-    {
-        complex_N o_ReflRatio(complex_N::GONIO, f_MaxReflRatioReference, ((2 * 3.14159265358) / NMB_PHASES) * iLoop);
-        complex_N o_Fraction = (complex_N(complex_N::ALGEB, 1, 0) + o_ReflRatio) / (complex_N(complex_N::ALGEB, 1, 0) - o_ReflRatio);
-        complex_N o_Result = m_ReferenceImpedance * o_Fraction;
-        reflFinishAlg[iLoop] = CalculateReflectionRatio(o_Result, complex_N(complex_N::GONIO, 50, 0));
-    }
-
     painterMain.setPen(QPen(Qt::darkGray));
     painterMain.setBrush(QBrush(Qt::darkGray));
 
     for(int iLoop = 0; iLoop < NMB_PHASES; iLoop++)
     {
-        qreal xSave = reflFinishAlg[iLoop].GetReal();
-        qreal ySave = reflFinishAlg[iLoop].GetImag();
-
-        QPointF adjustSize((width() / 4) + (xSave * width() * 7 / (4 * 9)), (height() / 2) - (ySave * height() * 7 / (2 * 9)));
+        QPointF adjustSize((width() / 4) + (reflFinishAlg[iLoop].GetReal() * width() * 7 / (4 * 9)), (height() / 2) - (reflFinishAlg[iLoop].GetImag() * height() * 7 / (2 * 9)));
         painterMain.drawEllipse(adjustSize, 2, 2);
     }
-
 
     for(int jLoop = 0; jLoop < 3; jLoop++)
     {
@@ -174,8 +173,9 @@ void widgetSmith::paintEvent(QPaintEvent*)
         for(int iLoop = 0; iLoop < axis[jLoop].count(); iLoop++)
         {
             painterMain.setPen(QPen(Qt::blue));
-            qreal xSave = axis[jLoop].at(iLoop).x() * cos(axis[jLoop].at(iLoop).y());
-            qreal ySave = axis[jLoop].at(iLoop).x() * sin(axis[jLoop].at(iLoop).y());
+            qreal xSave = axis[jLoop][iLoop].GetReal();
+            qreal ySave = axis[jLoop][iLoop].GetImag();
+
 
             //qDebug() << "values: " << xSave << "and" << ySave;
 

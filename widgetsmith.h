@@ -50,27 +50,14 @@ public:
     void SetNmbPoints(quint32 value);
 
 public slots:
-    void ReceivedNewData(qreal magnitudeCurrAvg, qreal phaseCurrAvg, qreal magnitudeCurr50, qreal phaseCurr50, qreal magnitudeAvg50, qreal phaseAvg50);
+    void ReceivedNewData(qreal magnitudeCurrAvg, qreal phaseCurrAvg, qreal magnitudeCurr50, qreal phaseCurr50);
     void ReadData(quint32 readedVal);
     void ReadReferenceImpedance(float magnitude, float phase, float maxReflRatioRef, float maxReflRatioCur);
 
 private:
-
     enum {NMB_PHASES = 180};
 
-    typedef struct
-    {
-        float magnitude;
-        float phase_rad;
-    } COMPLEX_NUMBER_GONIO;
-
-    typedef struct
-    {
-        float real;
-        float imag;
-    } COMPLEX_NUMBER_ALGEB;
-
-    QList<QPointF> axis[3];
+    QList<complex_N> axis[3];
 
     QPushButton* clearButton = new QPushButton(this);
     QSpinBox* nmbDisplayedSamples = new QSpinBox(this);

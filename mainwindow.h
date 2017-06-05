@@ -61,12 +61,6 @@ class MainWindow : public QMainWindow
 public:
     typedef struct
     {
-        float magnitude;
-        float phase_rad;
-    } COMPLEX_NUMBER_GONIO;
-
-    typedef struct
-    {
         float real;
         float imag;
     } COMPLEX_NUMBER_ALGEB;
@@ -156,7 +150,6 @@ private:
     void SetLastPort();
     void restoreAllSettings(void);
     void newDataV200(QByteArray aData);
-    COMPLEX_NUMBER_GONIO CalculateReflectionRatio(COMPLEX_NUMBER_GONIO current, COMPLEX_NUMBER_GONIO average);
     void CheckedIfIndexInQlist(int NumberComboBox, int indexInComboBox);
     void recognizeIfDisplayNewDataAllSignals(QTime timestamp, QStringList *listOfNumbers, int adx);
     void DisplayNewDataFromSignal(QTime timestamp, QStringList *listOfNumbers, int indexInSignal);
@@ -186,7 +179,7 @@ private:
     QTime timeCurrent;
 
 signals:
-    void SendNewImpedanceData(qreal magnitudeCurr2Avg, qreal phaseCurr2Avg, qreal magnitudeCurr250, qreal phaseCurr250, qreal magnitudeAvg250, qreal phaseAvg250);
+    void SendNewImpedanceData(qreal magnitudeCurr2Avg, qreal phaseCurr2Avg, qreal magnitudeCurr250, qreal phaseCurr250);
     void SendUpdateGraph(QTime timestamp, double receivedValue, int recordState, QString nameSignals, int src, int srStr, int flgs);
     void SendTextIntoLog(QString text);
     void SendSmithPoints(int value);
