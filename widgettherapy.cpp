@@ -50,7 +50,7 @@ widgetTherapy::widgetTherapy(QWidget *parent) : QWidget(parent)
 
         if(nValue != 0)
         {
-            qDebug() << "selected channel:" << nValue - 1;
+            //qDebug() << "selected channel:" << nValue - 1;
 
             QString msgChannel = QString("%1").arg(QString::number(PID_SET_CHOOSE_CURRENT_CHANNEL, 16));
             msgChannel += QString::number(QString("%1").arg(nValue - 1).toInt(), 16).rightJustified(2, '0');
@@ -64,6 +64,7 @@ widgetTherapy::widgetTherapy(QWidget *parent) : QWidget(parent)
 
         startButton->setEnabled(false);
         stopButton->setEnabled(true);
+        listOfChannels->setEnabled(false);
 
         for(int iLoop = 0; iLoop < E_POWER + 1; iLoop++)
         {
@@ -87,6 +88,7 @@ widgetTherapy::widgetTherapy(QWidget *parent) : QWidget(parent)
 
         startButton->setEnabled(true);
         stopButton->setEnabled(false);
+        listOfChannels->setEnabled(true);
 
         for(int iLoop = 0; iLoop < E_POWER + 1; iLoop++)
         {

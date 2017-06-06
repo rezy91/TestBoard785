@@ -96,10 +96,17 @@ void widgetSmith::ReceivedNewData(qreal magnitudeCurrAvg, qreal phaseCurrAvg, qr
 
     for(int iLoop = 0; iLoop < NMB_PHASES; iLoop++)
     {
-        complex_N o_ReflRatio(complex_N::GONIO, f_MaxReflRatioReference, ((2 * 3.14159265358) / NMB_PHASES) * iLoop);
-        complex_N o_Fraction = (complex_N(complex_N::ALGEB, 1, 0) + o_ReflRatio) / (complex_N(complex_N::ALGEB, 1, 0) - o_ReflRatio);
-        complex_N o_Result = m_ReferenceImpedance * o_Fraction;
-        reflFinishAlg[iLoop] = CalculateReflectionRatio(o_Result, complex_N(complex_N::GONIO, 50, 0));
+        complex_N o_ReflRatioRef(complex_N::GONIO, f_MaxReflRatioReference, ((2 * 3.14159265358) / NMB_PHASES) * iLoop);
+        complex_N o_ReflRatioAvg(complex_N::GONIO, f_MaxReflRatioCurrent, ((2 * 3.14159265358) / NMB_PHASES) * iLoop);
+
+        complex_N o_FractionRef = (complex_N(complex_N::ALGEB, 1, 0) + o_ReflRatioRef) / (complex_N(complex_N::ALGEB, 1, 0) - o_ReflRatioRef);
+        complex_N o_FractionAvg = (complex_N(complex_N::ALGEB, 1, 0) + o_ReflRatioAvg) / (complex_N(complex_N::ALGEB, 1, 0) - o_ReflRatioAvg);
+
+        complex_N o_ResultRef = m_ReferenceImpedance * o_FractionRef;
+        complex_N o_ResultAvr = m_ImpAverage * o_FractionAvg;
+
+        limitsRef[iLoop] = CalculateReflectionRatio(o_ResultRef, m_Imp50Ohm);
+        limitsAvg[iLoop] = CalculateReflectionRatio(o_ResultAvr, m_Imp50Ohm);
     }
 
     repaint();
@@ -154,12 +161,22 @@ void widgetSmith::paintEvent(QPaintEvent*)
     nmbDisplayedSamples->setGeometry(width() / 2, height() - 25, 50, 20);
 
     painterMain.drawPixmap(0, 0, QPixmap(QString(":/smith.png")).scaled(size()));
+
     painterMain.setPen(QPen(Qt::darkGray));
     painterMain.setBrush(QBrush(Qt::darkGray));
 
     for(int iLoop = 0; iLoop < NMB_PHASES; iLoop++)
     {
-        QPointF adjustSize((width() / 4) + (reflFinishAlg[iLoop].GetReal() * width() * 7 / (4 * 9)), (height() / 2) - (reflFinishAlg[iLoop].GetImag() * height() * 7 / (2 * 9)));
+        QPointF adjustSize((width() / 4) + (limitsRef[iLoop].GetReal() * width() * 7 / (4 * 9)), (height() / 2) - (limitsRef[iLoop].GetImag() * height() * 7 / (2 * 9)));
+        painterMain.drawEllipse(adjustSize, 2, 2);
+    }
+
+    painterMain.setPen(QPen(Qt::black));
+    painterMain.setBrush(QBrush(Qt::black));
+
+    for(int iLoop = 0; iLoop < NMB_PHASES; iLoop++)
+    {
+        QPointF adjustSize((width() / 4) + (limitsAvg[iLoop].GetReal() * width() * 7 / (4 * 9)), (height() / 2) - (limitsAvg[iLoop].GetImag() * height() * 7 / (2 * 9)));
         painterMain.drawEllipse(adjustSize, 2, 2);
     }
 
