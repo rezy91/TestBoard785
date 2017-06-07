@@ -71,8 +71,6 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
     connect(this, &MainWindow::SendAmpPwm, p_widgetSettings, &widgetSettings::ReadAmpPwm);
     connect(p_widgetSettings, &widgetSettings::SaveGenPwm, appSettings, &settings::StoreGenPwm);
     connect(this, &MainWindow::SendGenPwm, p_widgetSettings, &widgetSettings::ReadGenPwm);
-    connect(p_widgetSettings, &widgetSettings::SaveGenDac, appSettings, &settings::StoreGenDac);
-    connect(this, &MainWindow::SendGenDac, p_widgetSettings, &widgetSettings::ReadGenDac);
     connect(p_widgetSettings, &widgetSettings::SaveGenPwr, appSettings, &settings::StoreGenPwr);
     connect(this, &MainWindow::SendGenPwr, p_widgetSettings, &widgetSettings::ReadGenPwr);
 
@@ -99,7 +97,6 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
     emit SendAmpFreq(appSettings->RestoreAmpFreq());
     emit SendAmpPwm(appSettings->RestoreAmpPwm());
     emit SendGenPwm(appSettings->RestoreGenPwm());
-    emit SendGenDac(appSettings->RestoreGenDac());
     emit SendGenPwr(appSettings->RestoreGenPwr());
 
     for(int iLoop = 0; iLoop < E_GEN_ADC_NMB; iLoop++)

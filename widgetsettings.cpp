@@ -51,23 +51,6 @@ widgetSettings::widgetSettings(QWidget *parent) : QWidget(parent)
         emit SendV200specific(strCmd);
     });
 
-    connect(buttSendGenDac,&QPushButton::clicked,[=](bool clicked){
-
-        Q_UNUSED(clicked);
-
-        QString SaveData;
-        QString strCmd = QString("%1").arg(QString::number(PID_SET_DAC, 16));
-
-        for(int iChannel = 0; iChannel < E_NMB_GEN_DAC; iChannel++)
-        {
-            strCmd += QString::number(lineInputGenDac[iChannel]->text().toInt(), 16).rightJustified(2 * 2, '0');
-            SaveData.append(QString("%1").arg(QString::number(lineInputGenDac[iChannel]->text().toInt())) + " ");
-        }
-
-        emit SaveGenDac(SaveData);
-        emit SendV200specific(strCmd);
-    });
-
     connect(buttSendGenPwrReset,&QPushButton::clicked,[=](bool clicked){
 
         Q_UNUSED(clicked);
@@ -239,27 +222,6 @@ void widgetSettings::ReadGenPwm(QString data)
     }
 }
 
-void widgetSettings::ReadGenDac(QString data)
-{
-    QStringList arrListSaved;
-    arrListSaved = data.split(QRegExp("\\s+"));
-
-    if((arrListSaved.count() - 1) == E_NMB_GEN_DAC)
-    {
-        for(int iLoop = 0; iLoop < E_NMB_GEN_DAC; iLoop++)
-        {
-            lineInputGenDac[iLoop]->setText(arrListSaved.at(iLoop));
-        }
-    }
-    else
-    {
-        for(int iLoop = 0; iLoop < E_NMB_GEN_DAC; iLoop++)
-        {
-            lineInputGenDac[iLoop]->setText(c_defaultValueGenDac[iLoop]);
-        }
-    }
-}
-
 void widgetSettings::ReadGenPwr(QString data)
 {
     QStringList arrListSaved;
@@ -349,20 +311,6 @@ QGroupBox *widgetSettings::createSettingsGenGroup()
 
     buttSendGenPwmCool = new QPushButton("Send");
     childLayout->addWidget(buttSendGenPwmCool, E_NMB_GEN_PWM_COOL + 1, dw_GridOffsetColumn, Qt::AlignCenter);
-    dw_GridOffsetColumn++;
-
-    //Dac
-    childLayout->addWidget(createNewLabel("Dac cooling (0 - 4095)"), 0, dw_GridOffsetColumn, Qt::AlignCenter);
-
-    for(int iLoop = 0; iLoop < E_NMB_GEN_DAC; iLoop++)
-    {
-        lineInputGenDac[iLoop] = new QLineEdit();
-        lineInputGenDac[iLoop]->setMaximumWidth(dw_LengthLineEdit);
-        childLayout->addWidget(lineInputGenDac[iLoop], 1 + iLoop, dw_GridOffsetColumn, Qt::AlignCenter);
-    }
-
-    buttSendGenDac = new QPushButton("Send");
-    childLayout->addWidget(buttSendGenDac, E_NMB_GEN_DAC + 1, dw_GridOffsetColumn, Qt::AlignCenter);
     dw_GridOffsetColumn++;
 
     //Pwr reset

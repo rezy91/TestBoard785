@@ -193,7 +193,6 @@ signals:
     void SendAmpFreq(QString values);
     void SendAmpPwm(QString values);
     void SendGenPwm(QString values);
-    void SendGenDac(QString values);
     void SendGenPwr(QString values);
     void SendStatusReg(unsigned char value);
 

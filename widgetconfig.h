@@ -34,7 +34,7 @@ public slots:
 private:
     enum {E_NMB_GEN_ADC1 = 9};
     enum {E_NMB_GEN_ADC2 = 7};
-    enum {E_NMB_GEN_ADC3 = 4};
+    enum {E_NMB_GEN_ADC3 = 6};
     enum {E_NMB_GEN_OTHERS = 9};
     enum {E_NMB_GEN_REGULATOR = 4};
     enum {E_NMB_GEN_TESTTHERAPY = 2};
@@ -51,12 +51,12 @@ private:
     const QStringList c_defaultValueGenAdcMul[E_GEN_ADC_NMB] = { \
         {"1.0", "1.0", "1.0", "1.0", "1.0", "1.0", "1.0", "1.0", "1.0"}, \
         {"52.2082", "1.0", "5.4", "1.0", "5.4359", "1.0", "0.4384"}, \
-        {"1.0", "1.0", "1.0", "1.0"}, \
+        {"1.0", "1.0", "1.0", "1.0", "1.0", "1.0"}, \
         {"1.1154", "1.0", "1.0", "1.0", "1.0", "1.0", "1.0", "1.0", "1.0"}};
     const QStringList c_defaultValueGenAdcAdd[E_GEN_ADC_NMB] = { \
         {"0.0", "0.0", "0.0", "0.0", "0.0", "0.0", "0.0", "0.0", "0.0"}, \
         {"2422", "0.0", "316", "0.0", "274.35", "0.0", "22.733"}, \
-        {"0.0", "0.0", "0.0", "0.0"}, \
+        {"0.0", "0.0", "0.0", "0.0", "0.0", "0.0"}, \
         {"0.0", "-0.087", "1", "0.5", "2000", "0.0", "0.0", "0.0", "0.0"}};
     const QStringList c_defaultValueAmpAdcMul[E_AMP_ADC_NMB] = { \
         {"10", "191.27", "1.777", "1.777", "3.27", "3.27", "36.666", "3.05"}, \
@@ -82,7 +82,7 @@ private:
     QPushButton* buttSendGenTestTherapy;
 
     QLineEdit *lineInputAmpMulAdcx[E_AMP_ADC_NMB][E_NMB_AMP_ADC1];
-    QLineEdit *lineInputAmpAddAdcx[E_AMP_ADC_NMB][E_NMB_AMP_ADC3];
+    QLineEdit *lineInputAmpAddAdcx[E_AMP_ADC_NMB][E_NMB_AMP_ADC1];
     QLineEdit *lineInputGenPwmCqm[E_NMB_GEN_PWM_CQM];
     QPushButton* buttSendAmpMulAdcx[E_AMP_ADC_NMB];
     QPushButton* buttSendAmpAddAdcx[E_AMP_ADC_NMB];
