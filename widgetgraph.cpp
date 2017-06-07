@@ -216,6 +216,12 @@ int widgetGraph::findMinAndMaxTimeInLog()
 
 void widgetGraph::saveNewSampleToBuffer(int index, QTime time, double signal, QString text)
 {
+    if(text == allAdxSignalsGener[2][2] || text == allAdxSignalsGener[2][4])
+    {
+        signal = acos(signal);
+        signal = 180 / M_PI * signal;
+    }
+
     mSignalHistory[index].value.append(signal);
     mSignalHistory[index].time.append(time);
     mLegendItems[index] = text;

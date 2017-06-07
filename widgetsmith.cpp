@@ -86,8 +86,8 @@ void widgetSmith::SetNmbPoints(quint32 value)
 
 void widgetSmith::ReceivedNewData(qreal magnitudeCurrAvg, qreal phaseCurrAvg, qreal magnitudeCurr50, qreal phaseCurr50)
 {
-    complex_N m_ImpAverage(complex_N::GONIO, magnitudeCurrAvg, phaseCurrAvg);
-    complex_N m_ImpCurrent(complex_N::GONIO, magnitudeCurr50, phaseCurr50);
+    complex_N m_ImpAverage(complex_N::GONIO, magnitudeCurrAvg, acos(phaseCurrAvg));
+    complex_N m_ImpCurrent(complex_N::GONIO, magnitudeCurr50, acos(phaseCurr50));
     complex_N m_Imp50Ohm(complex_N::ALGEB, 50, 0);
 
     axis[0].append(CalculateReflectionRatio(m_ImpAverage, m_Imp50Ohm));
