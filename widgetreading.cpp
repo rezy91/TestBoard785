@@ -26,7 +26,6 @@ widgetReading::widgetReading(QWidget *parent) : QWidget(parent)
         }
     }
 
-    chBoxGen[0]->setEnabled(false);
     chBoxGen[4]->setEnabled(false);
 
     chBoxAmp[2]->setEnabled(false);
