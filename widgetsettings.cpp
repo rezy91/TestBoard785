@@ -41,11 +41,8 @@ widgetSettings::widgetSettings(QWidget *parent) : QWidget(parent)
         QString SaveData;
         QString strCmd = QString("%1").arg(QString::number(PID_SET_PWM_COOLS_DUTY, 16));
 
-        for(int iChannel = 0; iChannel < E_NMB_GEN_PWM_COOL; iChannel++)
-        {
-            strCmd += QString::number(lineInputGenPwmCool[iChannel]->text().toInt(), 16).rightJustified(1 * 2, '0');
-            SaveData.append(QString("%1").arg(QString::number(lineInputGenPwmCool[iChannel]->text().toInt())) + " ");
-        }
+        strCmd += QString::number(lineInputGenPwmCool->text().toInt(), 16).rightJustified(1 * 2, '0');
+        SaveData.append(QString("%1").arg(QString::number(lineInputGenPwmCool->text().toInt())) + " ");
 
         emit SaveGenPwm(SaveData);
         emit SendV200specific(strCmd);
@@ -206,19 +203,13 @@ void widgetSettings::ReadGenPwm(QString data)
     QStringList arrListSaved;
     arrListSaved = data.split(QRegExp("\\s+"));
 
-    if((arrListSaved.count() - 1) == E_NMB_GEN_PWM_COOL)
+    if((arrListSaved.count() - 1) == 1)
     {
-        for(int iLoop = 0; iLoop < E_NMB_GEN_PWM_COOL; iLoop++)
-        {
-            lineInputGenPwmCool[iLoop]->setText(arrListSaved.at(iLoop));
-        }
+        lineInputGenPwmCool->setText(arrListSaved.at(0));
     }
     else
     {
-        for(int iLoop = 0; iLoop < E_NMB_GEN_PWM_COOL; iLoop++)
-        {
-            lineInputGenPwmCool[iLoop]->setText(c_defaultValueGenPwm[iLoop]);
-        }
+        lineInputGenPwmCool->setText(c_defaultValueGenPwm);
     }
 }
 
@@ -302,15 +293,12 @@ QGroupBox *widgetSettings::createSettingsGenGroup()
     //Pwm
     childLayout->addWidget(createNewLabel("Pwm cooling (0 - 100 %)"), 0, dw_GridOffsetColumn, Qt::AlignCenter);
 
-    for(int iLoop = 0; iLoop < E_NMB_GEN_PWM_COOL; iLoop++)
-    {
-        lineInputGenPwmCool[iLoop] = new QLineEdit();
-        lineInputGenPwmCool[iLoop]->setMaximumWidth(dw_LengthLineEdit);
-        childLayout->addWidget(lineInputGenPwmCool[iLoop], 1 + iLoop, dw_GridOffsetColumn, Qt::AlignCenter);
-    }
+    lineInputGenPwmCool = new QLineEdit();
+    lineInputGenPwmCool->setMaximumWidth(dw_LengthLineEdit);
+    childLayout->addWidget(lineInputGenPwmCool, 1, dw_GridOffsetColumn, Qt::AlignCenter);
 
     buttSendGenPwmCool = new QPushButton("Send");
-    childLayout->addWidget(buttSendGenPwmCool, E_NMB_GEN_PWM_COOL + 1, dw_GridOffsetColumn, Qt::AlignCenter);
+    childLayout->addWidget(buttSendGenPwmCool, 2, dw_GridOffsetColumn, Qt::AlignCenter);
     dw_GridOffsetColumn++;
 
     //Pwr reset
@@ -354,10 +342,10 @@ QGroupBox *widgetSettings::createSettingsGenGroup()
     }
 
     //TestTherapy
-    childLayout->addWidget(createNewLabel("Test therapy"), dw_GridOffsetRow, dw_GridOffsetColumn + E_NMB_GEN_OUTPUTS, Qt::AlignCenter);
+    childLayout->addWidget(createNewLabel("Test therapy"), dw_GridOffsetRow, dw_GridOffsetColumn + E_NMB_GEN_APLx, Qt::AlignCenter);
     checkGenTestTherapy = new QCheckBox();
     checkGenTestTherapy->setStyleSheet(QString("QCheckBox::indicator { width: %1px; height:%1px;}").arg(c_dw_SizeCheckBox));
-    childLayout->addWidget(checkGenTestTherapy, dw_GridOffsetRow + 1, dw_GridOffsetColumn + E_NMB_GEN_OUTPUTS, Qt::AlignCenter);
+    childLayout->addWidget(checkGenTestTherapy, dw_GridOffsetRow + 1, dw_GridOffsetColumn + E_NMB_GEN_APLx, Qt::AlignCenter);
 
     groupBox->setLayout(childLayout);
 

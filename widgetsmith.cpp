@@ -195,27 +195,32 @@ void widgetSmith::paintEvent(QPaintEvent*)
 
 
             //qDebug() << "values: " << xSave << "and" << ySave;
+            QPointF adjustSize;
 
             if(jLoop == 0)
             {
                 painterMain.setBrush(QBrush(Qt::blue));
-                QPointF adjustSize((width() / 4) + (xSave * width() * 7 / (4 * 9)), (height() / 2) - (ySave * height() * 7 / (2 * 9)));
-                painterMain.drawEllipse(adjustSize,3,3);
+                adjustSize.setX((width() / 4) + (xSave * width() * 7 / (4 * 9)));
+                adjustSize.setY((height() / 2) - (ySave * height() * 7 / (2 * 9)));
             }
             else if(jLoop == 1)
             {
                 painterMain.setBrush(QBrush(Qt::red));
-                QPointF adjustSize((width() / 4) + (xSave * width() * 7 / (4 * 9)), (height() / 2) - (ySave * height() * 7 / (2 * 9)));
-                painterMain.drawEllipse(adjustSize,3,3);
+                adjustSize.setX((width() / 4) + (xSave * width() * 7 / (4 * 9)));
+                adjustSize.setY((height() / 2) - (ySave * height() * 7 / (2 * 9)));
             }
             else if(jLoop == 2)
             {
                 painterMain.setBrush(QBrush(Qt::green));
-                QPointF adjustSize((width() * 3 / 4) + (xSave * width() * 7 / (4 * 9)), (height() / 2) - (ySave * height() * 7 / (2 * 9)));
+                adjustSize.setX((width() * 3 / 4) + (xSave * width() * 7 / (4 * 9)));
+                adjustSize.setY((height() / 2) - (ySave * height() * 7 / (2 * 9)));
+            }
+
+            if(!(std::isnan(adjustSize.rx()) || std::isnan(adjustSize.rx())))
+            {
                 painterMain.drawEllipse(adjustSize,3,3);
             }
         }
-
     }
 
     painterMain.setPen(QPen(Qt::blue));

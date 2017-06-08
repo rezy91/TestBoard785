@@ -27,10 +27,9 @@ public slots:
     void ReadGenPwr(QString data);
 
 private:
-    enum {E_NMB_GEN_PWM_COOL = 2};
     enum {E_NMB_GEN_RAW_RECEIVING = 3};
     enum {E_NMB_GEN_OUTPUTS = 8};
-    enum {E_NMB_GEN_APLx = 8};
+    enum {E_NMB_GEN_APLx = 9};
 
     enum {E_NMB_AMP_OUTPUTS = 6};
 
@@ -39,11 +38,11 @@ private:
 
     const QString c_nameAmpOutputs[E_NMB_AMP_OUTPUTS] = {"PWR_Source_ON", "PWR_Source_Decharge", "ResetErr", "RESERVE_1", "RESERVE_2", "RESERVE_3"};
     const QString c_nameGenOutputs[E_NMB_GEN_OUTPUTS] = {"REL_OUT_1", "REL_OUT_2", "REL_OUT_3", "REL_OUT_4", "nAMP_RESET", "Amp_PWR_ON", "nGenErr_uP", "Fraction/Exilis"};
-    const QString c_nameGenAplX[E_NMB_GEN_APLx] = {"apl_1", "apl_1_PWR_ON", "apl_2", "apl_3", "apl_4", "cool_1", "cool_2", "cool_3"};
+    const QString c_nameGenAplX[E_NMB_GEN_APLx] = {"apl_1", "apl_1_PWR_ON", "apl_2", "apl_3", "apl_4", "cool_pump2", "cool_pump1", "cool_fan", "cool_pelt"};
 
     const QString c_defaultValueAmpFreq = "32000";
     const QString c_defaultValueAmpPwm = "10.0";
-    const QString c_defaultValueGenPwm[E_NMB_GEN_PWM_COOL] = {"15", "50"};
+    const QString c_defaultValueGenPwm = "15";
     const QString c_defaultValueGenPwr = "10";
 
 
@@ -56,7 +55,7 @@ private:
 
     QCheckBox* checkAmpOutput[E_NMB_AMP_OUTPUTS];
 
-    QLineEdit *lineInputGenPwmCool[E_NMB_GEN_PWM_COOL];
+    QLineEdit *lineInputGenPwmCool;
     QPushButton* buttSendGenPwmCool;
 
     QLineEdit *lineInputGenPwrReset;
