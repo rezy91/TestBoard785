@@ -66,6 +66,7 @@ private:
 
     complex_N limitsRef[NMB_PHASES];
     complex_N limitsAvg[NMB_PHASES];
+    complex_N limitsCur[NMB_PHASES];
     complex_N m_ReferenceImpedance;
     float f_MaxReflRatioReference;
     float f_MaxReflRatioCurrent;
