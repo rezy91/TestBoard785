@@ -162,7 +162,7 @@ widgetSettings::widgetSettings(QWidget *parent) : QWidget(parent)
     connect(checkGenTestTherapy, &QPushButton::clicked, [=](){
 
         QString strCmd = QString("%1").arg(QString::number(PID_START_STOP_TEST_THERAPY, 16));
-        strCmd += (checkGenTestTherapy->checkState() == Qt::Checked ? "0001" : "0000");
+        strCmd += (checkGenTestTherapy->checkState() == Qt::Checked ? "01" : "00");
 
         emit SendV200specific(strCmd);
     });

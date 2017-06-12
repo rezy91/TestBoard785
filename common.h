@@ -96,7 +96,7 @@ typedef enum packet_id
   PID_SET_APLS                        = 0x59,
   PID_SET_REGULATOR                   = 0x5A,
   PID_SET_THERAPY_TEST                = 0x5B,
-  PID_START_STOP_THERAPY              = 0x5C,
+  PID_START_STOP_TEST_THERAPY         = 0x5C,
   PID_SET_RESERVE_3                   = 0x5D,
   PID_SET_RESERVE_2                   = 0x5E,
   PID_SET_RESERVE_1                   = 0x5F,
@@ -135,7 +135,7 @@ const QString c_nameAdd = "Add";
 const QStringList allAdxSignalsGener[NMB_ITEMS_TIMERS_GENER] = { \
     {"g3c_counter", "Temperature1 [°C]", "Temperature2 [°C]"}, \
     {"g3s_counter", "pump1_adc", "pump2_adc", "Temperature1_adc", "Temperature2_adc", "CoolingPF3_adc", "CoolingPF5_adc"}, \
-    {"g2c_counter", "imp_avg [||]", "imp_avg [°]", "imp_max [||]", "imp_max [°]", "power_average [W]", "power_current [W]", "power_regulator [W]", "regulator_output", "regulator_error_sum", "refl_ratio", "effectiveness [%]", "g2c_exec", "g2c_conv"}, \
+    {"g2c_counter", "imp_avg [||]", "imp_avg [°]", "imp_max [||]", "imp_max [°]", "power_average [W]", "power_current [W]", "power_regulator [W]", "regulator_output", "regulator_error_sum", "refl_ratio", "effectiveness [%]", "R_cqm [ohm]",  "g2c_exec", "g2c_conv"}, \
     {"g2s_counter", "Vrf_adc", "I4_adc", "Vforward_adc", "I2_adc", "Vreverse_adc", "I3_adc", "I1_adc"}, \
     {"g1c_counter", "g1c_exec", "g1c_conv"}, \
     {"g1s_counter", "Apl1_Vcc_Adc", "CQM1_adc", "CQM2_adc", "V reference [mV]", "Temperature1", "+24V_adc", "+5V_adc", "Temperature MCU [°C]", "vrefin_adc"}};
@@ -145,7 +145,7 @@ const QStringList allAdxSignalsAmplf[NMB_ITEMS_TIMERS_AMPLF] = { \
     {"ax_counter", "ax_exec", "ax_conv"}, \
     {"a1s_counter", "Vfet1Out", "Vfet2Out", "Ifet1Out", "Ifet2Out", "Vgate1Out", "Vgate2Out", "inputVolatge_ADC", "inputCurrent_ADC"}};
 const QString coeffsOthersNameMultiple[NMB_COEFFICIENTS_OTHERS] = {"for power", "NOT_USED", "NOT_USED", "NOT_USED", "NOT_USED", "NOT_USED", "NOT_USED", "NOT_USED", "NOT_USED"};
-const QString coeffsOthersNameAdditive[NMB_COEFFICIENTS_OTHERS] = {"for power", "for phase (0 - pi/2) [rad]", "max refl ratio (0.0 - 1.0)", "max PWM to amp (0.1 - 0.9)", "max diff power regulator (0 - 100) [%]", "refer. imp. magnitude", "refer. imp. phase (0 - pi/2) [rad]", "max refl ratio (0.0 - 1.0)", "NOT_USED"};
+const QString coeffsOthersNameAdditive[NMB_COEFFICIENTS_OTHERS] = {"for power", "for phase (0 - pi/2) [rad]", "max refl ratio (0.0 - 1.0)", "max PWM to amp (0.1 - 0.9)", "max diff power regulator (0 - 100) [%]", "refer. imp. magnitude", "refer. imp. phase (0 - pi/2) [rad]", "max refl ratio (0.0 - 1.0)", "R_cqm max/min [ohm]"};
 
 
 #endif // COMMON_H
