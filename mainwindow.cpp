@@ -505,11 +505,7 @@ void MainWindow::newDataV200(QByteArray aData)
     }
     else
     {
-       //unsigned int dwStatusReg = (aData.at(1) << 24) + (aData.at(2) << 16) + (aData.at(3) << 8) + aData.at(4);
-
-       //qDebug() << "status" << dwStatusReg;
-
-       emit SendStatusReg(aData.at(2));
+       emit SendStatusReg(aData);
     }
 }
 

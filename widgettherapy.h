@@ -44,11 +44,14 @@ private:
     QPushButton* stopButton = new QPushButton(this);
     QComboBox* listOfChannels = new QComboBox(this);
 
+    void TherapyRuns(void);
+    void TherapyDoesnotRun(void);
+
 signals:
     void SendV200specific(QString msg);
 
 public slots:
-    void ReceivePartStatusReg(unsigned char value);
+    void ReceivePartStatusReg(QByteArray value);
 
 protected:
     void paintEvent(QPaintEvent*e);

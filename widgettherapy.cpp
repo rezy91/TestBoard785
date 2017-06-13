@@ -75,14 +75,7 @@ widgetTherapy::widgetTherapy(QWidget *parent) : QWidget(parent)
 
     connect(startButton, &QPushButton::clicked, [=](){
 
-        startButton->setEnabled(false);
-        stopButton->setEnabled(true);
-        listOfChannels->setEnabled(false);
-
-        for(int iLoop = 0; iLoop < E_POWER + 1; iLoop++)
-        {
-           therapyParams[iLoop].slider->setEnabled(false);
-        }
+        TherapyRuns();
 
         QString msgRun = QString("%1").arg(QString::number(PID_SET_STATE_OF_THERAPY, 16));
         msgRun += QString("02");
@@ -92,27 +85,44 @@ widgetTherapy::widgetTherapy(QWidget *parent) : QWidget(parent)
 
     connect(stopButton, &QPushButton::clicked, [=](){
 
-        startButton->setEnabled(true);
-        stopButton->setEnabled(false);
-        listOfChannels->setEnabled(true);
-
-        for(int iLoop = 0; iLoop < E_POWER + 1; iLoop++)
-        {
-           therapyParams[iLoop].slider->setEnabled(true);
-        }
+        TherapyDoesnotRun();
 
         QString msgRun = QString("%1").arg(QString::number(PID_SET_STATE_OF_THERAPY, 16));
-        msgRun += QString("00");
+        msgRun += QString("01");
 
         emit SendV200specific(msgRun);
     });
 }
 
-void widgetTherapy::ReceivePartStatusReg(unsigned char value)
+void widgetTherapy::TherapyRuns()
+{
+    startButton->setEnabled(false);
+    stopButton->setEnabled(true);
+    listOfChannels->setEnabled(false);
+
+    for(int iLoop = 0; iLoop < E_POWER + 1; iLoop++)
+    {
+       therapyParams[iLoop].slider->setEnabled(false);
+    }
+}
+
+void widgetTherapy::TherapyDoesnotRun()
+{
+    startButton->setEnabled(true);
+    stopButton->setEnabled(false);
+    listOfChannels->setEnabled(true);
+
+    for(int iLoop = 0; iLoop < E_POWER + 1; iLoop++)
+    {
+       therapyParams[iLoop].slider->setEnabled(true);
+    }
+}
+
+void widgetTherapy::ReceivePartStatusReg(QByteArray value)
 {
     for(int iLoop = 0; iLoop < nmbChannelsAppls; iLoop++)
     {
-        if(value & (0x02 << iLoop))
+        if(value.at(2) & (0x02 << iLoop))
         {
             //qDebug() << "channel" << iLoop << "connected";
             qobject_cast<QStandardItemModel*>(listOfChannels->model())->item(iLoop + 1)->setEnabled(true);
@@ -122,6 +132,18 @@ void widgetTherapy::ReceivePartStatusReg(unsigned char value)
             //qDebug() << "channel" << iLoop << "disconnected";
             qobject_cast<QStandardItemModel*>(listOfChannels->model())->item(iLoop + 1)->setEnabled(false);
         }
+    }
+
+
+    unsigned char stateTherapy = (value.at(1) & 0xC0) >> 6;
+
+    if(stateTherapy == 2)
+    {
+        TherapyRuns();
+    }
+    else
+    {
+        TherapyDoesnotRun();
     }
 }
 
