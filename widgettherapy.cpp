@@ -88,7 +88,7 @@ widgetTherapy::widgetTherapy(QWidget *parent) : QWidget(parent)
         TherapyDoesnotRun();
 
         QString msgRun = QString("%1").arg(QString::number(PID_SET_STATE_OF_THERAPY, 16));
-        msgRun += QString("01");
+        msgRun += QString("00");
 
         emit SendV200specific(msgRun);
     });
