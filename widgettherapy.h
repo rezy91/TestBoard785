@@ -46,7 +46,7 @@ private:
     QRadioButton* userButton = new QRadioButton("USER", this);
     QComboBox* listOfChannels = new QComboBox(this);
 
-    void TherapyRuns(void);
+    void TherapyRuns(unsigned char stateTherapy);
     void TherapyDoesnotRun(void);
 
 signals:

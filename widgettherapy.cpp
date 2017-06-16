@@ -98,14 +98,14 @@ widgetTherapy::widgetTherapy(QWidget *parent) : QWidget(parent)
         }
         else
         {
-            msgRun += QString("00");
+            msgRun += QString("01");
         }
 
         emit SendV200specific(msgRun);
     });
 }
 
-void widgetTherapy::TherapyRuns()
+void widgetTherapy::TherapyRuns(unsigned char stateTherapy)
 {
     startButton->setEnabled(false);
     stopButton->setEnabled(true);
@@ -116,6 +116,8 @@ void widgetTherapy::TherapyRuns()
     {
        therapyParams[iLoop].slider->setEnabled(false);
     }
+
+    userButton->setChecked(stateTherapy == 2 ? true : false);
 }
 
 void widgetTherapy::TherapyDoesnotRun()
@@ -152,7 +154,7 @@ void widgetTherapy::ReceivePartStatusReg(QByteArray value)
 
     if(stateTherapy != 0)
     {
-        TherapyRuns();
+        TherapyRuns(stateTherapy);
     }
     else
     {
