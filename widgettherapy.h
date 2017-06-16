@@ -9,6 +9,7 @@
 #include <QLabel>
 #include <QPushButton>
 #include <QComboBox>
+#include <QRadioButton>
 
 class widgetTherapy : public QWidget
 {
@@ -40,8 +41,9 @@ private:
 
     paramTherapy therapyParams[E_PARAMS_NMB];
 
-    QPushButton* startButton = new QPushButton(this);
-    QPushButton* stopButton = new QPushButton(this);
+    QPushButton* startButton = new QPushButton("START", this);
+    QPushButton* stopButton = new QPushButton("STOP", this);
+    QRadioButton* userButton = new QRadioButton("USER", this);
     QComboBox* listOfChannels = new QComboBox(this);
 
     void TherapyRuns(void);

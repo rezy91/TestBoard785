@@ -134,7 +134,7 @@ const QString c_nameAdd = "Add";
 
 const QStringList allAdxSignalsGener[NMB_ITEMS_TIMERS_GENER] = { \
     {"g3c_counter", "Temperature1 [°C]", "Temperature2 [°C]"}, \
-    {"g3s_counter", "pump1_adc", "pump2_adc", "Temperature1_adc", "Temperature2_adc", "CoolingPF3_adc", "CoolingPF5_adc"}, \
+    {"g3s_counter", "pumpPr_adc", "pumpSc_adc", "Temperature1_adc", "Temperature2_adc", "CoolingPF3_adc", "CoolingPF5_adc"}, \
     {"g2c_counter", "imp_avg [||]", "imp_avg [°]", "imp_max [||]", "imp_max [°]", "power_average [W]", "power_current [W]", "power_regulator [W]", "regulator_output", "regulator_error_sum", "refl_ratio", "effectiveness [%]", "R_cqm [ohm]",  "g2c_exec", "g2c_conv"}, \
     {"g2s_counter", "Vrf_adc", "I4_adc", "Vforward_adc", "I2_adc", "Vreverse_adc", "I3_adc", "I1_adc"}, \
     {"g1c_counter", "g1c_exec", "g1c_conv"}, \

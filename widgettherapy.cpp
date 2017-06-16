@@ -31,8 +31,12 @@ widgetTherapy::widgetTherapy(QWidget *parent) : QWidget(parent)
         qobject_cast<QStandardItemModel*>(listOfChannels->model())->item(iLoop + 1)->setEnabled(false);
     }
 
+    stopButton->setEnabled(false);
+    userButton->setEnabled(false);
+
     startButton->setText("START");
     stopButton->setText("STOP");
+    userButton->setText("USER");
 
     startButton->setStyleSheet("background-color:green;");
     stopButton->setStyleSheet("background-color:red;");
@@ -49,12 +53,6 @@ widgetTherapy::widgetTherapy(QWidget *parent) : QWidget(parent)
             msgTherapy += QString::number(QString("%1").arg(therapyParams[E_FREQUENCY].slider->value()).toInt(), 16).rightJustified(2, '0');
 
             emit SendV200specific(msgTherapy);
-
-            QString msgReady = QString("%1").arg(QString::number(PID_SET_STATE_OF_THERAPY, 16));
-            msgReady += QString("01");
-
-            emit SendV200specific(msgReady);
-
         });
 
     }
@@ -75,20 +73,33 @@ widgetTherapy::widgetTherapy(QWidget *parent) : QWidget(parent)
 
     connect(startButton, &QPushButton::clicked, [=](){
 
-        TherapyRuns();
-
         QString msgRun = QString("%1").arg(QString::number(PID_SET_STATE_OF_THERAPY, 16));
-        msgRun += QString("02");
+        msgRun += QString("01");
 
         emit SendV200specific(msgRun);
     });
 
     connect(stopButton, &QPushButton::clicked, [=](){
 
-        TherapyDoesnotRun();
-
         QString msgRun = QString("%1").arg(QString::number(PID_SET_STATE_OF_THERAPY, 16));
         msgRun += QString("00");
+        userButton->setChecked(false);
+
+        emit SendV200specific(msgRun);
+    });
+
+    connect(userButton, &QRadioButton::clicked, [=](){
+
+        QString msgRun = QString("%1").arg(QString::number(PID_SET_STATE_OF_THERAPY, 16));
+
+        if(userButton->isChecked())
+        {
+            msgRun += QString("02");
+        }
+        else
+        {
+            msgRun += QString("00");
+        }
 
         emit SendV200specific(msgRun);
     });
@@ -98,6 +109,7 @@ void widgetTherapy::TherapyRuns()
 {
     startButton->setEnabled(false);
     stopButton->setEnabled(true);
+    userButton->setEnabled(true);
     listOfChannels->setEnabled(false);
 
     for(int iLoop = 0; iLoop < E_POWER + 1; iLoop++)
@@ -110,6 +122,7 @@ void widgetTherapy::TherapyDoesnotRun()
 {
     startButton->setEnabled(true);
     stopButton->setEnabled(false);
+    userButton->setEnabled(false);
     listOfChannels->setEnabled(true);
 
     for(int iLoop = 0; iLoop < E_POWER + 1; iLoop++)
@@ -137,7 +150,7 @@ void widgetTherapy::ReceivePartStatusReg(QByteArray value)
 
     unsigned char stateTherapy = (value.at(1) & 0xC0) >> 6;
 
-    if(stateTherapy == 2)
+    if(stateTherapy != 0)
     {
         TherapyRuns();
     }
@@ -161,4 +174,5 @@ void widgetTherapy::paintEvent(QPaintEvent *e)
     listOfChannels->setGeometry((width() / 3) , height() / 2, width() / 8, 25);
     startButton->setGeometry((width() / 4) * 2, height() / 4, width() / 4, height() / 2);
     stopButton->setGeometry((width() / 4) * 3, height() / 4, width() / 4, height() / 2);
+    userButton->setGeometry((width() / 2), 0, 100, 40);
 }
