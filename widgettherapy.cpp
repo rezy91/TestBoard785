@@ -18,11 +18,6 @@ widgetTherapy::widgetTherapy(QWidget *parent) : QWidget(parent)
         therapyParams[iLoop].value->setText(QString("%1 %2").arg(therapyParams[iLoop].slider->value()).arg(unitParams[iLoop]));
     }
 
-
-    //temporary, until this function be available in generator
-    therapyParams[E_DUTYCYCLE].slider->setEnabled(false);
-    therapyParams[E_FREQUENCY].slider->setEnabled(false);
-
     listOfChannels->addItem("Select channel");
 
     for(int iLoop = 0; iLoop < nmbChannelsAppls; iLoop++)
@@ -51,6 +46,7 @@ widgetTherapy::widgetTherapy(QWidget *parent) : QWidget(parent)
             msgTherapy += QString::number(QString("%1").arg(therapyParams[E_POWER].slider->value()).toInt(), 16).rightJustified(4, '0');
             msgTherapy += QString::number(QString("%1").arg(therapyParams[E_DUTYCYCLE].slider->value()).toInt(), 16).rightJustified(2, '0');
             msgTherapy += QString::number(QString("%1").arg(therapyParams[E_FREQUENCY].slider->value()).toInt(), 16).rightJustified(2, '0');
+            msgTherapy += QString::number(QString("%1").arg(therapyParams[E_COOLING].slider->value()).toInt(), 16).rightJustified(2, '0');
 
             emit SendV200specific(msgTherapy);
         });
@@ -112,7 +108,7 @@ void widgetTherapy::TherapyRuns(unsigned char stateTherapy)
     userButton->setEnabled(true);
     listOfChannels->setEnabled(false);
 
-    for(int iLoop = 0; iLoop < E_POWER + 1; iLoop++)
+    for(int iLoop = 0; iLoop < E_PARAMS_NMB; iLoop++)
     {
        therapyParams[iLoop].slider->setEnabled(false);
     }
@@ -127,7 +123,7 @@ void widgetTherapy::TherapyDoesnotRun()
     userButton->setEnabled(false);
     listOfChannels->setEnabled(true);
 
-    for(int iLoop = 0; iLoop < E_POWER + 1; iLoop++)
+    for(int iLoop = 0; iLoop < E_PARAMS_NMB; iLoop++)
     {
        therapyParams[iLoop].slider->setEnabled(true);
     }
@@ -169,9 +165,9 @@ void widgetTherapy::paintEvent(QPaintEvent *e)
 
     for(int iLoop = 0; iLoop < E_PARAMS_NMB; iLoop++)
     {
-       therapyParams[iLoop].value->setGeometry(width() / 10 * iLoop, 0, width() / 15, 30);
-       therapyParams[iLoop].slider->setGeometry(width() / 10 * iLoop, 30, width() / 15, height() - 60);
-       therapyParams[iLoop].name->setGeometry(width() / 10 * iLoop, height() - 35, width() / 15, 30);
+       therapyParams[iLoop].value->setGeometry(width() / 15 * iLoop, 0, width() / 20, 30);
+       therapyParams[iLoop].slider->setGeometry(width() / 15 * iLoop, 30, width() / 20, height() - 60);
+       therapyParams[iLoop].name->setGeometry(width() / 15 * iLoop, height() - 35, width() / 20, 30);
     }
     listOfChannels->setGeometry((width() / 3) , height() / 2, width() / 8, 25);
     startButton->setGeometry((width() / 4) * 2, height() / 4, width() / 4, height() / 2);
