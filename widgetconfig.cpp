@@ -30,11 +30,6 @@ widgetConfig::widgetConfig(QWidget *parent) : QWidget(parent)
                 dw_nmbChannels = E_NMB_GEN_ADC3;
                 dw_PidMsg = PID_SET_ADC3_COEFFICIENTS_MULTIPLE;
             }
-            else if(iDevice == E_GEN_ADC_OTH)
-            {
-                dw_nmbChannels = E_NMB_GEN_OTHERS;
-                dw_PidMsg = PID_SET_ADC_OTHERS_COEFFS_MULTIPLE;
-            }
 
             QString AdcData;
             QString strCmd = QString("%1").arg(QString::number(dw_PidMsg, 16));
@@ -74,11 +69,6 @@ widgetConfig::widgetConfig(QWidget *parent) : QWidget(parent)
                 dw_nmbChannels = E_NMB_GEN_ADC3;
                 dw_PidMsg = PID_SET_ADC3_COEFFICIENTS_ADDITIVE;
             }
-            else if(iDevice == E_GEN_ADC_OTH)
-            {
-                dw_nmbChannels = E_NMB_GEN_OTHERS;
-                dw_PidMsg = PID_SET_ADC_OTHERS_COEFFS_ADDITIVE;
-            }
 
             QString AdcData;
             QString strCmd = QString("%1").arg(QString::number(dw_PidMsg, 16));
@@ -94,11 +84,6 @@ widgetConfig::widgetConfig(QWidget *parent) : QWidget(parent)
 
             emit SaveAdcData(QString(c_nameAdd), QString(c_nameGen), iDevice + 1, AdcData);
             emit SendV200specific(strCmd);
-
-            if(iDevice == E_GEN_ADC_OTH)
-            {
-                emit SendReferenceImpedance(lineInputGenAddAdcx[iDevice][5]->text().toFloat(), lineInputGenAddAdcx[iDevice][6]->text().toFloat(), lineInputGenAddAdcx[iDevice][7]->text().toFloat(), lineInputGenAddAdcx[iDevice][2]->text().toFloat());
-            }
         });
     }
 
@@ -249,10 +234,6 @@ void widgetConfig::ReadAdcData(QString type, QString device, int index, QString 
         {
             dw_nmbChannels = E_NMB_GEN_ADC3;
         }
-        else if(index == E_GEN_ADC_OTH)
-        {
-            dw_nmbChannels = E_NMB_GEN_OTHERS;
-        }
     }
     else if(device == c_nameAmp)
     {
@@ -324,11 +305,6 @@ void widgetConfig::ReadAdcData(QString type, QString device, int index, QString 
                 }
             }
         }
-    }
-
-    if(device == c_nameGen && index == E_GEN_ADC_OTH && type == c_nameAdd)
-    {
-        emit SendReferenceImpedance(lineInputGenAddAdcx[index][5]->text().toFloat(), lineInputGenAddAdcx[index][6]->text().toFloat(), lineInputGenAddAdcx[index][7]->text().toFloat(), lineInputGenAddAdcx[index][2]->text().toFloat());
     }
 }
 
@@ -478,16 +454,8 @@ QGroupBox *widgetConfig::createConfigGenGroup()
 
     for(int iDevice = 0; iDevice < E_GEN_ADC_NMB; iDevice++)
     {
-        if(iDevice == E_GEN_ADC_OTH)
-        {
-            childLayout->addWidget(createNewLabel("OTHERS multiple"), 3 * iDevice + 1, 0, Qt::AlignCenter);
-            childLayout->addWidget(createNewLabel("OTHERS additive"), 3 * iDevice + 2, 0, Qt::AlignCenter);
-        }
-        else
-        {
-            childLayout->addWidget(createNewLabel(QString("ADC_%1 multiple").arg(QString::number(iDevice + 1))), 3 * iDevice + 1, 0, Qt::AlignCenter);
-            childLayout->addWidget(createNewLabel(QString("ADC_%1 additive").arg(QString::number(iDevice + 1))), 3 * iDevice + 2, 0, Qt::AlignCenter);
-        }
+        childLayout->addWidget(createNewLabel(QString("ADC_%1 multiple").arg(QString::number(iDevice + 1))), 3 * iDevice + 1, 0, Qt::AlignCenter);
+        childLayout->addWidget(createNewLabel(QString("ADC_%1 additive").arg(QString::number(iDevice + 1))), 3 * iDevice + 2, 0, Qt::AlignCenter);
 
         int nmbChannels;
 
@@ -503,10 +471,6 @@ QGroupBox *widgetConfig::createConfigGenGroup()
         {
             nmbChannels = E_NMB_GEN_ADC3;
         }
-        else if(iDevice == E_GEN_ADC_OTH)
-        {
-            nmbChannels = E_NMB_GEN_OTHERS;
-        }
         else
         {
             qDebug() << "error: unsupported ADC device";
@@ -515,14 +479,7 @@ QGroupBox *widgetConfig::createConfigGenGroup()
 
         for(int iLoop = 0; iLoop < nmbChannels; iLoop++)
         {
-            if(iDevice == E_GEN_ADC_OTH)
-            {
-                childLayout->addWidget(createNewLabel(QString("%1").arg(coeffsOthersNameAdditive[iLoop])), 3 * iDevice, 1 + iLoop, Qt::AlignCenter);
-            }
-            else
-            {
-                childLayout->addWidget(createNewLabel(QString("%1").arg(allAdxSignalsGener[NMB_ITEMS_TIMERS_GENER - 1 - 2 * iDevice].at(iLoop + 1))), 3 * iDevice, 1 + iLoop, Qt::AlignCenter);
-            }
+            childLayout->addWidget(createNewLabel(QString("%1").arg(allAdxSignalsGener[NMB_ITEMS_TIMERS_GENER - 1 - 2 * iDevice].at(iLoop + 1))), 3 * iDevice, 1 + iLoop, Qt::AlignCenter);
 
             lineInputGenMulAdcx[iDevice][iLoop] = new QLineEdit();
             lineInputGenMulAdcx[iDevice][iLoop]->setMaximumWidth(dw_LengthLineEdit);

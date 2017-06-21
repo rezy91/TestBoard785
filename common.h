@@ -113,7 +113,6 @@ enum GEN_ADC_X
     E_GEN_ADC_1,
     E_GEN_ADC_2,
     E_GEN_ADC_3,
-    E_GEN_ADC_OTH,
     E_GEN_ADC_NMB
 };
 

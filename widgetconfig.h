@@ -35,7 +35,7 @@ private:
     enum {E_NMB_GEN_ADC1 = 9};
     enum {E_NMB_GEN_ADC2 = 7};
     enum {E_NMB_GEN_ADC3 = 6};
-    enum {E_NMB_GEN_OTHERS = 9};
+    enum {E_NMB_GEN_OTHERS = 11};
     enum {E_NMB_GEN_REGULATOR = 4};
     enum {E_NMB_GEN_TESTTHERAPY = 2};
     enum {E_NMB_GEN_PWM_CQM = 2};
@@ -46,20 +46,17 @@ private:
     const QString c_nameGenRegulator[E_NMB_GEN_REGULATOR] = {"PROPORCIAL", "INTEGRAL", "DERIVATIVE", "Period (10 - 1000 ms)"};
     const QString c_nameGenTestTherapy[E_NMB_GEN_TESTTHERAPY] = {"Duty factor (20 - 100 %)", "Frequency (25 - 200 Hz)"};
     const QString c_nameGenCQM[E_NMB_GEN_PWM_CQM] = {"ch_1 (1000 - 100000 Hz)", "ch_2 (1000 - 100000 Hz)"};
-    const QString coeffsOthersNameMultiple[E_NMB_GEN_OTHERS] = {"for power", "NOT_USED", "NOT_USED", "NOT_USED", "NOT_USED", "NOT_USED", "NOT_USED", "NOT_USED", "NOT_USED"};
-    const QString coeffsOthersNameAdditive[E_NMB_GEN_OTHERS] = {"for power", "for phase (0 - pi/2) [rad]", "max refl ratio (0.0 - 1.0)", "max PWM to amp (0.1 - 0.9)", "max diff power regulator (0 - 100) [%]", "refer. imp. magnitude", "refer. imp. phase (0 - pi/2) [rad]", "max refl ratio (0.0 - 1.0)", "R_cqm max/min [ohm]"};
+    const QString coeffsOthers[E_NMB_GEN_OTHERS] = {"power max", "power min", "for phase (0 - pi/2) [rad]", "max refl ratio (0.0 - 1.0)", "max PWM to amp (0.1 - 0.9)", "max diff power regulator (0 - 100) [%]", "refer. imp. magnitude", "refer. imp. phase (0 - pi/2) [rad]", "max refl ratio (0.0 - 1.0)", "R_cqm max [ohm]", "R_cqm min [ohm]"};
 
 
     const QStringList c_defaultValueGenAdcMul[E_GEN_ADC_NMB] = { \
         {"1.0", "1.0", "1.0", "1.0", "1.0", "1.0", "1.0", "1.0", "1.0"}, \
         {"52.2082", "1.0", "5.4", "1.0", "5.4359", "1.0", "0.4384"}, \
-        {"1.0", "1.0", "1.0", "1.0", "1.0", "1.0"}, \
-        {"1.1154", "1.0", "1.0", "1.0", "1.0", "1.0", "1.0", "1.0", "1.0"}};
+        {"1.0", "1.0", "1.0", "1.0", "1.0", "1.0"}};
     const QStringList c_defaultValueGenAdcAdd[E_GEN_ADC_NMB] = { \
         {"0.0", "0.0", "0.0", "0.0", "0.0", "0.0", "0.0", "0.0", "0.0"}, \
         {"2422", "0.0", "316", "0.0", "274.35", "0.0", "22.733"}, \
-        {"0.0", "0.0", "0.0", "0.0", "0.0", "0.0"}, \
-        {"0.0", "-0.087", "1", "0.5", "2000", "0.0", "0.0", "0.0", "0.0"}};
+        {"0.0", "0.0", "0.0", "0.0", "0.0", "0.0"}};
     const QStringList c_defaultValueAmpAdcMul[E_AMP_ADC_NMB] = { \
         {"10", "191.27", "1.777", "1.777", "3.27", "3.27", "36.666", "3.05"}, \
         {"1.0", "1.0", "1.0", "1.0", "1.0", "1.0", "1.0", "1.0"}};
