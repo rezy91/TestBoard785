@@ -158,26 +158,72 @@ widgetConfig::widgetConfig(QWidget *parent) : QWidget(parent)
         });
     }
 
-    connect(buttSendGenRegulator,&QPushButton::clicked,[=](bool clicked){
+    connect(buttSendGenOther,&QPushButton::clicked,[=](bool clicked){
 
         Q_UNUSED(clicked);
 
         QString SaveData;
-        QString strCmd = QString("%1").arg(QString::number(PID_SET_REGULATOR, 16));
+        QString strCmd = QString("%1").arg(QString::number(PID_SET_OTHERS, 16));
 
-        for(int iChannel = 0; iChannel < E_NMB_GEN_REGULATOR - 1; iChannel++)
+        for(int iChannel = 0; iChannel < E_NMB_GEN_OTHERS; iChannel++)
         {
-            float flNmb = lineInputGenRegulator[iChannel]->text().toFloat();
+            float flNmb = lineInputGenOthers[iChannel]->text().toFloat();
             QByteArray arrFloatInArraysDec(reinterpret_cast<const char *>(&flNmb), sizeof (flNmb));
             QByteArray arrFloatInArraysHexa = arrFloatInArraysDec.toHex();
             strCmd += QString(arrFloatInArraysHexa);
             SaveData.append(QString("%1").arg(QString::number(flNmb)) + " ");
         }
 
-        strCmd += QString::number(lineInputGenRegulator[E_NMB_GEN_REGULATOR - 1]->text().toInt(), 16).rightJustified(2 * 2, '0');
-        SaveData.append(QString("%1").arg(QString::number(lineInputGenRegulator[E_NMB_GEN_REGULATOR - 1]->text().toInt())) + " ");
+        emit SaveOthers(SaveData);
+        emit SendV200specific(strCmd);
+        emit SendReferenceImpedance(lineInputGenOthers[6]->text().toFloat(), lineInputGenOthers[7]->text().toFloat(), lineInputGenOthers[8]->text().toFloat(), lineInputGenOthers[3]->text().toFloat());
+    });
 
-        emit SaveRegulator(SaveData);
+    connect(buttSendGenRegulatorPower,&QPushButton::clicked,[=](bool clicked){
+
+        Q_UNUSED(clicked);
+
+        QString SaveData;
+        QString strCmd = QString("%1").arg(QString::number(PID_SET_REGULATOR_POWER, 16));
+
+        for(int iChannel = 0; iChannel < E_NMB_GEN_REGULATOR_POWER - 1; iChannel++)
+        {
+            float flNmb = lineInputGenRegulatorPower[iChannel]->text().toFloat();
+            QByteArray arrFloatInArraysDec(reinterpret_cast<const char *>(&flNmb), sizeof (flNmb));
+            QByteArray arrFloatInArraysHexa = arrFloatInArraysDec.toHex();
+            strCmd += QString(arrFloatInArraysHexa);
+            SaveData.append(QString("%1").arg(QString::number(flNmb)) + " ");
+        }
+
+        strCmd += QString::number(lineInputGenRegulatorPower[E_NMB_GEN_REGULATOR_POWER - 1]->text().toInt(), 16).rightJustified(2 * 2, '0');
+        SaveData.append(QString("%1").arg(QString::number(lineInputGenRegulatorPower[E_NMB_GEN_REGULATOR_POWER - 1]->text().toInt())) + " ");
+
+        emit SaveRegulatorPower(SaveData);
+        emit SendV200specific(strCmd);
+    });
+
+    connect(buttSendGenRegulatorCooling,&QPushButton::clicked,[=](bool clicked){
+
+        Q_UNUSED(clicked);
+
+        QString SaveData;
+        QString strCmd = QString("%1").arg(QString::number(PID_SET_REGULATOR_COOLING, 16));
+
+        for(int iChannel = 0; iChannel < E_NMB_GEN_REGULATOR_COOLING - 2; iChannel++)
+        {
+            float flNmb = lineInputGenRegulatorCooling[iChannel]->text().toFloat();
+            QByteArray arrFloatInArraysDec(reinterpret_cast<const char *>(&flNmb), sizeof (flNmb));
+            QByteArray arrFloatInArraysHexa = arrFloatInArraysDec.toHex();
+            strCmd += QString(arrFloatInArraysHexa);
+            SaveData.append(QString("%1").arg(QString::number(flNmb)) + " ");
+        }
+
+        strCmd += QString::number(lineInputGenRegulatorCooling[E_NMB_GEN_REGULATOR_COOLING - 2]->text().toInt(), 16).rightJustified(2 * 2, '0');
+        SaveData.append(QString("%1").arg(QString::number(lineInputGenRegulatorCooling[E_NMB_GEN_REGULATOR_COOLING - 2]->text().toInt())) + " ");
+        strCmd += QString::number(lineInputGenRegulatorCooling[E_NMB_GEN_REGULATOR_COOLING - 1]->text().toInt(), 16).rightJustified(1 * 2, '0');
+        SaveData.append(QString("%1").arg(QString::number(lineInputGenRegulatorCooling[E_NMB_GEN_REGULATOR_COOLING - 1]->text().toInt())) + " ");
+
+        emit SaveRegulatorCooling(SaveData);
         emit SendV200specific(strCmd);
     });
 
@@ -308,25 +354,69 @@ void widgetConfig::ReadAdcData(QString type, QString device, int index, QString 
     }
 }
 
-void widgetConfig::ReadRegulator(QString data)
+void widgetConfig::ReadOthers(QString data)
 {
     QStringList arrListSaved;
     arrListSaved = data.split(QRegExp("\\s+"));
 
-    if((arrListSaved.count() - 1) == E_NMB_GEN_REGULATOR)
+    if((arrListSaved.count() - 1) == E_NMB_GEN_OTHERS)
     {
-        for(int iLoop = 0; iLoop < E_NMB_GEN_REGULATOR - 1; iLoop++)
+        for(int iLoop = 0; iLoop < E_NMB_GEN_OTHERS - 1; iLoop++)
         {
-            lineInputGenRegulator[iLoop]->setText(arrListSaved.at(iLoop));
+            lineInputGenOthers[iLoop]->setText(arrListSaved.at(iLoop));
         }
 
-        lineInputGenRegulator[E_NMB_GEN_REGULATOR - 1]->setText(arrListSaved.at(E_NMB_GEN_REGULATOR - 1));
+        lineInputGenOthers[E_NMB_GEN_OTHERS - 1]->setText(arrListSaved.at(E_NMB_GEN_OTHERS - 1));
     }
     else
     {
-        for(int iLoop = 0; iLoop < E_NMB_GEN_REGULATOR; iLoop++)
+        for(int iLoop = 0; iLoop < E_NMB_GEN_OTHERS; iLoop++)
         {
-            lineInputGenRegulator[iLoop]->setText(c_defaultRegulator[iLoop]);
+            lineInputGenOthers[iLoop]->setText(c_defaultOthers[iLoop]);
+        }
+    }
+
+    emit SendReferenceImpedance(lineInputGenOthers[6]->text().toFloat(), lineInputGenOthers[7]->text().toFloat(), lineInputGenOthers[8]->text().toFloat(), lineInputGenOthers[3]->text().toFloat());
+}
+
+void widgetConfig::ReadRegulatorPower(QString data)
+{
+    QStringList arrListSaved;
+    arrListSaved = data.split(QRegExp("\\s+"));
+
+    if((arrListSaved.count() - 1) == E_NMB_GEN_REGULATOR_POWER)
+    {
+        for(int iLoop = 0; iLoop < E_NMB_GEN_REGULATOR_POWER; iLoop++)
+        {
+            lineInputGenRegulatorPower[iLoop]->setText(arrListSaved.at(iLoop));
+        }
+    }
+    else
+    {
+        for(int iLoop = 0; iLoop < E_NMB_GEN_REGULATOR_POWER; iLoop++)
+        {
+            lineInputGenRegulatorPower[iLoop]->setText(c_defaultRegulatorPower[iLoop]);
+        }
+    }
+}
+
+void widgetConfig::ReadRegulatorCooling(QString data)
+{
+    QStringList arrListSaved;
+    arrListSaved = data.split(QRegExp("\\s+"));
+
+    if((arrListSaved.count() - 1) == E_NMB_GEN_REGULATOR_COOLING)
+    {
+        for(int iLoop = 0; iLoop < E_NMB_GEN_REGULATOR_COOLING; iLoop++)
+        {
+            lineInputGenRegulatorCooling[iLoop]->setText(arrListSaved.at(iLoop));
+        }
+    }
+    else
+    {
+        for(int iLoop = 0; iLoop < E_NMB_GEN_REGULATOR_COOLING; iLoop++)
+        {
+            lineInputGenRegulatorCooling[iLoop]->setText(c_defaultRegulatorCooling[iLoop]);
         }
     }
 }
@@ -499,19 +589,55 @@ QGroupBox *widgetConfig::createConfigGenGroup()
 
     dw_GridOffsetColumn = E_GEN_ADC_NMB * 3;
 
-    childLayout->addWidget(createNewLabel("Regulator"), dw_GridOffsetColumn + 1, 0, Qt::AlignCenter);
 
-    for(int iLoop = 0; iLoop < E_NMB_GEN_REGULATOR; iLoop++)
+
+
+    childLayout->addWidget(createNewLabel("Others"), dw_GridOffsetColumn + 1, 0, Qt::AlignCenter);
+
+    for(int iLoop = 0; iLoop < E_NMB_GEN_OTHERS; iLoop++)
     {
-        childLayout->addWidget(createNewLabel(c_nameGenRegulator[iLoop]), dw_GridOffsetColumn, 1 + iLoop, Qt::AlignCenter);
-        lineInputGenRegulator[iLoop] = new QLineEdit();
-        lineInputGenRegulator[iLoop]->setMaximumWidth(dw_LengthLineEdit);
-        childLayout->addWidget(lineInputGenRegulator[iLoop], dw_GridOffsetColumn + 1, 1 + iLoop, Qt::AlignCenter);
+        childLayout->addWidget(createNewLabel(c_nameOthers[iLoop]), dw_GridOffsetColumn, 1 + iLoop, Qt::AlignCenter);
+        lineInputGenOthers[iLoop] = new QLineEdit();
+        lineInputGenOthers[iLoop]->setMaximumWidth(dw_LengthLineEdit);
+        childLayout->addWidget(lineInputGenOthers[iLoop], dw_GridOffsetColumn + 1, 1 + iLoop, Qt::AlignCenter);
     }
 
-    buttSendGenRegulator = new QPushButton("Send");
-    childLayout->addWidget(buttSendGenRegulator, dw_GridOffsetColumn + 1, E_NMB_GEN_REGULATOR + 1, Qt::AlignCenter);
+    buttSendGenOther = new QPushButton("Send");
+    childLayout->addWidget(buttSendGenOther, dw_GridOffsetColumn + 1, E_NMB_GEN_OTHERS + 1, Qt::AlignCenter);
     dw_GridOffsetColumn += 2;
+
+
+
+    childLayout->addWidget(createNewLabel("Regulator power"), dw_GridOffsetColumn + 1, 0, Qt::AlignCenter);
+
+    for(int iLoop = 0; iLoop < E_NMB_GEN_REGULATOR_POWER; iLoop++)
+    {
+        childLayout->addWidget(createNewLabel(c_nameGenRegulatorPower[iLoop]), dw_GridOffsetColumn, 1 + iLoop, Qt::AlignCenter);
+        lineInputGenRegulatorPower[iLoop] = new QLineEdit();
+        lineInputGenRegulatorPower[iLoop]->setMaximumWidth(dw_LengthLineEdit);
+        childLayout->addWidget(lineInputGenRegulatorPower[iLoop], dw_GridOffsetColumn + 1, 1 + iLoop, Qt::AlignCenter);
+    }
+
+    buttSendGenRegulatorPower = new QPushButton("Send");
+    childLayout->addWidget(buttSendGenRegulatorPower, dw_GridOffsetColumn + 1, E_NMB_GEN_REGULATOR_POWER + 1, Qt::AlignCenter);
+    dw_GridOffsetColumn += 2;
+
+
+
+    childLayout->addWidget(createNewLabel("Regulator cooling"), dw_GridOffsetColumn + 1, 0, Qt::AlignCenter);
+
+    for(int iLoop = 0; iLoop < E_NMB_GEN_REGULATOR_COOLING; iLoop++)
+    {
+        childLayout->addWidget(createNewLabel(c_nameGenRegulatorCooling[iLoop]), dw_GridOffsetColumn, 1 + iLoop, Qt::AlignCenter);
+        lineInputGenRegulatorCooling[iLoop] = new QLineEdit();
+        lineInputGenRegulatorCooling[iLoop]->setMaximumWidth(dw_LengthLineEdit);
+        childLayout->addWidget(lineInputGenRegulatorCooling[iLoop], dw_GridOffsetColumn + 1, 1 + iLoop, Qt::AlignCenter);
+    }
+
+    buttSendGenRegulatorCooling = new QPushButton("Send");
+    childLayout->addWidget(buttSendGenRegulatorCooling, dw_GridOffsetColumn + 1, E_NMB_GEN_REGULATOR_COOLING + 1, Qt::AlignCenter);
+    dw_GridOffsetColumn += 2;
+
 
 
     childLayout->addWidget(createNewLabel("Test Therapy"), dw_GridOffsetColumn + 1, 0, Qt::AlignCenter);

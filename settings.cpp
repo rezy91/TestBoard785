@@ -105,14 +105,34 @@ QString settings::RestoreAdcData(const QString type, const QString device, const
     return RestoreValue(QString("adc%1%2%3").arg(type).arg(device).arg(nIndexAdc)).toString();
 }
 
-void settings::StoreRegulator(const QString strValue)
+void settings::StoreOthers(const QString strValue)
 {
-    StoreValue(QString("regulator"), strValue);
+      StoreValue(QString("Others"), strValue);
 }
 
-QString settings::RestoreRegulator() const
+QString settings::RestoreOthers() const
 {
-    return RestoreValue(QString("regulator")).toString();
+     return RestoreValue(QString("Others")).toString();
+}
+
+void settings::StoreRegulatorPower(const QString strValue)
+{
+    StoreValue(QString("RegulatorPower"), strValue);
+}
+
+QString settings::RestoreRegulatorPower() const
+{
+    return RestoreValue(QString("RegulatorPower")).toString();
+}
+
+void settings::StoreRegulatorCooling(const QString strValue)
+{
+        StoreValue(QString("RegulatorCooling"), strValue);
+}
+
+QString settings::RestoreRegulatorCooling() const
+{
+      return RestoreValue(QString("RegulatorCooling")).toString();
 }
 
 void settings::StoreTestTherapy(const QString strValue)

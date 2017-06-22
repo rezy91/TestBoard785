@@ -57,8 +57,12 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
 
     connect(p_WidgetConfig, &widgetConfig::SaveAdcData, appSettings, &settings::StoreAdcData);
     connect(this, &MainWindow::SendAdcData, p_WidgetConfig, &widgetConfig::ReadAdcData);
-    connect(p_WidgetConfig, &widgetConfig::SaveRegulator, appSettings, &settings::StoreRegulator);
-    connect(this, &MainWindow::SendRegulator, p_WidgetConfig, &widgetConfig::ReadRegulator);
+    connect(p_WidgetConfig, &widgetConfig::SaveOthers, appSettings, &settings::StoreOthers);
+    connect(this, &MainWindow::SendOthers, p_WidgetConfig, &widgetConfig::ReadOthers);
+    connect(p_WidgetConfig, &widgetConfig::SaveRegulatorPower, appSettings, &settings::StoreRegulatorPower);
+    connect(this, &MainWindow::SendRegulatorPower, p_WidgetConfig, &widgetConfig::ReadRegulatorPower);
+    connect(p_WidgetConfig, &widgetConfig::SaveRegulatorCooling, appSettings, &settings::StoreRegulatorCooling);
+    connect(this, &MainWindow::SendRegulatorCooling, p_WidgetConfig, &widgetConfig::ReadRegulatorCooling);
     connect(p_WidgetConfig, &widgetConfig::SaveTestTherapy, appSettings, &settings::StoreTestTherapy);
     connect(this, &MainWindow::SendTestTherapy, p_WidgetConfig, &widgetConfig::ReadTestTherapy);
     connect(p_WidgetConfig, &widgetConfig::SaveTestCqmFreq, appSettings, &settings::StoreCqmFreq);
@@ -91,7 +95,9 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
     emit SendSmithPoints(appSettings->RestoreSmithPoints());
 
 
-    emit SendRegulator(appSettings->RestoreRegulator());
+    emit SendOthers(appSettings->RestoreOthers());
+    emit SendRegulatorPower(appSettings->RestoreRegulatorPower());
+    emit SendRegulatorCooling(appSettings->RestoreRegulatorCooling());
     emit SendTestTherapy(appSettings->RestoreTestTherapy());
     emit SendTestCqmFreq(appSettings->RestoreCqmFreq());
     emit SendAmpFreq(appSettings->RestoreAmpFreq());

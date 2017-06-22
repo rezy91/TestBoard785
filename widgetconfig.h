@@ -27,7 +27,9 @@ signals:
 
 public slots:
     void ReadAdcData(QString type, QString device, int index, QString data);
-    void ReadRegulator(QString data);
+    void ReadOthers(QString data);
+    void ReadRegulatorPower(QString data);
+    void ReadRegulatorCooling(QString data);
     void ReadTestTherapy(QString data);
     void ReadTestCqmFreq(QString data);
 
@@ -36,17 +38,19 @@ private:
     enum {E_NMB_GEN_ADC2 = 7};
     enum {E_NMB_GEN_ADC3 = 6};
     enum {E_NMB_GEN_OTHERS = 11};
-    enum {E_NMB_GEN_REGULATOR = 4};
+    enum {E_NMB_GEN_REGULATOR_POWER = 4};
+    enum {E_NMB_GEN_REGULATOR_COOLING = 5};
     enum {E_NMB_GEN_TESTTHERAPY = 2};
     enum {E_NMB_GEN_PWM_CQM = 2};
 
     enum {E_NMB_AMP_ADC1 = 8};
     enum {E_NMB_AMP_ADC3 = 8};
 
-    const QString c_nameGenRegulator[E_NMB_GEN_REGULATOR] = {"PROPORCIAL", "INTEGRAL", "DERIVATIVE", "Period (10 - 1000 ms)"};
+    const QString c_nameGenRegulatorPower[E_NMB_GEN_REGULATOR_POWER] = {"PROPORCIAL", "INTEGRAL", "DERIVATIVE", "Period (10 - 1000 ms)"};
+    const QString c_nameGenRegulatorCooling[E_NMB_GEN_REGULATOR_COOLING] = {"PROPORCIAL", "INTEGRAL", "DERIVATIVE", "Period (10 - 10000 ms)", "min PWM [%]"};
     const QString c_nameGenTestTherapy[E_NMB_GEN_TESTTHERAPY] = {"Duty factor (20 - 100 %)", "Frequency (25 - 200 Hz)"};
     const QString c_nameGenCQM[E_NMB_GEN_PWM_CQM] = {"ch_1 (1000 - 100000 Hz)", "ch_2 (1000 - 100000 Hz)"};
-    const QString coeffsOthers[E_NMB_GEN_OTHERS] = {"power max", "power min", "for phase (0 - pi/2) [rad]", "max refl ratio (0.0 - 1.0)", "max PWM to amp (0.1 - 0.9)", "max diff power regulator (0 - 100) [%]", "refer. imp. magnitude", "refer. imp. phase (0 - pi/2) [rad]", "max refl ratio (0.0 - 1.0)", "R_cqm max [ohm]", "R_cqm min [ohm]"};
+    const QString c_nameOthers[E_NMB_GEN_OTHERS] = {"power max", "power min", "for phase (0 - pi/2) [rad]", "max refl ratio (0.0 - 1.0)", "max PWM to amp (0.1 - 0.9)", "max diff power regulator (0 - 100) [%]", "refer. imp. magnitude", "refer. imp. phase (0 - pi/2) [rad]", "max refl ratio (0.0 - 1.0)", "R_cqm max [ohm]", "R_cqm min [ohm]"};
 
 
     const QStringList c_defaultValueGenAdcMul[E_GEN_ADC_NMB] = { \
@@ -63,7 +67,9 @@ private:
     const QStringList c_defaultValueAmpAdcAdd[E_AMP_ADC_NMB] = { \
         {"0.0", "15.34", "0.0", "0.0", "0.0", "0.0", "0.0", "0.0"}, \
         {"0.0", "188.18", "188.18", "0.0", "0.0", "0.0", "0.0", "0.0"}};
-    const QString c_defaultRegulator[E_NMB_GEN_REGULATOR] = {"0.002", "0.001", "1", "10"};
+    const QString c_defaultOthers[E_NMB_GEN_OTHERS] = {"1.1154", "0.0", "-0.087", "1", "0.5", "2000", "0.0", "0.0", "0.0", "2", "-2"};
+    const QString c_defaultRegulatorPower[E_NMB_GEN_REGULATOR_POWER] = {"0.002", "0.001", "1", "10"};
+    const QString c_defaultRegulatorCooling[E_NMB_GEN_REGULATOR_COOLING] = {"0.002", "0.001", "1", "100", "15"};
     const QString c_defaultTestTherapy[E_NMB_GEN_TESTTHERAPY] = {"2", "20"};
     const QString c_defaultValuePwmCqm[E_NMB_GEN_PWM_CQM] = {"35000", "35000"};
 
@@ -72,20 +78,24 @@ private:
 
     QLineEdit *lineInputGenMulAdcx[E_GEN_ADC_NMB][E_NMB_GEN_ADC1];
     QLineEdit *lineInputGenAddAdcx[E_GEN_ADC_NMB][E_NMB_GEN_ADC1];
-    QLineEdit *lineInputGenRegulator[E_NMB_GEN_REGULATOR];
+    QLineEdit *lineInputGenOthers[E_NMB_GEN_OTHERS];
+    QLineEdit *lineInputGenPwmCqm[E_NMB_GEN_PWM_CQM];
+    QLineEdit *lineInputGenRegulatorPower[E_NMB_GEN_REGULATOR_POWER];
+    QLineEdit *lineInputGenRegulatorCooling[E_NMB_GEN_REGULATOR_COOLING];
     QLineEdit *lineInputGenTestTherapy[E_NMB_GEN_TESTTHERAPY];
 
     QPushButton* buttSendGenMulAdcx[E_GEN_ADC_NMB];
     QPushButton* buttSendGenAddAdcx[E_GEN_ADC_NMB];
-    QPushButton* buttSendGenRegulator;
+    QPushButton* buttSendGenOther;
+    QPushButton* buttSendGenPwmCqm;
+    QPushButton* buttSendGenRegulatorPower;
+    QPushButton* buttSendGenRegulatorCooling;
     QPushButton* buttSendGenTestTherapy;
 
     QLineEdit *lineInputAmpMulAdcx[E_AMP_ADC_NMB][E_NMB_AMP_ADC1];
     QLineEdit *lineInputAmpAddAdcx[E_AMP_ADC_NMB][E_NMB_AMP_ADC1];
-    QLineEdit *lineInputGenPwmCqm[E_NMB_GEN_PWM_CQM];
     QPushButton* buttSendAmpMulAdcx[E_AMP_ADC_NMB];
     QPushButton* buttSendAmpAddAdcx[E_AMP_ADC_NMB];
-    QPushButton* buttSendGenPwmCqm;
 
 
     QLabel *createNewLabel(const QString &text);
@@ -95,7 +105,9 @@ private:
 signals:
     void SendV200specific(QString msg);
     void SaveAdcData(QString type, QString device, int index, QString data);
-    void SaveRegulator(QString data);
+    void SaveOthers(QString data);
+    void SaveRegulatorPower(QString data);
+    void SaveRegulatorCooling(QString data);
     void SaveTestTherapy(QString data);
     void SaveTestCqmFreq(QString data);
 
