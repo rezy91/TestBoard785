@@ -110,10 +110,10 @@ void widgetTherapy::TherapyRuns(unsigned char stateTherapy)
 
     for(int iLoop = 0; iLoop < E_PARAMS_NMB; iLoop++)
     {
-       therapyParams[iLoop].slider->setEnabled(false);
+       therapyParams[iLoop].slider->setEnabled(stateTherapy == E_STATE_READY ? true : false);
     }
 
-    userButton->setChecked(stateTherapy == 2 ? true : false);
+    userButton->setChecked(stateTherapy == E_STATE_ON ? true : false);
 }
 
 void widgetTherapy::TherapyDoesnotRun()
@@ -148,7 +148,7 @@ void widgetTherapy::ReceivePartStatusReg(QByteArray value)
 
     unsigned char stateTherapy = (value.at(1) & 0xC0) >> 6;
 
-    if(stateTherapy != 0)
+    if(stateTherapy != E_STATE_OFF)
     {
         TherapyRuns(stateTherapy);
     }

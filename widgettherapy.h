@@ -20,6 +20,12 @@ public:
 private:
     enum{nmbChannelsAppls = 4};
 
+    enum TherapyState{
+      E_STATE_OFF,
+      E_STATE_READY,
+      E_STATE_ON
+    };
+
     enum parameters{
       E_POWER,
       E_DUTYCYCLE,
