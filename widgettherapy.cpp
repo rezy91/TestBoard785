@@ -1,5 +1,4 @@
 #include "widgettherapy.h"
-#include "common.h"
 
 #include <QStandardItemModel>
 
@@ -129,33 +128,14 @@ void widgetTherapy::TherapyDoesnotRun()
     }
 }
 
-void widgetTherapy::ReceivePartStatusReg(QByteArray value)
+void widgetTherapy::ReceiveStatusReg(STATUS_REGISTER eStatusReg)
 {
-    for(int iLoop = 0; iLoop < nmbChannelsAppls; iLoop++)
-    {
-        if(value.at(2) & (0x02 << iLoop))
-        {
-            //qDebug() << "channel" << iLoop << "connected";
-            qobject_cast<QStandardItemModel*>(listOfChannels->model())->item(iLoop + 1)->setEnabled(true);
-        }
-        else
-        {
-            //qDebug() << "channel" << iLoop << "disconnected";
-            qobject_cast<QStandardItemModel*>(listOfChannels->model())->item(iLoop + 1)->setEnabled(false);
-        }
-    }
+    qobject_cast<QStandardItemModel*>(listOfChannels->model())->item(1)->setEnabled(eStatusReg.m_Reg.m_Bit.StateAcc0 == 1 ? true : false);
+    qobject_cast<QStandardItemModel*>(listOfChannels->model())->item(2)->setEnabled(eStatusReg.m_Reg.m_Bit.StateAcc1 == 1 ? true : false);
+    qobject_cast<QStandardItemModel*>(listOfChannels->model())->item(3)->setEnabled(eStatusReg.m_Reg.m_Bit.StateAcc2 == 1 ? true : false);
+    qobject_cast<QStandardItemModel*>(listOfChannels->model())->item(4)->setEnabled(eStatusReg.m_Reg.m_Bit.StateAcc3 == 1 ? true : false);
 
-
-    unsigned char stateTherapy = (value.at(1) & 0xC0) >> 6;
-
-    if(stateTherapy != E_STATE_OFF)
-    {
-        TherapyRuns(stateTherapy);
-    }
-    else
-    {
-        TherapyDoesnotRun();
-    }
+    (eStatusReg.m_Reg.m_Bit.StateTherapy != E_STATE_OFF) ? TherapyRuns(eStatusReg.m_Reg.m_Bit.StateTherapy) : TherapyDoesnotRun();
 }
 
 void widgetTherapy::paintEvent(QPaintEvent *e)

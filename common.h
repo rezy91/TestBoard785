@@ -124,6 +124,7 @@ enum AMP_ADC_X
 };
 
 enum{nmbCurvesInGraph = 4};
+enum {E_NMB_BIT_FLAGS_STATUS = 32};
 
 const QString c_nameGen = "Gen";
 const QString c_nameAmp = "Amp";
@@ -142,5 +143,56 @@ const QStringList allAdxSignalsAmplf[NMB_ITEMS_TIMERS_AMPLF] = { \
     {"a3s_counter", "Temperature_1", "Temperature_2", "Temperature_3", "+24V_adc", "+10V_adc", "Vcheck", "ADC3_14", "ADC3_15"}, \
     {"ax_counter", "ax_exec", "ax_conv"}, \
     {"a1s_counter", "Vfet1Out", "Vfet2Out", "Ifet1Out", "Ifet2Out", "Vgate1Out", "Vgate2Out", "inputVolatge_ADC", "inputCurrent_ADC"}};
+
+
+typedef struct status_register
+{
+  union M_REG
+  {
+    uint32_t m_dwLong;
+    struct M_BIT
+    {
+      // byte 0
+      uint8_t ChangeAcc0          :1;   // bit 0
+      uint8_t ChangeAcc1          :1;   // bit 1
+      uint8_t ChangeAcc2          :1;   // bit 2
+      uint8_t ChangeAcc3          :1;   // bit 3
+      uint8_t Empty0              :1;   // bit 4
+      uint8_t SelfTestDone        :1;   // bit 5
+      uint8_t Restart             :1;   // bit 6
+      uint8_t Error               :1;   // bit 7
+      // byte 1
+      uint8_t ButtonPressed       :1;   // bit 8
+      uint8_t KeyChanged          :1;   // bit 9
+      uint8_t TherapyRunning      :1;   // bit 10
+      uint8_t ParChangedByMas     :1;   // bit 11
+      uint8_t ParChangedByApp     :1;   // bit 12
+      uint8_t SyncWaiting         :1;   // bit 13
+      uint8_t EmergencyPressed    :1;   // bit 14
+      uint8_t LogRequest          :1;   // bit 15
+      // byte 2
+      uint8_t ChangeSmartDevice0  :1;   // bit 16
+      uint8_t StateAcc0           :1;   // bit 17
+      uint8_t StateAcc1           :1;   // bit 18
+      uint8_t StateAcc2           :1;   // bit 19
+      uint8_t StateAcc3           :1;   // bit 20
+      uint8_t StateSmartDevice0   :1;   // bit 21
+      uint8_t BadContactPatient   :1;   // bit 22
+      uint8_t ContactNeutral      :1;   // bit 23
+      // byte 3
+      uint8_t ChoosedChannel      :2;   // bit 24 - 25
+      uint8_t reserve4            :1;   // bit 26
+      uint8_t reserve3            :1;   // bit 27
+      uint8_t reserve2            :1;   // bit 28
+      uint8_t reserve1            :1;   // bit 29
+      uint8_t StateTherapy        :2;   // bit 30 - 31
+    } m_Bit;
+  } m_Reg;
+  uint8_t m_bySetTemperaturePatient;
+  uint8_t m_byReserve;
+  uint16_t m_wMeasuredPower;
+  uint16_t m_wSetPower;
+  int16_t m_wMeasuredTemperaturePatient;
+} STATUS_REGISTER;
 
 #endif // COMMON_H

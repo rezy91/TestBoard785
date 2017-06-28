@@ -78,7 +78,8 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
     connect(p_widgetSettings, &widgetSettings::SaveGenPwr, appSettings, &settings::StoreGenPwr);
     connect(this, &MainWindow::SendGenPwr, p_widgetSettings, &widgetSettings::ReadGenPwr);
 
-    connect(this, &MainWindow::SendStatusReg, p_WidgetTherapy, &widgetTherapy::ReceivePartStatusReg);
+    connect(this, &MainWindow::SendStatusReg, p_WidgetTherapy, &widgetTherapy::ReceiveStatusReg);
+    connect(this, &MainWindow::SendStatusReg, p_WidgetReading, &widgetReading::ReceiveStatusReg);
 
     connect(p_WidgetConfig, &widgetConfig::SendReferenceImpedance, p_WidgetSmith, &widgetSmith::ReadReferenceImpedance);
 
@@ -181,7 +182,7 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
         HasTimerInputExpired(GENERATOR_SOURCE);
         HasTimerInputExpired(AMPLIFIER_SOURCE);
 
-        if(++mMainTimer >= 500)//only for some tests
+        if(++mMainTimer >= 100)//Read Status register each xxx ms
         {
             mMainTimer = 0;
 
@@ -511,7 +512,19 @@ void MainWindow::newDataV200(QByteArray aData)
     }
     else
     {
-       emit SendStatusReg(aData);
+        STATUS_REGISTER eStatusReg;
+
+        eStatusReg.m_Reg.m_dwLong = uint32_t(aData.at(1) << 24) & 0xFF000000;
+        eStatusReg.m_Reg.m_dwLong |= uint32_t(aData.at(2) << 16) & 0x00FF0000;
+        eStatusReg.m_Reg.m_dwLong |= uint32_t(aData.at(3) << 8) & 0x0000FF00;
+        eStatusReg.m_Reg.m_dwLong |= uint32_t(aData.at(4)) & 0x000000FF;
+        eStatusReg.m_bySetTemperaturePatient = aData.at(5);
+        eStatusReg.m_byReserve = aData.at(6);
+        eStatusReg.m_wMeasuredPower = uint16_t(uint16_t(aData.at(7) << 8) & 0xFF00) | (uint16_t(aData.at(8)) & 0x00FF);
+        eStatusReg.m_wSetPower = uint16_t(uint16_t(aData.at(9) << 8) & 0xFF00) | (uint16_t(aData.at(10)) & 0x00FF);
+        eStatusReg.m_wMeasuredTemperaturePatient = int16_t(uint16_t(aData.at(11) << 8) & 0xFF00) | (uint16_t(aData.at(12)) & 0x00FF);
+
+       emit SendStatusReg(eStatusReg);
     }
 }
 

@@ -196,7 +196,7 @@ signals:
     void SendAmpPwm(QString values);
     void SendGenPwm(QString values);
     void SendGenPwr(QString values);
-    void SendStatusReg(QByteArray value);
+    void SendStatusReg(STATUS_REGISTER eStatusReg);
 
 protected:
     void closeEvent(QCloseEvent *event) override;

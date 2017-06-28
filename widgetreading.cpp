@@ -1,6 +1,7 @@
 #include "widgetreading.h"
 
 #include <QDesktopServices>
+#include <QLabel>
 
 widgetReading::widgetReading(QWidget *parent) : QWidget(parent)
 {
@@ -26,8 +27,26 @@ widgetReading::widgetReading(QWidget *parent) : QWidget(parent)
         }
     }
 
-    chBoxGen[4]->setEnabled(false);
+    for(int iLoop = 0; iLoop < E_NMB_BIT_FLAGS_STATUS / 2; iLoop++)
+    {
+        chBoxBitStatus[iLoop] = new QCheckBox(allNamesBitStatus[iLoop], this);
+        qGridLyout->addWidget(chBoxBitStatus[iLoop], iLoop, 4, Qt::AlignLeft);
+    }
 
+    for(int iLoop = 0; iLoop < E_NMB_BIT_FLAGS_STATUS / 2; iLoop++)
+    {
+        chBoxBitStatus[E_NMB_BIT_FLAGS_STATUS / 2 + iLoop] = new QCheckBox(allNamesBitStatus[E_NMB_BIT_FLAGS_STATUS / 2 + iLoop], this);
+        qGridLyout->addWidget(chBoxBitStatus[E_NMB_BIT_FLAGS_STATUS / 2 + iLoop], iLoop, 5, Qt::AlignLeft);
+    }
+
+    for(int iLoop = 0; iLoop < E_NMB_ITEMS_STATUS; iLoop++)
+    {
+        lineInputItemsStatus[iLoop] = new QLineEdit(this);
+        qGridLyout->addWidget(new QLabel(allNamesItemsStatus[iLoop]), iLoop, 6, Qt::AlignRight);
+        qGridLyout->addWidget(lineInputItemsStatus[iLoop], iLoop, 7, Qt::AlignLeft);
+    }
+
+    chBoxGen[4]->setEnabled(false);
     chBoxAmp[2]->setEnabled(false);
 
 
@@ -93,6 +112,92 @@ void widgetReading::ReadTimeRequests(bool device, int index, int value)
     {
         generTimes[index]->setValue(value);
     }
+}
+
+void widgetReading::ReceiveStatusReg(STATUS_REGISTER eStatusReg)
+{
+    chBoxBitStatus[0]->setChecked(eStatusReg.m_Reg.m_Bit.ChangeAcc0 == 1 ? true : false);
+    chBoxBitStatus[1]->setChecked(eStatusReg.m_Reg.m_Bit.ChangeAcc1 == 1 ? true : false);
+    chBoxBitStatus[2]->setChecked(eStatusReg.m_Reg.m_Bit.ChangeAcc2 == 1 ? true : false);
+    chBoxBitStatus[3]->setChecked(eStatusReg.m_Reg.m_Bit.ChangeAcc3 == 1 ? true : false);
+    chBoxBitStatus[4]->setChecked(eStatusReg.m_Reg.m_Bit.Empty0 == 1 ? true : false);
+    chBoxBitStatus[5]->setChecked(eStatusReg.m_Reg.m_Bit.SelfTestDone == 1 ? true : false);
+    chBoxBitStatus[6]->setChecked(eStatusReg.m_Reg.m_Bit.Restart == 1 ? true : false);
+    chBoxBitStatus[7]->setChecked(eStatusReg.m_Reg.m_Bit.Error == 1 ? true : false);
+    chBoxBitStatus[8]->setChecked(eStatusReg.m_Reg.m_Bit.ButtonPressed == 1 ? true : false);
+    chBoxBitStatus[9]->setChecked(eStatusReg.m_Reg.m_Bit.KeyChanged == 1 ? true : false);
+    chBoxBitStatus[10]->setChecked(eStatusReg.m_Reg.m_Bit.TherapyRunning == 1 ? true : false);
+    chBoxBitStatus[11]->setChecked(eStatusReg.m_Reg.m_Bit.ParChangedByMas == 1 ? true : false);
+    chBoxBitStatus[12]->setChecked(eStatusReg.m_Reg.m_Bit.ParChangedByApp == 1 ? true : false);
+    chBoxBitStatus[13]->setChecked(eStatusReg.m_Reg.m_Bit.SyncWaiting == 1 ? true : false);
+    chBoxBitStatus[14]->setChecked(eStatusReg.m_Reg.m_Bit.EmergencyPressed == 1 ? true : false);
+    chBoxBitStatus[15]->setChecked(eStatusReg.m_Reg.m_Bit.LogRequest == 1 ? true : false);
+
+    chBoxBitStatus[16]->setChecked(eStatusReg.m_Reg.m_Bit.ChangeSmartDevice0 == 1 ? true : false);
+    chBoxBitStatus[17]->setChecked(eStatusReg.m_Reg.m_Bit.StateAcc0 == 1 ? true : false);
+    chBoxBitStatus[18]->setChecked(eStatusReg.m_Reg.m_Bit.StateAcc1 == 1 ? true : false);
+    chBoxBitStatus[19]->setChecked(eStatusReg.m_Reg.m_Bit.StateAcc2 == 1 ? true : false);
+    chBoxBitStatus[20]->setChecked(eStatusReg.m_Reg.m_Bit.StateAcc3 == 1 ? true : false);
+    chBoxBitStatus[21]->setChecked(eStatusReg.m_Reg.m_Bit.StateSmartDevice0 == 1 ? true : false);
+    chBoxBitStatus[22]->setChecked(eStatusReg.m_Reg.m_Bit.BadContactPatient == 1 ? true : false);
+    chBoxBitStatus[23]->setChecked(eStatusReg.m_Reg.m_Bit.ContactNeutral == 1 ? true : false);
+
+
+    if(eStatusReg.m_Reg.m_Bit.ChoosedChannel == 3)
+    {
+        chBoxBitStatus[24]->setChecked(true);
+        chBoxBitStatus[25]->setChecked(true);
+    }
+    else if(eStatusReg.m_Reg.m_Bit.ChoosedChannel == 2)
+    {
+        chBoxBitStatus[24]->setChecked(false);
+        chBoxBitStatus[25]->setChecked(true);
+    }
+    else if(eStatusReg.m_Reg.m_Bit.ChoosedChannel == 1)
+    {
+        chBoxBitStatus[24]->setChecked(true);
+        chBoxBitStatus[25]->setChecked(false);
+    }
+    else if(eStatusReg.m_Reg.m_Bit.ChoosedChannel == 0)
+    {
+        chBoxBitStatus[24]->setChecked(false);
+        chBoxBitStatus[25]->setChecked(false);
+    }
+
+    chBoxBitStatus[26]->setChecked(eStatusReg.m_Reg.m_Bit.reserve4 == 1 ? true : false);
+    chBoxBitStatus[27]->setChecked(eStatusReg.m_Reg.m_Bit.reserve3 == 1 ? true : false);
+    chBoxBitStatus[28]->setChecked(eStatusReg.m_Reg.m_Bit.reserve2 == 1 ? true : false);
+    chBoxBitStatus[29]->setChecked(eStatusReg.m_Reg.m_Bit.reserve1 == 1 ? true : false);
+
+    if(eStatusReg.m_Reg.m_Bit.StateTherapy == 3)
+    {
+        chBoxBitStatus[30]->setChecked(true);
+        chBoxBitStatus[31]->setChecked(true);
+    }
+    else if(eStatusReg.m_Reg.m_Bit.StateTherapy == 2)
+    {
+        chBoxBitStatus[30]->setChecked(false);
+        chBoxBitStatus[31]->setChecked(true);
+    }
+    else if(eStatusReg.m_Reg.m_Bit.StateTherapy == 1)
+    {
+        chBoxBitStatus[30]->setChecked(true);
+        chBoxBitStatus[31]->setChecked(false);
+    }
+    else if(eStatusReg.m_Reg.m_Bit.StateTherapy == 0)
+    {
+        chBoxBitStatus[30]->setChecked(false);
+        chBoxBitStatus[31]->setChecked(false);
+    }
+
+
+
+    lineInputItemsStatus[0]->setText(QString("%1").arg(QString::number(eStatusReg.m_byReserve)));
+    lineInputItemsStatus[1]->setText(QString("%1").arg(QString::number(eStatusReg.m_wMeasuredPower)));
+    lineInputItemsStatus[2]->setText(QString("%1").arg(QString::number(eStatusReg.m_wSetPower)));
+    double dbTempPatient = (float)eStatusReg.m_wMeasuredTemperaturePatient / 100.0f;
+    lineInputItemsStatus[3]->setText(QString("%1").arg(QString::number(dbTempPatient)));
+    lineInputItemsStatus[4]->setText(QString("%1").arg(QString::number(eStatusReg.m_bySetTemperaturePatient)));
 }
 
 void widgetReading::paintEvent(QPaintEvent* e)

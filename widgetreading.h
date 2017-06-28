@@ -13,6 +13,7 @@
 #include <QGridLayout>
 #include <QCheckBox>
 #include <QSpinBox>
+#include <QLineEdit>
 
 #include "common.h"
 
@@ -30,10 +31,20 @@ signals:
 public slots:
     void showTextLog(QString showText);
     void ReadTimeRequests(bool device, int index, int value);
+    void ReceiveStatusReg(STATUS_REGISTER eStatusReg);
 
 private:
-    const QString allNamesAmp[NMB_ITEMS_TIMERS_AMPLF] = {"AMP ADC3 adjusted [ms]", "AMP ADC3 average [ms]", "AMP ADC1 adjusted [ms]", "AMP ADC1 average [ms]"};
-    const QString allNamesGen[NMB_ITEMS_TIMERS_GENER] = {"GEN ADC3 adjusted [ms]", "GEN ADC3 average [ms]", "GEN ADC2 adjusted [ms]", "GEN ADC2 average [ms]", "GEN ADC1 adjusted [ms]", "GEN ADC1 average [ms]"};
+    enum{E_NMB_ITEMS_STATUS = 5};
+
+    const QString allNamesAmp[NMB_ITEMS_TIMERS_AMPLF] = {"AMP ADC3 adjusted [ms]", "AMP ADC3 raw [ms]", "AMP ADC1 adjusted [ms]", "AMP ADC1 raw [ms]"};
+    const QString allNamesGen[NMB_ITEMS_TIMERS_GENER] = {"GEN Cooling [ms]", "GEN ADC3 raw [ms]", "GEN Impedance [ms]", "GEN ADC2 raw [ms]", \
+                                                         "GEN ADC1 adjusted [ms]", "GEN ADC1 raw [ms]"};
+    const QString allNamesBitStatus[E_NMB_BIT_FLAGS_STATUS] = {"ChangeAcc0", "ChangeAcc1", "ChangeAcc2", "ChangeAcc3", "Empty0", "SelfTestDone", "Restart", "Error", \
+                                                               "ButtonPressed", "KeyChanged", "TherapyRunning", "ParChangedByMas", "arChangedByApp", "SyncWaiting", \
+                                                               "EmergencyPressed", "LogRequest", "ChangeSmartDevice0", "StateAcc0", "StateAcc1", "StateAcc2", "StateAcc3", \
+                                                               "StateSmartDevice0", "BadContactPatient", "ContactNeutral", "ChoosedChannel_L", "ChoosedChannel_H", "reserve4", \
+                                                               "reserve3", "reserve2", "reserve1", "StateTherapy_L", "StateTherapy_H"};
+    const QString allNamesItemsStatus[E_NMB_ITEMS_STATUS] = {"Reserve", "Measured power [W]", "Set power [W]", "Measured temperature of patient [°C]", "Set temperature of patient [°C]"};
 
     QSize currSize;
 
@@ -46,6 +57,8 @@ private:
     QGridLayout* qGridLyout = new QGridLayout(this);
     QCheckBox* chBoxAmp[NMB_ITEMS_TIMERS_AMPLF];
     QCheckBox* chBoxGen[NMB_ITEMS_TIMERS_GENER];
+    QCheckBox* chBoxBitStatus[E_NMB_BIT_FLAGS_STATUS];
+    QLineEdit *lineInputItemsStatus[E_NMB_ITEMS_STATUS];
 
 protected:
     virtual void paintEvent(QPaintEvent*e);

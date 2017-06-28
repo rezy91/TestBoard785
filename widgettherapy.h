@@ -11,6 +11,8 @@
 #include <QComboBox>
 #include <QRadioButton>
 
+#include "common.h"
+
 class widgetTherapy : public QWidget
 {
     Q_OBJECT
@@ -60,7 +62,7 @@ signals:
     void SendV200specific(QString msg);
 
 public slots:
-    void ReceivePartStatusReg(QByteArray value);
+    void ReceiveStatusReg(STATUS_REGISTER eStatusReg);
 
 protected:
     void paintEvent(QPaintEvent*e);
