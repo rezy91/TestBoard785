@@ -36,12 +36,6 @@
 #include "widgettherapy.h"
 
 
-
-#define PID_TIMERS_ADCX_GENER              40
-#define PID_TIMER_INPUT_GENER              (PID_TIMERS_ADCX_GENER + NMB_ITEMS_TIMERS_GENER)
-#define PID_TIMERS_ADCX_AMPLF              30
-#define PID_TIMER_INPUT_AMPLF              (PID_TIMERS_ADCX_AMPLF + NMB_ITEMS_TIMERS_AMPLF)
-
 #define COLOR_BLUE_LIGHT        QColor(0,255,255)
 #define COLOR_BLUE_DARK         QColor(0,128,255)
 #define COLOR_BROWN_LIGHT       QColor(200,149,121)

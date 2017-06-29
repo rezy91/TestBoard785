@@ -81,7 +81,7 @@ typedef enum packet_id
   PID_READ_INPUT                      = 0x46,
   PID_SEND_ADCS_RAW_DATA              = 0x47,
   PID_SET_PWM_COOLS_DUTY              = 0x48,
-  PID_SET_DAC                         = 0x49,
+  PID_FREEEEEEEEEEEEE                 = 0x49,
   PID_SET_PWM_CQMS_FREQ               = 0x4A,
   PID_SET_ADC3_COEFFICIENTS_MULTIPLE  = 0x50,
   PID_SET_ADC3_COEFFICIENTS_ADDITIVE  = 0x51,

@@ -307,11 +307,11 @@ void MainWindow::onNewMsgReqReceived(Qt::CheckState m_newState, int m_device, in
 {
     if(m_device == 0)
     {
-        universalRequestMessageProtocol(m_newState, PID_TIMERS_ADCX_AMPLF + m_indexMsg);
+        universalRequestMessageProtocol(m_newState, QString::number(PID_SEND_AMP_TIMERS_RESULTS, 16).toInt() + m_indexMsg);
     }
     else if(m_device == 1)
     {
-        universalRequestMessageProtocol(m_newState, PID_TIMERS_ADCX_GENER + m_indexMsg);
+        universalRequestMessageProtocol(m_newState, QString::number(PID_SEND_ADC3_ADJUSTED_DATA_GENER, 16).toInt() + m_indexMsg);
     }
     //qDebug() << "slot occours";
 }
@@ -630,7 +630,7 @@ bool MainWindow::GetIndexFromQlist(MainWindow::SOURCE_DEVICE eSourceStream, int 
 
 void MainWindow::SetTimerRequests(int wIndex, bool bOnOff, QString sCommand, MainWindow::SOURCE_DEVICE eSourceStream)
 {
-    qint32 dwPidItems = (eSourceStream == GENERATOR_SOURCE) ? PID_TIMERS_ADCX_GENER : PID_TIMERS_ADCX_AMPLF;
+    qint32 dwPidItems = (eSourceStream == GENERATOR_SOURCE) ? QString::number(PID_SEND_ADC3_ADJUSTED_DATA_GENER, 16).toInt() : QString::number(PID_SEND_AMP_TIMERS_RESULTS, 16).toInt();
     qint32 dwVolumeItems = (eSourceStream == GENERATOR_SOURCE) ? NMB_ITEMS_TIMERS_GENER : NMB_ITEMS_TIMERS_AMPLF;
     PERIODIC_REQUEST* p_sRequests = (eSourceStream == GENERATOR_SOURCE) ? eRequestsGenerAdcx : eRequestsAmplifAdcx;
 
@@ -978,11 +978,11 @@ void MainWindow::universalRequestMessageProtocol(Qt::CheckState eState, int wInd
 
     qDebug() << strCmd;
 
-    if(wIndex == PID_TIMER_INPUT_GENER)
+    if(wIndex == PID_READ_INPUT)
     {
         SetTimerinput(eState == Qt::Unchecked ? false : true, strCmd, GENERATOR_SOURCE);
     }
-    else if(wIndex == PID_TIMER_INPUT_AMPLF)
+    else if(wIndex == PID_READ_AMP_INPUT)
     {
         SetTimerinput(eState == Qt::Unchecked ? false : true, strCmd, AMPLIFIER_SOURCE);
     }
