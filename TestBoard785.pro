@@ -11,7 +11,7 @@ greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 TEMPLATE = app
 
 APPNAME = Master_785_simulator
-MYVERSION = 0.1.3
+MYVERSION = 0.1.4
 
 
 CONFIG += c++11
@@ -52,13 +52,13 @@ RESOURCES += \
     resources.qrc
 
 win32 {
-    RC_FILE = app.rc
     TARGET = "$$APPNAME $$MYVERSION"
+    RC_FILE = app.rc
 }
 
 unix {
-    TARGET = Master_785_simulator
-    target.path = /opt/btl
+    TARGET = "$$APPNAME"
+    target.path = /opt/btl/bin
     INSTALLS += target
 }
 
