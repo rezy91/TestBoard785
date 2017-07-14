@@ -83,6 +83,8 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
 
     connect(p_WidgetConfig, &widgetConfig::SendReferenceImpedance, p_WidgetSmith, &widgetSmith::ReadReferenceImpedance);
 
+    connect(this, &MainWindow::SendFirmwareVersion, p_WidgetReading, &widgetReading::ReceiveFirmwareVersion);
+
 
     ui->comboBox_1->addItem(QString("Generator (ID = %1d)").arg(constGenerID));
     ui->comboBox_1->addItem(QString("Amplifier (ID = %1d)").arg(constAmpID));
@@ -394,8 +396,17 @@ void MainWindow::newDataV200(QByteArray aData)
     ui->statusBar->showMessage("Data received: " + QString(aData.toHex()));
     QStringList myStringOnlyNumbers = adjustRowDataIntoOnlyNumber(aData);
 
-    if(aData.at(0) == 'g')//Gener´s data
+    switch(aData.at(0))
     {
+    case 'g'://Gener´s data
+        AppendText(timeCurrent, QString(aData));
+
+        if(m_bSaveData)
+        {
+            m_oFile.write(myTimeStamp(timeCurrent).toUtf8() + "\t" + QString(aData).simplified().toUtf8() + "\r\n");
+            m_oFile.flush();
+        }
+
         if(aData.at(1) == '3' && aData.at(2) == 'c')//ADC3 adjusted data
         {
             recognizeIfDisplayNewDataAllSignals(timeCurrent, &myStringOnlyNumbers, 0);
@@ -455,9 +466,16 @@ void MainWindow::newDataV200(QByteArray aData)
                 eRequestGenerInput.isInProgress = false;
             }
         }
-    }
-    else if(aData.at(0) == 'a')//Amp´s data
-    {
+        break;
+    case 'a'://Amp´s data
+        AppendText(timeCurrent, QString(aData));
+
+        if(m_bSaveData)
+        {
+            m_oFile.write(myTimeStamp(timeCurrent).toUtf8() + "\t" + QString(aData).simplified().toUtf8() + "\r\n");
+            m_oFile.flush();
+        }
+
         if(aData.at(1) == 't')//timers adjusted data
         {
             recognizeIfDisplayNewDataAllSignals(timeCurrent, &myStringOnlyNumbers, NMB_ITEMS_TIMERS_GENER);
@@ -497,21 +515,8 @@ void MainWindow::newDataV200(QByteArray aData)
                 eRequestAmplfInput.isInProgress = false;
             }
         }
-    }
-
-
-    if(aData.at(0) != PID_REPLY_SEND_STATUS_REGISTER)
-    {
-        AppendText(timeCurrent, QString(aData));
-
-        if(m_bSaveData)
-        {
-            m_oFile.write(myTimeStamp(timeCurrent).toUtf8() + "\t" + QString(aData).simplified().toUtf8() + "\r\n");
-            m_oFile.flush();
-        }
-    }
-    else
-    {
+        break;
+    case PID_REPLY_SEND_STATUS_REGISTER:
         STATUS_REGISTER eStatusReg;
 
         eStatusReg.m_Reg.m_dwLong = uint32_t(aData.at(1) << 24) & 0xFF000000;
@@ -524,7 +529,104 @@ void MainWindow::newDataV200(QByteArray aData)
         eStatusReg.m_wSetPower = uint16_t(uint16_t(aData.at(9) << 8) & 0xFF00) | (uint16_t(aData.at(10)) & 0x00FF);
         eStatusReg.m_wMeasuredTemperaturePatient = int16_t(uint16_t(aData.at(11) << 8) & 0xFF00) | (uint16_t(aData.at(12)) & 0x00FF);
 
-       emit SendStatusReg(eStatusReg);
+        if(m_bGeneratorConnected == false)
+        {
+            m_bGeneratorConnected = true;
+
+            QString strCmd = QString("%1").arg(QString::number(PID_SEND_HW_CONFIG, 16));
+            strCmd += QString::number(2, 16).rightJustified(1 * 2, '0');
+            m_CommProt.data()->SendData(m_nDeviceAddress, QByteArray::fromHex(strCmd.toStdString().c_str()), true);
+        }
+
+        if(eStatusReg.m_Reg.m_Bit.StateSmartDevice0 && eStatusReg.m_Reg.m_Bit.ChangeSmartDevice0)
+        {
+            QString strCmd = QString("%1").arg(QString::number(PID_SEND_HW_CONFIG, 16));
+            strCmd += QString::number(14, 16).rightJustified(1 * 2, '0');
+            strCmd += QString::number(4, 16).rightJustified(1 * 2, '0');
+            m_CommProt.data()->SendData(m_nDeviceAddress, QByteArray::fromHex(strCmd.toStdString().c_str()), true);
+        }
+        else if(eStatusReg.m_Reg.m_Bit.StateSmartDevice0 == 0)
+        {
+            emit SendFirmwareVersion(4, 0);
+        }
+
+        if(eStatusReg.m_Reg.m_Bit.StateAcc0 && eStatusReg.m_Reg.m_Bit.ChangeAcc0)
+        {
+            QString strCmd = QString("%1").arg(QString::number(PID_SEND_HW_CONFIG, 16));
+            strCmd += QString::number(9, 16).rightJustified(1 * 2, '0');
+            m_CommProt.data()->SendData(m_nDeviceAddress, QByteArray::fromHex(strCmd.toStdString().c_str()), true);
+        }
+        else if(eStatusReg.m_Reg.m_Bit.StateAcc0 == 0)
+        {
+            emit SendFirmwareVersion(0, 0);
+        }
+
+        if(eStatusReg.m_Reg.m_Bit.StateAcc1 && eStatusReg.m_Reg.m_Bit.ChangeAcc1)
+        {
+            QString strCmd = QString("%1").arg(QString::number(PID_SEND_HW_CONFIG, 16));
+            strCmd += QString::number(10, 16).rightJustified(1 * 2, '0');
+            m_CommProt.data()->SendData(m_nDeviceAddress, QByteArray::fromHex(strCmd.toStdString().c_str()), true);
+        }
+        else if(eStatusReg.m_Reg.m_Bit.StateAcc1 == 0)
+        {
+            emit SendFirmwareVersion(1, 0);
+        }
+
+        if(eStatusReg.m_Reg.m_Bit.StateAcc2 && eStatusReg.m_Reg.m_Bit.ChangeAcc2)
+        {
+            QString strCmd = QString("%1").arg(QString::number(PID_SEND_HW_CONFIG, 16));
+            strCmd += QString::number(11, 16).rightJustified(1 * 2, '0');
+            m_CommProt.data()->SendData(m_nDeviceAddress, QByteArray::fromHex(strCmd.toStdString().c_str()), true);
+        }
+        else if(eStatusReg.m_Reg.m_Bit.StateAcc2 == 0)
+        {
+            emit SendFirmwareVersion(2, 0);
+        }
+
+        if(eStatusReg.m_Reg.m_Bit.StateAcc3 && eStatusReg.m_Reg.m_Bit.ChangeAcc3)
+        {
+            QString strCmd = QString("%1").arg(QString::number(PID_SEND_HW_CONFIG, 16));
+            strCmd += QString::number(12, 16).rightJustified(1 * 2, '0');
+            m_CommProt.data()->SendData(m_nDeviceAddress, QByteArray::fromHex(strCmd.toStdString().c_str()), true);
+        }
+        else if(eStatusReg.m_Reg.m_Bit.StateAcc3 == 0)
+        {
+            emit SendFirmwareVersion(3, 0);
+        }
+
+        emit SendStatusReg(eStatusReg);
+
+        break;
+    case PID_REPLY_SEND_HW_CONFIG:
+        if((aData.at(1) >= 9 && aData.at(1) <= 12) || aData.at(1) == 14 || aData.at(1) == 2)
+        {
+            int nReceivedBytes = (uchar(aData.at(2)) << 8) + uchar(aData.at(3));
+
+            if(nReceivedBytes >= 200)
+            {
+                uint nFirmwareVersion = (uchar(aData.at(4 + 88 + 3)) << 24) + (uchar(aData.at(4 + 88 + 2)) << 16) + (uchar(aData.at(4 + 88 + 1)) << 8) + uchar(aData.at(4 + 88));
+
+                int nIndex;
+
+                switch (aData.at(1))
+                {
+                case 2:
+                    nIndex = 5;
+                    break;
+                case 14:
+                    nIndex = 4;
+                    break;
+                default:
+                    nIndex = int(aData.at(1) - 9);
+                    break;
+                }
+
+                emit SendFirmwareVersion(nIndex, nFirmwareVersion);
+            }
+        }
+        break;
+    default:
+        break;
     }
 }
 

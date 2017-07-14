@@ -14,6 +14,7 @@
 #include <QCheckBox>
 #include <QSpinBox>
 #include <QLineEdit>
+#include <QLabel>
 
 #include "common.h"
 
@@ -32,9 +33,11 @@ public slots:
     void showTextLog(QString showText);
     void ReadTimeRequests(bool device, int index, int value);
     void ReceiveStatusReg(STATUS_REGISTER eStatusReg);
+    void ReceiveFirmwareVersion(int nIndex, uint nValue);
 
 private:
     enum{E_NMB_ITEMS_STATUS = 5};
+    enum{E_NMB_SLAVE_DEVICES = 6};
 
     const QString allNamesAmp[NMB_ITEMS_TIMERS_AMPLF] = {"AMP ADC3 adjusted [ms]", "AMP ADC3 raw [ms]", "AMP ADC1 adjusted [ms]", "AMP ADC1 raw [ms]"};
     const QString allNamesGen[NMB_ITEMS_TIMERS_GENER] = {"GEN Cooling [ms]", "GEN ADC3 raw [ms]", "GEN Impedance [ms]", "GEN ADC2 raw [ms]", \
@@ -44,7 +47,8 @@ private:
                                                                "EmergencyPressed", "LogRequest", "ChangeSmartDevice0", "StateAcc0", "StateAcc1", "StateAcc2", "StateAcc3", \
                                                                "StateSmartDevice0", "BadContactPatient", "ContactNeutral", "ChoosedChannel_L", "ChoosedChannel_H", "reserve4", \
                                                                "reserve3", "reserve2", "reserve1", "StateTherapy_L", "StateTherapy_H"};
-    const QString allNamesItemsStatus[E_NMB_ITEMS_STATUS] = {"Reserve", "Measured power [W]", "Set power [W]", "Measured temperature of patient [°C]", "Set temperature of patient [°C]"};
+    const QString allNamesItemsStatus[E_NMB_ITEMS_STATUS] = {"Reserve:", "Measured power [W]:", "Set power [W]:", "Measured temperature of patient [°C]:", "Set temperature of patient [°C]:"};
+    const QString allNamesFirmwareVersion[E_NMB_SLAVE_DEVICES] = {"Apl_large version:", "Apl_small1 version:", "Apl_small2 version:", "Apl_small3 version:", "Amplifier version:", "Generator version:"};
 
     QSize currSize;
 
@@ -58,7 +62,8 @@ private:
     QCheckBox* chBoxAmp[NMB_ITEMS_TIMERS_AMPLF];
     QCheckBox* chBoxGen[NMB_ITEMS_TIMERS_GENER];
     QCheckBox* chBoxBitStatus[E_NMB_BIT_FLAGS_STATUS];
-    QLineEdit *lineInputItemsStatus[E_NMB_ITEMS_STATUS];
+    QLabel* lineInputItemsStatus[E_NMB_ITEMS_STATUS];
+    QLabel* labelFirmwareVersion[E_NMB_SLAVE_DEVICES];
 
 protected:
     virtual void paintEvent(QPaintEvent*e);

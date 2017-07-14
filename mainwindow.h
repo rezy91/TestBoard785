@@ -121,6 +121,7 @@ private:
     bool flagIfSourceIsLoggedAmplf[NMB_ITEMS_TIMERS_AMPLF];
 
     bool m_bSaveData = false;
+    bool m_bGeneratorConnected = false;
     int sourceDataStream = NO_STREAM;
 
     QFile m_oFile;
@@ -191,6 +192,7 @@ signals:
     void SendGenPwm(QString values);
     void SendGenPwr(QString values);
     void SendStatusReg(STATUS_REGISTER eStatusReg);
+    void SendFirmwareVersion(int nIndex, uint nValue);
 
 protected:
     void closeEvent(QCloseEvent *event) override;

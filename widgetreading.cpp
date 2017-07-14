@@ -41,9 +41,17 @@ widgetReading::widgetReading(QWidget *parent) : QWidget(parent)
 
     for(int iLoop = 0; iLoop < E_NMB_ITEMS_STATUS; iLoop++)
     {
-        lineInputItemsStatus[iLoop] = new QLineEdit(this);
+        lineInputItemsStatus[iLoop] = new QLabel(this);
         qGridLyout->addWidget(new QLabel(allNamesItemsStatus[iLoop]), iLoop, 6, Qt::AlignRight);
         qGridLyout->addWidget(lineInputItemsStatus[iLoop], iLoop, 7, Qt::AlignLeft);
+    }
+
+
+    for(int iLoop = 0; iLoop < E_NMB_SLAVE_DEVICES; iLoop++)
+    {
+        labelFirmwareVersion[iLoop] = new QLabel(this);
+        qGridLyout->addWidget(new QLabel(allNamesFirmwareVersion[iLoop]), E_NMB_ITEMS_STATUS + 2 + iLoop, 6, Qt::AlignRight);
+        qGridLyout->addWidget(labelFirmwareVersion[iLoop], E_NMB_ITEMS_STATUS + 2 + iLoop, 7, Qt::AlignLeft);
     }
 
     chBoxGen[4]->setEnabled(false);
@@ -198,6 +206,11 @@ void widgetReading::ReceiveStatusReg(STATUS_REGISTER eStatusReg)
     double dbTempPatient = (float)eStatusReg.m_wMeasuredTemperaturePatient / 100.0f;
     lineInputItemsStatus[3]->setText(QString("%1").arg(QString::number(dbTempPatient)));
     lineInputItemsStatus[4]->setText(QString("%1").arg(QString::number(eStatusReg.m_bySetTemperaturePatient)));
+}
+
+void widgetReading::ReceiveFirmwareVersion(int nIndex, uint nValue)
+{
+    labelFirmwareVersion[nIndex]->setText(nValue ? QString("%1").arg(QString::number(nValue)) : QString("unknown"));
 }
 
 void widgetReading::paintEvent(QPaintEvent* e)
