@@ -11,7 +11,7 @@ greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 TEMPLATE = app
 
 APPNAME = Master_785_simulator
-MYVERSION = 0.1.4
+MYVERSION = 0.1.5
 
 
 CONFIG += c++11
@@ -30,7 +30,8 @@ SOURCES += main.cpp\
     widgettherapy.cpp \
     settings.cpp \
     widgetsettings.cpp \
-    complex_N.cpp
+    complex_N.cpp \
+    widgetadmin.cpp
 
 HEADERS  += mainwindow.h \
     widgetconfig.h \
@@ -41,7 +42,8 @@ HEADERS  += mainwindow.h \
     widgettherapy.h \
     settings.h \
     widgetsettings.h \
-    complex_N.h
+    complex_N.h \
+    widgetadmin.h
 
 FORMS    += mainwindow.ui
 

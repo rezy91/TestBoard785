@@ -137,6 +137,22 @@
         </layout>
        </widget>
       </widget>
+      <widget class="QWidget" name="Admin">
+       <attribute name="title">
+        <string>Admin</string>
+       </attribute>
+       <widget class="QWidget" name="verticalLayoutWidget_5">
+        <property name="geometry">
+         <rect>
+          <x>0</x>
+          <y>0</y>
+          <width>160</width>
+          <height>80</height>
+         </rect>
+        </property>
+        <layout class="QVBoxLayout" name="verticalLayout_5"/>
+       </widget>
+      </widget>
      </widget>
     </item>
    </layout>

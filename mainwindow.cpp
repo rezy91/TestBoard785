@@ -30,7 +30,7 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
 
     installEventFilter(this);
 
-    ui->statusBar->showMessage("Start app");
+    ui->statusBar->showMessage(QString("Start app %1").arg(APP_VERSION));
     qDebug() << "Start of application.";
     qDebug() << "screen width:" << QApplication::desktop()->screenGeometry().width() << ", screen height:" << QApplication::desktop()->screenGeometry().height();
 
@@ -169,6 +169,7 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
     ui->verticalLayout_3->addWidget(p_WidgetGraph);
     ui->verticalLayout_3->addWidget(p_WidgetSmith);
     ui->verticalLayout_3->addWidget(p_WidgetTherapy);
+    ui->verticalLayout_5->addWidget(p_WidgetAdmin);
 
     timeCurrent.start();
 
@@ -1042,34 +1043,32 @@ void MainWindow::refreshPlot()
         currentSize = ui->Reading->size();
 
         p_WidgetReading->setFixedSize(currentSize);
-        //p_WidgetReading->repaint();
     }
     else if(currentTab == 1)
     {
         currentSize = ui->Configuration->size();
 
         p_WidgetConfig->setFixedSize(currentSize);
-        p_WidgetConfig->repaint();
     }
     else if(currentTab == 2)
     {
         currentSize = ui->Settings->size();
 
         p_widgetSettings->setFixedSize(currentSize);
-        p_widgetSettings->repaint();
     }
     else if(currentTab == 3)
     {
         currentSize = ui->Graph->size();
 
         p_WidgetGraph->setFixedSize(QSize(currentSize.width(), (currentSize.height() / 10) * 6));
-        p_WidgetGraph->repaint();
-
         p_WidgetSmith->setFixedSize(QSize(currentSize.width(), (currentSize.height() / 10) * 2));
-        p_WidgetSmith->repaint();
-
         p_WidgetTherapy->setFixedSize(QSize(currentSize.width(), (currentSize.height() / 10) * 2));
-        p_WidgetTherapy->repaint();
+    }
+    else if(currentTab == 4)
+    {
+        currentSize = ui->Admin->size();
+
+        p_WidgetAdmin->setFixedSize(currentSize);
     }
 }
 

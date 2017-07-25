@@ -34,6 +34,7 @@
 #include "widgetgraph.h"
 #include "widgetsmith.h"
 #include "widgettherapy.h"
+#include "widgetadmin.h"
 
 
 #define COLOR_BLUE_LIGHT        QColor(0,255,255)
@@ -133,6 +134,7 @@ private:
     widgetSmith *p_WidgetSmith = new widgetSmith(this);
     widgetGraph *p_WidgetGraph = new widgetGraph(this);
     widgetTherapy *p_WidgetTherapy = new widgetTherapy(this);
+    widgetAdmin *p_WidgetAdmin = new widgetAdmin(this);
     settings* appSettings = new settings(this);
 
     void AppendText(QTime timestamp, QString strText);
