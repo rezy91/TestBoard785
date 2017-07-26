@@ -85,6 +85,10 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
 
     connect(this, &MainWindow::SendFirmwareVersion, p_WidgetReading, &widgetReading::ReceiveFirmwareVersion);
 
+    connect(p_WidgetAdmin, &widgetAdmin::SaveAdmin, appSettings, &settings::StoreAdmin);
+    connect(this, &MainWindow::SendAdmin, p_WidgetAdmin, &widgetAdmin::ReadAdmin);
+
+    connect(p_WidgetAdmin, &widgetAdmin::SetLimitSlider, p_WidgetTherapy, &widgetTherapy::ReceiveLimitSlider);
 
     ui->comboBox_1->addItem(QString("Generator (ID = %1d)").arg(constGenerID));
     ui->comboBox_1->addItem(QString("Amplifier (ID = %1d)").arg(constAmpID));
@@ -118,6 +122,11 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
     {
         emit SendAdcData(QString(c_nameAdd), QString(c_nameAmp), iLoop, appSettings->RestoreAdcData(QString(c_nameAdd), QString(c_nameAmp), iLoop + 1));
         emit SendAdcData(QString(c_nameMul), QString(c_nameAmp), iLoop, appSettings->RestoreAdcData(QString(c_nameMul), QString(c_nameAmp), iLoop + 1));
+    }
+
+    for(int iLoop = 0; iLoop < E_NMB_ITEMS_ADMIN; iLoop++)
+    {
+        emit SendAdmin(iLoop, appSettings->RestoreAdmin(iLoop));
     }
 
     for(int iLoop = 0; iLoop < nmbCurvesInGraph; iLoop++)

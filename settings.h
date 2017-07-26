@@ -70,6 +70,9 @@ public:
     void StoreGenPwr(const QString strValue);
     QString RestoreGenPwr(void) const;
 
+    void StoreAdmin(const int nIndex, const QString strValue);
+    QString RestoreAdmin(const int nIndex) const;
+
 private:
     QSettings* m_pAppSettings = new QSettings("settingsV1.ini", QSettings::IniFormat);
 

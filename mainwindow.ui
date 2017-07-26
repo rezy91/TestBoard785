@@ -150,7 +150,11 @@
           <height>80</height>
          </rect>
         </property>
-        <layout class="QVBoxLayout" name="verticalLayout_5"/>
+        <layout class="QVBoxLayout" name="verticalLayout_5">
+         <property name="sizeConstraint">
+          <enum>QLayout::SetMinAndMaxSize</enum>
+         </property>
+        </layout>
        </widget>
       </widget>
      </widget>

@@ -195,6 +195,7 @@ signals:
     void SendGenPwr(QString values);
     void SendStatusReg(STATUS_REGISTER eStatusReg);
     void SendFirmwareVersion(int nIndex, uint nValue);
+    void SendAdmin(int index, QString values);
 
 protected:
     void closeEvent(QCloseEvent *event) override;

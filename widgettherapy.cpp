@@ -13,8 +13,10 @@ widgetTherapy::widgetTherapy(QWidget *parent) : QWidget(parent)
         therapyParams[iLoop].slider->setMaximum(maxSlider[iLoop]);
         therapyParams[iLoop].slider->setMinimum(minSlider[iLoop]);
         therapyParams[iLoop].slider->setSingleStep(stepSlider[iLoop]);
+
         therapyParams[iLoop].name->setText(namesParams[iLoop]);
         therapyParams[iLoop].value->setText(QString("%1 %2").arg(therapyParams[iLoop].slider->value()).arg(unitParams[iLoop]));
+
     }
 
     listOfChannels->addItem("Select channel");
@@ -136,6 +138,24 @@ void widgetTherapy::ReceiveStatusReg(STATUS_REGISTER eStatusReg)
     qobject_cast<QStandardItemModel*>(listOfChannels->model())->item(4)->setEnabled(eStatusReg.m_Reg.m_Bit.StateAcc3 == 1 ? true : false);
 
     (eStatusReg.m_Reg.m_Bit.StateTherapy != E_STATE_OFF) ? TherapyRuns(eStatusReg.m_Reg.m_Bit.StateTherapy) : TherapyDoesnotRun();
+}
+
+void widgetTherapy::ReceiveLimitSlider(int index, QString text)
+{
+    if(index == 0)
+    {
+        therapyParams[E_POWER].slider->setMaximum(text.toInt());
+    }
+    else if(index == 1)
+    {
+        therapyParams[E_COOLING].slider->setMaximum(text.toInt());
+    }
+    else if(index == 2)
+    {
+
+    }
+
+    //qDebug() << index << text;
 }
 
 void widgetTherapy::paintEvent(QPaintEvent *e)

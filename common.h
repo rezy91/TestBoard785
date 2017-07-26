@@ -125,6 +125,7 @@ enum AMP_ADC_X
 
 enum{nmbCurvesInGraph = 4};
 enum {E_NMB_BIT_FLAGS_STATUS = 32};
+enum {E_NMB_ITEMS_ADMIN = 3};
 
 const QString c_nameGen = "Gen";
 const QString c_nameAmp = "Amp";

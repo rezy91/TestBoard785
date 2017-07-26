@@ -205,6 +205,16 @@ QString settings::RestoreGenPwr() const
     return RestoreValue(QString("genPwr")).toString();
 }
 
+void settings::StoreAdmin(const int nIndex, const QString strValue)
+{
+    StoreValue(QString("admin%1").arg(nIndex), strValue);
+}
+
+QString settings::RestoreAdmin(const int nIndex) const
+{
+    return RestoreValue(QString("admin%1").arg(nIndex)).toString();
+}
+
 void settings::StorePortName(const QString &strPortName)
 {
     StoreValue(QString("portname"), strPortName);
