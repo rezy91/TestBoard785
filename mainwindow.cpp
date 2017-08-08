@@ -291,6 +291,16 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
         case CommProtInterface::Enabled:
             TmrMstr.start(1);
             qDebug() << "Enabled";
+
+            for(qint32 iLoop = 0; iLoop < NMB_ITEMS_TIMERS_AMPLF; iLoop++)
+            {
+                onNewMsgReqReceived(p_WidgetReading->GetCheckStateAmplf(iLoop), 0, iLoop);
+            }
+
+            for(qint32 iLoop = 0; iLoop < NMB_ITEMS_TIMERS_GENER; iLoop++)
+            {
+                onNewMsgReqReceived(p_WidgetReading->GetCheckStateGener(iLoop), 1, iLoop);
+            }
             break;
         case CommProtInterface::Detecting:
             qDebug() << "Detecting";

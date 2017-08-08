@@ -105,6 +105,16 @@ widgetReading::widgetReading(QWidget *parent) : QWidget(parent)
 
 }
 
+Qt::CheckState widgetReading::GetCheckStateAmplf(int nIndex)
+{
+    return chBoxAmp[nIndex]->checkState();
+}
+
+Qt::CheckState widgetReading::GetCheckStateGener(int nIndex)
+{
+    return chBoxGen[nIndex]->checkState();
+}
+
 void widgetReading::showTextLog(QString showText)
 {
     textBrowser->append(showText);

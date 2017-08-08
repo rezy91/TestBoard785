@@ -24,6 +24,8 @@ class widgetReading : public QWidget
 public:
     explicit widgetReading(QWidget *parent = 0);
     void SetQSize(QSize value) {currSize = value;}
+    Qt::CheckState GetCheckStateAmplf(int nIndex);
+    Qt::CheckState GetCheckStateGener(int nIndex);
 
 signals:
     void SendV200Requirement(Qt::CheckState newState, int device, int indexMsg);
