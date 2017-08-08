@@ -215,6 +215,26 @@ QString settings::RestoreAdmin(const int nIndex) const
     return RestoreValue(QString("admin%1").arg(nIndex)).toString();
 }
 
+void settings::StoreRcvMsgAmp(const QString strValue)
+{
+    StoreValue(QString("rcvMsgAmp"), strValue);
+}
+
+QString settings::RestoreRcvMsgAmp() const
+{
+    return RestoreValue(QString("rcvMsgAmp")).toString();
+}
+
+void settings::StoreRcvMsgGen(const QString strValue)
+{
+    StoreValue(QString("rcvMsgGen"), strValue);
+}
+
+QString settings::RestoreRcvMsgGen() const
+{
+    return RestoreValue(QString("rcvMsgGen")).toString();
+}
+
 void settings::StorePortName(const QString &strPortName)
 {
     StoreValue(QString("portname"), strPortName);

@@ -79,6 +79,16 @@ widgetReading::widgetReading(QWidget *parent) : QWidget(parent)
 
             Q_UNUSED(clicked);
             //qDebug() << iLoop << "amp checkbox:" << chBoxAmp[iLoop]->checkState();
+
+
+            QString SaveData;
+
+            for(int jLoop = 0; jLoop < NMB_ITEMS_TIMERS_AMPLF; jLoop++)
+            {
+                SaveData.append(QString("%1").arg(chBoxAmp[jLoop]->checkState() ==  Qt::Checked ? "1" : "0") + " ");
+            }
+
+            emit SaveReadMsgsAmplf(SaveData);
             emit SendV200Requirement(chBoxAmp[iLoop]->checkState(), 0, iLoop);
         });
 
@@ -94,6 +104,15 @@ widgetReading::widgetReading(QWidget *parent) : QWidget(parent)
 
             Q_UNUSED(clicked);
             //qDebug() << iLoop << "gen checkbox:" << chBoxGen[iLoop]->checkState();
+
+            QString SaveData;
+
+            for(int jLoop = 0; jLoop < NMB_ITEMS_TIMERS_GENER; jLoop++)
+            {
+                SaveData.append(QString("%1").arg(chBoxGen[jLoop]->checkState() ==  Qt::Checked ? "1" : "0") + " ");
+            }
+
+            emit SaveReadMsgsGener(SaveData);
             emit SendV200Requirement(chBoxGen[iLoop]->checkState(), 1, iLoop);
         });
 
@@ -221,6 +240,54 @@ void widgetReading::ReceiveStatusReg(STATUS_REGISTER eStatusReg)
 void widgetReading::ReceiveFirmwareVersion(int nIndex, uint nValue)
 {
     labelFirmwareVersion[nIndex]->setText(nValue ? QString("%1").arg(QString::number(nValue)) : QString("unknown"));
+}
+
+void widgetReading::ReceiveRcvMsgAmp(QString data)
+{
+    QStringList arrListSaved;
+    arrListSaved = data.split(QRegExp("\\s+"));
+
+    if((arrListSaved.count() - 1) == NMB_ITEMS_TIMERS_AMPLF)
+    {
+        for(int iLoop = 0; iLoop < NMB_ITEMS_TIMERS_AMPLF; iLoop++)
+        {
+            chBoxAmp[iLoop]->setCheckState(arrListSaved.at(iLoop) == "1" ? Qt::Checked : Qt::Unchecked);
+        }
+    }
+    else
+    {
+        for(int iLoop = 0; iLoop < NMB_ITEMS_TIMERS_AMPLF; iLoop++)
+        {
+            if(iLoop != 2)
+            {
+                chBoxAmp[iLoop]->setCheckState(Qt::Checked);
+            }
+        }
+    }
+}
+
+void widgetReading::ReceiveRcvMsgGen(QString data)
+{
+    QStringList arrListSaved;
+    arrListSaved = data.split(QRegExp("\\s+"));
+
+    if((arrListSaved.count() - 1) == NMB_ITEMS_TIMERS_GENER)
+    {
+        for(int iLoop = 0; iLoop < NMB_ITEMS_TIMERS_GENER; iLoop++)
+        {
+            chBoxGen[iLoop]->setCheckState(arrListSaved.at(iLoop) == "1" ? Qt::Checked : Qt::Unchecked);
+        }
+    }
+    else
+    {
+        for(int iLoop = 0; iLoop < NMB_ITEMS_TIMERS_GENER; iLoop++)
+        {
+            if(iLoop != 4)
+            {
+                chBoxGen[iLoop]->setCheckState(Qt::Checked);
+            }
+        }
+    }
 }
 
 void widgetReading::paintEvent(QPaintEvent* e)

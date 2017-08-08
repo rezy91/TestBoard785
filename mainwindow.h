@@ -196,6 +196,8 @@ signals:
     void SendStatusReg(STATUS_REGISTER eStatusReg);
     void SendFirmwareVersion(int nIndex, uint nValue);
     void SendAdmin(int index, QString values);
+    void SendRcvMsgAmp(QString values);
+    void SendRcvMsgGen(QString values);
 
 protected:
     void closeEvent(QCloseEvent *event) override;

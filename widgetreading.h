@@ -30,12 +30,16 @@ public:
 signals:
     void SendV200Requirement(Qt::CheckState newState, int device, int indexMsg);
     void SendNewTime(int timeValue, int device, int indexMsg);
+    void SaveReadMsgsAmplf(QString data);
+    void SaveReadMsgsGener(QString data);
 
 public slots:
     void showTextLog(QString showText);
     void ReadTimeRequests(bool device, int index, int value);
     void ReceiveStatusReg(STATUS_REGISTER eStatusReg);
     void ReceiveFirmwareVersion(int nIndex, uint nValue);
+    void ReceiveRcvMsgAmp(QString data);
+    void ReceiveRcvMsgGen(QString data);
 
 private:
     enum{E_NMB_ITEMS_STATUS = 5};

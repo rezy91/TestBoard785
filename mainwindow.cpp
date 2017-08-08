@@ -90,6 +90,11 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
 
     connect(p_WidgetAdmin, &widgetAdmin::SetLimitSlider, p_WidgetTherapy, &widgetTherapy::ReceiveLimitSlider);
 
+    connect(p_WidgetReading, &widgetReading::SaveReadMsgsAmplf, appSettings, &settings::StoreRcvMsgAmp);
+    connect(this, &MainWindow::SendRcvMsgAmp, p_WidgetReading, &widgetReading::ReceiveRcvMsgAmp);
+    connect(p_WidgetReading, &widgetReading::SaveReadMsgsGener, appSettings, &settings::StoreRcvMsgGen);
+    connect(this, &MainWindow::SendRcvMsgGen, p_WidgetReading, &widgetReading::ReceiveRcvMsgGen);
+
     ui->comboBox_1->addItem(QString("Generator (ID = %1d)").arg(constGenerID));
     ui->comboBox_1->addItem(QString("Amplifier (ID = %1d)").arg(constAmpID));
 
@@ -111,6 +116,8 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
     emit SendAmpPwm(appSettings->RestoreAmpPwm());
     emit SendGenPwm(appSettings->RestoreGenPwm());
     emit SendGenPwr(appSettings->RestoreGenPwr());
+    emit SendRcvMsgAmp(appSettings->RestoreRcvMsgAmp());
+    emit SendRcvMsgGen(appSettings->RestoreRcvMsgGen());
 
     for(int iLoop = 0; iLoop < E_GEN_ADC_NMB; iLoop++)
     {
