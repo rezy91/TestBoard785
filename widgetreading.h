@@ -43,18 +43,18 @@ public slots:
 
 private:
     enum{E_NMB_ITEMS_STATUS = 5};
-    enum{E_NMB_SLAVE_DEVICES = 6};
+    enum{E_NMB_SLAVE_DEVICES = 7};
 
     const QString allNamesAmp[NMB_ITEMS_TIMERS_AMPLF] = {"AMP ADC3 adjusted [ms]", "AMP ADC3 raw [ms]", "AMP ADC1 adjusted [ms]", "AMP ADC1 raw [ms]"};
     const QString allNamesGen[NMB_ITEMS_TIMERS_GENER] = {"GEN Cooling [ms]", "GEN ADC3 raw [ms]", "GEN Impedance [ms]", "GEN ADC2 raw [ms]", \
                                                          "GEN ADC1 adjusted [ms]", "GEN ADC1 raw [ms]"};
     const QString allNamesBitStatus[E_NMB_BIT_FLAGS_STATUS] = {"ChangeAcc0", "ChangeAcc1", "ChangeAcc2", "ChangeAcc3", "Empty0", "SelfTestDone", "Restart", "Error", \
-                                                               "ButtonPressed", "KeyChanged", "TherapyRunning", "ParChangedByMas", "arChangedByApp", "SyncWaiting", \
+                                                               "ButtonPressed", "KeyChanged", "TherapyRunning", "ParChangedByMas", "ParChangedByApp", "SyncWaiting", \
                                                                "EmergencyPressed", "LogRequest", "ChangeSmartDevice0", "StateAcc0", "StateAcc1", "StateAcc2", "StateAcc3", \
-                                                               "StateSmartDevice0", "BadContactPatient", "ContactNeutral", "ChoosedChannel_L", "ChoosedChannel_H", "reserve4", \
-                                                               "reserve3", "reserve2", "reserve1", "StateTherapy_L", "StateTherapy_H"};
+                                                               "StateSmartDevice0", "ContactPatient", "ContactNeutral", "ChoosedChannel_L", "ChoosedChannel_H", "reseve2", \
+                                                               "reseve1", "ChangeSmartDevice1", "StateSmartDevice1", "StateTherapy_L", "StateTherapy_H"};
     const QString allNamesItemsStatus[E_NMB_ITEMS_STATUS] = {"Reserve:", "Measured power [W]:", "Set power [W]:", "Measured temperature of patient [°C]:", "Set temperature of patient [°C]:"};
-    const QString allNamesFirmwareVersion[E_NMB_SLAVE_DEVICES] = {"Apl_large version:", "Apl_small1 version:", "Apl_small2 version:", "Apl_small3 version:", "Amplifier version:", "Generator version:"};
+    const QString allNamesFirmwareVersion[E_NMB_SLAVE_DEVICES] = {"Apl_large version:", "Apl_small1 version:", "Apl_small2 version:", "Apl_small3 version:", "Amplifier version:", "RF Generator version:", "USN Generator version:"};
 
     QSize currSize;
 

@@ -178,14 +178,14 @@ typedef struct status_register
       uint8_t StateAcc2           :1;   // bit 19
       uint8_t StateAcc3           :1;   // bit 20
       uint8_t StateSmartDevice0   :1;   // bit 21
-      uint8_t BadContactPatient   :1;   // bit 22
+      uint8_t ContactPatient      :1;   // bit 22
       uint8_t ContactNeutral      :1;   // bit 23
       // byte 3
       uint8_t ChoosedChannel      :2;   // bit 24 - 25
-      uint8_t reserve4            :1;   // bit 26
-      uint8_t reserve3            :1;   // bit 27
-      uint8_t reserve2            :1;   // bit 28
-      uint8_t reserve1            :1;   // bit 29
+      uint8_t ChsdChannelCorrect  :1;   // bit 26
+      uint8_t SlavesSynchOnDone   :1;   // bit 27
+      uint8_t ChangeSmartDevice1  :1;   // bit 28
+      uint8_t StateSmartDevice1   :1;   // bit 29
       uint8_t StateTherapy        :2;   // bit 30 - 31
     } m_Bit;
   } m_Reg;

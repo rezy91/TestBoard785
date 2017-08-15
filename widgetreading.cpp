@@ -176,7 +176,7 @@ void widgetReading::ReceiveStatusReg(STATUS_REGISTER eStatusReg)
     chBoxBitStatus[19]->setChecked(eStatusReg.m_Reg.m_Bit.StateAcc2 == 1 ? true : false);
     chBoxBitStatus[20]->setChecked(eStatusReg.m_Reg.m_Bit.StateAcc3 == 1 ? true : false);
     chBoxBitStatus[21]->setChecked(eStatusReg.m_Reg.m_Bit.StateSmartDevice0 == 1 ? true : false);
-    chBoxBitStatus[22]->setChecked(eStatusReg.m_Reg.m_Bit.BadContactPatient == 1 ? true : false);
+    chBoxBitStatus[22]->setChecked(eStatusReg.m_Reg.m_Bit.ContactPatient == 1 ? true : false);
     chBoxBitStatus[23]->setChecked(eStatusReg.m_Reg.m_Bit.ContactNeutral == 1 ? true : false);
 
 
@@ -201,10 +201,10 @@ void widgetReading::ReceiveStatusReg(STATUS_REGISTER eStatusReg)
         chBoxBitStatus[25]->setChecked(false);
     }
 
-    chBoxBitStatus[26]->setChecked(eStatusReg.m_Reg.m_Bit.reserve4 == 1 ? true : false);
-    chBoxBitStatus[27]->setChecked(eStatusReg.m_Reg.m_Bit.reserve3 == 1 ? true : false);
-    chBoxBitStatus[28]->setChecked(eStatusReg.m_Reg.m_Bit.reserve2 == 1 ? true : false);
-    chBoxBitStatus[29]->setChecked(eStatusReg.m_Reg.m_Bit.reserve1 == 1 ? true : false);
+    chBoxBitStatus[26]->setChecked(eStatusReg.m_Reg.m_Bit.ChsdChannelCorrect == 1 ? true : false);
+    chBoxBitStatus[27]->setChecked(eStatusReg.m_Reg.m_Bit.SlavesSynchOnDone == 1 ? true : false);
+    chBoxBitStatus[28]->setChecked(eStatusReg.m_Reg.m_Bit.ChangeSmartDevice1 == 1 ? true : false);
+    chBoxBitStatus[29]->setChecked(eStatusReg.m_Reg.m_Bit.StateSmartDevice1 == 1 ? true : false);
 
     if(eStatusReg.m_Reg.m_Bit.StateTherapy == 3)
     {

@@ -565,6 +565,18 @@ void MainWindow::newDataV200(QByteArray aData)
             m_CommProt.data()->SendData(m_nDeviceAddress, QByteArray::fromHex(strCmd.toStdString().c_str()), true);
         }
 
+        if(eStatusReg.m_Reg.m_Bit.StateSmartDevice1 && eStatusReg.m_Reg.m_Bit.ChangeSmartDevice1)
+        {
+            QString strCmd = QString("%1").arg(QString::number(PID_SEND_HW_CONFIG, 16));
+            strCmd += QString::number(14, 16).rightJustified(1 * 2, '0');
+            strCmd += QString::number(5, 16).rightJustified(1 * 2, '0');
+            m_CommProt.data()->SendData(m_nDeviceAddress, QByteArray::fromHex(strCmd.toStdString().c_str()), true);
+        }
+        else if(eStatusReg.m_Reg.m_Bit.StateSmartDevice1 == 0)
+        {
+            emit SendFirmwareVersion(6, 0);
+        }
+
         if(eStatusReg.m_Reg.m_Bit.StateSmartDevice0 && eStatusReg.m_Reg.m_Bit.ChangeSmartDevice0)
         {
             QString strCmd = QString("%1").arg(QString::number(PID_SEND_HW_CONFIG, 16));
@@ -629,7 +641,7 @@ void MainWindow::newDataV200(QByteArray aData)
         {
             int nReceivedBytes = (uchar(aData.at(2)) << 8) + uchar(aData.at(3));
 
-            if(nReceivedBytes >= 200)
+            if(nReceivedBytes >= 192)
             {
                 uint nFirmwareVersion = (uchar(aData.at(4 + 88 + 3)) << 24) + (uchar(aData.at(4 + 88 + 2)) << 16) + (uchar(aData.at(4 + 88 + 1)) << 8) + uchar(aData.at(4 + 88));
 
@@ -641,7 +653,14 @@ void MainWindow::newDataV200(QByteArray aData)
                     nIndex = 5;
                     break;
                 case 14:
-                    nIndex = 4;
+                    if(aData.at(4 + nReceivedBytes) == 4)
+                    {
+                        nIndex = 4;
+                    }
+                    else if(aData.at(4 + nReceivedBytes) == 5)
+                    {
+                        nIndex = 6;
+                    }
                     break;
                 default:
                     nIndex = int(aData.at(1) - 9);
