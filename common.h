@@ -190,7 +190,7 @@ typedef struct status_register
     } m_Bit;
   } m_Reg;
   uint8_t m_bySetTemperaturePatient;
-  uint8_t m_byReserve;
+  uint8_t m_bySetIntensityUsn;
   uint16_t m_wMeasuredPower;
   uint16_t m_wSetPower;
   int16_t m_wMeasuredTemperaturePatient;

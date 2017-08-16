@@ -551,7 +551,7 @@ void MainWindow::newDataV200(QByteArray aData)
         eStatusReg.m_Reg.m_dwLong |= uint32_t(aData.at(3) << 8) & 0x0000FF00;
         eStatusReg.m_Reg.m_dwLong |= uint32_t(aData.at(4)) & 0x000000FF;
         eStatusReg.m_bySetTemperaturePatient = aData.at(5);
-        eStatusReg.m_byReserve = aData.at(6);
+        eStatusReg.m_bySetIntensityUsn = aData.at(6);
         eStatusReg.m_wMeasuredPower = uint16_t(uint16_t(aData.at(7) << 8) & 0xFF00) | (uint16_t(aData.at(8)) & 0x00FF);
         eStatusReg.m_wSetPower = uint16_t(uint16_t(aData.at(9) << 8) & 0xFF00) | (uint16_t(aData.at(10)) & 0x00FF);
         eStatusReg.m_wMeasuredTemperaturePatient = int16_t(uint16_t(aData.at(11) << 8) & 0xFF00) | (uint16_t(aData.at(12)) & 0x00FF);

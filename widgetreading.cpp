@@ -229,7 +229,7 @@ void widgetReading::ReceiveStatusReg(STATUS_REGISTER eStatusReg)
 
 
 
-    lineInputItemsStatus[0]->setText(QString("%1").arg(QString::number(eStatusReg.m_byReserve)));
+    lineInputItemsStatus[0]->setText(QString("%1").arg(QString::number(float(eStatusReg.m_bySetIntensityUsn) / 10)));
     lineInputItemsStatus[1]->setText(QString("%1").arg(QString::number(eStatusReg.m_wMeasuredPower)));
     lineInputItemsStatus[2]->setText(QString("%1").arg(QString::number(eStatusReg.m_wSetPower)));
     double dbTempPatient = (float)eStatusReg.m_wMeasuredTemperaturePatient / 100.0f;

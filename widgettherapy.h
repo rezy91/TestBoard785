@@ -33,6 +33,7 @@ private:
       E_DUTYCYCLE,
       E_FREQUENCY,
       E_COOLING,
+      E_ULTRASOUND,
       E_PARAMS_NMB
     };
 
@@ -42,11 +43,11 @@ private:
         QSlider* slider;
     };
 
-    const QString namesParams[E_PARAMS_NMB] = {"Power", "Duty cycle", "Frequency", "Cooling"};
-    const QString unitParams[E_PARAMS_NMB] = {"[W]", "[%]", "[Hz]", "[°C]"};
-    const int maxSlider[E_PARAMS_NMB] = {100, 100, 200, 45};
-    const int minSlider[E_PARAMS_NMB] = {0, 20, 25, 15};
-    const int stepSlider[E_PARAMS_NMB] = {1, 20, 5, 1};
+    const QString namesParams[E_PARAMS_NMB] = {"Power", "Duty cycle", "Frequency", "Cooling", "Ultrasound"};
+    const QString unitParams[E_PARAMS_NMB] = {"[W]", "[%]", "[Hz]", "[°C]", "[W/cm^2]"};
+    const int maxSlider[E_PARAMS_NMB] = {100, 100, 200, 45, 20};
+    const int minSlider[E_PARAMS_NMB] = {0, 20, 25, 15, 0};
+    const int stepSlider[E_PARAMS_NMB] = {1, 20, 5, 1, 1};
 
     paramTherapy therapyParams[E_PARAMS_NMB];
 

@@ -41,13 +41,14 @@ widgetTherapy::widgetTherapy(QWidget *parent) : QWidget(parent)
     {
         connect(therapyParams[iLoop].slider, &QSlider::valueChanged, [=](int value){
             //qDebug() << "slider:" << iLoop << "has value:" << value;
-            therapyParams[iLoop].value->setText(QString("%1 %2").arg(value).arg(unitParams[iLoop]));
+            therapyParams[iLoop].value->setText(QString("%1 %2").arg(iLoop == E_ULTRASOUND ? float(value) / 10 : value).arg(unitParams[iLoop]));
 
             QString msgTherapy = QString("%1").arg(QString::number(PID_SET_THERAPY_SETTINGS, 16));
             msgTherapy += QString::number(QString("%1").arg(therapyParams[E_POWER].slider->value()).toInt(), 16).rightJustified(4, '0');
             msgTherapy += QString::number(QString("%1").arg(therapyParams[E_DUTYCYCLE].slider->value()).toInt(), 16).rightJustified(2, '0');
             msgTherapy += QString::number(QString("%1").arg(therapyParams[E_FREQUENCY].slider->value()).toInt(), 16).rightJustified(2, '0');
             msgTherapy += QString::number(QString("%1").arg(therapyParams[E_COOLING].slider->value()).toInt(), 16).rightJustified(2, '0');
+            msgTherapy += QString::number(QString("%1").arg(therapyParams[E_ULTRASOUND].slider->value()).toInt(), 16).rightJustified(2, '0');
 
             emit SendV200specific(msgTherapy);
         });

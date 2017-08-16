@@ -53,7 +53,7 @@ private:
                                                                "EmergencyPressed", "LogRequest", "ChangeSmartDevice0", "StateAcc0", "StateAcc1", "StateAcc2", "StateAcc3", \
                                                                "StateSmartDevice0", "ContactPatient", "ContactNeutral", "ChoosedChannel_L", "ChoosedChannel_H", "reseve2", \
                                                                "reseve1", "ChangeSmartDevice1", "StateSmartDevice1", "StateTherapy_L", "StateTherapy_H"};
-    const QString allNamesItemsStatus[E_NMB_ITEMS_STATUS] = {"Reserve:", "Measured power [W]:", "Set power [W]:", "Measured temperature of patient [°C]:", "Set temperature of patient [°C]:"};
+    const QString allNamesItemsStatus[E_NMB_ITEMS_STATUS] = {"Intensity USN [W/cm^2]:", "Measured power RF [W]:", "Set power RF [W]:", "Measured temperature of patient [°C]:", "Set temperature of patient [°C]:"};
     const QString allNamesFirmwareVersion[E_NMB_SLAVE_DEVICES] = {"Apl_large version:", "Apl_small1 version:", "Apl_small2 version:", "Apl_small3 version:", "Amplifier version:", "RF Generator version:", "USN Generator version:"};
 
     QSize currSize;
