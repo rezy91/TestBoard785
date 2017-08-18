@@ -99,6 +99,10 @@ typedef enum packet_id
   PID_SET_RESERVE_3                   = 0x5D,
   PID_SET_RESERVE_2                   = 0x5E,
   PID_SET_RESERVE_1                   = 0x5F,
+
+  PID_READ_MEASURE_DATA_USN           = 0x2F,
+  PID_READ_MEASURE_DATA_APL_L         = 0x62,
+  PID_READ_MEASURE_DATA_APL_S         = 0x63,
 } PACKET_ID;
 
 typedef enum
@@ -121,6 +125,14 @@ enum AMP_ADC_X
     E_AMP_ADC_1,
     E_AMP_ADC_3,
     E_AMP_ADC_NMB
+};
+
+enum USN_APL_MSGS
+{
+    E_USN,
+    E_APL_LARGE,
+    E_APL_SMALL,
+    NMB_ITEMS_TIMERS_APLS_AND_USN
 };
 
 enum{nmbCurvesInGraph = 4};

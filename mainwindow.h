@@ -80,7 +80,10 @@ public:
     typedef enum
     {
         GENERATOR_SOURCE,
-        AMPLIFIER_SOURCE
+        AMPLIFIER_SOURCE,
+        APL_LARGE_SOURCE,
+        APL_SMALL_SOURCE,
+        USN_GENER_SOURCE
     } SOURCE_DEVICE;
 
     explicit MainWindow(QWidget *parent = 0);
@@ -102,10 +105,9 @@ private:
     const quint32 constGenerID = 21;
     const quint32 constAmpID = 1;
 
-    const QString allSignalsNameGener[NMB_ITEMS_TIMERS_GENER] = {"COOLING_RECEIVE_DATA", "ADC3_RECEIVE_AVERAGE_DATA", "IMPEDANCE_RECEIVE_DATA", "ADC2_RECEIVE_AVERAGE_DATA", "NOT_USED_CURRENTLY", "ADC1_RECEIVE_AVERAGE_DATA"};
-    const QString allSignalsNameAmplf[NMB_ITEMS_TIMERS_AMPLF] = {"TIMERS_RESULTS", "ADC3_RECEIVE_AVERAGE_DATA", "NOT_USED_CURRENTLY", "ADC1_RECEIVE_AVERAGE_DATA"};
     const QString allSignalsBaseOnlyGener[NMB_ITEMS_TIMERS_GENER] = {"g3c", "g3s", "g2c", "g2s", "g1c", "g1s"};
     const QString allSignalsBaseOnlyAmplf[NMB_ITEMS_TIMERS_AMPLF] = {"at", "a3s", "ax", "a1s"};
+    const QString allSignalsBaseOnlyAplUsn[NMB_ITEMS_TIMERS_APLS_AND_USN] = {"u", "l", "s"};
 
     Ui::MainWindow *ui;
     QSharedPointer<CommProtV200> m_CommProt;
@@ -115,11 +117,13 @@ private:
 
     PERIODIC_REQUEST eRequestsAmplifAdcx[NMB_ITEMS_TIMERS_AMPLF];
     PERIODIC_REQUEST eRequestsGenerAdcx[NMB_ITEMS_TIMERS_GENER];
+    PERIODIC_REQUEST eRequestsAplUsn[NMB_ITEMS_TIMERS_APLS_AND_USN];
     PERIODIC_REQUEST eRequestGenerInput;
     PERIODIC_REQUEST eRequestAmplfInput;
 
     bool flagIfSourceIsLoggedGener[NMB_ITEMS_TIMERS_GENER];
     bool flagIfSourceIsLoggedAmplf[NMB_ITEMS_TIMERS_AMPLF];
+    bool flagIfSourceIsLoggedAplUsn[NMB_ITEMS_TIMERS_APLS_AND_USN];
 
     bool m_bSaveData = false;
     bool m_bGeneratorConnected = false;
@@ -158,9 +162,11 @@ private:
     bool GetIndexFromQlist(SOURCE_DEVICE eSourceStream, int &dwAbsIndex, int dwNumberCmbBx, int dwIndexCmbBx);
     void ShowSignalsIntoComboBox(SOURCE_STREAM eSourceStream);
     void ShowSignalsIfShould(SOURCE_STREAM eSourceStream, SOURCE_DEVICE eSourceDevice, qint32 &dwStartIndex, QColor eBackgrColor);
-    void SetTimerRequests(int wIndex, bool bOnOff, QString sCommand, SOURCE_DEVICE eSourceStream);
+    void SetTimerRequestsGenAmp(int wIndex, bool bOnOff, QString sCommand, SOURCE_DEVICE eSourceStream);
+    void SetTimerRequestsAplUsn(bool bOnOff, QString sCommand, SOURCE_DEVICE eSourceStream);
     void SetTimerinput(bool bOnOff, QString sCommand, SOURCE_DEVICE eSourceStream);
-    void HasTimerRequestsExpired(SOURCE_DEVICE eSourceStream);
+    void HasTimerRequestsExpiredGenAmpl(SOURCE_DEVICE eSourceStream);
+    void HasTimerRequestsExpiredAplUsn();
     void HasTimerInputExpired(SOURCE_DEVICE eSourceStream);
 
     void refreshPlot(void);
@@ -180,7 +186,7 @@ signals:
     void SendUpdateGraph(QTime timestamp, double receivedValue, int recordState, QString nameSignals, int src, int srStr, int flgs);
     void SendTextIntoLog(QString text);
     void SendSmithPoints(int value);
-    void SendTimeRequests(bool device, int index, int value);
+    void SendTimeRequests(int device, int index, int value);
     void SendAxisHigh(int index, double value);
     void SendAxisLow(int index, double value);
     void SendAdcData(QString type, QString device, int index, QString values);
@@ -198,6 +204,7 @@ signals:
     void SendAdmin(int index, QString values);
     void SendRcvMsgAmp(QString values);
     void SendRcvMsgGen(QString values);
+    void SendRcvMsgAplUsn(QString values);
 
 protected:
     void closeEvent(QCloseEvent *event) override;

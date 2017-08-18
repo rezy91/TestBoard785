@@ -5,53 +5,64 @@
 
 widgetReading::widgetReading(QWidget *parent) : QWidget(parent)
 {
+    for(int iLoop = 0; iLoop < NMB_ITEMS_TIMERS_APLS_AND_USN; iLoop++)
+    {
+        chBoxAplUsn[iLoop] = new QCheckBox(allNamesAplUsn[iLoop], this);
+        aplUsnTimes[iLoop] = new QSpinBox(this);
+        qGridLyout->addWidget(aplUsnTimes[iLoop], iLoop, 0, Qt::AlignRight);
+        qGridLyout->addWidget(chBoxAplUsn[iLoop], iLoop, 1, Qt::AlignLeft);
+
+        aplUsnTimes[iLoop]->setMaximum(1000);
+        aplUsnTimes[iLoop]->setSingleStep(10);
+    }
+
+    for(int iLoop = 0; iLoop < NMB_ITEMS_TIMERS_AMPLF; iLoop++)
+    {
+        chBoxAmp[iLoop] = new QCheckBox(allNamesAmp[iLoop], this);
+        amplfTimes[iLoop] = new QSpinBox(this);
+        qGridLyout->addWidget(amplfTimes[iLoop], iLoop, 2, Qt::AlignRight);
+        qGridLyout->addWidget(chBoxAmp[iLoop], iLoop, 3, Qt::AlignLeft);
+
+        amplfTimes[iLoop]->setMaximum(1000);
+        amplfTimes[iLoop]->setSingleStep(10);
+    }
+
     for(int iLoop = 0; iLoop < NMB_ITEMS_TIMERS_GENER; iLoop++)
     {
         chBoxGen[iLoop] = new QCheckBox(allNamesGen[iLoop], this);
         generTimes[iLoop] = new QSpinBox(this);
-        qGridLyout->addWidget(generTimes[iLoop], iLoop, 2, Qt::AlignRight);
-        qGridLyout->addWidget(chBoxGen[iLoop], iLoop, 3, Qt::AlignLeft);
+        qGridLyout->addWidget(generTimes[iLoop], iLoop, 4, Qt::AlignRight);
+        qGridLyout->addWidget(chBoxGen[iLoop], iLoop, 5, Qt::AlignLeft);
 
         generTimes[iLoop]->setMaximum(1000);
         generTimes[iLoop]->setSingleStep(10);
-
-        if(iLoop < NMB_ITEMS_TIMERS_AMPLF)
-        {
-            chBoxAmp[iLoop] = new QCheckBox(allNamesAmp[iLoop], this);
-            amplfTimes[iLoop] = new QSpinBox(this);
-            qGridLyout->addWidget(amplfTimes[iLoop], iLoop, 0, Qt::AlignRight);
-            qGridLyout->addWidget(chBoxAmp[iLoop], iLoop, 1, Qt::AlignLeft);
-
-            amplfTimes[iLoop]->setMaximum(1000);
-            amplfTimes[iLoop]->setSingleStep(10);
-        }
     }
 
     for(int iLoop = 0; iLoop < E_NMB_BIT_FLAGS_STATUS / 2; iLoop++)
     {
         chBoxBitStatus[iLoop] = new QCheckBox(allNamesBitStatus[iLoop], this);
-        qGridLyout->addWidget(chBoxBitStatus[iLoop], iLoop, 4, Qt::AlignLeft);
+        qGridLyout->addWidget(chBoxBitStatus[iLoop], iLoop, 6, Qt::AlignLeft);
     }
 
     for(int iLoop = 0; iLoop < E_NMB_BIT_FLAGS_STATUS / 2; iLoop++)
     {
         chBoxBitStatus[E_NMB_BIT_FLAGS_STATUS / 2 + iLoop] = new QCheckBox(allNamesBitStatus[E_NMB_BIT_FLAGS_STATUS / 2 + iLoop], this);
-        qGridLyout->addWidget(chBoxBitStatus[E_NMB_BIT_FLAGS_STATUS / 2 + iLoop], iLoop, 5, Qt::AlignLeft);
+        qGridLyout->addWidget(chBoxBitStatus[E_NMB_BIT_FLAGS_STATUS / 2 + iLoop], iLoop, 7, Qt::AlignLeft);
     }
 
     for(int iLoop = 0; iLoop < E_NMB_ITEMS_STATUS; iLoop++)
     {
         lineInputItemsStatus[iLoop] = new QLabel(this);
-        qGridLyout->addWidget(new QLabel(allNamesItemsStatus[iLoop]), iLoop, 6, Qt::AlignRight);
-        qGridLyout->addWidget(lineInputItemsStatus[iLoop], iLoop, 7, Qt::AlignLeft);
+        qGridLyout->addWidget(new QLabel(allNamesItemsStatus[iLoop]), iLoop, 8, Qt::AlignRight);
+        qGridLyout->addWidget(lineInputItemsStatus[iLoop], iLoop, 9, Qt::AlignLeft);
     }
 
 
     for(int iLoop = 0; iLoop < E_NMB_SLAVE_DEVICES; iLoop++)
     {
         labelFirmwareVersion[iLoop] = new QLabel(this);
-        qGridLyout->addWidget(new QLabel(allNamesFirmwareVersion[iLoop]), E_NMB_ITEMS_STATUS + 2 + iLoop, 6, Qt::AlignRight);
-        qGridLyout->addWidget(labelFirmwareVersion[iLoop], E_NMB_ITEMS_STATUS + 2 + iLoop, 7, Qt::AlignLeft);
+        qGridLyout->addWidget(new QLabel(allNamesFirmwareVersion[iLoop]), E_NMB_ITEMS_STATUS + 2 + iLoop, 8, Qt::AlignRight);
+        qGridLyout->addWidget(labelFirmwareVersion[iLoop], E_NMB_ITEMS_STATUS + 2 + iLoop, 9, Qt::AlignLeft);
     }
 
     chBoxGen[4]->setEnabled(false);
@@ -122,6 +133,30 @@ widgetReading::widgetReading(QWidget *parent) : QWidget(parent)
         });
     }
 
+    for(int iLoop = 0; iLoop < NMB_ITEMS_TIMERS_APLS_AND_USN; iLoop++)
+    {
+        connect(chBoxAplUsn[iLoop],&QCheckBox::clicked,[=](bool clicked){
+
+            Q_UNUSED(clicked);
+            //qDebug() << iLoop << "aplUsn checkbox:" << chBoxAplUsn[iLoop]->checkState();
+
+            QString SaveData;
+
+            for(int jLoop = 0; jLoop < NMB_ITEMS_TIMERS_APLS_AND_USN; jLoop++)
+            {
+                SaveData.append(QString("%1").arg(chBoxAplUsn[jLoop]->checkState() ==  Qt::Checked ? "1" : "0") + " ");
+            }
+
+            emit SaveReadMsgsAplUsn(SaveData);
+            emit SendV200Requirement(chBoxAplUsn[iLoop]->checkState(), 2, iLoop);
+        });
+
+        connect(aplUsnTimes[iLoop],static_cast<void (QSpinBox::*)(int)>(&QSpinBox::valueChanged),[=](int value){
+
+            emit SendNewTime(value, 2, iLoop);
+        });
+    }
+
 }
 
 Qt::CheckState widgetReading::GetCheckStateAmplf(int nIndex)
@@ -134,20 +169,30 @@ Qt::CheckState widgetReading::GetCheckStateGener(int nIndex)
     return chBoxGen[nIndex]->checkState();
 }
 
+Qt::CheckState widgetReading::GetCheckStateAplUsn(int nIndex)
+{
+    return chBoxAplUsn[nIndex]->checkState();
+}
+
 void widgetReading::showTextLog(QString showText)
 {
     textBrowser->append(showText);
 }
 
-void widgetReading::ReadTimeRequests(bool device, int index, int value)
+void widgetReading::ReadTimeRequests(int device, int index, int value)
 {
+    qDebug() << device << index << value;
     if(device == 0)
     {
         amplfTimes[index]->setValue(value);
     }
-    else
+    else if(device == 1)
     {
         generTimes[index]->setValue(value);
+    }
+    else if(device == 2)
+    {
+        aplUsnTimes[index]->setValue(value);
     }
 }
 
@@ -285,6 +330,30 @@ void widgetReading::ReceiveRcvMsgGen(QString data)
             if(iLoop != 4)
             {
                 chBoxGen[iLoop]->setCheckState(Qt::Checked);
+            }
+        }
+    }
+}
+
+void widgetReading::ReceiveRcvMsgAplUsn(QString data)
+{
+    QStringList arrListSaved;
+    arrListSaved = data.split(QRegExp("\\s+"));
+
+    if((arrListSaved.count() - 1) == NMB_ITEMS_TIMERS_APLS_AND_USN)
+    {
+        for(int iLoop = 0; iLoop < NMB_ITEMS_TIMERS_APLS_AND_USN; iLoop++)
+        {
+            chBoxAplUsn[iLoop]->setCheckState(arrListSaved.at(iLoop) == "1" ? Qt::Checked : Qt::Unchecked);
+        }
+    }
+    else
+    {
+        for(int iLoop = 0; iLoop < NMB_ITEMS_TIMERS_APLS_AND_USN; iLoop++)
+        {
+            if(iLoop != 4)
+            {
+                chBoxAplUsn[iLoop]->setCheckState(Qt::Checked);
             }
         }
     }

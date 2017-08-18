@@ -31,6 +31,9 @@ public:
     void StoreRefreshAmplif(const int nIndexTimer, const int nPeriod_ms);
     int RestoreRefreshAmplif(const int nIndexTimer) const;
 
+    void StoreRefreshAplUsn(const int nIndexTimer, const int nPeriod_ms);
+    int RestoreRefreshAplUsn(const int nIndexTimer) const;
+
     void StoreHighValueSignal(const int nIndexTimer, const double value);
     double RestoreHighValueSignal(const int nIndexTimer) const;
 
@@ -78,6 +81,9 @@ public:
 
     void StoreRcvMsgGen(const QString strValue);
     QString RestoreRcvMsgGen(void) const;
+
+    void StoreRcvMsgAplUsn(const QString strValue);
+    QString RestoreRcvMsgAplUsn(void) const;
 
 private:
     QSettings* m_pAppSettings = new QSettings("settingsV1.ini", QSettings::IniFormat);

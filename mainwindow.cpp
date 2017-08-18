@@ -94,6 +94,8 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
     connect(this, &MainWindow::SendRcvMsgAmp, p_WidgetReading, &widgetReading::ReceiveRcvMsgAmp);
     connect(p_WidgetReading, &widgetReading::SaveReadMsgsGener, appSettings, &settings::StoreRcvMsgGen);
     connect(this, &MainWindow::SendRcvMsgGen, p_WidgetReading, &widgetReading::ReceiveRcvMsgGen);
+    connect(p_WidgetReading, &widgetReading::SaveReadMsgsAplUsn, appSettings, &settings::StoreRcvMsgAplUsn);
+    connect(this, &MainWindow::SendRcvMsgAplUsn, p_WidgetReading, &widgetReading::ReceiveRcvMsgAplUsn);
 
     ui->comboBox_1->addItem(QString("Generator (ID = %1d)").arg(constGenerID));
     ui->comboBox_1->addItem(QString("Amplifier (ID = %1d)").arg(constAmpID));
@@ -118,6 +120,7 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
     emit SendGenPwr(appSettings->RestoreGenPwr());
     emit SendRcvMsgAmp(appSettings->RestoreRcvMsgAmp());
     emit SendRcvMsgGen(appSettings->RestoreRcvMsgGen());
+    emit SendRcvMsgAplUsn(appSettings->RestoreRcvMsgAplUsn());
 
     for(int iLoop = 0; iLoop < E_GEN_ADC_NMB; iLoop++)
     {
@@ -163,9 +166,19 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
         eRequestsAmplifAdcx[iLoop].timer.CurrentTime_ms = 0;
         eRequestsAmplifAdcx[iLoop].timer.bEnable = false;
         eRequestsAmplifAdcx[iLoop].timer.RequirementTime_ms = 50;
-        eRequestsAmplifAdcx[iLoop].isInProgress = false;;
+        eRequestsAmplifAdcx[iLoop].isInProgress = false;
 
         emit SendTimeRequests(0, iLoop, appSettings->RestoreRefreshAmplif(iLoop));
+    }
+
+    for(int iLoop = 0; iLoop < NMB_ITEMS_TIMERS_APLS_AND_USN; iLoop++)
+    {
+        eRequestsAplUsn[iLoop].timer.CurrentTime_ms = 0;
+        eRequestsAplUsn[iLoop].timer.bEnable = false;
+        eRequestsAplUsn[iLoop].timer.RequirementTime_ms = 50;
+        eRequestsAplUsn[iLoop].isInProgress = false;
+
+        emit SendTimeRequests(2, iLoop, appSettings->RestoreRefreshAplUsn(iLoop));
     }
 
 
@@ -195,8 +208,9 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
 
     connect(&TmrMstr,&QTimer::timeout,[this](){
 
-        HasTimerRequestsExpired(GENERATOR_SOURCE);
-        HasTimerRequestsExpired(AMPLIFIER_SOURCE);
+        HasTimerRequestsExpiredGenAmpl(GENERATOR_SOURCE);
+        HasTimerRequestsExpiredGenAmpl(AMPLIFIER_SOURCE);
+        HasTimerRequestsExpiredAplUsn();
 
         HasTimerInputExpired(GENERATOR_SOURCE);
         HasTimerInputExpired(AMPLIFIER_SOURCE);
@@ -271,6 +285,15 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
             }
         }
 
+        for(int iLoop = 0; iLoop < NMB_ITEMS_TIMERS_APLS_AND_USN; iLoop++)
+        {
+            if(eRequestsAplUsn[iLoop].internalIdClass == vErrorData.toInt())
+            {
+               eRequestsAplUsn[iLoop].isInProgress = false;
+               return;
+            }
+        }
+
         if(eRequestGenerInput.internalIdClass == vErrorData.toInt())
         {
            eRequestGenerInput.isInProgress = false;
@@ -308,6 +331,11 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
             {
                 onNewMsgReqReceived(p_WidgetReading->GetCheckStateGener(iLoop), 1, iLoop);
             }
+
+            for(qint32 iLoop = 0; iLoop < NMB_ITEMS_TIMERS_APLS_AND_USN; iLoop++)
+            {
+                onNewMsgReqReceived(p_WidgetReading->GetCheckStateAplUsn(iLoop), 2, iLoop);
+            }
             break;
         case CommProtInterface::Detecting:
             qDebug() << "Detecting";
@@ -336,11 +364,30 @@ void MainWindow::onNewMsgReqReceived(Qt::CheckState m_newState, int m_device, in
 {
     if(m_device == 0)
     {
-        universalRequestMessageProtocol(m_newState, QString::number(PID_SEND_AMP_TIMERS_RESULTS, 16).toInt() + m_indexMsg);
+        universalRequestMessageProtocol(m_newState, PID_SEND_AMP_TIMERS_RESULTS + m_indexMsg);
     }
     else if(m_device == 1)
     {
-        universalRequestMessageProtocol(m_newState, QString::number(PID_SEND_ADC3_ADJUSTED_DATA_GENER, 16).toInt() + m_indexMsg);
+        universalRequestMessageProtocol(m_newState, PID_SEND_ADC3_ADJUSTED_DATA_GENER + m_indexMsg);
+    }
+    else if(m_device == 2)
+    {
+        uint32_t dwPidMsg;
+
+        if(m_indexMsg == E_USN)
+        {
+            dwPidMsg = PID_READ_MEASURE_DATA_USN;
+        }
+        else if(m_indexMsg == E_APL_LARGE)
+        {
+            dwPidMsg = PID_READ_MEASURE_DATA_APL_L;
+        }
+        else if(m_indexMsg == E_APL_SMALL)
+        {
+            dwPidMsg = PID_READ_MEASURE_DATA_APL_S;
+        }
+
+        universalRequestMessageProtocol(m_newState, dwPidMsg);
     }
     //qDebug() << "slot occours";
 }
@@ -356,6 +403,11 @@ void MainWindow::onNewTimeRequest(int valueTime, int m_device, int m_indexMsg)
     {
         appSettings->StoreRefreshGener(m_indexMsg, valueTime);
         eRequestsGenerAdcx[m_indexMsg].timer.RequirementTime_ms = valueTime;
+    }
+    else if(m_device == 2)
+    {
+        appSettings->StoreRefreshAplUsn(m_indexMsg, valueTime);
+        eRequestsAplUsn[m_indexMsg].timer.RequirementTime_ms = valueTime;
     }
 }
 
@@ -419,6 +471,8 @@ void MainWindow::newDataV200(QByteArray aData)
 {
     //actualize time
     timeCurrent.restart();
+
+    //qDebug() << aData;
 
     ui->statusBar->showMessage("Data received: " + QString(aData.toHex()));
     QStringList myStringOnlyNumbers = adjustRowDataIntoOnlyNumber(aData);
@@ -493,6 +547,30 @@ void MainWindow::newDataV200(QByteArray aData)
                 eRequestGenerInput.isInProgress = false;
             }
         }
+        break;
+    case 'u'://usn´s data
+        AppendText(timeCurrent, QString(aData));
+        if(eRequestsAplUsn[0].isInProgress == true)
+        {
+            eRequestsAplUsn[0].isInProgress = false;
+        }
+
+        break;
+    case 'l'://app_l´s data
+        AppendText(timeCurrent, QString(aData));
+        if(eRequestsAplUsn[1].isInProgress == true)
+        {
+            eRequestsAplUsn[1].isInProgress = false;
+        }
+
+        break;
+    case 's'://app_s´s data
+        AppendText(timeCurrent, QString(aData));
+        if(eRequestsAplUsn[2].isInProgress == true)
+        {
+            eRequestsAplUsn[2].isInProgress = false;
+        }
+
         break;
     case 'a'://Amp´s data
         AppendText(timeCurrent, QString(aData));
@@ -776,7 +854,7 @@ bool MainWindow::GetIndexFromQlist(MainWindow::SOURCE_DEVICE eSourceStream, int 
     return false;
 }
 
-void MainWindow::SetTimerRequests(int wIndex, bool bOnOff, QString sCommand, MainWindow::SOURCE_DEVICE eSourceStream)
+void MainWindow::SetTimerRequestsGenAmp(int wIndex, bool bOnOff, QString sCommand, MainWindow::SOURCE_DEVICE eSourceStream)
 {
     qint32 dwPidItems = (eSourceStream == GENERATOR_SOURCE) ? QString::number(PID_SEND_ADC3_ADJUSTED_DATA_GENER, 16).toInt() : QString::number(PID_SEND_AMP_TIMERS_RESULTS, 16).toInt();
     qint32 dwVolumeItems = (eSourceStream == GENERATOR_SOURCE) ? NMB_ITEMS_TIMERS_GENER : NMB_ITEMS_TIMERS_AMPLF;
@@ -804,6 +882,40 @@ void MainWindow::SetTimerRequests(int wIndex, bool bOnOff, QString sCommand, Mai
             break;
         }
     }
+}
+
+void MainWindow::SetTimerRequestsAplUsn(bool bOnOff, QString sCommand, MainWindow::SOURCE_DEVICE eSourceStream)
+{
+    uint32_t dwIndex;
+
+
+    if(eSourceStream == APL_LARGE_SOURCE)
+    {
+        dwIndex = E_APL_LARGE;
+    }
+    else if(eSourceStream == APL_SMALL_SOURCE)
+    {
+        dwIndex = E_APL_SMALL;
+    }
+    else if(eSourceStream == USN_GENER_SOURCE)
+    {
+        dwIndex = E_USN;
+    }
+
+    if(bOnOff == true)
+    {
+        eRequestsAplUsn[dwIndex].timer.CurrentTime_ms = eRequestsAplUsn[dwIndex].timer.RequirementTime_ms;
+        eRequestsAplUsn[dwIndex].timer.bEnable = true;
+
+        eRequestsAplUsn[dwIndex].assemblyMsq = QByteArray::fromHex(sCommand.toStdString().c_str());
+        eRequestsAplUsn[dwIndex].respExp = true;
+    }
+    else
+    {
+        eRequestsAplUsn[dwIndex].timer.bEnable = false;
+        eRequestsAplUsn[dwIndex].respExp = false;
+    }
+
 }
 
 void MainWindow::ShowSignalsIntoComboBox(SOURCE_STREAM eSourceStream)
@@ -862,7 +974,7 @@ void MainWindow::SetTimerinput(bool bOnOff, QString sCommand, MainWindow::SOURCE
     }
 }
 
-void MainWindow::HasTimerRequestsExpired(MainWindow::SOURCE_DEVICE eSourceStream)
+void MainWindow::HasTimerRequestsExpiredGenAmpl(MainWindow::SOURCE_DEVICE eSourceStream)
 {
     qint32 dwVolumeItems = (eSourceStream == GENERATOR_SOURCE) ? NMB_ITEMS_TIMERS_GENER : NMB_ITEMS_TIMERS_AMPLF;
     PERIODIC_REQUEST* p_sRequests = (eSourceStream == GENERATOR_SOURCE) ? eRequestsGenerAdcx : eRequestsAmplifAdcx;
@@ -886,6 +998,32 @@ void MainWindow::HasTimerRequestsExpired(MainWindow::SOURCE_DEVICE eSourceStream
                     p_sRequests[loop].isInProgress = true;
                     p_sRequests[loop].timer.CurrentTime_ms = 0;
                     p_sRequests[loop].internalIdClass = m_CommProt.data()->SendData(m_nDeviceAddress, p_sRequests[loop].assemblyMsq, p_sRequests[loop].respExp);
+                }
+            }
+        }
+    }
+}
+
+void MainWindow::HasTimerRequestsExpiredAplUsn()
+{
+    for(qint32 loop = 0; loop < NMB_ITEMS_TIMERS_APLS_AND_USN; loop++)
+    {
+        if(eRequestsAplUsn[loop].timer.bEnable == true)
+        {
+            eRequestsAplUsn[loop].timer.CurrentTime_ms++;
+            if(eRequestsAplUsn[loop].timer.CurrentTime_ms >= eRequestsAplUsn[loop].timer.RequirementTime_ms)
+            {
+                //qDebug() << "Timer requests" << loop << "tick";
+                if(eRequestsAplUsn[loop].isInProgress == true)
+                {
+                    //qDebug() << "Timer requests" << loop << "busy";
+                }
+                else
+                {
+                    //qDebug() << "Timer requests" << loop << "again";
+                    eRequestsAplUsn[loop].isInProgress = true;
+                    eRequestsAplUsn[loop].timer.CurrentTime_ms = 0;
+                    eRequestsAplUsn[loop].internalIdClass = m_CommProt.data()->SendData(m_nDeviceAddress, eRequestsAplUsn[loop].assemblyMsq, eRequestsAplUsn[loop].respExp);
                 }
             }
         }
@@ -993,6 +1131,12 @@ void MainWindow::on_disconnectButton_clicked()
     {
         eRequestsAmplifAdcx[loop].timer.bEnable = false;
         eRequestsAmplifAdcx[loop].isInProgress = false;
+    }
+
+    for(qint32 loop = 0; loop < NMB_ITEMS_TIMERS_APLS_AND_USN; loop++)
+    {
+        eRequestsAplUsn[loop].timer.bEnable = false;
+        eRequestsAplUsn[loop].isInProgress = false;
     }
 
     eRequestGenerInput.timer.bEnable = false;
@@ -1119,23 +1263,38 @@ void MainWindow::refreshPlot()
 
 void MainWindow::universalRequestMessageProtocol(Qt::CheckState eState, int wIndex)
 {
-    QString strCmd = QString("%1").arg(wIndex);
+    int wIndexHex = QString::number(wIndex, 16).toInt();
+    QString strCmd = QString("%1").arg(QString::number(wIndex, 16));
+
+
     strCmd += QString("0%1").arg(eState == Qt::Unchecked ? "0" : "1");
 
-    qDebug() << strCmd;
+    qDebug() << "+++++++" << strCmd << wIndex << wIndexHex << QString::number(PID_READ_MEASURE_DATA_APL_L).toInt();
 
-    if(wIndex == PID_READ_INPUT)
+    if(wIndex == QString::number(PID_READ_INPUT).toInt())
     {
         SetTimerinput(eState == Qt::Unchecked ? false : true, strCmd, GENERATOR_SOURCE);
     }
-    else if(wIndex == PID_READ_AMP_INPUT)
+    else if(wIndex == QString::number(PID_READ_AMP_INPUT).toInt())
     {
         SetTimerinput(eState == Qt::Unchecked ? false : true, strCmd, AMPLIFIER_SOURCE);
     }
+    else if(wIndex == QString::number(PID_READ_MEASURE_DATA_USN).toInt())
+    {
+        SetTimerRequestsAplUsn(eState == Qt::Unchecked ? false : true, strCmd, USN_GENER_SOURCE);
+    }
+    else if(wIndex == QString::number(PID_READ_MEASURE_DATA_APL_L).toInt())
+    {
+        SetTimerRequestsAplUsn(eState == Qt::Unchecked ? false : true, strCmd, APL_LARGE_SOURCE);
+    }
+    else if(wIndex == QString::number(PID_READ_MEASURE_DATA_APL_S).toInt())
+    {
+        SetTimerRequestsAplUsn(eState == Qt::Unchecked ? false : true, strCmd, APL_SMALL_SOURCE);
+    }
     else
     {
-        SetTimerRequests(wIndex, eState == Qt::Unchecked ? false : true, strCmd, GENERATOR_SOURCE);
-        SetTimerRequests(wIndex, eState == Qt::Unchecked ? false : true, strCmd, AMPLIFIER_SOURCE);
+        SetTimerRequestsGenAmp(wIndexHex, eState == Qt::Unchecked ? false : true, strCmd, GENERATOR_SOURCE);
+        SetTimerRequestsGenAmp(wIndexHex, eState == Qt::Unchecked ? false : true, strCmd, AMPLIFIER_SOURCE);
 
         ShowSignalsIntoComboBox(RECEIVE_STREAM);
     }

@@ -75,6 +75,16 @@ int settings::RestoreRefreshAmplif(const int nIndexTimer) const
     return RestoreValue(QString("timerAmp%1").arg(nIndexTimer)).toUInt();
 }
 
+void settings::StoreRefreshAplUsn(const int nIndexTimer, const int nPeriod_ms)
+{
+    StoreValue(QString("timerAplUsn%1").arg(nIndexTimer), nPeriod_ms);
+}
+
+int settings::RestoreRefreshAplUsn(const int nIndexTimer) const
+{
+    return RestoreValue(QString("timerAplUsn%1").arg(nIndexTimer)).toUInt();
+}
+
 void settings::StoreHighValueSignal(const int nIndexTimer, const double value)
 {
     StoreValue(QString("HighLevel1%1").arg(nIndexTimer), value);
@@ -233,6 +243,16 @@ void settings::StoreRcvMsgGen(const QString strValue)
 QString settings::RestoreRcvMsgGen() const
 {
     return RestoreValue(QString("rcvMsgGen")).toString();
+}
+
+void settings::StoreRcvMsgAplUsn(const QString strValue)
+{
+    StoreValue(QString("rcvMsgAplUsn"), strValue);
+}
+
+QString settings::RestoreRcvMsgAplUsn() const
+{
+    return RestoreValue(QString("rcvMsgAplUsn")).toString();
 }
 
 void settings::StorePortName(const QString &strPortName)
