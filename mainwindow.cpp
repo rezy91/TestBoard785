@@ -550,25 +550,52 @@ void MainWindow::newDataV200(QByteArray aData)
         break;
     case 'u'://usn´s data
         AppendText(timeCurrent, QString(aData));
-        if(eRequestsAplUsn[0].isInProgress == true)
+
+        if(m_bSaveData)
         {
-            eRequestsAplUsn[0].isInProgress = false;
+            m_oFile.write(myTimeStamp(timeCurrent).toUtf8() + "\t" + QString(aData).simplified().toUtf8() + "\r\n");
+            m_oFile.flush();
+        }
+
+        recognizeIfDisplayNewDataAllSignals(timeCurrent, &myStringOnlyNumbers, NMB_ITEMS_TIMERS_GENER + NMB_ITEMS_TIMERS_AMPLF);
+
+        if(eRequestsAplUsn[E_USN].isInProgress == true)
+        {
+            eRequestsAplUsn[E_USN].isInProgress = false;
         }
 
         break;
     case 'l'://app_l´s data
         AppendText(timeCurrent, QString(aData));
-        if(eRequestsAplUsn[1].isInProgress == true)
+
+        if(m_bSaveData)
         {
-            eRequestsAplUsn[1].isInProgress = false;
+            m_oFile.write(myTimeStamp(timeCurrent).toUtf8() + "\t" + QString(aData).simplified().toUtf8() + "\r\n");
+            m_oFile.flush();
+        }
+
+        recognizeIfDisplayNewDataAllSignals(timeCurrent, &myStringOnlyNumbers, NMB_ITEMS_TIMERS_GENER + NMB_ITEMS_TIMERS_AMPLF + 1);
+
+        if(eRequestsAplUsn[E_APL_LARGE].isInProgress == true)
+        {
+            eRequestsAplUsn[E_APL_LARGE].isInProgress = false;
         }
 
         break;
     case 's'://app_s´s data
         AppendText(timeCurrent, QString(aData));
-        if(eRequestsAplUsn[2].isInProgress == true)
+
+        if(m_bSaveData)
         {
-            eRequestsAplUsn[2].isInProgress = false;
+            m_oFile.write(myTimeStamp(timeCurrent).toUtf8() + "\t" + QString(aData).simplified().toUtf8() + "\r\n");
+            m_oFile.flush();
+        }
+
+        recognizeIfDisplayNewDataAllSignals(timeCurrent, &myStringOnlyNumbers, NMB_ITEMS_TIMERS_GENER + NMB_ITEMS_TIMERS_AMPLF + 2);
+
+        if(eRequestsAplUsn[E_APL_SMALL].isInProgress == true)
+        {
+            eRequestsAplUsn[E_APL_SMALL].isInProgress = false;
         }
 
         break;
@@ -763,12 +790,18 @@ void MainWindow::CheckedIfIndexInQlist(int NumberComboBox, int indexInComboBox)
         recStat[NumberComboBox] = 1;
         int absoluteIndex = indexInComboBox - 1;
 
-        if(GetIndexFromQlist(GENERATOR_SOURCE, absoluteIndex, NumberComboBox, indexInComboBox))
+        if(GetIndexFromQlistGenAmp(GENERATOR_SOURCE, absoluteIndex, NumberComboBox, indexInComboBox))
         {
             return;
         }
-
-        GetIndexFromQlist(AMPLIFIER_SOURCE, absoluteIndex, NumberComboBox, indexInComboBox);
+        else if(GetIndexFromQlistGenAmp(AMPLIFIER_SOURCE, absoluteIndex, NumberComboBox, indexInComboBox))
+        {
+            return;
+        }
+        else
+        {
+            GetIndexFromQlistAplUsn(absoluteIndex, NumberComboBox, indexInComboBox);
+        }
     }
     else
     {
@@ -779,7 +812,7 @@ void MainWindow::CheckedIfIndexInQlist(int NumberComboBox, int indexInComboBox)
     }
 }
 
-bool MainWindow::GetIndexFromQlist(MainWindow::SOURCE_DEVICE eSourceStream, int &dwAbsIndex, int dwNumberCmbBx, int dwIndexCmbBx)
+bool MainWindow::GetIndexFromQlistGenAmp(MainWindow::SOURCE_DEVICE eSourceStream, int &dwAbsIndex, int dwNumberCmbBx, int dwIndexCmbBx)
 {
     qint32 dwVolumeItems = (eSourceStream == GENERATOR_SOURCE) ? NMB_ITEMS_TIMERS_GENER : NMB_ITEMS_TIMERS_AMPLF;
     PERIODIC_REQUEST* p_sRequests = (eSourceStream == GENERATOR_SOURCE) ? eRequestsGenerAdcx : eRequestsAmplifAdcx;
@@ -837,18 +870,68 @@ bool MainWindow::GetIndexFromQlist(MainWindow::SOURCE_DEVICE eSourceStream, int 
 
                     m_logFile.close();
                 }
-
-                if(eSourceStream == GENERATOR_SOURCE)
-                {
-
-                    return true;
-                }
-                else
-                {
-                    return false;
-                }
+                return true;
             }
             dwAbsIndex -= p_sStringList[iLoop].count();
+        }
+    }
+    return false;
+}
+
+bool MainWindow::GetIndexFromQlistAplUsn(int &dwAbsIndex, int dwNumberCmbBx, int dwIndexCmbBx)
+{
+    for(qint32 iLoop = 0; iLoop < NMB_ITEMS_TIMERS_APLS_AND_USN; iLoop++)
+    {
+        if((sourceDataStream == RECEIVE_STREAM && eRequestsAplUsn[iLoop].timer.bEnable) || (sourceDataStream == LOG_STREAM && flagIfSourceIsLoggedAplUsn[iLoop]))
+        {
+            if((dwAbsIndex - allAdxSignalsAplUsn[iLoop].count()) < 0)
+            {
+                sourceAd[dwNumberCmbBx] = NMB_ITEMS_TIMERS_GENER + NMB_ITEMS_TIMERS_AMPLF + iLoop;
+                sourceSignal[dwNumberCmbBx] = dwAbsIndex;
+                sourceSignText[dwNumberCmbBx] = allSignalsBaseOnlyAplUsn[iLoop];
+
+                //qDebug() << "has been found signal:" << allAdxSignalsGener[iLoop].at(dwAbsIndex) << endl;
+                //qDebug() << sourceSignText[dwNumberCmbBx];
+
+                if(sourceDataStream == LOG_STREAM)
+                {
+                    QFile m_logFile(logPath);
+
+                    if(!m_logFile.open(QFile::ReadOnly))
+                    {
+                        qDebug() << "error: cannot open file";
+                    }
+                    else
+                    {
+                        QTextStream fileStream(&m_logFile);
+
+                        while (!fileStream.atEnd())
+                        {
+                            QString newLinereaded = fileStream.readLine();
+                            QStringList stringsSplitted = newLinereaded.split(QRegExp("\\s+"));
+
+                            //qDebug() << newLinereaded;
+
+
+                            if(stringsSplitted[1] == sourceSignText[dwNumberCmbBx])//founded row appeared
+                            {
+                                QTime timeLog = QTime::fromString(stringsSplitted[0], "hh:mm:ss,zzz");
+                                QStringList myStringOnlyNumbers = adjustRowDataIntoOnlyNumber(newLinereaded);
+
+                                DisplayNewDataFromSignal(timeLog, &myStringOnlyNumbers, dwNumberCmbBx);
+                            }
+
+                        }
+
+                        //send flag, that has been sending last one
+                        emit SendUpdateGraph(QTime(0,0,0), 0, 0, " ", dwIndexCmbBx, sourceDataStream, 1);
+                    }
+
+                    m_logFile.close();
+                }
+                return true;
+            }
+            dwAbsIndex -= allAdxSignalsAplUsn[iLoop].count();
         }
     }
     return false;
@@ -925,11 +1008,12 @@ void MainWindow::ShowSignalsIntoComboBox(SOURCE_STREAM eSourceStream)
 
     qint32 dwIndexStart = 1;
 
-    ShowSignalsIfShould(eSourceStream, GENERATOR_SOURCE, dwIndexStart, COLOR_BLUE_DARK);
-    ShowSignalsIfShould(eSourceStream, AMPLIFIER_SOURCE, dwIndexStart, COLOR_BROWN_DARK);
+    ShowSignalsGenAmplIfShould(eSourceStream, GENERATOR_SOURCE, dwIndexStart, COLOR_BLUE_DARK);
+    ShowSignalsGenAmplIfShould(eSourceStream, AMPLIFIER_SOURCE, dwIndexStart, COLOR_BROWN_DARK);
+    ShowSignalsAplUsnIfShould(eSourceStream, dwIndexStart, COLOR_GREEN_DARK);
 }
 
-void MainWindow::ShowSignalsIfShould(SOURCE_STREAM eSourceStream, MainWindow::SOURCE_DEVICE eSourceDevice, qint32 &dwStartIndex, QColor eBackgrColor)
+void MainWindow::ShowSignalsGenAmplIfShould(SOURCE_STREAM eSourceStream, MainWindow::SOURCE_DEVICE eSourceDevice, qint32 &dwStartIndex, QColor eBackgrColor)
 {
     qint32 dwVolumeItems = (eSourceDevice == GENERATOR_SOURCE) ? NMB_ITEMS_TIMERS_GENER : NMB_ITEMS_TIMERS_AMPLF;
     const QStringList* p_sStringList = (eSourceDevice == GENERATOR_SOURCE) ? allAdxSignalsGener : allAdxSignalsAmplf;
@@ -950,6 +1034,25 @@ void MainWindow::ShowSignalsIfShould(SOURCE_STREAM eSourceStream, MainWindow::SO
             }
 
             dwStartIndex += p_sStringList[row].count();
+        }
+    }
+}
+
+void MainWindow::ShowSignalsAplUsnIfShould(SOURCE_STREAM eSourceStream, qint32 &dwStartIndex, QColor eBackgrColor)
+{
+    for(qint32 row = 0; row < NMB_ITEMS_TIMERS_APLS_AND_USN; row++)
+    {
+        if(((eSourceStream == LOG_STREAM) && flagIfSourceIsLoggedAplUsn[row]) || ((eSourceStream == RECEIVE_STREAM) && eRequestsAplUsn[row].timer.bEnable))
+        {
+            p_WidgetGraph->addItems(allAdxSignalsAplUsn[row]);
+
+            for(qint32 iLoop = 0; iLoop <= allAdxSignalsAplUsn[row].count(); iLoop++)
+            {
+                p_WidgetGraph->setItemData(dwStartIndex + iLoop, QBrush(eBackgrColor), Qt::BackgroundRole);
+                p_WidgetGraph->setItemData(dwStartIndex + iLoop, QBrush(Qt::white), Qt::TextColorRole);
+            }
+
+            dwStartIndex += allAdxSignalsAplUsn[row].count();
         }
     }
 }
@@ -1070,6 +1173,9 @@ void MainWindow::recognizeIfDisplayNewDataAllSignals(QTime timestamp, QStringLis
 
 void MainWindow::DisplayNewDataFromSignal(QTime timestamp, QStringList *listOfNumbers, int indexInSignal)
 {
+    QString textToShow;
+
+
     if(sourceSignal[indexInSignal] >= listOfNumbers->count())
     {
         qDebug() << "!!!!!!! received messegage isn´t according template";
@@ -1078,7 +1184,18 @@ void MainWindow::DisplayNewDataFromSignal(QTime timestamp, QStringList *listOfNu
 
     recvItems[indexInSignal] = listOfNumbers->at(sourceSignal[indexInSignal]).toDouble();
 
-    QString textToShow = (sourceAd[indexInSignal] >= NMB_ITEMS_TIMERS_GENER) ? allAdxSignalsAmplf[sourceAd[indexInSignal] - NMB_ITEMS_TIMERS_GENER].at(sourceSignal[indexInSignal]) : allAdxSignalsGener[sourceAd[indexInSignal]].at(sourceSignal[indexInSignal]);
+    if(sourceAd[indexInSignal] < NMB_ITEMS_TIMERS_GENER)
+    {
+        textToShow.append(allAdxSignalsGener[sourceAd[indexInSignal]].at(sourceSignal[indexInSignal]));
+    }
+    else if(sourceAd[indexInSignal] < (NMB_ITEMS_TIMERS_GENER + NMB_ITEMS_TIMERS_AMPLF))
+    {
+        textToShow.append(allAdxSignalsAmplf[sourceAd[indexInSignal] - NMB_ITEMS_TIMERS_GENER].at(sourceSignal[indexInSignal]));
+    }
+    else
+    {
+        textToShow.append(allAdxSignalsAplUsn[sourceAd[indexInSignal] - NMB_ITEMS_TIMERS_GENER - NMB_ITEMS_TIMERS_AMPLF].at(sourceSignal[indexInSignal]));
+    }
 
     emit SendUpdateGraph(timestamp, recvItems[indexInSignal], recStat[indexInSignal], textToShow, indexInSignal, sourceDataStream, 0);
 }
@@ -1177,6 +1294,11 @@ void MainWindow::openlogButtonPressed()
         flagIfSourceIsLoggedAmplf[iLoop] = false;
     }
 
+    for(int iLoop = 0; iLoop < NMB_ITEMS_TIMERS_APLS_AND_USN; iLoop++)
+    {
+        flagIfSourceIsLoggedAplUsn[iLoop] = false;
+    }
+
     //QString savedPath = m_pSettingStrorage->RestorePathLog();
     logPath = QFileDialog::getOpenFileName(this, "Open log file", QString("%1/").arg(QCoreApplication::applicationDirPath()), "Log File (*.log)");
     //m_pSettingStrorage->StorePathLog(logPath);
@@ -1209,6 +1331,14 @@ void MainWindow::openlogButtonPressed()
                 if(stringsSplitted[1] == allSignalsBaseOnlyAmplf[iLoop])
                 {
                     flagIfSourceIsLoggedAmplf[iLoop] = true;
+                }
+            }
+
+            for(int iLoop = 0; iLoop < NMB_ITEMS_TIMERS_APLS_AND_USN; iLoop++)
+            {
+                if(stringsSplitted[1] == allSignalsBaseOnlyAplUsn[iLoop])
+                {
+                    flagIfSourceIsLoggedAplUsn[iLoop] = true;
                 }
             }
         }
@@ -1295,9 +1425,9 @@ void MainWindow::universalRequestMessageProtocol(Qt::CheckState eState, int wInd
     {
         SetTimerRequestsGenAmp(wIndexHex, eState == Qt::Unchecked ? false : true, strCmd, GENERATOR_SOURCE);
         SetTimerRequestsGenAmp(wIndexHex, eState == Qt::Unchecked ? false : true, strCmd, AMPLIFIER_SOURCE);
-
-        ShowSignalsIntoComboBox(RECEIVE_STREAM);
     }
+
+    ShowSignalsIntoComboBox(RECEIVE_STREAM);
 }
 
 void MainWindow::specificMessageProtocol(QString message)

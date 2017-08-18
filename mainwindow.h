@@ -37,13 +37,9 @@
 #include "widgetadmin.h"
 
 
-#define COLOR_BLUE_LIGHT        QColor(0,255,255)
 #define COLOR_BLUE_DARK         QColor(0,128,255)
-#define COLOR_BROWN_LIGHT       QColor(200,149,121)
 #define COLOR_BROWN_DARK        QColor(124,78,52)
-
-#define COLOR_SAVED_GREEN       QColor(98,251,89)
-#define COLOR_UNSAVED_GREY      QColor(207,207,207)
+#define COLOR_GREEN_DARK        QColor(0,128,0)
 
 namespace Ui {
 class MainWindow;
@@ -159,9 +155,11 @@ private:
     void prepareComboBoxesWithSignals();
     void selectedDeviceSetAccordingSaved(quint32 value);
 
-    bool GetIndexFromQlist(SOURCE_DEVICE eSourceStream, int &dwAbsIndex, int dwNumberCmbBx, int dwIndexCmbBx);
+    bool GetIndexFromQlistGenAmp(SOURCE_DEVICE eSourceStream, int &dwAbsIndex, int dwNumberCmbBx, int dwIndexCmbBx);
+    bool GetIndexFromQlistAplUsn(int &dwAbsIndex, int dwNumberCmbBx, int dwIndexCmbBx);
     void ShowSignalsIntoComboBox(SOURCE_STREAM eSourceStream);
-    void ShowSignalsIfShould(SOURCE_STREAM eSourceStream, SOURCE_DEVICE eSourceDevice, qint32 &dwStartIndex, QColor eBackgrColor);
+    void ShowSignalsGenAmplIfShould(SOURCE_STREAM eSourceStream, SOURCE_DEVICE eSourceDevice, qint32 &dwStartIndex, QColor eBackgrColor);
+    void ShowSignalsAplUsnIfShould(SOURCE_STREAM eSourceStream, qint32 &dwStartIndex, QColor eBackgrColor);
     void SetTimerRequestsGenAmp(int wIndex, bool bOnOff, QString sCommand, SOURCE_DEVICE eSourceStream);
     void SetTimerRequestsAplUsn(bool bOnOff, QString sCommand, SOURCE_DEVICE eSourceStream);
     void SetTimerinput(bool bOnOff, QString sCommand, SOURCE_DEVICE eSourceStream);

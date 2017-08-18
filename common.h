@@ -147,7 +147,8 @@ const QString c_nameAdd = "Add";
 const QStringList allAdxSignalsGener[NMB_ITEMS_TIMERS_GENER] = { \
     {"g3c_counter", "Temperature cold [°C]", "Temperature hot [°C]", "Temperature tip [°C]", "regulator_output [%]", "regulator_error_sum"}, \
     {"g3s_counter", "Cold_pump_adc", "Hot_pump_adc", "Temperature_cold_adc", "Temperature_hot_adc", "fan_adc", "pelt_adc"}, \
-    {"g2c_counter", "imp_avg [||]", "imp_avg [°]", "imp_max [||]", "imp_max [°]", "power_average [W]", "power_current [W]", "power_regulator [W]", "regulator_output", "regulator_error_sum", "refl_ratio", "effectiveness [%]", "R_cqm [ohm]",  "g2c_exec", "g2c_conv"}, \
+    {"g2c_counter", "imp_avg [||]", "imp_avg [°]", "imp_max [||]", "imp_max [°]", "power_average [W]", "power_current [W]", "power_regulator [W]", "regulator_output",  \
+     "regulator_error_sum", "refl_ratio", "effectiveness [%]", "R_cqm [ohm]",  "g2c_exec", "g2c_conv"}, \
     {"g2s_counter", "Vrf_adc", "I4_adc", "Vforward_adc", "I2_adc", "Vreverse_adc", "I3_adc", "I1_adc"}, \
     {"g1c_counter", "g1c_exec", "g1c_conv"}, \
     {"g1s_counter", "Apl1_Vcc_Adc", "CQM1_adc", "CQM2_adc", "V reference [mV]", "Temperature1", "+24V_adc", "+5V_adc", "Temperature MCU [°C]", "vrefin_adc"}};
@@ -156,6 +157,13 @@ const QStringList allAdxSignalsAmplf[NMB_ITEMS_TIMERS_AMPLF] = { \
     {"a3s_counter", "Temperature_1", "Temperature_2", "Temperature_3", "+24V_adc", "+10V_adc", "Vcheck", "ADC3_14", "ADC3_15"}, \
     {"ax_counter", "ax_exec", "ax_conv"}, \
     {"a1s_counter", "Vfet1Out", "Vfet2Out", "Ifet1Out", "Ifet2Out", "Vgate1Out", "Vgate2Out", "inputVolatge_ADC", "inputCurrent_ADC"}};
+const QStringList allAdxSignalsAplUsn[NMB_ITEMS_TIMERS_APLS_AND_USN] = { \
+    {"output frequency [Hz]", "current hlavice [mA]", "output voltage [mV]", "power voltage [mV]", "generated voltage [mV]", "voltage at 10V [mV]", "voltage at 5V [mV]",  \
+     "voltage at 3.3V [mV]", "temp. gener [K]", "temp hlavice_A [0.1K]", "temp hlavice_B [0.1K]", "contact [%]", "temp. board [K]"}, \
+    {"1", "2", "3", "4", "5", "6", "7", "8", "9", "10"}, \
+    {"counter", "RF voltage [V]", "USN voltage [V]", "TIP voltage [V]", "temp. tip [°C]", "nmb meas. tip", "err meas. tip", "err fatal meas. tip", "temp. board [°C]",  \
+     "nmb meas. board", "err meas. board", "err fatal meas. board", "temp. IR", "temp. IR int.", "nmb IR", "err nmb IR", "nmb BNO", "err nmb BNO", "nmb CAP", "err nmb CAP",  \
+     "nmb TIP", "err nmb TIP", "23", "24", "25", "26", "27", "28", "29", "30", "31", "32", "33", "34", "35", "36", "37", "38", "39", "40", "41", "42", "43", "44", "45", "46", "47", "48", "49", "50"}};
 
 
 typedef struct status_register
