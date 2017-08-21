@@ -158,8 +158,8 @@ const QStringList allAdxSignalsAmplf[NMB_ITEMS_TIMERS_AMPLF] = { \
     {"ax_counter", "ax_exec", "ax_conv"}, \
     {"a1s_counter", "Vfet1Out", "Vfet2Out", "Ifet1Out", "Ifet2Out", "Vgate1Out", "Vgate2Out", "inputVolatge_ADC", "inputCurrent_ADC"}};
 const QStringList allAdxSignalsAplUsn[NMB_ITEMS_TIMERS_APLS_AND_USN] = { \
-    {"output frequency [Hz]", "current hlavice [mA]", "output voltage [mV]", "power voltage [mV]", "generated voltage [mV]", "voltage at 10V [mV]", "voltage at 5V [mV]",  \
-     "voltage at 3.3V [mV]", "temp. gener [K]", "temp hlavice_A [0.1K]", "temp hlavice_B [0.1K]", "contact [%]", "temp. board [K]"}, \
+    {"output frequency [Hz]", "current head [mA]", "output voltage [mV]", "power voltage [mV]", "generated voltage [mV]", "voltage at 10V [mV]", "voltage at 5V [mV]",  \
+     "voltage at 3.3V [mV]", "temp. gener [K]", "temp head_A [0.1K]", "temp head_B [0.1K]", "contact [%]", "temp. board [K]"}, \
     {"1", "2", "3", "4", "5", "6", "7", "8", "9", "10"}, \
     {"counter", "RF voltage [V]", "USN voltage [V]", "TIP voltage [V]", "temp. tip [°C]", "nmb meas. tip", "err meas. tip", "err fatal meas. tip", "temp. board [°C]",  \
      "nmb meas. board", "err meas. board", "err fatal meas. board", "temp. IR", "temp. IR int.", "nmb IR", "err nmb IR", "nmb BNO", "err nmb BNO", "nmb CAP", "err nmb CAP",  \

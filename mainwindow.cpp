@@ -1270,6 +1270,8 @@ void MainWindow::on_disconnectButton_clicked()
     }
 
     p_WidgetGraph->clearAll();
+    p_WidgetTherapy->resetValues();
+
     sourceDataStream = NO_STREAM;
 }
 
@@ -1399,7 +1401,7 @@ void MainWindow::universalRequestMessageProtocol(Qt::CheckState eState, int wInd
 
     strCmd += QString("0%1").arg(eState == Qt::Unchecked ? "0" : "1");
 
-    qDebug() << "+++++++" << strCmd << wIndex << wIndexHex << QString::number(PID_READ_MEASURE_DATA_APL_L).toInt();
+    //qDebug() << "+++++++" << strCmd << wIndex << wIndexHex;
 
     if(wIndex == QString::number(PID_READ_INPUT).toInt())
     {

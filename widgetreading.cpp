@@ -181,7 +181,6 @@ void widgetReading::showTextLog(QString showText)
 
 void widgetReading::ReadTimeRequests(int device, int index, int value)
 {
-    qDebug() << device << index << value;
     if(device == 0)
     {
         amplfTimes[index]->setValue(value);

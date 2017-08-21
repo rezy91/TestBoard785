@@ -59,6 +59,9 @@ private:
     void TherapyRuns(unsigned char stateTherapy);
     void TherapyDoesnotRun(void);
 
+public:
+    void resetValues(void);
+
 signals:
     void SendV200specific(QString msg);
 

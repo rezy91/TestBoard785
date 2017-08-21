@@ -131,6 +131,17 @@ void widgetTherapy::TherapyDoesnotRun()
     }
 }
 
+void widgetTherapy::resetValues()
+{
+    listOfChannels->setCurrentIndex(0);
+
+    for(int iLoop = 0; iLoop < E_PARAMS_NMB; iLoop++)
+    {
+       therapyParams[iLoop].value->setText(QString("%1 %2").arg(minSlider[iLoop]).arg(unitParams[iLoop]));
+       therapyParams[iLoop].slider->setValue(minSlider[iLoop]);
+    }
+}
+
 void widgetTherapy::ReceiveStatusReg(STATUS_REGISTER eStatusReg)
 {
     qobject_cast<QStandardItemModel*>(listOfChannels->model())->item(1)->setEnabled(eStatusReg.m_Reg.m_Bit.StateAcc0 == 1 ? true : false);
