@@ -101,8 +101,8 @@ typedef enum packet_id
   PID_SET_RESERVE_1                   = 0x5F,
 
   PID_READ_MEASURE_DATA_USN           = 0x2F,
-  PID_READ_MEASURE_DATA_APL_L         = 0x62,
-  PID_READ_MEASURE_DATA_APL_S         = 0x63,
+  PID_READ_MEASURE_DATA_APL_L         = 0x3E,
+  PID_READ_MEASURE_DATA_APL_S         = 0x3F,
 } PACKET_ID;
 
 typedef enum
