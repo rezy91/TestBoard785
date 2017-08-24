@@ -51,7 +51,7 @@ private:
     const QString allNamesAmp[NMB_ITEMS_TIMERS_AMPLF] = {"AMP ADC3 adjusted [ms]", "AMP ADC3 raw [ms]", "AMP ADC1 adjusted [ms]", "AMP ADC1 raw [ms]"};
     const QString allNamesGen[NMB_ITEMS_TIMERS_GENER] = {"GEN Cooling [ms]", "GEN ADC3 raw [ms]", "GEN Impedance [ms]", "GEN ADC2 raw [ms]", \
                                                          "GEN ADC1 adjusted [ms]", "GEN ADC1 raw [ms]"};
-    const QString allNamesAplUsn[NMB_ITEMS_TIMERS_APLS_AND_USN] = {"USN [ms]", "APL_l [ms]", "APL_s [ms]"};
+    const QString allNamesAplUsn[NMB_ITEMS_TIMERS_APLS_AND_USN] = {"USN [ms]", "APL_l [ms]", "APL_s1 [ms]", "APL_s2 [ms]", "APL_s3 [ms]"};
     const QString allNamesBitStatus[E_NMB_BIT_FLAGS_STATUS] = {"ChangeAcc0", "ChangeAcc1", "ChangeAcc2", "ChangeAcc3", "Empty0", "SelfTestDone", "Restart", "Error", \
                                                                "ButtonPressed", "KeyChanged", "TherapyRunning", "ParChangedByMas", "ParChangedByApp", "SyncWaiting", \
                                                                "EmergencyPressed", "LogRequest", "ChangeSmartDevice0", "StateAcc0", "StateAcc1", "StateAcc2", "StateAcc3", \

@@ -103,6 +103,10 @@ typedef enum packet_id
   PID_READ_MEASURE_DATA_USN           = 0x2F,
   PID_READ_MEASURE_DATA_APL_L         = 0x3E,
   PID_READ_MEASURE_DATA_APL_S         = 0x3F,
+
+  PID_READ_MEAS_APL_S_1_DEVEL         = 0x60,
+  PID_READ_MEAS_APL_S_2_DEVEL         = 0x61,
+  PID_READ_MEAS_APL_S_3_DEVEL         = 0x62,
 } PACKET_ID;
 
 typedef enum
@@ -131,7 +135,9 @@ enum USN_APL_MSGS
 {
     E_USN,
     E_APL_LARGE,
-    E_APL_SMALL,
+    E_APL_SMALL_1,
+    E_APL_SMALL_2,
+    E_APL_SMALL_3,
     NMB_ITEMS_TIMERS_APLS_AND_USN
 };
 
@@ -161,9 +167,16 @@ const QStringList allAdxSignalsAplUsn[NMB_ITEMS_TIMERS_APLS_AND_USN] = { \
     {"output frequency [Hz]", "current head [mA]", "output voltage [mV]", "power voltage [mV]", "generated voltage [mV]", "voltage at 10V [mV]", "voltage at 5V [mV]",  \
      "voltage at 3.3V [mV]", "temp. gener [K]", "temp head_A [0.1K]", "temp head_B [0.1K]", "contact [%]", "temp. board [K]"}, \
     {"1", "2", "3", "4", "5", "6", "7", "8", "9", "10"}, \
-    {"counter", "RF voltage [V]", "USN voltage [V]", "TIP voltage [V]", "temp. tip [°C]", "nmb meas. tip", "err meas. tip", "err fatal meas. tip", "temp. board [°C]",  \
+    {"s1 counter", "RF voltage [V]", "USN voltage [V]", "TIP voltage [V]", "temp. tip [°C]", "nmb meas. tip", "err meas. tip", "err fatal meas. tip", "temp. board [°C]",  \
+     "nmb meas. board", "err meas. board", "err fatal meas. board", "temp. IR", "temp. IR int.", "nmb IR", "err nmb IR", "nmb BNO", "err nmb BNO", "nmb CAP", "err nmb CAP",  \
+     "nmb TIP", "err nmb TIP", "23", "24", "25", "26", "27", "28", "29", "30", "31", "32", "33", "34", "35", "36", "37", "38", "39", "40", "41", "42", "43", "44", "45", "46", "47", "48", "49", "50"},
+    {"s2 counter", "RF voltage [V]", "USN voltage [V]", "TIP voltage [V]", "temp. tip [°C]", "nmb meas. tip", "err meas. tip", "err fatal meas. tip", "temp. board [°C]",  \
+     "nmb meas. board", "err meas. board", "err fatal meas. board", "temp. IR", "temp. IR int.", "nmb IR", "err nmb IR", "nmb BNO", "err nmb BNO", "nmb CAP", "err nmb CAP",  \
+     "nmb TIP", "err nmb TIP", "23", "24", "25", "26", "27", "28", "29", "30", "31", "32", "33", "34", "35", "36", "37", "38", "39", "40", "41", "42", "43", "44", "45", "46", "47", "48", "49", "50"},
+    {"s3 counter", "RF voltage [V]", "USN voltage [V]", "TIP voltage [V]", "temp. tip [°C]", "nmb meas. tip", "err meas. tip", "err fatal meas. tip", "temp. board [°C]",  \
      "nmb meas. board", "err meas. board", "err fatal meas. board", "temp. IR", "temp. IR int.", "nmb IR", "err nmb IR", "nmb BNO", "err nmb BNO", "nmb CAP", "err nmb CAP",  \
      "nmb TIP", "err nmb TIP", "23", "24", "25", "26", "27", "28", "29", "30", "31", "32", "33", "34", "35", "36", "37", "38", "39", "40", "41", "42", "43", "44", "45", "46", "47", "48", "49", "50"}};
+
 
 
 typedef struct status_register

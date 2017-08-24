@@ -382,14 +382,22 @@ void MainWindow::onNewMsgReqReceived(Qt::CheckState m_newState, int m_device, in
         {
             dwPidMsg = PID_READ_MEASURE_DATA_APL_L;
         }
-        else if(m_indexMsg == E_APL_SMALL)
+        else if(m_indexMsg == E_APL_SMALL_1)
         {
-            dwPidMsg = PID_READ_MEASURE_DATA_APL_S;
+            dwPidMsg = PID_READ_MEAS_APL_S_1_DEVEL;
+        }
+        else if(m_indexMsg == E_APL_SMALL_2)
+        {
+            dwPidMsg = PID_READ_MEAS_APL_S_2_DEVEL;
+        }
+        else if(m_indexMsg == E_APL_SMALL_3)
+        {
+            dwPidMsg = PID_READ_MEAS_APL_S_3_DEVEL;
         }
 
         universalRequestMessageProtocol(m_newState, dwPidMsg);
     }
-    //qDebug() << "slot occours";
+    //qDebug() << "slot occours" << m_indexMsg;
 }
 
 void MainWindow::onNewTimeRequest(int valueTime, int m_device, int m_indexMsg)
@@ -557,7 +565,7 @@ void MainWindow::newDataV200(QByteArray aData)
             m_oFile.flush();
         }
 
-        recognizeIfDisplayNewDataAllSignals(timeCurrent, &myStringOnlyNumbers, NMB_ITEMS_TIMERS_GENER + NMB_ITEMS_TIMERS_AMPLF);
+        recognizeIfDisplayNewDataAllSignals(timeCurrent, &myStringOnlyNumbers, NMB_ITEMS_TIMERS_GENER + NMB_ITEMS_TIMERS_AMPLF + E_USN);
 
         if(eRequestsAplUsn[E_USN].isInProgress == true)
         {
@@ -574,7 +582,7 @@ void MainWindow::newDataV200(QByteArray aData)
             m_oFile.flush();
         }
 
-        recognizeIfDisplayNewDataAllSignals(timeCurrent, &myStringOnlyNumbers, NMB_ITEMS_TIMERS_GENER + NMB_ITEMS_TIMERS_AMPLF + 1);
+        recognizeIfDisplayNewDataAllSignals(timeCurrent, &myStringOnlyNumbers, NMB_ITEMS_TIMERS_GENER + NMB_ITEMS_TIMERS_AMPLF + E_APL_LARGE);
 
         if(eRequestsAplUsn[E_APL_LARGE].isInProgress == true)
         {
@@ -591,11 +599,32 @@ void MainWindow::newDataV200(QByteArray aData)
             m_oFile.flush();
         }
 
-        recognizeIfDisplayNewDataAllSignals(timeCurrent, &myStringOnlyNumbers, NMB_ITEMS_TIMERS_GENER + NMB_ITEMS_TIMERS_AMPLF + 2);
-
-        if(eRequestsAplUsn[E_APL_SMALL].isInProgress == true)
+        if(aData.at(1) == '1')//small_1
         {
-            eRequestsAplUsn[E_APL_SMALL].isInProgress = false;
+            recognizeIfDisplayNewDataAllSignals(timeCurrent, &myStringOnlyNumbers, NMB_ITEMS_TIMERS_GENER + NMB_ITEMS_TIMERS_AMPLF + E_APL_SMALL_1);
+
+            if(eRequestsAplUsn[E_APL_SMALL_1].isInProgress == true)
+            {
+                eRequestsAplUsn[E_APL_SMALL_1].isInProgress = false;
+            }
+        }
+        else if(aData.at(1) == '2')//small_2
+        {
+            recognizeIfDisplayNewDataAllSignals(timeCurrent, &myStringOnlyNumbers, NMB_ITEMS_TIMERS_GENER + NMB_ITEMS_TIMERS_AMPLF + E_APL_SMALL_2);
+
+            if(eRequestsAplUsn[E_APL_SMALL_2].isInProgress == true)
+            {
+                eRequestsAplUsn[E_APL_SMALL_2].isInProgress = false;
+            }
+        }
+        else if(aData.at(1) == '3')//small_3
+        {
+            recognizeIfDisplayNewDataAllSignals(timeCurrent, &myStringOnlyNumbers, NMB_ITEMS_TIMERS_GENER + NMB_ITEMS_TIMERS_AMPLF + E_APL_SMALL_3);
+
+            if(eRequestsAplUsn[E_APL_SMALL_3].isInProgress == true)
+            {
+                eRequestsAplUsn[E_APL_SMALL_3].isInProgress = false;
+            }
         }
 
         break;
@@ -976,9 +1005,17 @@ void MainWindow::SetTimerRequestsAplUsn(bool bOnOff, QString sCommand, MainWindo
     {
         dwIndex = E_APL_LARGE;
     }
-    else if(eSourceStream == APL_SMALL_SOURCE)
+    else if(eSourceStream == APL_SMALL_1_SOURCE)
     {
-        dwIndex = E_APL_SMALL;
+        dwIndex = E_APL_SMALL_1;
+    }
+    else if(eSourceStream == APL_SMALL_2_SOURCE)
+    {
+        dwIndex = E_APL_SMALL_2;
+    }
+    else if(eSourceStream == APL_SMALL_3_SOURCE)
+    {
+        dwIndex = E_APL_SMALL_3;
     }
     else if(eSourceStream == USN_GENER_SOURCE)
     {
@@ -1419,9 +1456,17 @@ void MainWindow::universalRequestMessageProtocol(Qt::CheckState eState, int wInd
     {
         SetTimerRequestsAplUsn(eState == Qt::Unchecked ? false : true, strCmd, APL_LARGE_SOURCE);
     }
-    else if(wIndex == QString::number(PID_READ_MEASURE_DATA_APL_S).toInt())
+    else if(wIndex == QString::number(PID_READ_MEAS_APL_S_1_DEVEL).toInt())
     {
-        SetTimerRequestsAplUsn(eState == Qt::Unchecked ? false : true, strCmd, APL_SMALL_SOURCE);
+        SetTimerRequestsAplUsn(eState == Qt::Unchecked ? false : true, strCmd, APL_SMALL_1_SOURCE);
+    }
+    else if(wIndex == QString::number(PID_READ_MEAS_APL_S_2_DEVEL).toInt())
+    {
+        SetTimerRequestsAplUsn(eState == Qt::Unchecked ? false : true, strCmd, APL_SMALL_2_SOURCE);
+    }
+    else if(wIndex == QString::number(PID_READ_MEAS_APL_S_3_DEVEL).toInt())
+    {
+        SetTimerRequestsAplUsn(eState == Qt::Unchecked ? false : true, strCmd, APL_SMALL_3_SOURCE);
     }
     else
     {

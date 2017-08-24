@@ -78,7 +78,9 @@ public:
         GENERATOR_SOURCE,
         AMPLIFIER_SOURCE,
         APL_LARGE_SOURCE,
-        APL_SMALL_SOURCE,
+        APL_SMALL_1_SOURCE,
+        APL_SMALL_2_SOURCE,
+        APL_SMALL_3_SOURCE,
         USN_GENER_SOURCE
     } SOURCE_DEVICE;
 
@@ -103,7 +105,7 @@ private:
 
     const QString allSignalsBaseOnlyGener[NMB_ITEMS_TIMERS_GENER] = {"g3c", "g3s", "g2c", "g2s", "g1c", "g1s"};
     const QString allSignalsBaseOnlyAmplf[NMB_ITEMS_TIMERS_AMPLF] = {"at", "a3s", "ax", "a1s"};
-    const QString allSignalsBaseOnlyAplUsn[NMB_ITEMS_TIMERS_APLS_AND_USN] = {"u", "l", "s"};
+    const QString allSignalsBaseOnlyAplUsn[NMB_ITEMS_TIMERS_APLS_AND_USN] = {"u", "l", "s1", "s2", "s3"};
 
     Ui::MainWindow *ui;
     QSharedPointer<CommProtV200> m_CommProt;
