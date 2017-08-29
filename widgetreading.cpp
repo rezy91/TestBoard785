@@ -8,6 +8,7 @@ widgetReading::widgetReading(QWidget *parent) : QWidget(parent)
     for(int iLoop = 0; iLoop < NMB_ITEMS_TIMERS_APLS_AND_USN; iLoop++)
     {
         chBoxAplUsn[iLoop] = new QCheckBox(allNamesAplUsn[iLoop], this);
+        chBoxAplUsn[iLoop]->setEnabled(false);
         aplUsnTimes[iLoop] = new QSpinBox(this);
         qGridLyout->addWidget(aplUsnTimes[iLoop], iLoop, 0, Qt::AlignRight);
         qGridLyout->addWidget(chBoxAplUsn[iLoop], iLoop, 1, Qt::AlignLeft);
@@ -19,6 +20,7 @@ widgetReading::widgetReading(QWidget *parent) : QWidget(parent)
     for(int iLoop = 0; iLoop < NMB_ITEMS_TIMERS_AMPLF; iLoop++)
     {
         chBoxAmp[iLoop] = new QCheckBox(allNamesAmp[iLoop], this);
+        chBoxAmp[iLoop]->setEnabled(false);
         amplfTimes[iLoop] = new QSpinBox(this);
         qGridLyout->addWidget(amplfTimes[iLoop], iLoop, 2, Qt::AlignRight);
         qGridLyout->addWidget(chBoxAmp[iLoop], iLoop, 3, Qt::AlignLeft);
@@ -30,6 +32,7 @@ widgetReading::widgetReading(QWidget *parent) : QWidget(parent)
     for(int iLoop = 0; iLoop < NMB_ITEMS_TIMERS_GENER; iLoop++)
     {
         chBoxGen[iLoop] = new QCheckBox(allNamesGen[iLoop], this);
+        chBoxGen[iLoop]->setEnabled(false);
         generTimes[iLoop] = new QSpinBox(this);
         qGridLyout->addWidget(generTimes[iLoop], iLoop, 4, Qt::AlignRight);
         qGridLyout->addWidget(chBoxGen[iLoop], iLoop, 5, Qt::AlignLeft);
@@ -64,9 +67,6 @@ widgetReading::widgetReading(QWidget *parent) : QWidget(parent)
         qGridLyout->addWidget(new QLabel(allNamesFirmwareVersion[iLoop]), E_NMB_ITEMS_STATUS + 2 + iLoop, 8, Qt::AlignRight);
         qGridLyout->addWidget(labelFirmwareVersion[iLoop], E_NMB_ITEMS_STATUS + 2 + iLoop, 9, Qt::AlignLeft);
     }
-
-    chBoxGen[4]->setEnabled(false);
-    chBoxAmp[2]->setEnabled(false);
 
 
     vBox->addLayout(qGridLyout);
@@ -172,6 +172,39 @@ Qt::CheckState widgetReading::GetCheckStateGener(int nIndex)
 Qt::CheckState widgetReading::GetCheckStateAplUsn(int nIndex)
 {
     return chBoxAplUsn[nIndex]->checkState();
+}
+
+bool widgetReading::GetEnabledAmplf(int nIndex)
+{
+    return chBoxAmp[nIndex]->isEnabled();
+}
+
+bool widgetReading::GetEnabledGener(int nIndex)
+{
+    return chBoxGen[nIndex]->isEnabled();
+}
+
+bool widgetReading::GetEnabledAplUsn(int nIndex)
+{
+    return chBoxAplUsn[nIndex]->isEnabled();
+}
+
+void widgetReading::disableAll()
+{
+    for(int iLoop = 0; iLoop < NMB_ITEMS_TIMERS_APLS_AND_USN; iLoop++)
+    {
+        chBoxAplUsn[iLoop]->setEnabled(false);
+    }
+
+    for(int iLoop = 0; iLoop < NMB_ITEMS_TIMERS_AMPLF; iLoop++)
+    {
+        chBoxAmp[iLoop]->setEnabled(false);
+    }
+
+    for(int iLoop = 0; iLoop < NMB_ITEMS_TIMERS_GENER; iLoop++)
+    {
+        chBoxGen[iLoop]->setEnabled(false);
+    }
 }
 
 void widgetReading::showTextLog(QString showText)
@@ -283,7 +316,107 @@ void widgetReading::ReceiveStatusReg(STATUS_REGISTER eStatusReg)
 
 void widgetReading::ReceiveFirmwareVersion(int nIndex, uint nValue)
 {
-    labelFirmwareVersion[nIndex]->setText(nValue ? QString("%1").arg(QString::number(nValue)) : QString("unknown"));
+    qDebug() << nIndex;
+
+    if(nValue)
+    {
+        labelFirmwareVersion[nIndex]->setText(QString("%1").arg(QString::number(nValue)));
+
+        if(nIndex == 0)
+        {
+            chBoxAplUsn[E_APL_LARGE]->setEnabled(true);
+            SendV200Requirement(chBoxAplUsn[E_APL_LARGE]->checkState(), 2, E_APL_LARGE);
+        }
+        else if(nIndex == 1)
+        {
+            chBoxAplUsn[E_APL_SMALL_1]->setEnabled(true);
+            SendV200Requirement(chBoxAplUsn[E_APL_SMALL_1]->checkState(), 2, E_APL_SMALL_1);
+        }
+        else if(nIndex == 2)
+        {
+            chBoxAplUsn[E_APL_SMALL_2]->setEnabled(true);
+            SendV200Requirement(chBoxAplUsn[E_APL_SMALL_2]->checkState(), 2, E_APL_SMALL_2);
+        }
+        else if(nIndex == 3)
+        {
+            chBoxAplUsn[E_APL_SMALL_3]->setEnabled(true);
+            SendV200Requirement(chBoxAplUsn[E_APL_SMALL_3]->checkState(), 2, E_APL_SMALL_3);
+        }
+        else if(nIndex == 4)
+        {
+            for(int iLoop = 0; iLoop < NMB_ITEMS_TIMERS_AMPLF; iLoop++)
+            {
+                if(iLoop != 2)
+                {
+                    chBoxAmp[iLoop]->setEnabled(true);
+                    SendV200Requirement(chBoxAmp[iLoop]->checkState(), 0, iLoop);
+                }
+            }
+        }
+        else if(nIndex == 5)
+        {
+            for(int iLoop = 0; iLoop < NMB_ITEMS_TIMERS_GENER; iLoop++)
+            {
+                if(iLoop != 4)
+                {
+                    chBoxGen[iLoop]->setEnabled(true);
+                    SendV200Requirement(chBoxGen[iLoop]->checkState(), 1, iLoop);
+                }
+            }
+        }
+        else if(nIndex == 6)
+        {
+            chBoxAplUsn[E_USN]->setEnabled(true);
+            SendV200Requirement(chBoxAplUsn[E_USN]->checkState(), 2, E_USN);
+        }
+    }
+    else
+    {
+        labelFirmwareVersion[nIndex]->setText(QString("unknown"));
+
+        if(nIndex == 0)
+        {
+            chBoxAplUsn[E_APL_LARGE]->setEnabled(false);
+        }
+        else if(nIndex == 1)
+        {
+            chBoxAplUsn[E_APL_SMALL_1]->setEnabled(false);
+        }
+        else if(nIndex == 2)
+        {
+            chBoxAplUsn[E_APL_SMALL_2]->setEnabled(false);
+        }
+        else if(nIndex == 3)
+        {
+            chBoxAplUsn[E_APL_SMALL_3]->setEnabled(false);
+        }
+        else if(nIndex == 4)
+        {
+            for(int iLoop = 0; iLoop < NMB_ITEMS_TIMERS_AMPLF; iLoop++)
+            {
+                if(iLoop != 2)
+                {
+                    chBoxAmp[iLoop]->setEnabled(false);
+                }
+            }
+        }
+        else if(nIndex == 5)
+        {
+            for(int iLoop = 0; iLoop < NMB_ITEMS_TIMERS_GENER; iLoop++)
+            {
+                if(iLoop != 4)
+                {
+                    chBoxGen[iLoop]->setEnabled(false);
+                }
+            }
+        }
+        else if(nIndex == 6)
+        {
+            chBoxAplUsn[E_USN]->setEnabled(false);
+        }
+    }
+
+
 }
 
 void widgetReading::ReceiveRcvMsgAmp(QString data)

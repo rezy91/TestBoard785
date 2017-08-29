@@ -27,6 +27,10 @@ public:
     Qt::CheckState GetCheckStateAmplf(int nIndex);
     Qt::CheckState GetCheckStateGener(int nIndex);
     Qt::CheckState GetCheckStateAplUsn(int nIndex);
+    bool GetEnabledAmplf(int nIndex);
+    bool GetEnabledGener(int nIndex);
+    bool GetEnabledAplUsn(int nIndex);
+    void disableAll(void);
 
 signals:
     void SendV200Requirement(Qt::CheckState newState, int device, int indexMsg);

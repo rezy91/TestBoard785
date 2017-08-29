@@ -324,17 +324,26 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
 
             for(qint32 iLoop = 0; iLoop < NMB_ITEMS_TIMERS_AMPLF; iLoop++)
             {
-                onNewMsgReqReceived(p_WidgetReading->GetCheckStateAmplf(iLoop), 0, iLoop);
+                if(p_WidgetReading->GetEnabledAmplf(iLoop))
+                {
+                    onNewMsgReqReceived(p_WidgetReading->GetCheckStateAmplf(iLoop), 0, iLoop);
+                }
             }
 
             for(qint32 iLoop = 0; iLoop < NMB_ITEMS_TIMERS_GENER; iLoop++)
             {
-                onNewMsgReqReceived(p_WidgetReading->GetCheckStateGener(iLoop), 1, iLoop);
+                if(p_WidgetReading->GetEnabledGener(iLoop))
+                {
+                    onNewMsgReqReceived(p_WidgetReading->GetCheckStateGener(iLoop), 1, iLoop);
+                }
             }
 
             for(qint32 iLoop = 0; iLoop < NMB_ITEMS_TIMERS_APLS_AND_USN; iLoop++)
             {
-                onNewMsgReqReceived(p_WidgetReading->GetCheckStateAplUsn(iLoop), 2, iLoop);
+                if(p_WidgetReading->GetEnabledAplUsn(iLoop))
+                {
+                    onNewMsgReqReceived(p_WidgetReading->GetCheckStateAplUsn(iLoop), 2, iLoop);
+                }
             }
             break;
         case CommProtInterface::Detecting:
@@ -699,72 +708,91 @@ void MainWindow::newDataV200(QByteArray aData)
             m_CommProt.data()->SendData(m_nDeviceAddress, QByteArray::fromHex(strCmd.toStdString().c_str()), true);
         }
 
-        if(eStatusReg.m_Reg.m_Bit.StateSmartDevice1 && eStatusReg.m_Reg.m_Bit.ChangeSmartDevice1)
+        if(eStatusReg.m_Reg.m_Bit.ChangeSmartDevice1)
         {
-            QString strCmd = QString("%1").arg(QString::number(PID_SEND_HW_CONFIG, 16));
-            strCmd += QString::number(14, 16).rightJustified(1 * 2, '0');
-            strCmd += QString::number(5, 16).rightJustified(1 * 2, '0');
-            m_CommProt.data()->SendData(m_nDeviceAddress, QByteArray::fromHex(strCmd.toStdString().c_str()), true);
-        }
-        else if(eStatusReg.m_Reg.m_Bit.StateSmartDevice1 == 0)
-        {
-            emit SendFirmwareVersion(6, 0);
-        }
-
-        if(eStatusReg.m_Reg.m_Bit.StateSmartDevice0 && eStatusReg.m_Reg.m_Bit.ChangeSmartDevice0)
-        {
-            QString strCmd = QString("%1").arg(QString::number(PID_SEND_HW_CONFIG, 16));
-            strCmd += QString::number(14, 16).rightJustified(1 * 2, '0');
-            strCmd += QString::number(4, 16).rightJustified(1 * 2, '0');
-            m_CommProt.data()->SendData(m_nDeviceAddress, QByteArray::fromHex(strCmd.toStdString().c_str()), true);
-        }
-        else if(eStatusReg.m_Reg.m_Bit.StateSmartDevice0 == 0)
-        {
-            emit SendFirmwareVersion(4, 0);
+            if(eStatusReg.m_Reg.m_Bit.StateSmartDevice1)
+            {
+                QString strCmd = QString("%1").arg(QString::number(PID_SEND_HW_CONFIG, 16));
+                strCmd += QString::number(14, 16).rightJustified(1 * 2, '0');
+                strCmd += QString::number(5, 16).rightJustified(1 * 2, '0');
+                m_CommProt.data()->SendData(m_nDeviceAddress, QByteArray::fromHex(strCmd.toStdString().c_str()), true);
+            }
+            else
+            {
+                emit SendFirmwareVersion(6, 0);
+            }
         }
 
-        if(eStatusReg.m_Reg.m_Bit.StateAcc0 && eStatusReg.m_Reg.m_Bit.ChangeAcc0)
+        if(eStatusReg.m_Reg.m_Bit.ChangeSmartDevice0)
         {
-            QString strCmd = QString("%1").arg(QString::number(PID_SEND_HW_CONFIG, 16));
-            strCmd += QString::number(9, 16).rightJustified(1 * 2, '0');
-            m_CommProt.data()->SendData(m_nDeviceAddress, QByteArray::fromHex(strCmd.toStdString().c_str()), true);
-        }
-        else if(eStatusReg.m_Reg.m_Bit.StateAcc0 == 0)
-        {
-            emit SendFirmwareVersion(0, 0);
-        }
-
-        if(eStatusReg.m_Reg.m_Bit.StateAcc1 && eStatusReg.m_Reg.m_Bit.ChangeAcc1)
-        {
-            QString strCmd = QString("%1").arg(QString::number(PID_SEND_HW_CONFIG, 16));
-            strCmd += QString::number(10, 16).rightJustified(1 * 2, '0');
-            m_CommProt.data()->SendData(m_nDeviceAddress, QByteArray::fromHex(strCmd.toStdString().c_str()), true);
-        }
-        else if(eStatusReg.m_Reg.m_Bit.StateAcc1 == 0)
-        {
-            emit SendFirmwareVersion(1, 0);
+            if(eStatusReg.m_Reg.m_Bit.StateSmartDevice0)
+            {
+                QString strCmd = QString("%1").arg(QString::number(PID_SEND_HW_CONFIG, 16));
+                strCmd += QString::number(14, 16).rightJustified(1 * 2, '0');
+                strCmd += QString::number(4, 16).rightJustified(1 * 2, '0');
+                m_CommProt.data()->SendData(m_nDeviceAddress, QByteArray::fromHex(strCmd.toStdString().c_str()), true);
+            }
+            else if(eStatusReg.m_Reg.m_Bit.StateSmartDevice0 == 0)
+            {
+                emit SendFirmwareVersion(4, 0);
+            }
         }
 
-        if(eStatusReg.m_Reg.m_Bit.StateAcc2 && eStatusReg.m_Reg.m_Bit.ChangeAcc2)
+        if(eStatusReg.m_Reg.m_Bit.ChangeAcc0)
         {
-            QString strCmd = QString("%1").arg(QString::number(PID_SEND_HW_CONFIG, 16));
-            strCmd += QString::number(11, 16).rightJustified(1 * 2, '0');
-            m_CommProt.data()->SendData(m_nDeviceAddress, QByteArray::fromHex(strCmd.toStdString().c_str()), true);
-        }
-        else if(eStatusReg.m_Reg.m_Bit.StateAcc2 == 0)
-        {
-            emit SendFirmwareVersion(2, 0);
+            if(eStatusReg.m_Reg.m_Bit.StateAcc0)
+            {
+                QString strCmd = QString("%1").arg(QString::number(PID_SEND_HW_CONFIG, 16));
+                strCmd += QString::number(9, 16).rightJustified(1 * 2, '0');
+                m_CommProt.data()->SendData(m_nDeviceAddress, QByteArray::fromHex(strCmd.toStdString().c_str()), true);
+            }
+            else
+            {
+                emit SendFirmwareVersion(0, 0);
+            }
         }
 
-        if(eStatusReg.m_Reg.m_Bit.StateAcc3 && eStatusReg.m_Reg.m_Bit.ChangeAcc3)
+        if(eStatusReg.m_Reg.m_Bit.ChangeAcc1)
         {
-            QString strCmd = QString("%1").arg(QString::number(PID_SEND_HW_CONFIG, 16));
-            strCmd += QString::number(12, 16).rightJustified(1 * 2, '0');
-            m_CommProt.data()->SendData(m_nDeviceAddress, QByteArray::fromHex(strCmd.toStdString().c_str()), true);
+            if(eStatusReg.m_Reg.m_Bit.StateAcc1)
+            {
+                QString strCmd = QString("%1").arg(QString::number(PID_SEND_HW_CONFIG, 16));
+                strCmd += QString::number(10, 16).rightJustified(1 * 2, '0');
+                m_CommProt.data()->SendData(m_nDeviceAddress, QByteArray::fromHex(strCmd.toStdString().c_str()), true);
+            }
+
+            else
+            {
+                emit SendFirmwareVersion(1, 0);
+            }
         }
-        else if(eStatusReg.m_Reg.m_Bit.StateAcc3 == 0)
+
+        if(eStatusReg.m_Reg.m_Bit.ChangeAcc2)
         {
-            emit SendFirmwareVersion(3, 0);
+            if(eStatusReg.m_Reg.m_Bit.StateAcc2)
+            {
+                QString strCmd = QString("%1").arg(QString::number(PID_SEND_HW_CONFIG, 16));
+                strCmd += QString::number(11, 16).rightJustified(1 * 2, '0');
+                m_CommProt.data()->SendData(m_nDeviceAddress, QByteArray::fromHex(strCmd.toStdString().c_str()), true);
+            }
+            else
+            {
+                emit SendFirmwareVersion(2, 0);
+            }
+        }
+
+        if(eStatusReg.m_Reg.m_Bit.ChangeAcc3)
+        {
+            if(eStatusReg.m_Reg.m_Bit.StateAcc3)
+            {
+                QString strCmd = QString("%1").arg(QString::number(PID_SEND_HW_CONFIG, 16));
+                strCmd += QString::number(12, 16).rightJustified(1 * 2, '0');
+                m_CommProt.data()->SendData(m_nDeviceAddress, QByteArray::fromHex(strCmd.toStdString().c_str()), true);
+            }
+            else if(eStatusReg.m_Reg.m_Bit.StateAcc3 == 0)
+            {
+                emit SendFirmwareVersion(3, 0);
+            }
         }
 
         emit SendStatusReg(eStatusReg);
@@ -1308,8 +1336,11 @@ void MainWindow::on_disconnectButton_clicked()
 
     p_WidgetGraph->clearAll();
     p_WidgetTherapy->resetValues();
+    p_WidgetReading->disableAll();
 
     sourceDataStream = NO_STREAM;
+
+    m_bGeneratorConnected = false;
 }
 
 
