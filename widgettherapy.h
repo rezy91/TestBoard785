@@ -45,7 +45,7 @@ private:
 
     const QString namesParams[E_PARAMS_NMB] = {"Power", "Duty cycle", "Frequency", "Cooling", "Ultrasound"};
     const QString unitParams[E_PARAMS_NMB] = {"[W]", "[%]", "[Hz]", "[°C]", "[W/cm^2]"};
-    const int maxSlider[E_PARAMS_NMB] = {100, 100, 200, 45, 20};
+    const int maxSlider[E_PARAMS_NMB] = {100, 100, 200, 45, 15};
     const int minSlider[E_PARAMS_NMB] = {0, 20, 25, 15, 0};
     const int stepSlider[E_PARAMS_NMB] = {1, 20, 5, 1, 1};
 
@@ -56,8 +56,11 @@ private:
     QRadioButton* userButton = new QRadioButton("USER", this);
     QComboBox* listOfChannels = new QComboBox(this);
 
+    int dwCurrentChannel;
+
     void TherapyRuns(unsigned char stateTherapy);
     void TherapyDoesnotRun(void);
+    void EnableSliders(TherapyState eState);
 
 public:
     void resetValues(void);

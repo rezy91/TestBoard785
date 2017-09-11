@@ -465,6 +465,8 @@ void MainWindow::on_connectButton_clicked()
             return;
         }
     }
+
+    m_bGeneratorConnected = false;
 }
 
 void MainWindow::SetAvaiblePorts()
@@ -1339,8 +1341,6 @@ void MainWindow::on_disconnectButton_clicked()
     p_WidgetReading->disableAll();
 
     sourceDataStream = NO_STREAM;
-
-    m_bGeneratorConnected = false;
 }
 
 

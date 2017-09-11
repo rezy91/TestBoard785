@@ -4,6 +4,8 @@
 
 widgetTherapy::widgetTherapy(QWidget *parent) : QWidget(parent)
 {
+    dwCurrentChannel = 0;
+
     for(int iLoop = 0; iLoop < E_PARAMS_NMB; iLoop++)
     {
         therapyParams[iLoop].name = new QLabel(this);
@@ -13,10 +15,10 @@ widgetTherapy::widgetTherapy(QWidget *parent) : QWidget(parent)
         therapyParams[iLoop].slider->setMaximum(maxSlider[iLoop]);
         therapyParams[iLoop].slider->setMinimum(minSlider[iLoop]);
         therapyParams[iLoop].slider->setSingleStep(stepSlider[iLoop]);
+        therapyParams[iLoop].slider->setEnabled(false);
 
         therapyParams[iLoop].name->setText(namesParams[iLoop]);
         therapyParams[iLoop].value->setText(QString("%1 %2").arg(therapyParams[iLoop].slider->value()).arg(unitParams[iLoop]));
-
     }
 
     listOfChannels->addItem("Select channel");
@@ -57,14 +59,22 @@ widgetTherapy::widgetTherapy(QWidget *parent) : QWidget(parent)
 
     connect(listOfChannels,static_cast<void (QComboBox::*)(int)>(&QComboBox::currentIndexChanged),[=](int nValue){
 
+        dwCurrentChannel = nValue;
+
         if(nValue != 0)
         {
             //qDebug() << "selected channel:" << nValue - 1;
+
+            EnableSliders(E_STATE_OFF);
 
             QString msgChannel = QString("%1").arg(QString::number(PID_SET_CHOOSE_CURRENT_CHANNEL, 16));
             msgChannel += QString::number(QString("%1").arg(nValue - 1).toInt(), 16).rightJustified(2, '0');
 
             emit SendV200specific(msgChannel);
+        }
+        else
+        {
+            EnableSliders(E_STATE_OFF);
         }
 
     });
@@ -110,10 +120,7 @@ void widgetTherapy::TherapyRuns(unsigned char stateTherapy)
     userButton->setEnabled(true);
     listOfChannels->setEnabled(false);
 
-    for(int iLoop = 0; iLoop < E_PARAMS_NMB; iLoop++)
-    {
-       therapyParams[iLoop].slider->setEnabled(stateTherapy == E_STATE_READY ? true : false);
-    }
+    EnableSliders(TherapyState(stateTherapy));
 
     userButton->setChecked(stateTherapy == E_STATE_ON ? true : false);
 }
@@ -125,10 +132,37 @@ void widgetTherapy::TherapyDoesnotRun()
     userButton->setEnabled(false);
     listOfChannels->setEnabled(true);
 
-    for(int iLoop = 0; iLoop < E_PARAMS_NMB; iLoop++)
-    {
-       therapyParams[iLoop].slider->setEnabled(true);
-    }
+    EnableSliders(E_STATE_OFF);
+}
+
+void widgetTherapy::EnableSliders(widgetTherapy::TherapyState eState)
+{
+   if(eState == E_STATE_ON || dwCurrentChannel == 0)
+   {
+       for(int iLoop = 0; iLoop < E_PARAMS_NMB; iLoop++)
+       {
+           therapyParams[iLoop].slider->setEnabled(false);
+       }
+   }
+   else
+   {
+       therapyParams[E_POWER].slider->setEnabled(true);
+       therapyParams[E_ULTRASOUND].slider->setEnabled(true);
+
+       //large
+       if(dwCurrentChannel == 1)
+       {
+           therapyParams[E_DUTYCYCLE].slider->setEnabled(false);
+           therapyParams[E_FREQUENCY].slider->setEnabled(false);
+           therapyParams[E_COOLING].slider->setEnabled(true);
+       }
+       else
+       {
+           therapyParams[E_DUTYCYCLE].slider->setEnabled(true);
+           therapyParams[E_FREQUENCY].slider->setEnabled(true);
+           therapyParams[E_COOLING].slider->setEnabled(false);
+       }
+   }
 }
 
 void widgetTherapy::resetValues()
@@ -140,6 +174,8 @@ void widgetTherapy::resetValues()
        therapyParams[iLoop].value->setText(QString("%1 %2").arg(minSlider[iLoop]).arg(unitParams[iLoop]));
        therapyParams[iLoop].slider->setValue(minSlider[iLoop]);
     }
+
+    dwCurrentChannel = 0;
 }
 
 void widgetTherapy::ReceiveStatusReg(STATUS_REGISTER eStatusReg)
@@ -150,6 +186,11 @@ void widgetTherapy::ReceiveStatusReg(STATUS_REGISTER eStatusReg)
     qobject_cast<QStandardItemModel*>(listOfChannels->model())->item(4)->setEnabled(eStatusReg.m_Reg.m_Bit.StateAcc3 == 1 ? true : false);
 
     (eStatusReg.m_Reg.m_Bit.StateTherapy != E_STATE_OFF) ? TherapyRuns(eStatusReg.m_Reg.m_Bit.StateTherapy) : TherapyDoesnotRun();
+
+    /*therapyParams[E_POWER].slider->setValue(eStatusReg.m_wSetPower);
+    therapyParams[E_COOLING].slider->setValue(eStatusReg.m_bySetTemperaturePatient);
+    therapyParams[E_ULTRASOUND].slider->setValue(eStatusReg.m_bySetIntensityUsn);
+    */
 }
 
 void widgetTherapy::ReceiveLimitSlider(int index, QString text)

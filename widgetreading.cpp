@@ -66,6 +66,8 @@ widgetReading::widgetReading(QWidget *parent) : QWidget(parent)
         labelFirmwareVersion[iLoop] = new QLabel(this);
         qGridLyout->addWidget(new QLabel(allNamesFirmwareVersion[iLoop]), E_NMB_ITEMS_STATUS + 2 + iLoop, 8, Qt::AlignRight);
         qGridLyout->addWidget(labelFirmwareVersion[iLoop], E_NMB_ITEMS_STATUS + 2 + iLoop, 9, Qt::AlignLeft);
+
+        ReceiveFirmwareVersion(iLoop, 0);
     }
 
 
@@ -204,6 +206,11 @@ void widgetReading::disableAll()
     for(int iLoop = 0; iLoop < NMB_ITEMS_TIMERS_GENER; iLoop++)
     {
         chBoxGen[iLoop]->setEnabled(false);
+    }
+
+    for(int iLoop = 0; iLoop < E_NMB_SLAVE_DEVICES; iLoop++)
+    {
+        ReceiveFirmwareVersion(iLoop, 0);
     }
 }
 
