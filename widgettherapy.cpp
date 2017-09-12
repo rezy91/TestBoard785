@@ -48,7 +48,7 @@ widgetTherapy::widgetTherapy(QWidget *parent) : QWidget(parent)
             QString msgTherapy = QString("%1").arg(QString::number(PID_SET_THERAPY_SETTINGS, 16));
             msgTherapy += QString::number(QString("%1").arg(therapyParams[E_POWER].slider->value()).toInt(), 16).rightJustified(4, '0');
             msgTherapy += QString::number(QString("%1").arg(therapyParams[E_DUTYCYCLE].slider->value()).toInt(), 16).rightJustified(2, '0');
-            msgTherapy += QString::number(QString("%1").arg(therapyParams[E_FREQUENCY].slider->value()).toInt(), 16).rightJustified(2, '0');
+            msgTherapy += QString::number(QString("%1").arg(0).toInt(), 16).rightJustified(2, '0');
             msgTherapy += QString::number(QString("%1").arg(therapyParams[E_COOLING].slider->value()).toInt(), 16).rightJustified(2, '0');
             msgTherapy += QString::number(QString("%1").arg(therapyParams[E_ULTRASOUND].slider->value()).toInt(), 16).rightJustified(2, '0');
 
@@ -153,13 +153,11 @@ void widgetTherapy::EnableSliders(widgetTherapy::TherapyState eState)
        if(dwCurrentChannel == 1)
        {
            therapyParams[E_DUTYCYCLE].slider->setEnabled(false);
-           therapyParams[E_FREQUENCY].slider->setEnabled(false);
            therapyParams[E_COOLING].slider->setEnabled(true);
        }
        else
        {
            therapyParams[E_DUTYCYCLE].slider->setEnabled(true);
-           therapyParams[E_FREQUENCY].slider->setEnabled(true);
            therapyParams[E_COOLING].slider->setEnabled(false);
        }
    }

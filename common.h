@@ -227,6 +227,7 @@ typedef struct status_register
   uint16_t m_wMeasuredPower;
   uint16_t m_wSetPower;
   int16_t m_wMeasuredTemperaturePatient;
+  uint8_t m_wSetDutyFactor;
 } STATUS_REGISTER;
 
 #endif // COMMON_H

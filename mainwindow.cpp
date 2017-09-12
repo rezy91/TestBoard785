@@ -700,6 +700,7 @@ void MainWindow::newDataV200(QByteArray aData)
         eStatusReg.m_wMeasuredPower = uint16_t(uint16_t(aData.at(7) << 8) & 0xFF00) | (uint16_t(aData.at(8)) & 0x00FF);
         eStatusReg.m_wSetPower = uint16_t(uint16_t(aData.at(9) << 8) & 0xFF00) | (uint16_t(aData.at(10)) & 0x00FF);
         eStatusReg.m_wMeasuredTemperaturePatient = int16_t(uint16_t(aData.at(11) << 8) & 0xFF00) | (uint16_t(aData.at(12)) & 0x00FF);
+        eStatusReg.m_wSetDutyFactor = aData.at(13);
 
         if(m_bGeneratorConnected == false)
         {
