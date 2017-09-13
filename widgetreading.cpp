@@ -323,7 +323,7 @@ void widgetReading::ReceiveStatusReg(STATUS_REGISTER eStatusReg)
 
 void widgetReading::ReceiveFirmwareVersion(int nIndex, uint nValue)
 {
-    qDebug() << nIndex;
+    //qDebug() << nIndex;
 
     if(nValue)
     {

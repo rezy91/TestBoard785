@@ -322,6 +322,9 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
             TmrMstr.start(1);
             qDebug() << "Enabled";
 
+            //initial delay for properly run out of device
+            QThread::msleep(800);
+
             for(qint32 iLoop = 0; iLoop < NMB_ITEMS_TIMERS_AMPLF; iLoop++)
             {
                 if(p_WidgetReading->GetEnabledAmplf(iLoop))
@@ -735,7 +738,7 @@ void MainWindow::newDataV200(QByteArray aData)
                 strCmd += QString::number(4, 16).rightJustified(1 * 2, '0');
                 m_CommProt.data()->SendData(m_nDeviceAddress, QByteArray::fromHex(strCmd.toStdString().c_str()), true);
             }
-            else if(eStatusReg.m_Reg.m_Bit.StateSmartDevice0 == 0)
+            else
             {
                 emit SendFirmwareVersion(4, 0);
             }
@@ -792,7 +795,7 @@ void MainWindow::newDataV200(QByteArray aData)
                 strCmd += QString::number(12, 16).rightJustified(1 * 2, '0');
                 m_CommProt.data()->SendData(m_nDeviceAddress, QByteArray::fromHex(strCmd.toStdString().c_str()), true);
             }
-            else if(eStatusReg.m_Reg.m_Bit.StateAcc3 == 0)
+            else
             {
                 emit SendFirmwareVersion(3, 0);
             }
