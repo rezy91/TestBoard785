@@ -61,21 +61,16 @@ widgetTherapy::widgetTherapy(QWidget *parent) : QWidget(parent)
 
         dwCurrentChannel = nValue;
 
-        if(nValue != 0)
-        {
-            //qDebug() << "selected channel:" << nValue - 1;
+        qDebug() << "selected channel:" << dwCurrentChannel;
 
-            EnableSliders(E_STATE_OFF);
+        EnableSliders(E_STATE_OFF);
 
-            QString msgChannel = QString("%1").arg(QString::number(PID_SET_CHOOSE_CURRENT_CHANNEL, 16));
-            msgChannel += QString::number(QString("%1").arg(nValue - 1).toInt(), 16).rightJustified(2, '0');
+        QString msgChannel = QString("%1").arg(QString::number(PID_SET_CHOOSE_CURRENT_CHANNEL, 16));
 
-            emit SendV200specific(msgChannel);
-        }
-        else
-        {
-            EnableSliders(E_STATE_OFF);
-        }
+        msgChannel += QString::number(QString("%1").arg(dwCurrentChannel != 0 ? dwCurrentChannel - 1 : 0).toInt(), 16).rightJustified(2, '0');
+        msgChannel += QString::number(QString("%1").arg(nValue == 0 ? 0 : 1).toInt(), 16).rightJustified(2, '0');
+
+        emit SendV200specific(msgChannel);
 
     });
 
@@ -137,7 +132,7 @@ void widgetTherapy::TherapyDoesnotRun()
 
 void widgetTherapy::EnableSliders(widgetTherapy::TherapyState eState)
 {
-   if(eState == E_STATE_ON || dwCurrentChannel == 0)
+   if(eState == E_STATE_ON)
    {
        for(int iLoop = 0; iLoop < E_PARAMS_NMB; iLoop++)
        {
@@ -150,7 +145,12 @@ void widgetTherapy::EnableSliders(widgetTherapy::TherapyState eState)
        therapyParams[E_ULTRASOUND].slider->setEnabled(true);
 
        //large
-       if(dwCurrentChannel == 1)
+       if(dwCurrentChannel == 0)
+       {
+           therapyParams[E_DUTYCYCLE].slider->setEnabled(true);
+           therapyParams[E_COOLING].slider->setEnabled(true);
+       }
+       else if(dwCurrentChannel == 1)
        {
            therapyParams[E_DUTYCYCLE].slider->setEnabled(false);
            therapyParams[E_COOLING].slider->setEnabled(true);
