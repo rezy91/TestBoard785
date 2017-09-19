@@ -443,9 +443,9 @@ void MainWindow::selectedDeviceSetAccordingSaved(quint32 value)
     }
 }
 
-void MainWindow::AppendText(QTime timestamp, QString strText)
+void MainWindow::AppendText(QTime timestamp, QString strText, TEXT_BROWSERS eIndex)
 {
-    emit SendTextIntoLog(myTimeStamp(timestamp) + "\t" + strText);
+    emit SendTextIntoLog(myTimeStamp(timestamp) + "\t" + strText, eIndex);
 }
 
 void MainWindow::on_connectButton_clicked()
@@ -499,10 +499,10 @@ void MainWindow::newDataV200(QByteArray aData)
     ui->statusBar->showMessage("Data received: " + QString(aData.toHex()));
     QStringList myStringOnlyNumbers = adjustRowDataIntoOnlyNumber(aData);
 
-    switch(aData.at(0))
+    switch(uint8_t(aData.at(0)))
     {
     case 'g'://Gener´s data
-        AppendText(timeCurrent, QString(aData));
+        AppendText(timeCurrent, QString(aData), E_BROWSER_FOR_OSCILLOSCOPE);
 
         if(m_bSaveData)
         {
@@ -571,7 +571,7 @@ void MainWindow::newDataV200(QByteArray aData)
         }
         break;
     case 'u'://usn´s data
-        AppendText(timeCurrent, QString(aData));
+        AppendText(timeCurrent, QString(aData), E_BROWSER_FOR_OSCILLOSCOPE);
 
         if(m_bSaveData)
         {
@@ -588,7 +588,7 @@ void MainWindow::newDataV200(QByteArray aData)
 
         break;
     case 'l'://app_l´s data
-        AppendText(timeCurrent, QString(aData));
+        AppendText(timeCurrent, QString(aData), E_BROWSER_FOR_OSCILLOSCOPE);
 
         if(m_bSaveData)
         {
@@ -605,7 +605,7 @@ void MainWindow::newDataV200(QByteArray aData)
 
         break;
     case 's'://app_s´s data
-        AppendText(timeCurrent, QString(aData));
+        AppendText(timeCurrent, QString(aData), E_BROWSER_FOR_OSCILLOSCOPE);
 
         if(m_bSaveData)
         {
@@ -643,7 +643,7 @@ void MainWindow::newDataV200(QByteArray aData)
 
         break;
     case 'a'://Amp´s data
-        AppendText(timeCurrent, QString(aData));
+        AppendText(timeCurrent, QString(aData), E_BROWSER_FOR_OSCILLOSCOPE);
 
         if(m_bSaveData)
         {
@@ -801,8 +801,23 @@ void MainWindow::newDataV200(QByteArray aData)
             }
         }
 
+        if(eStatusReg.m_Reg.m_Bit.LogRequest)
+        {
+            QString strCmd = QString("%1").arg(QString::number(PID_SET_LOGGING, 16));
+            strCmd += QString::number(2, 16).rightJustified(1 * 2, '0');
+            strCmd += QString::number(0, 16).rightJustified(1 * 2, '0');
+            strCmd += QString::number(0, 16).rightJustified(1 * 2, '0');
+            strCmd += QString::number(0, 16).rightJustified(1 * 2, '0');
+            strCmd += QString::number(0, 16).rightJustified(1 * 2, '0');
+            m_CommProt.data()->SendData(m_nDeviceAddress, QByteArray::fromHex(strCmd.toStdString().c_str()), true);
+        }
+
         emit SendStatusReg(eStatusReg);
 
+        break;
+
+    case PID_REPLY_SEND_LOGGING_ASCII:
+        AppendText(timeCurrent, QString(aData.mid(3)), E_BROWSER_LOG_ASCII);
         break;
     case PID_REPLY_SEND_HW_CONFIG:
         if((aData.at(1) >= 9 && aData.at(1) <= 12) || aData.at(1) == 14 || aData.at(1) == 2)
@@ -1334,7 +1349,7 @@ void MainWindow::on_disconnectButton_clicked()
     {
         m_oFile.close();
         QFileInfo oFileInfo(m_oFile);
-        AppendText(timeCurrent, QString("Data saved to <a href=\"%1\">%1</a>, file size is %2 kB").arg(oFileInfo.absoluteFilePath()).arg(static_cast<double>(oFileInfo.size()) / 1024, 0, 'f', 2));
+        AppendText(timeCurrent, QString("Data saved to <a href=\"%1\">%1</a>, file size is %2 kB").arg(oFileInfo.absoluteFilePath()).arg(static_cast<double>(oFileInfo.size()) / 1024, 0, 'f', 2), E_BROWSER_FOR_OSCILLOSCOPE);
 
         qDebug() << "Data saved";
 

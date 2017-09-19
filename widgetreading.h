@@ -40,7 +40,7 @@ signals:
     void SaveReadMsgsAplUsn(QString data);
 
 public slots:
-    void showTextLog(QString showText);
+    void showTextLog(QString showText, TEXT_BROWSERS eIndexBrowser);
     void ReadTimeRequests(int device, int index, int value);
     void ReceiveStatusReg(STATUS_REGISTER eStatusReg);
     void ReceiveFirmwareVersion(int nIndex, uint nValue);
@@ -67,7 +67,8 @@ private:
     QSize currSize;
 
     QVBoxLayout* vBox = new QVBoxLayout(this);
-    QTextBrowser* textBrowser = new QTextBrowser(this);
+    QHBoxLayout* hBox = new QHBoxLayout(this);
+    QTextBrowser* txtBrowsers[E_BROWSER_NMB];
     QPushButton* buttClear = new QPushButton("clear log", this);
     QSpinBox* generTimes[NMB_ITEMS_TIMERS_GENER];
     QSpinBox* amplfTimes[NMB_ITEMS_TIMERS_AMPLF];

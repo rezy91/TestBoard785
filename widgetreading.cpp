@@ -70,18 +70,27 @@ widgetReading::widgetReading(QWidget *parent) : QWidget(parent)
         ReceiveFirmwareVersion(iLoop, 0);
     }
 
+    for(int iLoop = 0; iLoop < E_BROWSER_NMB; iLoop++)
+    {
+       txtBrowsers[iLoop] = new QTextBrowser(this);
+       hBox->addWidget(txtBrowsers[iLoop]);
+    }
 
     vBox->addLayout(qGridLyout);
-    vBox->addWidget(textBrowser);
+    vBox->addLayout(hBox);
     vBox->addWidget(buttClear);
 
     connect(buttClear,&QPushButton::clicked,[=](bool clicked){
 
         Q_UNUSED(clicked);
-        textBrowser->clear();
+
+        for(int iLoop = 0; iLoop < E_BROWSER_NMB; iLoop++)
+        {
+           txtBrowsers[iLoop]->clear();
+        }
     });
 
-    connect(textBrowser,&QTextBrowser::anchorClicked,[=](const QUrl &arg1){
+    connect(txtBrowsers[E_BROWSER_FOR_OSCILLOSCOPE],&QTextBrowser::anchorClicked,[=](const QUrl &arg1){
 
         QDesktopServices::openUrl(arg1);
     });
@@ -214,9 +223,9 @@ void widgetReading::disableAll()
     }
 }
 
-void widgetReading::showTextLog(QString showText)
+void widgetReading::showTextLog(QString showText, TEXT_BROWSERS eIndexBrowser)
 {
-    textBrowser->append(showText);
+    txtBrowsers[eIndexBrowser]->append(showText);
 }
 
 void widgetReading::ReadTimeRequests(int device, int index, int value)

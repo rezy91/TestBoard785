@@ -139,7 +139,7 @@ private:
     widgetAdmin *p_WidgetAdmin = new widgetAdmin(this);
     settings* appSettings = new settings(this);
 
-    void AppendText(QTime timestamp, QString strText);
+    void AppendText(QTime timestamp, QString strText, TEXT_BROWSERS eIndex);
     void FillTableContent();
     void FillCommandTableGenerator();
     void FillCommandTableAmplifier();
@@ -184,7 +184,7 @@ private:
 signals:
     void SendNewImpedanceData(qreal magnitudeCurr2Avg, qreal phaseCurr2Avg, qreal magnitudeCurr250, qreal phaseCurr250);
     void SendUpdateGraph(QTime timestamp, double receivedValue, int recordState, QString nameSignals, int src, int srStr, int flgs);
-    void SendTextIntoLog(QString text);
+    void SendTextIntoLog(QString text, TEXT_BROWSERS eIndex);
     void SendSmithPoints(int value);
     void SendTimeRequests(int device, int index, int value);
     void SendAxisHigh(int index, double value);
