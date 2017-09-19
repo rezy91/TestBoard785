@@ -461,11 +461,14 @@ void MainWindow::on_connectButton_clicked()
 
     if(m_bSaveData)
     {
-        m_oFile.setFileName(QString("SavedData_%1.log").arg(QDateTime::currentDateTime().toTime_t()));
-        if(!m_oFile.open(QFile::WriteOnly))
+        for(int iLoop = 0; iLoop < E_BROWSER_NMB; iLoop++)
         {
-            qDebug() << "error: cannot open file";
-            return;
+            m_oFile[iLoop].setFileName(QString("%1_%2.log").arg(allNamedFiles[iLoop]).arg(QDateTime::currentDateTime().toTime_t()));
+            if(!m_oFile[iLoop].open(QFile::WriteOnly))
+            {
+                qDebug() << "error: cannot open file" << iLoop;
+                return;
+            }
         }
     }
 
@@ -506,8 +509,8 @@ void MainWindow::newDataV200(QByteArray aData)
 
         if(m_bSaveData)
         {
-            m_oFile.write(myTimeStamp(timeCurrent).toUtf8() + "\t" + QString(aData).simplified().toUtf8() + "\r\n");
-            m_oFile.flush();
+            m_oFile[E_BROWSER_FOR_OSCILLOSCOPE].write(myTimeStamp(timeCurrent).toUtf8() + "\t" + QString(aData).simplified().toUtf8() + "\r\n");
+            m_oFile[E_BROWSER_FOR_OSCILLOSCOPE].flush();
         }
 
         if(aData.at(1) == '3' && aData.at(2) == 'c')//ADC3 adjusted data
@@ -575,8 +578,8 @@ void MainWindow::newDataV200(QByteArray aData)
 
         if(m_bSaveData)
         {
-            m_oFile.write(myTimeStamp(timeCurrent).toUtf8() + "\t" + QString(aData).simplified().toUtf8() + "\r\n");
-            m_oFile.flush();
+            m_oFile[E_BROWSER_FOR_OSCILLOSCOPE].write(myTimeStamp(timeCurrent).toUtf8() + "\t" + QString(aData).simplified().toUtf8() + "\r\n");
+            m_oFile[E_BROWSER_FOR_OSCILLOSCOPE].flush();
         }
 
         recognizeIfDisplayNewDataAllSignals(timeCurrent, &myStringOnlyNumbers, NMB_ITEMS_TIMERS_GENER + NMB_ITEMS_TIMERS_AMPLF + E_USN);
@@ -592,8 +595,8 @@ void MainWindow::newDataV200(QByteArray aData)
 
         if(m_bSaveData)
         {
-            m_oFile.write(myTimeStamp(timeCurrent).toUtf8() + "\t" + QString(aData).simplified().toUtf8() + "\r\n");
-            m_oFile.flush();
+            m_oFile[E_BROWSER_FOR_OSCILLOSCOPE].write(myTimeStamp(timeCurrent).toUtf8() + "\t" + QString(aData).simplified().toUtf8() + "\r\n");
+            m_oFile[E_BROWSER_FOR_OSCILLOSCOPE].flush();
         }
 
         recognizeIfDisplayNewDataAllSignals(timeCurrent, &myStringOnlyNumbers, NMB_ITEMS_TIMERS_GENER + NMB_ITEMS_TIMERS_AMPLF + E_APL_LARGE);
@@ -609,8 +612,8 @@ void MainWindow::newDataV200(QByteArray aData)
 
         if(m_bSaveData)
         {
-            m_oFile.write(myTimeStamp(timeCurrent).toUtf8() + "\t" + QString(aData).simplified().toUtf8() + "\r\n");
-            m_oFile.flush();
+            m_oFile[E_BROWSER_FOR_OSCILLOSCOPE].write(myTimeStamp(timeCurrent).toUtf8() + "\t" + QString(aData).simplified().toUtf8() + "\r\n");
+            m_oFile[E_BROWSER_FOR_OSCILLOSCOPE].flush();
         }
 
         if(aData.at(1) == '1')//small_1
@@ -647,8 +650,8 @@ void MainWindow::newDataV200(QByteArray aData)
 
         if(m_bSaveData)
         {
-            m_oFile.write(myTimeStamp(timeCurrent).toUtf8() + "\t" + QString(aData).simplified().toUtf8() + "\r\n");
-            m_oFile.flush();
+            m_oFile[E_BROWSER_FOR_OSCILLOSCOPE].write(myTimeStamp(timeCurrent).toUtf8() + "\t" + QString(aData).simplified().toUtf8() + "\r\n");
+            m_oFile[E_BROWSER_FOR_OSCILLOSCOPE].flush();
         }
 
         if(aData.at(1) == 't')//timers adjusted data
@@ -818,6 +821,12 @@ void MainWindow::newDataV200(QByteArray aData)
 
     case PID_REPLY_SEND_LOGGING_ASCII:
         AppendText(timeCurrent, QString(aData.mid(3)), E_BROWSER_LOG_ASCII);
+
+        if(m_bSaveData)
+        {
+            m_oFile[E_BROWSER_LOG_ASCII].write(myTimeStamp(timeCurrent).toUtf8() + "\t" + QString(aData.mid(3)).simplified().toUtf8() + "\r\n");
+            m_oFile[E_BROWSER_LOG_ASCII].flush();
+        }
         break;
     case PID_REPLY_SEND_HW_CONFIG:
         if((aData.at(1) >= 9 && aData.at(1) <= 12) || aData.at(1) == 14 || aData.at(1) == 2)
@@ -1345,14 +1354,17 @@ void MainWindow::on_disconnectButton_clicked()
     eRequestGenerInput.timer.bEnable = false;
     eRequestAmplfInput.timer.bEnable = false;
 
-    if(m_oFile.isOpen())
+    for(int iLoop = 0; iLoop < E_BROWSER_NMB; iLoop++)
     {
-        m_oFile.close();
-        QFileInfo oFileInfo(m_oFile);
-        AppendText(timeCurrent, QString("Data saved to <a href=\"%1\">%1</a>, file size is %2 kB").arg(oFileInfo.absoluteFilePath()).arg(static_cast<double>(oFileInfo.size()) / 1024, 0, 'f', 2), E_BROWSER_FOR_OSCILLOSCOPE);
 
-        qDebug() << "Data saved";
+        if(m_oFile[iLoop].isOpen())
+        {
+            m_oFile[iLoop].close();
+            QFileInfo oFileInfo(m_oFile[iLoop]);
+            AppendText(timeCurrent, QString("Data saved to <a href=\"%1\">%1</a>, file size is %2 kB").arg(oFileInfo.absoluteFilePath()).arg(static_cast<double>(oFileInfo.size()) / 1024, 0, 'f', 2), TEXT_BROWSERS(iLoop));
 
+            //qDebug() << "Data saved";
+        }
     }
 
     p_WidgetGraph->clearAll();

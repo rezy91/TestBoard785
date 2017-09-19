@@ -106,6 +106,7 @@ private:
     const QString allSignalsBaseOnlyGener[NMB_ITEMS_TIMERS_GENER] = {"g3c", "g3s", "g2c", "g2s", "g1c", "g1s"};
     const QString allSignalsBaseOnlyAmplf[NMB_ITEMS_TIMERS_AMPLF] = {"at", "a3s", "ax", "a1s"};
     const QString allSignalsBaseOnlyAplUsn[NMB_ITEMS_TIMERS_APLS_AND_USN] = {"u", "l", "s1", "s2", "s3"};
+    const QString allNamedFiles[E_BROWSER_NMB] = {"SavedData", "LoggedData"};
 
     Ui::MainWindow *ui;
     QSharedPointer<CommProtV200> m_CommProt;
@@ -127,7 +128,7 @@ private:
     bool m_bGeneratorConnected = false;
     int sourceDataStream = NO_STREAM;
 
-    QFile m_oFile;
+    QFile m_oFile[E_BROWSER_NMB];
     QString logPath;
 
     widgetReading *p_WidgetReading = new widgetReading(this);
