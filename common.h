@@ -164,7 +164,7 @@ const QStringList allAdxSignalsGener[NMB_ITEMS_TIMERS_GENER] = { \
      "regulator_error_sum", "refl_ratio", "effectiveness [%]", "R_cqm [ohm]",  "g2c_exec", "g2c_conv"}, \
     {"g2s_counter", "Vrf_adc", "I4_adc", "Vforward_adc", "I2_adc", "Vreverse_adc", "I3_adc", "I1_adc"}, \
     {"g1c_counter", "g1c_exec", "g1c_conv"}, \
-    {"g1s_counter", "Apl1_Vcc_Adc", "CQM1_adc", "CQM2_adc", "V reference [mV]", "Temperature1", "+24V_adc", "+5V_adc", "Temperature MCU [°C]", "vrefin_adc"}};
+    {"g1s_counter", "Apl1_Vcc_Adc", "CQM1_adc", "CQM2_adc", "V reference [mV]", "Temperature board [°C]", "+24V_adc", "+5V_adc", "Temperature MCU [°C]", "vrefin_adc"}};
 const QStringList allAdxSignalsAmplf[NMB_ITEMS_TIMERS_AMPLF] = { \
     {"at_counter", "Frequency", "/Frequency", "duty_factor_1", "duty_factor_2", "dead_time_1->2", "dead_time_2->1"}, \
     {"a3s_counter", "Temperature_1", "Temperature_2", "Temperature_3", "+24V_adc", "+10V_adc", "Vcheck", "ADC3_14", "ADC3_15"}, \
