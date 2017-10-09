@@ -127,11 +127,27 @@ void widgetSmith::ReadData(quint32 readedVal)
     }
 }
 
+void widgetSmith::ReadDefaultReferenceImpedance(float magnitude, float phase, float maxReflRatioRef, float maxReflRatioCur)
+{
+    m_ReferenceImpedanceDefault = complex_N(complex_N::GONIO, magnitude, phase);
+    f_MaxReflRatioReferenceDefault = maxReflRatioRef;
+    f_MaxReflRatioCurrentDefault = maxReflRatioCur;
+
+    SetDefaultReferenceImpedance();
+}
+
 void widgetSmith::ReadReferenceImpedance(float magnitude, float phase, float maxReflRatioRef, float maxReflRatioCur)
 {
     m_ReferenceImpedance = complex_N(complex_N::GONIO, magnitude, phase);
     f_MaxReflRatioReference = maxReflRatioRef;
     f_MaxReflRatioCurrent = maxReflRatioCur;
+}
+
+void widgetSmith::SetDefaultReferenceImpedance()
+{
+    m_ReferenceImpedance = m_ReferenceImpedanceDefault;
+    f_MaxReflRatioReference = f_MaxReflRatioReferenceDefault;
+    f_MaxReflRatioCurrent = f_MaxReflRatioCurrentDefault;
 }
 
 complex_N widgetSmith::CalculateReflectionRatio(complex_N current, complex_N average)

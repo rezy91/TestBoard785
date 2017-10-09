@@ -52,7 +52,9 @@ public:
 public slots:
     void ReceivedNewData(qreal magnitudeCurrAvg, qreal phaseCurrAvg, qreal magnitudeCurr50, qreal phaseCurr50);
     void ReadData(quint32 readedVal);
+    void ReadDefaultReferenceImpedance(float magnitude, float phase, float maxReflRatioRef, float maxReflRatioCur);
     void ReadReferenceImpedance(float magnitude, float phase, float maxReflRatioRef, float maxReflRatioCur);
+    void SetDefaultReferenceImpedance(void);
 
 private:
     enum {NMB_PHASES = 180};
@@ -70,6 +72,10 @@ private:
     complex_N m_ReferenceImpedance;
     float f_MaxReflRatioReference;
     float f_MaxReflRatioCurrent;
+
+    complex_N m_ReferenceImpedanceDefault;
+    float f_MaxReflRatioReferenceDefault;
+    float f_MaxReflRatioCurrentDefault;
 
     complex_N CalculateReflectionRatio(complex_N current, complex_N average);
 

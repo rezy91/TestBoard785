@@ -38,6 +38,7 @@ private:
         E_REFER_IMPEDANCE_MODUL,
         E_REFER_IMPEDANCE_PHASE,
         E_REFER_IMPEDANCE_REFL,
+        E_CURRN_IMPEDANCE_REFL,
         E_NMB_PARAMETERS_IN_MEMORY,
     };
     enum {MAX_TIP_MEMORY_STRUCT_SIZE = 128};
@@ -45,9 +46,9 @@ private:
 
     const QString c_nameParametersInMemory[E_NMB_PARAMETERS_IN_MEMORY] =
     {"VERSION", "SERIAL", "EXPIRATION", "DATE_MANUFACT", "DATE_ACTIVE", "TIP_TYPE", "USN_FREQ_CRYSTAL", "USN_CONTROL_VARIABLE", "USN_VOLTAGEV100",
-     "USN_VALUE_AIR", "USN_VALUE_WATER", "USN_CONTROL_TYPE", "RF_POWER_MAX", "REFER_IMPEDANCE_MODUL", "REFER_IMPEDANCE_PHASE", "REFER_IMPEDANCE_REFL"};
+     "USN_VALUE_AIR", "USN_VALUE_WATER", "USN_CONTROL_TYPE", "RF_POWER_MAX", "REFER_IMPEDANCE_MODUL", "REFER_IMPEDANCE_PHASE", "REFER_IMPEDANCE_REFL", "CURRENT_IMPEDANCE_REFL"};
 
-    const int c_VolumeParameters[E_NMB_PARAMETERS_IN_MEMORY] = {2, 30, 4, 8, 14, 1, 2, 2, 2, 2, 2, 1, 2, 1, 1, 1};
+    const int c_VolumeParameters[E_NMB_PARAMETERS_IN_MEMORY] = {2, 30, 4, 8, 14, 1, 2, 2, 2, 2, 2, 1, 2, 1, 1, 1, 1};
 
     int c_AddressParameters[E_NMB_PARAMETERS_IN_MEMORY];
 
@@ -71,6 +72,7 @@ private:
 signals:
     void SendV200specific(QString msg);
     void SendReferenceImpedance(float mag, float phase, float ratioRef, float ratioCur);
+    void SendDefaultReferenceImpedance(void);
 
 public slots:
     void ReceiveStatusReg(STATUS_REGISTER eStatusReg);

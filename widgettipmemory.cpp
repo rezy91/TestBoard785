@@ -345,9 +345,11 @@ void widgetTipMemory::DecodeChoosedChannel(int dwChannel)
 
         if(dwVersion == uint32_t(TIP_MEMORY_VERSION))
         {
-           qDebug() << "version OK";
-
-           //SendReferenceImpedance(float(arr_byTipContent[dwChannel][c_AddressParameters[E_REFER_IMPEDANCE_MODUL]]), float(arr_byTipContent[dwChannel][c_AddressParameters[E_REFER_IMPEDANCE_PHASE]]), float(arr_byTipContent[dwChannel][c_AddressParameters[E_REFER_IMPEDANCE_REFL]]), 0);
+           emit SendReferenceImpedance(float(arr_byTipContent[dwChannel][c_AddressParameters[E_REFER_IMPEDANCE_MODUL]]), float((arr_byTipContent[dwChannel][c_AddressParameters[E_REFER_IMPEDANCE_PHASE]]) * 3.14) / 180, float(arr_byTipContent[dwChannel][c_AddressParameters[E_REFER_IMPEDANCE_REFL]]) / 100, float(arr_byTipContent[dwChannel][c_AddressParameters[E_CURRN_IMPEDANCE_REFL]]) / 100);
+        }
+        else
+        {
+            emit SendDefaultReferenceImpedance();
         }
     }
 }

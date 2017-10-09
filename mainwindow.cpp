@@ -83,7 +83,7 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
     connect(this, &MainWindow::SendStatusReg, p_WidgetReading, &widgetReading::ReceiveStatusReg);
     connect(this, &MainWindow::SendStatusReg, p_WidgetTipMemory, &widgetTipMemory::ReceiveStatusReg);
 
-    connect(p_WidgetConfig, &widgetConfig::SendReferenceImpedance, p_WidgetSmith, &widgetSmith::ReadReferenceImpedance);
+    connect(p_WidgetConfig, &widgetConfig::SendReferenceImpedance, p_WidgetSmith, &widgetSmith::ReadDefaultReferenceImpedance);
 
     connect(this, &MainWindow::SendFirmwareVersion, p_WidgetReading, &widgetReading::ReceiveFirmwareVersion);
 
@@ -102,6 +102,7 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
     connect(this, &MainWindow::SendTipMemory, p_WidgetTipMemory, &widgetTipMemory::ReceiveTipMemory);
     connect(p_WidgetTherapy, &widgetTherapy::ChoosedChannel, p_WidgetTipMemory, &widgetTipMemory::DecodeChoosedChannel);
     connect(p_WidgetTipMemory, &widgetTipMemory::SendReferenceImpedance, p_WidgetSmith, &widgetSmith::ReadReferenceImpedance);
+    connect(p_WidgetTipMemory, &widgetTipMemory::SendDefaultReferenceImpedance, p_WidgetSmith, &widgetSmith::SetDefaultReferenceImpedance);
 
     ui->comboBox_1->addItem(QString("Generator (ID = %1d)").arg(constGenerID));
     ui->comboBox_1->addItem(QString("Amplifier (ID = %1d)").arg(constAmpID));
