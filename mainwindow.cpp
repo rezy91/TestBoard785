@@ -44,6 +44,7 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
     connect(p_WidgetTherapy, &widgetTherapy::SendV200specific, this, &MainWindow::specificMessageProtocol);
     connect(p_WidgetConfig, &widgetConfig::SendV200specific, this, &MainWindow::specificMessageProtocol);
     connect(p_widgetSettings, &widgetSettings::SendV200specific, this, &MainWindow::specificMessageProtocol);
+    connect(p_WidgetTipMemory, &widgetTipMemory::SendV200specific, this, &MainWindow::specificMessageProtocol);
 
     connect(p_WidgetSmith, &widgetSmith::SaveData, appSettings, &settings::StoreSmithPoints);
     connect(this, &MainWindow::SendSmithPoints, p_WidgetSmith, &widgetSmith::ReadData);
@@ -80,6 +81,7 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
 
     connect(this, &MainWindow::SendStatusReg, p_WidgetTherapy, &widgetTherapy::ReceiveStatusReg);
     connect(this, &MainWindow::SendStatusReg, p_WidgetReading, &widgetReading::ReceiveStatusReg);
+    connect(this, &MainWindow::SendStatusReg, p_WidgetTipMemory, &widgetTipMemory::ReceiveStatusReg);
 
     connect(p_WidgetConfig, &widgetConfig::SendReferenceImpedance, p_WidgetSmith, &widgetSmith::ReadReferenceImpedance);
 
@@ -96,6 +98,8 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
     connect(this, &MainWindow::SendRcvMsgGen, p_WidgetReading, &widgetReading::ReceiveRcvMsgGen);
     connect(p_WidgetReading, &widgetReading::SaveReadMsgsAplUsn, appSettings, &settings::StoreRcvMsgAplUsn);
     connect(this, &MainWindow::SendRcvMsgAplUsn, p_WidgetReading, &widgetReading::ReceiveRcvMsgAplUsn);
+
+    connect(this, &MainWindow::SendTipMemory, p_WidgetTipMemory, &widgetTipMemory::ReceiveTipMemory);
 
     ui->comboBox_1->addItem(QString("Generator (ID = %1d)").arg(constGenerID));
     ui->comboBox_1->addItem(QString("Amplifier (ID = %1d)").arg(constAmpID));
@@ -199,6 +203,7 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
     ui->verticalLayout_3->addWidget(p_WidgetSmith);
     ui->verticalLayout_3->addWidget(p_WidgetTherapy);
     ui->verticalLayout_5->addWidget(p_WidgetAdmin);
+    ui->verticalLayout_6->addWidget(p_WidgetTipMemory);
 
     timeCurrent.start();
 
@@ -694,6 +699,10 @@ void MainWindow::newDataV200(QByteArray aData)
             }
         }
         break;
+    case PID_REPLY_TOUCH_MEMORY_OK:
+        emit SendTipMemory(uint8_t(aData.at(1)), uint8_t(aData.at(4)), aData.mid(5));
+
+        break;
     case PID_REPLY_SEND_STATUS_REGISTER:
         STATUS_REGISTER eStatusReg;
 
@@ -754,6 +763,10 @@ void MainWindow::newDataV200(QByteArray aData)
                 QString strCmd = QString("%1").arg(QString::number(PID_SEND_HW_CONFIG, 16));
                 strCmd += QString::number(9, 16).rightJustified(1 * 2, '0');
                 m_CommProt.data()->SendData(m_nDeviceAddress, QByteArray::fromHex(strCmd.toStdString().c_str()), true);
+
+                QString strCmdTip = QString("%1").arg(QString::number(PID_TOUCH_MEMORY, 16));
+                strCmdTip += QString::number(128 + 0, 16).rightJustified(1 * 2, '0');
+                m_CommProt.data()->SendData(m_nDeviceAddress, QByteArray::fromHex(strCmdTip.toStdString().c_str()), true);
             }
             else
             {
@@ -768,6 +781,10 @@ void MainWindow::newDataV200(QByteArray aData)
                 QString strCmd = QString("%1").arg(QString::number(PID_SEND_HW_CONFIG, 16));
                 strCmd += QString::number(10, 16).rightJustified(1 * 2, '0');
                 m_CommProt.data()->SendData(m_nDeviceAddress, QByteArray::fromHex(strCmd.toStdString().c_str()), true);
+
+                QString strCmdTip = QString("%1").arg(QString::number(PID_TOUCH_MEMORY, 16));
+                strCmdTip += QString::number(128 + 1, 16).rightJustified(1 * 2, '0');
+                m_CommProt.data()->SendData(m_nDeviceAddress, QByteArray::fromHex(strCmdTip.toStdString().c_str()), true);
             }
 
             else
@@ -783,6 +800,10 @@ void MainWindow::newDataV200(QByteArray aData)
                 QString strCmd = QString("%1").arg(QString::number(PID_SEND_HW_CONFIG, 16));
                 strCmd += QString::number(11, 16).rightJustified(1 * 2, '0');
                 m_CommProt.data()->SendData(m_nDeviceAddress, QByteArray::fromHex(strCmd.toStdString().c_str()), true);
+
+                QString strCmdTip = QString("%1").arg(QString::number(PID_TOUCH_MEMORY, 16));
+                strCmdTip += QString::number(128 + 2, 16).rightJustified(1 * 2, '0');
+                m_CommProt.data()->SendData(m_nDeviceAddress, QByteArray::fromHex(strCmdTip.toStdString().c_str()), true);
             }
             else
             {
@@ -797,6 +818,10 @@ void MainWindow::newDataV200(QByteArray aData)
                 QString strCmd = QString("%1").arg(QString::number(PID_SEND_HW_CONFIG, 16));
                 strCmd += QString::number(12, 16).rightJustified(1 * 2, '0');
                 m_CommProt.data()->SendData(m_nDeviceAddress, QByteArray::fromHex(strCmd.toStdString().c_str()), true);
+
+                QString strCmdTip = QString("%1").arg(QString::number(PID_TOUCH_MEMORY, 16));
+                strCmdTip += QString::number(128 + 3, 16).rightJustified(1 * 2, '0');
+                m_CommProt.data()->SendData(m_nDeviceAddress, QByteArray::fromHex(strCmdTip.toStdString().c_str()), true);
             }
             else
             {
@@ -1370,6 +1395,7 @@ void MainWindow::on_disconnectButton_clicked()
     p_WidgetGraph->clearAll();
     p_WidgetTherapy->resetValues();
     p_WidgetReading->disableAll();
+    p_WidgetTipMemory->clearAll();
 
     sourceDataStream = NO_STREAM;
 }
@@ -1489,6 +1515,12 @@ void MainWindow::refreshPlot()
         currentSize = ui->Admin->size();
 
         p_WidgetAdmin->setFixedSize(currentSize);
+    }
+    else if(currentTab == 5)
+    {
+        currentSize = ui->TipMemory->size();
+
+        p_WidgetTipMemory->setFixedSize(currentSize);
     }
 }
 

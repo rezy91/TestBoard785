@@ -31,7 +31,8 @@ SOURCES += main.cpp\
     settings.cpp \
     widgetsettings.cpp \
     complex_N.cpp \
-    widgetadmin.cpp
+    widgetadmin.cpp \
+    widgettipmemory.cpp
 
 HEADERS  += mainwindow.h \
     widgetconfig.h \
@@ -43,7 +44,8 @@ HEADERS  += mainwindow.h \
     settings.h \
     widgetsettings.h \
     complex_N.h \
-    widgetadmin.h
+    widgetadmin.h \
+    widgettipmemory.h
 
 FORMS    += mainwindow.ui
 

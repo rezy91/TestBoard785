@@ -35,6 +35,7 @@
 #include "widgetsmith.h"
 #include "widgettherapy.h"
 #include "widgetadmin.h"
+#include "widgettipmemory.h"
 
 
 #define COLOR_BLUE_DARK         QColor(0,128,255)
@@ -138,6 +139,7 @@ private:
     widgetGraph *p_WidgetGraph = new widgetGraph(this);
     widgetTherapy *p_WidgetTherapy = new widgetTherapy(this);
     widgetAdmin *p_WidgetAdmin = new widgetAdmin(this);
+    widgetTipMemory *p_WidgetTipMemory = new widgetTipMemory(this);
     settings* appSettings = new settings(this);
 
     void AppendText(QTime timestamp, QString strText, TEXT_BROWSERS eIndex);
@@ -206,6 +208,7 @@ signals:
     void SendRcvMsgAmp(QString values);
     void SendRcvMsgGen(QString values);
     void SendRcvMsgAplUsn(QString values);
+    void SendTipMemory(uint8_t byChannel, uint8_t byBytes, QByteArray byBuffer);
 
 protected:
     void closeEvent(QCloseEvent *event) override;

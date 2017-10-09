@@ -20,7 +20,6 @@ public:
     explicit widgetTherapy(QWidget *parent = 0);
 
 private:
-    enum{nmbChannelsAppls = 4};
 
     enum TherapyState{
       E_STATE_OFF,

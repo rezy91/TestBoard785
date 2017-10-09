@@ -22,6 +22,7 @@ typedef enum packet_id
   PID_SEND_RX_TX_BUFFER_SIZE           = 0x0B,
   PID_SEND_TEMPERATURE                 = 0x0C,
   PID_SEND_HW_CONFIG                   = 0x0D,
+  PID_WRITE_TO_MEMORY                  = 0x0F,
   PID_SWITCH_BRIDGE_MODE               = 0x81,
   PID_SEND_CHANNEL_COUNT               = 0x82,
   PID_SET_LOGGING                      = 0x83,
@@ -40,6 +41,7 @@ typedef enum packet_id
   PID_REPLY_SEND_SELFTEST_RESULT       = 0x11,
   PID_REPLY_SEND_FW_VERSION            = 0x12,
   PID_REPLY_RUN_SELFTEST               = 0x13,
+  PID_REPLY_TOUCH_MEMORY_OK            = 0x15,
   PID_REPLY_TOUCH_MEMORY               = 0x18,
   PID_REPLY_SEND_STATUS_REGISTER       = 0x1A,
   PID_REPLY_SEND_RX_TX_BUFFER_SIZE     = 0x1B,
@@ -148,7 +150,8 @@ enum TEXT_BROWSERS
     E_BROWSER_NMB
 };
 
-enum{nmbCurvesInGraph = 4};
+enum {nmbCurvesInGraph = 4};
+enum {nmbChannelsAppls = 4};
 enum {E_NMB_BIT_FLAGS_STATUS = 32};
 enum {E_NMB_ITEMS_ADMIN = 3};
 

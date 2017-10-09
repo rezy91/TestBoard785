@@ -159,7 +159,6 @@ void widgetTherapy::EnableSliders(widgetTherapy::TherapyState eState)
 
 void widgetTherapy::resetValues()
 {
-    listOfChannels->setCurrentIndex(0);
 
     for(int iLoop = 0; iLoop < E_PARAMS_NMB; iLoop++)
     {
@@ -168,6 +167,12 @@ void widgetTherapy::resetValues()
     }
 
     dwCurrentChannel = 0;
+
+    listOfChannels->setCurrentIndex(0);
+    qobject_cast<QStandardItemModel*>(listOfChannels->model())->item(1)->setEnabled(false);
+    qobject_cast<QStandardItemModel*>(listOfChannels->model())->item(2)->setEnabled(false);
+    qobject_cast<QStandardItemModel*>(listOfChannels->model())->item(3)->setEnabled(false);
+    qobject_cast<QStandardItemModel*>(listOfChannels->model())->item(4)->setEnabled(false);
 }
 
 void widgetTherapy::ReceiveStatusReg(STATUS_REGISTER eStatusReg)
