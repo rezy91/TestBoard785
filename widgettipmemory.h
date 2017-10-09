@@ -73,6 +73,8 @@ signals:
     void SendV200specific(QString msg);
     void SendReferenceImpedance(float mag, float phase, float ratioRef, float ratioCur);
     void SendDefaultReferenceImpedance(void);
+    void SendMaximalPower(uint16_t sMaxP);
+    void SendDefaultMaximalPower();
 
 public slots:
     void ReceiveStatusReg(STATUS_REGISTER eStatusReg);

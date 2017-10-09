@@ -343,15 +343,18 @@ void widgetTipMemory::DecodeChoosedChannel(int dwChannel)
     if(dwChannel >= 0)
     {
         uint32_t dwVersion = uint32_t(arr_byTipContent[dwChannel][c_AddressParameters[E_VERSION]] << 8) + uint32_t(arr_byTipContent[dwChannel][c_AddressParameters[E_VERSION] + 1]);
-        //qDebug() << dwVersion;
 
         if(dwVersion == uint32_t(TIP_MEMORY_VERSION))
         {
-           emit SendReferenceImpedance(float(arr_byTipContent[dwChannel][c_AddressParameters[E_REFER_IMPEDANCE_MODUL]]), float((arr_byTipContent[dwChannel][c_AddressParameters[E_REFER_IMPEDANCE_PHASE]]) * 3.14) / 180, float(arr_byTipContent[dwChannel][c_AddressParameters[E_REFER_IMPEDANCE_REFL]]) / 100, float(arr_byTipContent[dwChannel][c_AddressParameters[E_CURRN_IMPEDANCE_REFL]]) / 100);
+            emit SendReferenceImpedance(float(arr_byTipContent[dwChannel][c_AddressParameters[E_REFER_IMPEDANCE_MODUL]]), float((arr_byTipContent[dwChannel][c_AddressParameters[E_REFER_IMPEDANCE_PHASE]]) * 3.14) / 180, float(arr_byTipContent[dwChannel][c_AddressParameters[E_REFER_IMPEDANCE_REFL]]) / 100, float(arr_byTipContent[dwChannel][c_AddressParameters[E_CURRN_IMPEDANCE_REFL]]) / 100);
+
+            uint16_t dwMaxPower = uint32_t(arr_byTipContent[dwChannel][c_AddressParameters[E_RF_POWER_MAX]] << 8) + uint32_t(arr_byTipContent[dwChannel][c_AddressParameters[E_RF_POWER_MAX] + 1]);
+            emit SendMaximalPower(dwMaxPower);
         }
         else
         {
             emit SendDefaultReferenceImpedance();
+            emit SendDefaultMaximalPower();
         }
     }
 }

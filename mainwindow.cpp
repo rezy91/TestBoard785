@@ -103,6 +103,9 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
     connect(p_WidgetTherapy, &widgetTherapy::ChoosedChannel, p_WidgetTipMemory, &widgetTipMemory::DecodeChoosedChannel);
     connect(p_WidgetTipMemory, &widgetTipMemory::SendReferenceImpedance, p_WidgetSmith, &widgetSmith::ReadReferenceImpedance);
     connect(p_WidgetTipMemory, &widgetTipMemory::SendDefaultReferenceImpedance, p_WidgetSmith, &widgetSmith::SetDefaultReferenceImpedance);
+    connect(p_WidgetTipMemory, &widgetTipMemory::SendMaximalPower, p_WidgetTherapy, &widgetTherapy::ReceiveMaxPower);
+    connect(p_WidgetTipMemory, &widgetTipMemory::SendDefaultMaximalPower, p_WidgetTherapy, &widgetTherapy::ReceiveDefaultMaxPower);
+
 
     ui->comboBox_1->addItem(QString("Generator (ID = %1d)").arg(constGenerID));
     ui->comboBox_1->addItem(QString("Amplifier (ID = %1d)").arg(constAmpID));

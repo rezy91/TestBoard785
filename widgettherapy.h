@@ -55,6 +55,7 @@ private:
     QComboBox* listOfChannels = new QComboBox(this);
 
     int dwCurrentChannel;
+    int dwMaximalSetPower;
 
     void TherapyRuns(unsigned char stateTherapy);
     void TherapyDoesnotRun(void);
@@ -70,6 +71,8 @@ signals:
 public slots:
     void ReceiveStatusReg(STATUS_REGISTER eStatusReg);
     void ReceiveLimitSlider(int index, QString text);
+    void ReceiveMaxPower(uint16_t sMaxPower);
+    void ReceiveDefaultMaxPower(void);
 
 protected:
     void paintEvent(QPaintEvent*e);

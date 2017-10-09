@@ -5,6 +5,7 @@
 widgetTherapy::widgetTherapy(QWidget *parent) : QWidget(parent)
 {
     dwCurrentChannel = 0;
+    dwMaximalSetPower = 0;
 
     for(int iLoop = 0; iLoop < E_PARAMS_NMB; iLoop++)
     {
@@ -195,7 +196,8 @@ void widgetTherapy::ReceiveLimitSlider(int index, QString text)
 {
     if(index == 0)
     {
-        therapyParams[E_POWER].slider->setMaximum(text.toInt());
+        dwMaximalSetPower = text.toInt();
+        therapyParams[E_POWER].slider->setMaximum(dwMaximalSetPower);
     }
     else if(index == 1)
     {
@@ -207,6 +209,16 @@ void widgetTherapy::ReceiveLimitSlider(int index, QString text)
     }
 
     //qDebug() << index << text;
+}
+
+void widgetTherapy::ReceiveMaxPower(uint16_t sMaxPower)
+{
+    therapyParams[E_POWER].slider->setMaximum(int(sMaxPower));
+}
+
+void widgetTherapy::ReceiveDefaultMaxPower()
+{
+    therapyParams[E_POWER].slider->setMaximum(dwMaximalSetPower);
 }
 
 void widgetTherapy::paintEvent(QPaintEvent *e)
