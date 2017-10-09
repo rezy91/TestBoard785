@@ -79,6 +79,8 @@ widgetTipMemory::widgetTipMemory(QWidget *parent) : QWidget(parent)
                             strCmd += QString::number(strInput.at(jLoop).unicode(), 16);
                         }
 
+                        strCmd += QString::number(0, 16).rightJustified(2, '0');//null character
+
                         qDebug() << strCmd;
                         emit SendV200specific(strCmd);
                     }
