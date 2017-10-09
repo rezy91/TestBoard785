@@ -70,6 +70,7 @@ widgetTherapy::widgetTherapy(QWidget *parent) : QWidget(parent)
         msgChannel += QString::number(QString("%1").arg(dwCurrentChannel).toInt(), 16).rightJustified(2, '0');
 
         emit SendV200specific(msgChannel);
+        emit ChoosedChannel(dwCurrentChannel);
 
     });
 

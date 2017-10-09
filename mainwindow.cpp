@@ -100,6 +100,8 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
     connect(this, &MainWindow::SendRcvMsgAplUsn, p_WidgetReading, &widgetReading::ReceiveRcvMsgAplUsn);
 
     connect(this, &MainWindow::SendTipMemory, p_WidgetTipMemory, &widgetTipMemory::ReceiveTipMemory);
+    connect(p_WidgetTherapy, &widgetTherapy::ChoosedChannel, p_WidgetTipMemory, &widgetTipMemory::DecodeChoosedChannel);
+    connect(p_WidgetTipMemory, &widgetTipMemory::SendReferenceImpedance, p_WidgetSmith, &widgetSmith::ReadReferenceImpedance);
 
     ui->comboBox_1->addItem(QString("Generator (ID = %1d)").arg(constGenerID));
     ui->comboBox_1->addItem(QString("Amplifier (ID = %1d)").arg(constAmpID));

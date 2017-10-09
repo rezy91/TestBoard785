@@ -65,6 +65,7 @@ public:
 
 signals:
     void SendV200specific(QString msg);
+    void ChoosedChannel(int dwChannel);
 
 public slots:
     void ReceiveStatusReg(STATUS_REGISTER eStatusReg);

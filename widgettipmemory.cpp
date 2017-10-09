@@ -205,7 +205,6 @@ void widgetTipMemory::decodeTipMemory(uint8_t byChannel)
         if(iLoop != E_EXPIRATION && iLoop != E_SERIAL && iLoop != E_DATE_MANUFACT && iLoop != E_DATE_ACTIVE)
         {
             lineInputParameter[iLoop]->setText(QString::number(gBytes));
-            qDebug() << gBytes;
         }
     }
 
@@ -334,5 +333,21 @@ void widgetTipMemory::ReceiveTipMemory(uint8_t byChannel, uint8_t byBytes, QByte
     for(uint8_t iLoop = 0; iLoop < byBytes; iLoop++)
     {
         arr_byTipContent[byChannel][iLoop] = uint8_t(byBuffer.at(iLoop));
+    }
+}
+
+void widgetTipMemory::DecodeChoosedChannel(int dwChannel)
+{
+    if(dwChannel >= 0)
+    {
+        uint32_t dwVersion = uint32_t(arr_byTipContent[dwChannel][c_AddressParameters[E_VERSION]] << 8) + uint32_t(arr_byTipContent[dwChannel][c_AddressParameters[E_VERSION] + 1]);
+        //qDebug() << dwVersion;
+
+        if(dwVersion == uint32_t(TIP_MEMORY_VERSION))
+        {
+           qDebug() << "version OK";
+
+           //SendReferenceImpedance(float(arr_byTipContent[dwChannel][c_AddressParameters[E_REFER_IMPEDANCE_MODUL]]), float(arr_byTipContent[dwChannel][c_AddressParameters[E_REFER_IMPEDANCE_PHASE]]), float(arr_byTipContent[dwChannel][c_AddressParameters[E_REFER_IMPEDANCE_REFL]]), 0);
+        }
     }
 }

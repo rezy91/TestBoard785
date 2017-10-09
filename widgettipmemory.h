@@ -41,6 +41,7 @@ private:
         E_NMB_PARAMETERS_IN_MEMORY,
     };
     enum {MAX_TIP_MEMORY_STRUCT_SIZE = 128};
+    enum {TIP_MEMORY_VERSION = 100};
 
     const QString c_nameParametersInMemory[E_NMB_PARAMETERS_IN_MEMORY] =
     {"VERSION", "SERIAL", "EXPIRATION", "DATE_MANUFACT", "DATE_ACTIVE", "TIP_TYPE", "USN_FREQ_CRYSTAL", "USN_CONTROL_VARIABLE", "USN_VOLTAGEV100",
@@ -69,10 +70,12 @@ private:
 
 signals:
     void SendV200specific(QString msg);
+    void SendReferenceImpedance(float mag, float phase, float ratioRef, float ratioCur);
 
 public slots:
     void ReceiveStatusReg(STATUS_REGISTER eStatusReg);
     void ReceiveTipMemory(uint8_t byChannel, uint8_t byBytes, QByteArray byBuffer);
+    void DecodeChoosedChannel(int dwChannel);
 };
 
 #endif // WIDGETTIPMEMORY_H
