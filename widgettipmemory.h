@@ -48,13 +48,13 @@ private:
     {"VERSION", "SERIAL", "EXPIRATION", "DATE_MANUFACT", "DATE_ACTIVE", "TIP_TYPE", "USN_FREQ_CRYSTAL", "USN_CONTROL_VARIABLE", "USN_VOLTAGEV100",
      "USN_VALUE_AIR", "USN_VALUE_WATER", "USN_CONTROL_TYPE", "RF_POWER_MAX", "REFER_IMPEDANCE_MODUL", "REFER_IMPEDANCE_PHASE", "REFER_IMPEDANCE_REFL", "CURRENT_IMPEDANCE_REFL"};
     const QString c_nameUnitInMemory[E_NMB_PARAMETERS_IN_MEMORY] =
-    {"-", "-", "-", "-", "-", "-", "Hz", "mA|mV", "mV", "mV", "mV", "i/u", "W", "||", "°", "%", "%"};
+    {"-", "-", "-", "-", "-", "-", "Hz", "mA|mV", "mV", "mV", "mV", "-", "W", "||", "°", "%", "%"};
     const int c_VolumeParameters[E_NMB_PARAMETERS_IN_MEMORY] = {1, 30, 4, 8, 14, 1, 2, 2, 2, 2, 2, 1, 2, 1, 1, 1, 1};
 
     int c_AddressParameters[E_NMB_PARAMETERS_IN_MEMORY];
 
     QLineEdit *lineInputParameter[E_NMB_PARAMETERS_IN_MEMORY];
-    QPushButton* buttSend[E_NMB_PARAMETERS_IN_MEMORY];
+    QPushButton* buttSend[E_NMB_PARAMETERS_IN_MEMORY + 1];
     QVBoxLayout* vBox = new QVBoxLayout(this);
     QGridLayout* gridParams = new QGridLayout(this);
     QComboBox* listOfChannels = new QComboBox(this);
@@ -68,6 +68,9 @@ private:
     void decodeTipMemory(uint8_t byChannel);
     bool IsStringNumber(QString strInput);
     bool IsPrintable(QString strInput);
+
+    bool CollectStringAscii(int iIndex, QString strInputString, QString &text);
+    bool CollectStringParameter(int iIndex, QString strInputString, QString &text);
 
 
 signals:

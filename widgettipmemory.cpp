@@ -33,6 +33,9 @@ widgetTipMemory::widgetTipMemory(QWidget *parent) : QWidget(parent)
         gridParams->addWidget(buttSend[iLoop], iLoop, 2, Qt::AlignLeft);
     }
 
+    buttSend[E_NMB_PARAMETERS_IN_MEMORY] = new QPushButton("Send all values");
+    gridParams->addWidget(buttSend[E_NMB_PARAMETERS_IN_MEMORY], E_NMB_PARAMETERS_IN_MEMORY, 2, Qt::AlignLeft);
+
     vBox->addWidget(listOfChannels, Qt::AlignCenter);
     vBox->addLayout(gridParams);
 
@@ -50,6 +53,29 @@ widgetTipMemory::widgetTipMemory(QWidget *parent) : QWidget(parent)
         }
     });
 
+    connect(buttSend[E_NMB_PARAMETERS_IN_MEMORY],&QPushButton::clicked,[=](bool clicked){
+        Q_UNUSED(clicked);
+
+        QString strCmd = QString("%1").arg(QString::number(PID_WRITE_TO_MEMORY, 16));
+        strCmd += QString::number(dwCurrentChannel).rightJustified(1 * 2, '0');
+        strCmd += QString::number(0, 16).rightJustified(2 * 2, '0');
+        strCmd += QString::number(MAX_TIP_MEMORY_STRUCT_SIZE, 16).rightJustified(2 * 2, '0');
+
+        for(int iLoop = 0; iLoop < E_NMB_PARAMETERS_IN_MEMORY; iLoop++)
+        {
+            QString strInput = lineInputParameter[iLoop]->text();
+
+            if(!CollectStringParameter(iLoop, strInput, strCmd))
+            {
+                return;
+            }
+        }
+
+        qDebug() << strCmd;
+        emit SendV200specific(strCmd);
+
+    });
+
     for(int iLoop = 0; iLoop < E_NMB_PARAMETERS_IN_MEMORY; iLoop++)
     {
         connect(buttSend[iLoop],&QPushButton::clicked,[=](bool clicked){
@@ -57,200 +83,16 @@ widgetTipMemory::widgetTipMemory(QWidget *parent) : QWidget(parent)
             Q_UNUSED(clicked);
 
             QString strInput = lineInputParameter[iLoop]->text();
-            uint32_t dwInput = strInput.toUInt();
 
             QString strCmd = QString("%1").arg(QString::number(PID_WRITE_TO_MEMORY, 16));
             strCmd += QString::number(dwCurrentChannel).rightJustified(1 * 2, '0');
             strCmd += QString::number(c_AddressParameters[iLoop], 16).rightJustified(2 * 2, '0');
             strCmd += QString::number(c_VolumeParameters[iLoop], 16).rightJustified(2 * 2, '0');
 
-
-            if(iLoop == E_SERIAL)
+            if(CollectStringParameter(iLoop, strInput, strCmd))
             {
-                if(IsPrintable(strInput))
-                {
-                    if(strInput.length() > c_VolumeParameters[iLoop])
-                    {
-                        QString strMsg = QString("'%1' (%2) is longer than maximum length (%3)").arg(strInput).arg(strInput.length()).arg(c_VolumeParameters[iLoop]);
-                        QMessageBox::information(this, "Invalid input", strMsg);
-                    }
-                    else
-                    {
-                        for(int jLoop = 0; jLoop < strInput.length(); jLoop++)
-                        {
-                            strCmd += QString::number(strInput.at(jLoop).unicode(), 16);
-                        }
-
-                        strCmd += QString::number(0, 16).rightJustified(2, '0');//null character
-
-                        qDebug() << strCmd;
-                        emit SendV200specific(strCmd);
-                    }
-                }
-                else
-                {
-                    QString strMsg = QString("'%1' has character which is not letter or number").arg(strInput);
-                    QMessageBox::information(this, "Invalid input", strMsg);
-                }
-            }
-            else
-            {
-                if(IsStringNumber(strInput))
-                {
-                    if(iLoop == E_EXPIRATION)
-                    {
-                        if(dwInput > uint32_t(c_VolumeParameters[iLoop] * 8))
-                        {
-                            QString strMsg = QString("'%1' is too big").arg(strInput);
-                            QMessageBox::information(this, "Invalid input", strMsg);
-                            return;
-                        }
-                        else
-                        {
-                            ulong uBits = 0;
-
-                            for(uint jLoop = 0; jLoop < dwInput; jLoop++)
-                            {
-                                uBits |= (1 << jLoop);
-                            }
-
-                            strCmd += QString::number(uBits, 16).rightJustified(2 * c_VolumeParameters[iLoop], '0');
-                        }
-                    }
-                    if(iLoop == E_DATE_MANUFACT || iLoop == E_DATE_ACTIVE)
-                    {
-                        if(strInput.length() > c_VolumeParameters[iLoop])
-                        {
-                            QString strMsg = QString("'%1' (%2) is longer than maximum length (%3)").arg(strInput).arg(strInput.length()).arg(c_VolumeParameters[iLoop]);
-                            QMessageBox::information(this, "Invalid input", strMsg);
-                            return;
-                        }
-                        else
-                        {
-                            for(int jLoop = 0; jLoop < strInput.length(); jLoop++)
-                            {
-                                strCmd += QString::number(strInput.at(jLoop).unicode(), 16);
-                            }
-                        }
-                    }
-                    else if(iLoop == E_USN_FREQ_CRYSTAL)
-                    {
-                        if(dwInput > uint32_t(UINT16_MAX * 100))
-                        {
-                            QString strMsg = QString("'%1' is too big").arg(strInput);
-                            QMessageBox::information(this, "Invalid input", strMsg);
-                            return;
-                        }
-                        else
-                        {
-                            uint16_t sDividedValue = dwInput / 100;
-                            strCmd += QString::number(sDividedValue, 16).rightJustified(2 * c_VolumeParameters[iLoop], '0');
-                        }
-                    }
-                    else if(iLoop == E_USN_VOLTAGEV100 || iLoop == E_USN_VALUE_AIR || iLoop == E_USN_VALUE_WATER)
-                    {
-                        if(dwInput > uint32_t(UINT16_MAX * 10))
-                        {
-                            QString strMsg = QString("'%1' is too big").arg(strInput);
-                            QMessageBox::information(this, "Invalid input", strMsg);
-                            return;
-                        }
-                        else
-                        {
-                            uint16_t sDividedValue = dwInput / 10;
-                            strCmd += QString::number(sDividedValue, 16).rightJustified(2 * c_VolumeParameters[iLoop], '0');
-                        }
-                    }
-                    else if(iLoop == E_USN_CONTROL_TYPE)
-                    {
-                        if(dwInput > 3)
-                        {
-                            QString strMsg = QString("'%1' is too big").arg(strInput);
-                            QMessageBox::information(this, "Invalid input", strMsg);
-                            return;
-                        }
-                        else
-                        {
-                            uint16_t sDividedValue = dwInput;
-                            strCmd += QString::number(sDividedValue, 16).rightJustified(2 * c_VolumeParameters[iLoop], '0');
-                        }
-                    }
-                    else if(iLoop == E_USN_CONTROL_VARIABLE)
-                    {
-                        int dwControlType = lineInputParameter[E_USN_CONTROL_TYPE]->text().toUInt();
-
-                        if(dwControlType == 0 || dwControlType == 1 || dwControlType == 3)//voltage
-                        {
-                            if(dwInput > uint32_t(UINT16_MAX * 10))
-                            {
-                                QString strMsg = QString("'%1' is too big").arg(strInput);
-                                QMessageBox::information(this, "Invalid input", strMsg);
-                                return;
-                            }
-                            else
-                            {
-                                uint16_t sDividedValue = dwInput / 10;
-                                strCmd += QString::number(sDividedValue, 16).rightJustified(2 * c_VolumeParameters[iLoop], '0');
-                            }
-                        }
-                        else if(dwControlType == 2)//current
-                        {
-                            if(dwInput > uint32_t(UINT16_MAX))
-                            {
-                                QString strMsg = QString("'%1' is too big").arg(strInput);
-                                QMessageBox::information(this, "Invalid input", strMsg);
-                                return;
-                            }
-                            else
-                            {
-                                uint16_t sDividedValue = dwInput;
-                                strCmd += QString::number(sDividedValue, 16).rightJustified(2 * c_VolumeParameters[iLoop], '0');
-                            }
-                        }
-                        else
-                        {
-                            QString strMsg = QString("CONTROL TYPE out of range");
-                            QMessageBox::information(this, "Invalid input", strMsg);
-                            return;
-                        }
-                    }
-                    else if(iLoop == E_RF_POWER_MAX)
-                    {
-                        if(dwInput > uint32_t(UINT16_MAX))
-                        {
-                            QString strMsg = QString("'%1' is too big").arg(strInput);
-                            QMessageBox::information(this, "Invalid input", strMsg);
-                            return;
-                        }
-                        else
-                        {
-                            uint16_t sDividedValue = dwInput;
-                            strCmd += QString::number(sDividedValue, 16).rightJustified(2 * c_VolumeParameters[iLoop], '0');
-                        }
-                    }
-                    else if(iLoop == E_REFER_IMPEDANCE_MODUL || iLoop == E_REFER_IMPEDANCE_PHASE || iLoop == E_REFER_IMPEDANCE_REFL || iLoop == E_CURRN_IMPEDANCE_REFL || iLoop == E_TIP_TYPE || iLoop == E_VERSION)
-                    {
-                        if(dwInput > uint32_t(UINT8_MAX))
-                        {
-                            QString strMsg = QString("'%1' is too big").arg(strInput);
-                            QMessageBox::information(this, "Invalid input", strMsg);
-                            return;
-                        }
-                        else
-                        {
-                            uint16_t sDividedValue = dwInput;
-                            strCmd += QString::number(sDividedValue, 16).rightJustified(2 * c_VolumeParameters[iLoop], '0');
-                        }
-                    }
-
-                    qDebug() << strCmd;
-                    emit SendV200specific(strCmd);
-                }
-                else
-                {
-                    QString strMsg = QString("'%1' is not positive integer").arg(strInput);
-                    QMessageBox::information(this, "Invalid input", strMsg);
-                }
+                qDebug() << strCmd;
+                emit SendV200specific(strCmd);
             }
 
         });
@@ -379,8 +221,209 @@ bool widgetTipMemory::IsPrintable(QString strInput)
 {
     for (int i = 0; i < strInput.length(); i++)
     {
-        if (!strInput[i].isPrint())
+        if (!strInput[i].isLetterOrNumber())
         {
+            return false;
+        }
+    }
+
+    return true;
+}
+
+bool widgetTipMemory::CollectStringAscii(int iIndex, QString strInputString, QString &text)
+{
+    if(strInputString.length() > c_VolumeParameters[iIndex])
+    {
+        QString strMsg = QString("'%1' (%2) is longer than maximum length (%3)").arg(strInputString).arg(strInputString.length()).arg(c_VolumeParameters[iIndex]);
+        QMessageBox::information(this, "Invalid input", strMsg);
+        return false;
+    }
+    else
+    {
+        for(int jLoop = 0; jLoop < c_VolumeParameters[iIndex]; jLoop++)
+        {
+            if(jLoop < strInputString.length())
+            {
+                text += QString::number(strInputString.at(jLoop).unicode(), 16);
+            }
+            else
+            {
+                text += QString::number(0, 16).rightJustified(2, '0');
+            }
+        }
+
+        return true;
+    }
+
+    return false;
+}
+
+bool widgetTipMemory::CollectStringParameter(int iIndex, QString strInputString, QString &text)
+{
+    uint32_t dwInput = strInputString.toUInt();
+
+
+    if(iIndex == E_SERIAL)
+    {
+        if(IsPrintable(strInputString))
+        {
+            if(!CollectStringAscii(iIndex, strInputString, text))
+            {
+                return false;
+            }
+        }
+        else
+        {
+            QString strMsg = QString("'%1' has character which is not letter or number").arg(strInputString);
+            QMessageBox::information(this, "Invalid input", strMsg);
+            return false;
+        }
+    }
+    else
+    {
+        if(IsStringNumber(strInputString))
+        {
+            if(iIndex == E_EXPIRATION)
+            {
+                if(dwInput > uint32_t(c_VolumeParameters[iIndex] * 8))
+                {
+                    QString strMsg = QString("'%1' is too big").arg(strInputString);
+                    QMessageBox::information(this, "Invalid input", strMsg);
+                    return false;
+                }
+                else
+                {
+                    ulong uBits = 0;
+
+                    for(uint jLoop = 0; jLoop < dwInput; jLoop++)
+                    {
+                        uBits |= (1 << jLoop);
+                    }
+
+                    text += QString::number(uBits, 16).rightJustified(2 * c_VolumeParameters[iIndex], '0');
+                }
+            }
+            if(iIndex == E_DATE_MANUFACT || iIndex == E_DATE_ACTIVE)
+            {
+                if(!CollectStringAscii(iIndex, strInputString, text))
+                {
+                    return false;
+                }
+            }
+            else if(iIndex == E_USN_FREQ_CRYSTAL)
+            {
+                if(dwInput > uint32_t(UINT16_MAX * 100))
+                {
+                    QString strMsg = QString("'%1' is too big").arg(strInputString);
+                    QMessageBox::information(this, "Invalid input", strMsg);
+                    return false;
+                }
+                else
+                {
+                    uint16_t sDividedValue = dwInput / 100;
+                    text += QString::number(sDividedValue, 16).rightJustified(2 * c_VolumeParameters[iIndex], '0');
+                }
+            }
+            else if(iIndex == E_USN_VOLTAGEV100 || iIndex == E_USN_VALUE_AIR || iIndex == E_USN_VALUE_WATER)
+            {
+                if(dwInput > uint32_t(UINT16_MAX * 10))
+                {
+                    QString strMsg = QString("'%1' is too big").arg(strInputString);
+                    QMessageBox::information(this, "Invalid input", strMsg);
+                    return false;
+                }
+                else
+                {
+                    uint16_t sDividedValue = dwInput / 10;
+                    text += QString::number(sDividedValue, 16).rightJustified(2 * c_VolumeParameters[iIndex], '0');
+                }
+            }
+            else if(iIndex == E_USN_CONTROL_TYPE)
+            {
+                if(dwInput > 3)
+                {
+                    QString strMsg = QString("'%1' is too big").arg(strInputString);
+                    QMessageBox::information(this, "Invalid input", strMsg);
+                    return false;
+                }
+                else
+                {
+                    uint16_t sDividedValue = dwInput;
+                    text += QString::number(sDividedValue, 16).rightJustified(2 * c_VolumeParameters[iIndex], '0');
+                }
+            }
+            else if(iIndex == E_USN_CONTROL_VARIABLE)
+            {
+                int dwControlType = lineInputParameter[E_USN_CONTROL_TYPE]->text().toUInt();
+
+                if(dwControlType == 0 || dwControlType == 1 || dwControlType == 3)//voltage
+                {
+                    if(dwInput > uint32_t(UINT16_MAX * 10))
+                    {
+                        QString strMsg = QString("'%1' is too big").arg(strInputString);
+                        QMessageBox::information(this, "Invalid input", strMsg);
+                        return false;
+                    }
+                    else
+                    {
+                        uint16_t sDividedValue = dwInput / 10;
+                        text += QString::number(sDividedValue, 16).rightJustified(2 * c_VolumeParameters[iIndex], '0');
+                    }
+                }
+                else if(dwControlType == 2)//current
+                {
+                    if(dwInput > uint32_t(UINT16_MAX))
+                    {
+                        QString strMsg = QString("'%1' is too big").arg(strInputString);
+                        QMessageBox::information(this, "Invalid input", strMsg);
+                        return false;
+                    }
+                    else
+                    {
+                        uint16_t sDividedValue = dwInput;
+                        text += QString::number(sDividedValue, 16).rightJustified(2 * c_VolumeParameters[iIndex], '0');
+                    }
+                }
+                else
+                {
+                    QString strMsg = QString("CONTROL TYPE out of range");
+                    QMessageBox::information(this, "Invalid input", strMsg);
+                    return false;
+                }
+            }
+            else if(iIndex == E_RF_POWER_MAX)
+            {
+                if(dwInput > uint32_t(UINT16_MAX))
+                {
+                    QString strMsg = QString("'%1' is too big").arg(strInputString);
+                    QMessageBox::information(this, "Invalid input", strMsg);
+                    return false;
+                }
+                else
+                {
+                    uint16_t sDividedValue = dwInput;
+                    text += QString::number(sDividedValue, 16).rightJustified(2 * c_VolumeParameters[iIndex], '0');
+                }
+            }
+            else if(iIndex == E_REFER_IMPEDANCE_MODUL || iIndex == E_REFER_IMPEDANCE_PHASE || iIndex == E_REFER_IMPEDANCE_REFL || iIndex == E_CURRN_IMPEDANCE_REFL || iIndex == E_TIP_TYPE || iIndex == E_VERSION)
+            {
+                if(dwInput > uint32_t(UINT8_MAX))
+                {
+                    QString strMsg = QString("'%1' is too big").arg(strInputString);
+                    QMessageBox::information(this, "Invalid input", strMsg);
+                    return false;
+                }
+                else
+                {
+                    uint16_t sDividedValue = dwInput;
+                    text += QString::number(sDividedValue, 16).rightJustified(2 * c_VolumeParameters[iIndex], '0');
+                }
+            }
+        }
+        else
+        {
+            QString strMsg = QString("'%1' is not positive integer").arg(strInputString);
+            QMessageBox::information(this, "Invalid input", strMsg);
             return false;
         }
     }
