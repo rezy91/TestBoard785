@@ -214,7 +214,7 @@ widgetTipMemory::widgetTipMemory(QWidget *parent) : QWidget(parent)
                             return;
                         }
                     }
-                    else if(iLoop == E_RF_POWER_MAX || iLoop == E_VERSION)
+                    else if(iLoop == E_RF_POWER_MAX)
                     {
                         if(dwInput > uint32_t(UINT16_MAX))
                         {
@@ -228,7 +228,7 @@ widgetTipMemory::widgetTipMemory(QWidget *parent) : QWidget(parent)
                             strCmd += QString::number(sDividedValue, 16).rightJustified(2 * c_VolumeParameters[iLoop], '0');
                         }
                     }
-                    else if(iLoop == E_REFER_IMPEDANCE_MODUL || iLoop == E_REFER_IMPEDANCE_PHASE || iLoop == E_REFER_IMPEDANCE_REFL || iLoop == E_CURRN_IMPEDANCE_REFL || iLoop == E_TIP_TYPE)
+                    else if(iLoop == E_REFER_IMPEDANCE_MODUL || iLoop == E_REFER_IMPEDANCE_PHASE || iLoop == E_REFER_IMPEDANCE_REFL || iLoop == E_CURRN_IMPEDANCE_REFL || iLoop == E_TIP_TYPE || iLoop == E_VERSION)
                     {
                         if(dwInput > uint32_t(UINT8_MAX))
                         {
@@ -441,7 +441,7 @@ void widgetTipMemory::DecodeChoosedChannel(int dwChannel)
 {
     if(dwChannel >= 0)
     {
-        uint32_t dwVersion = uint32_t(arr_byTipContent[dwChannel][c_AddressParameters[E_VERSION]] << 8) + uint32_t(arr_byTipContent[dwChannel][c_AddressParameters[E_VERSION] + 1]);
+        uint32_t dwVersion = uint32_t(arr_byTipContent[dwChannel][c_AddressParameters[E_VERSION]]);
 
         if(dwVersion == uint32_t(TIP_MEMORY_VERSION))
         {
