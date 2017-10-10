@@ -26,7 +26,7 @@ widgetTipMemory::widgetTipMemory(QWidget *parent) : QWidget(parent)
             c_AddressParameters[iLoop] = c_AddressParameters[iLoop - 1] + c_VolumeParameters[iLoop - 1];
         }
 
-        gridParams->addWidget(createNewLabel(QString("%1 [%2]").arg(c_nameParametersInMemory[iLoop]).arg(c_VolumeParameters[iLoop])), iLoop, 0, Qt::AlignRight);
+        gridParams->addWidget(createNewLabel(QString("%1 (%2) [%3]").arg(c_nameParametersInMemory[iLoop]).arg(c_VolumeParameters[iLoop]).arg(c_nameUnitInMemory[iLoop])), iLoop, 0, Qt::AlignRight);
         lineInputParameter[iLoop] = new QLineEdit();
         gridParams->addWidget(lineInputParameter[iLoop], iLoop, 1, Qt::AlignCenter);
         buttSend[iLoop] = new QPushButton("Send");
@@ -159,6 +159,38 @@ widgetTipMemory::widgetTipMemory(QWidget *parent) : QWidget(parent)
 
                             strCmd += QString::number(uBits, 16).rightJustified(2 * c_VolumeParameters[iLoop], '0');
                         }
+                        else if(iLoop == E_USN_CONTROL_VARIABLE)
+                        {
+                            int dwControlType = lineInputParameter[E_USN_CONTROL_TYPE]->text().toUInt();
+                            uint16_t sDividedValue;
+
+                            if(dwControlType == 0 || dwControlType == 1 dwControlType == 3)//voltage
+                            {
+                                sDividedValue = strInput.toUInt() / 10;
+                            }
+                            else if(dwControlType == 2)//current
+                            {
+                                sDividedValue = strInput.toUInt();
+                            }
+                            else
+                            {
+                                QString strMsg = QString("CONTROL TYPE out of range");
+                                QMessageBox::information(this, "Invalid input", strMsg);
+                                return;
+                            }
+
+                            strCmd += QString::number(sDividedValue, 16).rightJustified(2 * c_VolumeParameters[iLoop], '0');
+                        }
+                        else if(iLoop == E_USN_FREQ_CRYSTAL)
+                        {
+                            uint16_t sDividedValue = strInput.toUInt() / 100;
+                            strCmd += QString::number(sDividedValue, 16).rightJustified(2 * c_VolumeParameters[iLoop], '0');
+                        }
+                        else if(iLoop == E_USN_VOLTAGEV100 || iLoop == E_USN_VALUE_AIR || iLoop == E_USN_VALUE_WATER)
+                        {
+                            uint16_t sDividedValue = strInput.toUInt() / 10;
+                            strCmd += QString::number(sDividedValue, 16).rightJustified(2 * c_VolumeParameters[iLoop], '0');
+                        }
                         else
                         {
                             strCmd += QString::number(strInput.toUInt(), 16).rightJustified(2 * c_VolumeParameters[iLoop], '0');
@@ -170,7 +202,7 @@ widgetTipMemory::widgetTipMemory(QWidget *parent) : QWidget(parent)
                 }
                 else
                 {
-                    QString strMsg = QString("'%1' is not positive number").arg(strInput);
+                    QString strMsg = QString("'%1' is not positive integer").arg(strInput);
                     QMessageBox::information(this, "Invalid input", strMsg);
                 }
             }
