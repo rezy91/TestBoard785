@@ -238,6 +238,20 @@ typedef struct status_register
   uint16_t m_wSetPower;
   int16_t m_wMeasuredTemperaturePatient;
   uint8_t m_wSetDutyFactor;
+
+  union
+  {
+    uint8_t mByExtended;
+    struct
+    {
+      uint8_t measuredCqm      :3;   // bit 0 - 2
+      uint8_t Extreserve5      :1;   // bit 3
+      uint8_t Extreserve4      :1;   // bit 4
+      uint8_t Extreserve3      :1;   // bit 5
+      uint8_t Extreserve2      :1;   // bit 6
+      uint8_t Extreserve1      :1;   // bit 7
+    } m_BitExtended;
+  } m_ByteExtended;
 } STATUS_REGISTER;
 
 #endif // COMMON_H

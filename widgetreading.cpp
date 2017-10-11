@@ -328,6 +328,7 @@ void widgetReading::ReceiveStatusReg(STATUS_REGISTER eStatusReg)
     double dbTempPatient = (float)eStatusReg.m_wMeasuredTemperaturePatient / 100.0f;
     lineInputItemsStatus[4]->setText(QString("%1").arg(QString::number(dbTempPatient)));
     lineInputItemsStatus[5]->setText(QString("%1").arg(QString::number(eStatusReg.m_bySetTemperaturePatient)));
+    lineInputItemsStatus[6]->setText(QString("%1").arg(QString::number(eStatusReg.m_ByteExtended.mByExtended)));
 }
 
 void widgetReading::ReceiveFirmwareVersion(int nIndex, uint nValue)
