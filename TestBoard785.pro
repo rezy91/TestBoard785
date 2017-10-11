@@ -11,7 +11,7 @@ greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 TEMPLATE = app
 
 APPNAME = Master_785_simulator
-MYVERSION = 0.1.12
+MYVERSION = 0.1.13
 
 
 CONFIG += c++11
