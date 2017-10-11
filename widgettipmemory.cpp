@@ -5,7 +5,7 @@
 
 widgetTipMemory::widgetTipMemory(QWidget *parent) : QWidget(parent)
 {
-    dwCurrentChannel = 0;
+    dwCurrentChannel = dwChannelDefault;
 
     listOfChannels->addItem("Select channel");
     listOfChannels->setMaximumWidth(100);
@@ -33,47 +33,25 @@ widgetTipMemory::widgetTipMemory(QWidget *parent) : QWidget(parent)
         gridParams->addWidget(buttSend[iLoop], iLoop, 2, Qt::AlignLeft);
     }
 
-    buttSend[E_NMB_PARAMETERS_IN_MEMORY] = new QPushButton("Send all values");
-    gridParams->addWidget(buttSend[E_NMB_PARAMETERS_IN_MEMORY], E_NMB_PARAMETERS_IN_MEMORY, 2, Qt::AlignLeft);
+    hBox->addWidget(listOfChannels);
 
-    vBox->addWidget(listOfChannels, Qt::AlignCenter);
+    for(int iLoop = 0; iLoop < E_NMB_BUTTONS; iLoop++)
+    {
+        buttConfig[iLoop] = new QPushButton(QString("%1").arg(c_nameButtonConfig[iLoop]));
+        hBox->addWidget(buttConfig[iLoop]);
+    }
+
+    vBox->addLayout(hBox);
     vBox->addLayout(gridParams);
 
     connect(listOfChannels,static_cast<void (QComboBox::*)(int)>(&QComboBox::currentIndexChanged),[=](int nValue){
 
         dwCurrentChannel = nValue - 1;
 
-        if(dwCurrentChannel >= 0)
+        if(dwCurrentChannel == dwChannelDefault)
         {
-            decodeTipMemory(uint8_t(dwCurrentChannel));
+            clearLineInput();
         }
-        else
-        {
-            clearAll();
-        }
-    });
-
-    connect(buttSend[E_NMB_PARAMETERS_IN_MEMORY],&QPushButton::clicked,[=](bool clicked){
-        Q_UNUSED(clicked);
-
-        QString strCmd = QString("%1").arg(QString::number(PID_WRITE_TO_MEMORY, 16));
-        strCmd += QString::number(dwCurrentChannel).rightJustified(1 * 2, '0');
-        strCmd += QString::number(0, 16).rightJustified(2 * 2, '0');
-        strCmd += QString::number(MAX_TIP_MEMORY_STRUCT_SIZE, 16).rightJustified(2 * 2, '0');
-
-        for(int iLoop = 0; iLoop < E_NMB_PARAMETERS_IN_MEMORY; iLoop++)
-        {
-            QString strInput = lineInputParameter[iLoop]->text();
-
-            if(!CollectStringParameter(iLoop, strInput, strCmd))
-            {
-                return;
-            }
-        }
-
-        qDebug() << strCmd;
-        emit SendV200specific(strCmd);
-
     });
 
     for(int iLoop = 0; iLoop < E_NMB_PARAMETERS_IN_MEMORY; iLoop++)
@@ -93,6 +71,48 @@ widgetTipMemory::widgetTipMemory(QWidget *parent) : QWidget(parent)
             {
                 qDebug() << strCmd;
                 emit SendV200specific(strCmd);
+            }
+
+        });
+    }
+
+    for(int iLoop = 0; iLoop < E_NMB_BUTTONS; iLoop++)
+    {
+        connect(buttConfig[iLoop],&QPushButton::clicked,[=](bool clicked){
+
+            Q_UNUSED(clicked);
+
+            if(dwCurrentChannel >= 0)
+            {
+                if(iLoop == E_BUTTON_SAVE_MCU)
+                {
+                    QString strCmd = QString("%1").arg(QString::number(PID_WRITE_TO_MEMORY, 16));
+                    strCmd += QString::number(dwCurrentChannel).rightJustified(1 * 2, '0');
+                    strCmd += QString::number(0, 16).rightJustified(2 * 2, '0');
+                    strCmd += QString::number(MAX_TIP_MEMORY_STRUCT_SIZE, 16).rightJustified(2 * 2, '0');
+
+                    for(int jLoop = 0; jLoop < E_NMB_PARAMETERS_IN_MEMORY; jLoop++)
+                    {
+                        QString strInput = lineInputParameter[jLoop]->text();
+
+                        if(!CollectStringParameter(jLoop, strInput, strCmd))
+                        {
+                            return;
+                        }
+                    }
+
+                    qDebug() << strCmd;
+                    emit SendV200specific(strCmd);
+                }
+                else if(iLoop == E_BUTTON_LOAD_MCU)
+                {
+                    decodeTipMemory(uint8_t(dwCurrentChannel));
+                }
+            }
+            else
+            {
+                QString strMsg = QString("Select channel");
+                QMessageBox::information(this, "Invalid channel", strMsg);
             }
 
         });
@@ -431,20 +451,30 @@ bool widgetTipMemory::CollectStringParameter(int iIndex, QString strInputString,
     return true;
 }
 
-void widgetTipMemory::clearAll()
+void widgetTipMemory::clearComboBox(int iIndex)
+{
+    dwCurrentChannel = dwChannelDefault;
+    listOfChannels->setCurrentIndex(0);
+
+    qobject_cast<QStandardItemModel*>(listOfChannels->model())->item(iIndex)->setEnabled(false);
+
+    clearLineInput();
+}
+
+void widgetTipMemory::clearLineInput()
 {
     for(int iLoop = 0; iLoop < E_NMB_PARAMETERS_IN_MEMORY; iLoop++)
     {
         lineInputParameter[iLoop]->clear();
     }
+}
 
-    dwCurrentChannel = 0;
-
-    listOfChannels->setCurrentIndex(0);
-    qobject_cast<QStandardItemModel*>(listOfChannels->model())->item(1)->setEnabled(false);
-    qobject_cast<QStandardItemModel*>(listOfChannels->model())->item(2)->setEnabled(false);
-    qobject_cast<QStandardItemModel*>(listOfChannels->model())->item(3)->setEnabled(false);
-    qobject_cast<QStandardItemModel*>(listOfChannels->model())->item(4)->setEnabled(false);
+void widgetTipMemory::clearAll()
+{
+    clearComboBox(1);
+    clearComboBox(2);
+    clearComboBox(3);
+    clearComboBox(4);
 }
 
 void widgetTipMemory::ReceiveStatusReg(STATUS_REGISTER eStatusReg)
@@ -456,19 +486,19 @@ void widgetTipMemory::ReceiveStatusReg(STATUS_REGISTER eStatusReg)
 
     if(dwCurrentChannel == 0 && eStatusReg.m_Reg.m_Bit.ChangeAcc0 && eStatusReg.m_Reg.m_Bit.StateAcc0 == 0)
     {
-        clearAll();
+        clearComboBox(1);
     }
     else if(dwCurrentChannel == 1 && eStatusReg.m_Reg.m_Bit.ChangeAcc1 && eStatusReg.m_Reg.m_Bit.StateAcc1 == 0)
     {
-        clearAll();
+        clearComboBox(2);
     }
     else if(dwCurrentChannel == 2 && eStatusReg.m_Reg.m_Bit.ChangeAcc2 && eStatusReg.m_Reg.m_Bit.StateAcc2 == 0)
     {
-        clearAll();
+        clearComboBox(3);
     }
     else if(dwCurrentChannel == 3 && eStatusReg.m_Reg.m_Bit.ChangeAcc3 && eStatusReg.m_Reg.m_Bit.StateAcc3 == 0)
     {
-        clearAll();
+        clearComboBox(4);
     }
 }
 

@@ -5,6 +5,7 @@
 #include <QWidget>
 #include <QComboBox>
 #include <QVBoxLayout>
+#include <QHBoxLayout>
 #include <QGridLayout>
 #include <QLabel>
 #include <QLineEdit>
@@ -41,6 +42,14 @@ private:
         E_CURRN_IMPEDANCE_REFL,
         E_NMB_PARAMETERS_IN_MEMORY,
     };
+    enum
+    {
+        E_BUTTON_LOAD_MCU,
+        E_BUTTON_LOAD_FILE,
+        E_BUTTON_SAVE_MCU,
+        E_BUTTON_SAVE_FILE,
+        E_NMB_BUTTONS,
+    };
     enum {MAX_TIP_MEMORY_STRUCT_SIZE = 128};
     enum {TIP_MEMORY_VERSION = 100};
 
@@ -49,13 +58,17 @@ private:
      "USN_VALUE_AIR", "USN_VALUE_WATER", "USN_CONTROL_TYPE", "RF_POWER_MAX", "REFER_IMPEDANCE_MODUL", "REFER_IMPEDANCE_PHASE", "REFER_IMPEDANCE_REFL", "CURRENT_IMPEDANCE_REFL"};
     const QString c_nameUnitInMemory[E_NMB_PARAMETERS_IN_MEMORY] =
     {"-", "-", "-", "-", "-", "-", "Hz", "mA|mV", "mV", "mV", "mV", "-", "W", "||", "°", "%", "%"};
+    const QString c_nameButtonConfig[E_NMB_BUTTONS] = {"Load from MCU", "Load from file", "Write to MCU", "Write to file"};
     const int c_VolumeParameters[E_NMB_PARAMETERS_IN_MEMORY] = {1, 30, 4, 8, 14, 1, 2, 2, 2, 2, 2, 1, 2, 1, 1, 1, 1};
+    const int dwChannelDefault = -1;
 
     int c_AddressParameters[E_NMB_PARAMETERS_IN_MEMORY];
 
     QLineEdit *lineInputParameter[E_NMB_PARAMETERS_IN_MEMORY];
-    QPushButton* buttSend[E_NMB_PARAMETERS_IN_MEMORY + 1];
+    QPushButton* buttSend[E_NMB_PARAMETERS_IN_MEMORY];
+    QPushButton* buttConfig[E_NMB_BUTTONS];
     QVBoxLayout* vBox = new QVBoxLayout(this);
+    QHBoxLayout* hBox = new QHBoxLayout(this);
     QGridLayout* gridParams = new QGridLayout(this);
     QComboBox* listOfChannels = new QComboBox(this);
 
@@ -71,6 +84,9 @@ private:
 
     bool CollectStringAscii(int iIndex, QString strInputString, QString &text);
     bool CollectStringParameter(int iIndex, QString strInputString, QString &text);
+
+    void clearComboBox(int iIndex);
+    void clearLineInput(void);
 
 
 signals:
