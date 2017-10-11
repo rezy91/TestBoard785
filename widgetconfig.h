@@ -37,7 +37,7 @@ private:
     enum {E_NMB_GEN_ADC1 = 9};
     enum {E_NMB_GEN_ADC2 = 7};
     enum {E_NMB_GEN_ADC3 = 6};
-    enum {E_NMB_GEN_OTHERS = 15};
+    enum {E_NMB_GEN_OTHERS = 17};
     enum {E_NMB_GEN_REGULATOR_POWER = 4};
     enum {E_NMB_GEN_REGULATOR_COOLING = 7};
     enum {E_NMB_GEN_TESTTHERAPY = 2};
@@ -50,7 +50,7 @@ private:
     const QString c_nameGenRegulatorCooling[E_NMB_GEN_REGULATOR_COOLING] = {"PROPORCIAL", "INTEGRAL", "DERIVATIVE", "Period (10 - 10000 ms)", "min PWM [%]", "t_cold [°C]", "t_hot [°C]"};
     const QString c_nameGenTestTherapy[E_NMB_GEN_TESTTHERAPY] = {"Duty factor (20 - 100 %)", "Frequency (25 - 200 Hz)"};
     const QString c_nameGenCQM[E_NMB_GEN_PWM_CQM] = {"ch_1 (1000 - 100000 Hz)", "ch_2 (1000 - 100000 Hz)"};
-    const QString c_nameOthers[E_NMB_GEN_OTHERS] = {"power max", "power min", "for phase (0 - pi/2) [rad]", "max refl ratio (0.0 - 1.0)", "max PWM to amp (0.1 - 0.9)", "max diff power regulator (0 - 100) [%]", "refer. imp. magnitude", "refer. imp. phase (0 - pi/2) [rad]", "max refl ratio (0.0 - 1.0)", "R_cqm max [ohm]", "R_cqm min [ohm]", "Cqm_r_ser [ohm]", "Cqm_r_par [ohm]", "Cqm_u [V]", "Cqm_r_off [ohm]"};
+    const QString c_nameOthers[E_NMB_GEN_OTHERS] = {"power max", "power min", "for phase (0 - pi/2) [rad]", "max refl ratio (0.0 - 1.0)", "max PWM to amp (0.1 - 0.9)", "max diff power regulator (0 - 100) [%]", "refer. imp. magnitude", "refer. imp. phase (0 - pi/2) [rad]", "max refl ratio (0.0 - 1.0)", "R_cqm min [ohm]", "R_cqm less [ohm]", "R_cqm more [ohm]", "R_cqm max [ohm]", "Cqm_r_ser [ohm]", "Cqm_r_par [ohm]", "Cqm_u [V]", "Cqm_r_off [ohm]"};
 
 
     const QStringList c_defaultValueGenAdcMul[E_GEN_ADC_NMB] = { \
@@ -67,7 +67,7 @@ private:
     const QStringList c_defaultValueAmpAdcAdd[E_AMP_ADC_NMB] = { \
         {"0.0", "15.34", "0.0", "0.0", "0.0", "0.0", "0.0", "0.0"}, \
         {"0.0", "188.18", "188.18", "0.0", "0.0", "0.0", "0.0", "0.0"}};
-    const QString c_defaultOthers[E_NMB_GEN_OTHERS] = {"1.1154", "0.0", "-0.087", "0.3", "0.5", "2000", "100", "0.1", "0.2", "2", "-2", "565.4867", "471.6876", "4043.999", "27.85234"};
+    const QString c_defaultOthers[E_NMB_GEN_OTHERS] = {"1.1154", "0.0", "-0.087", "0.3", "0.5", "2000", "100", "0.1", "0.2", "-2", "20", "50", "100", "565.4867", "471.6876", "4043.999", "27.85234"};
     const QString c_defaultRegulatorPower[E_NMB_GEN_REGULATOR_POWER] = {"0.002", "0.001", "1", "10"};
     const QString c_defaultRegulatorCooling[E_NMB_GEN_REGULATOR_COOLING] = {"0.15", "0.0043", "1", "30", "15", "20", "40"};
     const QString c_defaultTestTherapy[E_NMB_GEN_TESTTHERAPY] = {"2", "20"};
