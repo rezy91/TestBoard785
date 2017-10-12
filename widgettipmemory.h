@@ -68,8 +68,8 @@ private:
     QPushButton* buttSend[E_NMB_PARAMETERS_IN_MEMORY];
     QPushButton* buttConfig[E_NMB_BUTTONS];
     QVBoxLayout* vBox = new QVBoxLayout(this);
-    QHBoxLayout* hBox = new QHBoxLayout(this);
-    QGridLayout* gridParams = new QGridLayout(this);
+    QHBoxLayout* hBox = new QHBoxLayout();
+    QGridLayout* gridParams = new QGridLayout();
     QComboBox* listOfChannels = new QComboBox(this);
 
     uint8_t arr_byTipContent[nmbChannelsAppls][MAX_TIP_MEMORY_STRUCT_SIZE];

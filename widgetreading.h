@@ -67,14 +67,14 @@ private:
     QSize currSize;
 
     QVBoxLayout* vBox = new QVBoxLayout(this);
-    QHBoxLayout* hBox = new QHBoxLayout(this);
+    QHBoxLayout* hBox = new QHBoxLayout();
     QTextBrowser* txtBrowsers[E_BROWSER_NMB];
     QPushButton* buttClear = new QPushButton("clear log", this);
     QSpinBox* generTimes[NMB_ITEMS_TIMERS_GENER];
     QSpinBox* amplfTimes[NMB_ITEMS_TIMERS_AMPLF];
     QSpinBox* aplUsnTimes[NMB_ITEMS_TIMERS_APLS_AND_USN];
 
-    QGridLayout* qGridLyout = new QGridLayout(this);
+    QGridLayout* qGridLyout = new QGridLayout();
     QCheckBox* chBoxAmp[NMB_ITEMS_TIMERS_AMPLF];
     QCheckBox* chBoxGen[NMB_ITEMS_TIMERS_GENER];
     QCheckBox* chBoxAplUsn[NMB_ITEMS_TIMERS_APLS_AND_USN];

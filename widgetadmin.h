@@ -23,7 +23,7 @@ private:
     QLabel *createNewLabel(const QString &text);
 
     QVBoxLayout* mainLayout = new QVBoxLayout(this);
-    QGridLayout* childLayout = new QGridLayout(this);
+    QGridLayout* childLayout = new QGridLayout();
 
     QLineEdit *lineInputItems[E_NMB_ITEMS_ADMIN];
 
