@@ -74,7 +74,7 @@ widgetTipMemory::widgetTipMemory(QWidget *parent) : QWidget(parent)
             if(CollectStringParameter(iLoop, strInput, strCmd))
             {
                 qDebug() << strCmd;
-                emit SendV200specific(strCmd);
+                emit SendV200specific(strCmd, false);
             }
 
         });
@@ -157,7 +157,7 @@ widgetTipMemory::widgetTipMemory(QWidget *parent) : QWidget(parent)
                     }
 
                     qDebug() << strCmd;
-                    emit SendV200specific(strCmd);
+                    emit SendV200specific(strCmd, false);
                 }
                 else
                 {

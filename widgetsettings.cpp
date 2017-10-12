@@ -16,7 +16,7 @@ widgetSettings::widgetSettings(QWidget *parent) : QWidget(parent)
         SaveData.append(QString("%1").arg(QString::number(lineInputAmpFreq->text().toInt())) + " ");
 
         emit SaveAmpFreq(SaveData);
-        emit SendV200specific(strCmd);
+        emit SendV200specific(strCmd, false);
     });
 
     connect(buttSendAmpPwm,&QPushButton::clicked,[=](bool clicked){
@@ -30,7 +30,7 @@ widgetSettings::widgetSettings(QWidget *parent) : QWidget(parent)
         SaveData.append(QString("%1").arg(QString::number(lineInputAmpPwm->text().toDouble())) + " ");
 
         emit SaveAmpPwm(SaveData);
-        emit SendV200specific(strCmd);
+        emit SendV200specific(strCmd, false);
     });
 
 
@@ -45,7 +45,7 @@ widgetSettings::widgetSettings(QWidget *parent) : QWidget(parent)
         SaveData.append(QString("%1").arg(QString::number(lineInputGenPwmCool->text().toInt())) + " ");
 
         emit SaveGenPwm(SaveData);
-        emit SendV200specific(strCmd);
+        emit SendV200specific(strCmd, false);
     });
 
     connect(buttSendGenPwrReset,&QPushButton::clicked,[=](bool clicked){
@@ -66,7 +66,7 @@ widgetSettings::widgetSettings(QWidget *parent) : QWidget(parent)
                 strCmd += (checkAmpOutput[jDevice]->checkState() == Qt::Checked ? "01" : "00");
             }
 
-            emit SendV200specific(strCmd);
+            emit SendV200specific(strCmd, false);
         });
     }
 
@@ -82,7 +82,7 @@ widgetSettings::widgetSettings(QWidget *parent) : QWidget(parent)
                 strCmd += (checkGenOutputs[jDevice]->checkState() == Qt::Checked ? "01" : "00");
             }
 
-            emit SendV200specific(strCmd);
+            emit SendV200specific(strCmd, false);
         });
     }
 
@@ -114,7 +114,7 @@ widgetSettings::widgetSettings(QWidget *parent) : QWidget(parent)
             checkGenRawData[2]->setEnabled(true);
         }
 
-        emit SendV200specific(strCmd);
+        emit SendV200specific(strCmd, false);
     });
 
     connect(checkGenRawData[1], &QCheckBox::stateChanged, [=](int checked){
@@ -135,7 +135,7 @@ widgetSettings::widgetSettings(QWidget *parent) : QWidget(parent)
             checkGenRawData[2]->setEnabled(true);
         }
 
-        emit SendV200specific(strCmd);
+        emit SendV200specific(strCmd, false);
     });
 
     connect(checkGenRawData[2], &QCheckBox::stateChanged, [=](int checked){
@@ -156,7 +156,7 @@ widgetSettings::widgetSettings(QWidget *parent) : QWidget(parent)
             checkGenRawData[0]->setEnabled(true);
         }
 
-        emit SendV200specific(strCmd);
+        emit SendV200specific(strCmd, false);
     });
 
     connect(checkGenTestTherapy, &QPushButton::clicked, [=](){
@@ -164,7 +164,7 @@ widgetSettings::widgetSettings(QWidget *parent) : QWidget(parent)
         QString strCmd = QString("%1").arg(QString::number(PID_START_STOP_TEST_THERAPY, 16));
         strCmd += (checkGenTestTherapy->checkState() == Qt::Checked ? "01" : "00");
 
-        emit SendV200specific(strCmd);
+        emit SendV200specific(strCmd, false);
     });
 }
 
@@ -382,6 +382,6 @@ void widgetSettings::AssemblyAplxAndPwrResetPacket(bool source)
     }
 
     emit SaveGenPwr(SaveData);
-    emit SendV200specific(strCmd);
+    emit SendV200specific(strCmd, false);
 }
 

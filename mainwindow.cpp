@@ -705,6 +705,27 @@ void MainWindow::newDataV200(QByteArray aData)
             }
         }
         break;
+
+    //generator config data
+    case PID_SET_PWM_CQMS_FREQ:
+    case PID_SET_ADC3_COEFFICIENTS_MULTIPLE:
+    case PID_SET_ADC3_COEFFICIENTS_ADDITIVE:
+    case PID_SET_ADC2_COEFFICIENTS_MULTIPLE:
+    case PID_SET_ADC2_COEFFICIENTS_ADDITIVE:
+    case PID_SET_ADC1_COEFFICIENTS_MULTIPLE:
+    case PID_SET_ADC1_COEFFICIENTS_ADDITIVE:
+    case PID_SET_OTHERS:
+    case PID_SET_REGULATOR_COOLING:
+    case PID_SET_OUTPUTS:
+    case PID_SET_APLS:
+    case PID_SET_REGULATOR_POWER:
+    case PID_SET_THERAPY_TEST:
+
+        qDebug() << "read config data" << aData;
+
+        break;
+
+
     case PID_REPLY_TOUCH_MEMORY_OK:
         emit SendTipMemory(uint8_t(aData.at(1)), uint8_t(aData.at(4)), aData.mid(5));
 
@@ -1578,9 +1599,9 @@ void MainWindow::universalRequestMessageProtocol(Qt::CheckState eState, int wInd
     ShowSignalsIntoComboBox(RECEIVE_STREAM);
 }
 
-void MainWindow::specificMessageProtocol(QString message)
+void MainWindow::specificMessageProtocol(QString message, bool bExpectedResponse)
 {
-    m_CommProt.data()->SendData(m_nDeviceAddress, QByteArray::fromHex(message.toStdString().c_str()), false);
+    m_CommProt.data()->SendData(m_nDeviceAddress, QByteArray::fromHex(message.toStdString().c_str()), bExpectedResponse);
 }
 
 bool MainWindow::eventFilter(QObject *object, QEvent *event)

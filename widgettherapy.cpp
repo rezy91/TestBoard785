@@ -53,7 +53,7 @@ widgetTherapy::widgetTherapy(QWidget *parent) : QWidget(parent)
             msgTherapy += QString::number(QString("%1").arg(therapyParams[E_COOLING].slider->value()).toInt(), 16).rightJustified(2, '0');
             msgTherapy += QString::number(QString("%1").arg(therapyParams[E_ULTRASOUND].slider->value()).toInt(), 16).rightJustified(2, '0');
 
-            emit SendV200specific(msgTherapy);
+            emit SendV200specific(msgTherapy, false);
         });
 
     }
@@ -70,7 +70,7 @@ widgetTherapy::widgetTherapy(QWidget *parent) : QWidget(parent)
 
         msgChannel += QString::number(QString("%1").arg(dwCurrentChannel).toInt(), 16).rightJustified(2, '0');
 
-        emit SendV200specific(msgChannel);
+        emit SendV200specific(msgChannel, false);
         emit ChoosedChannel(dwCurrentChannel);
 
     });
@@ -80,7 +80,7 @@ widgetTherapy::widgetTherapy(QWidget *parent) : QWidget(parent)
         QString msgRun = QString("%1").arg(QString::number(PID_SET_STATE_OF_THERAPY, 16));
         msgRun += QString("01");
 
-        emit SendV200specific(msgRun);
+        emit SendV200specific(msgRun, false);
     });
 
     connect(stopButton, &QPushButton::clicked, [=](){
@@ -89,7 +89,7 @@ widgetTherapy::widgetTherapy(QWidget *parent) : QWidget(parent)
         msgRun += QString("00");
         userButton->setChecked(false);
 
-        emit SendV200specific(msgRun);
+        emit SendV200specific(msgRun, false);
     });
 
     connect(userButton, &QRadioButton::clicked, [=](){
@@ -105,7 +105,7 @@ widgetTherapy::widgetTherapy(QWidget *parent) : QWidget(parent)
             msgRun += QString("01");
         }
 
-        emit SendV200specific(msgRun);
+        emit SendV200specific(msgRun, false);
     });
 }
 

@@ -90,7 +90,7 @@ private:
 
 
 signals:
-    void SendV200specific(QString msg);
+    void SendV200specific(QString msg, bool bExp);
     void SendReferenceImpedance(float mag, float phase, float ratioRef, float ratioCur);
     void SendDefaultReferenceImpedance(void);
     void SendMaximalPower(uint16_t sMaxP);

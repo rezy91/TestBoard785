@@ -98,7 +98,7 @@ public slots:
     void openlogButtonPressed();
     void onNewMsgReqReceived(Qt::CheckState m_newState, int m_device, int m_indexMsg);
     void onNewTimeRequest(int valueTime, int m_device, int m_indexMsg);
-    void specificMessageProtocol(QString message);
+    void specificMessageProtocol(QString message, bool bExpectedResponse);
 
 private:
     const quint32 constGenerID = 21;

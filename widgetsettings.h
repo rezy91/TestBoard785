@@ -77,7 +77,7 @@ private:
     void AssemblyAplxAndPwrResetPacket(bool source);
 
 signals:
-    void SendV200specific(QString msg);
+    void SendV200specific(QString msg, bool bExp);
     void SaveAmpFreq(QString data);
     void SaveAmpPwm(QString data);
     void SaveGenPwm(QString data);

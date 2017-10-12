@@ -34,6 +34,12 @@ public slots:
     void ReadTestCqmFreq(QString data);
 
 private:
+    typedef enum
+    {
+      CONFIG_WRITE,
+      CONFIG_READ,
+    } CONFIG_ACTION;
+
     enum {E_NMB_GEN_ADC1 = 9};
     enum {E_NMB_GEN_ADC2 = 7};
     enum {E_NMB_GEN_ADC3 = 6};
@@ -103,7 +109,7 @@ private:
     QGroupBox *createConfigGenGroup();
 
 signals:
-    void SendV200specific(QString msg);
+    void SendV200specific(QString msg, bool bExp);
     void SaveAdcData(QString type, QString device, int index, QString data);
     void SaveOthers(QString data);
     void SaveRegulatorPower(QString data);

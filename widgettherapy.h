@@ -65,7 +65,7 @@ public:
     void resetValues(void);
 
 signals:
-    void SendV200specific(QString msg);
+    void SendV200specific(QString msg, bool bExp);
     void ChoosedChannel(int dwChannel);
 
 public slots:

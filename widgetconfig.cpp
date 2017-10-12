@@ -33,6 +33,7 @@ widgetConfig::widgetConfig(QWidget *parent) : QWidget(parent)
 
             QString AdcData;
             QString strCmd = QString("%1").arg(QString::number(dw_PidMsg, 16));
+            strCmd += QString::number(CONFIG_WRITE, 16).rightJustified(2, '0');
 
             for(int iChannel = 0; iChannel < dw_nmbChannels; iChannel++)
             {
@@ -44,7 +45,7 @@ widgetConfig::widgetConfig(QWidget *parent) : QWidget(parent)
             }
 
             emit SaveAdcData(QString(c_nameMul), QString(c_nameGen), iDevice + 1, AdcData);
-            emit SendV200specific(strCmd);
+            emit SendV200specific(strCmd, false);
         });
 
         connect(buttSendGenAddAdcx[iDevice],&QPushButton::clicked,[=](bool clicked){
@@ -72,6 +73,7 @@ widgetConfig::widgetConfig(QWidget *parent) : QWidget(parent)
 
             QString AdcData;
             QString strCmd = QString("%1").arg(QString::number(dw_PidMsg, 16));
+            strCmd += QString::number(CONFIG_WRITE, 16).rightJustified(2, '0');
 
             for(int iChannel = 0; iChannel < dw_nmbChannels; iChannel++)
             {
@@ -83,7 +85,7 @@ widgetConfig::widgetConfig(QWidget *parent) : QWidget(parent)
             }
 
             emit SaveAdcData(QString(c_nameAdd), QString(c_nameGen), iDevice + 1, AdcData);
-            emit SendV200specific(strCmd);
+            emit SendV200specific(strCmd, false);
         });
     }
 
@@ -120,7 +122,7 @@ widgetConfig::widgetConfig(QWidget *parent) : QWidget(parent)
             }
 
             emit SaveAdcData(QString(c_nameMul), QString(c_nameAmp), iDevice + 1, AdcData);
-            emit SendV200specific(strCmd);
+            emit SendV200specific(strCmd, false);
         });
 
         connect(buttSendAmpAddAdcx[iDevice],&QPushButton::clicked,[=](bool clicked){
@@ -154,7 +156,7 @@ widgetConfig::widgetConfig(QWidget *parent) : QWidget(parent)
             }
 
             emit SaveAdcData(QString(c_nameAdd), QString(c_nameAmp), iDevice + 1, AdcData);
-            emit SendV200specific(strCmd);
+            emit SendV200specific(strCmd, false);
         });
     }
 
@@ -164,6 +166,7 @@ widgetConfig::widgetConfig(QWidget *parent) : QWidget(parent)
 
         QString SaveData;
         QString strCmd = QString("%1").arg(QString::number(PID_SET_OTHERS, 16));
+        strCmd += QString::number(CONFIG_WRITE, 16).rightJustified(2, '0');
 
         for(int iChannel = 0; iChannel < E_NMB_GEN_OTHERS; iChannel++)
         {
@@ -175,7 +178,7 @@ widgetConfig::widgetConfig(QWidget *parent) : QWidget(parent)
         }
 
         emit SaveOthers(SaveData);
-        emit SendV200specific(strCmd);
+        emit SendV200specific(strCmd, false);
         emit SendReferenceImpedance(lineInputGenOthers[6]->text().toFloat(), lineInputGenOthers[7]->text().toFloat(), lineInputGenOthers[8]->text().toFloat(), lineInputGenOthers[3]->text().toFloat());
     });
 
@@ -185,6 +188,7 @@ widgetConfig::widgetConfig(QWidget *parent) : QWidget(parent)
 
         QString SaveData;
         QString strCmd = QString("%1").arg(QString::number(PID_SET_REGULATOR_POWER, 16));
+        strCmd += QString::number(CONFIG_WRITE, 16).rightJustified(2, '0');
 
         for(int iChannel = 0; iChannel < E_NMB_GEN_REGULATOR_POWER - 1; iChannel++)
         {
@@ -199,7 +203,7 @@ widgetConfig::widgetConfig(QWidget *parent) : QWidget(parent)
         SaveData.append(QString("%1").arg(QString::number(lineInputGenRegulatorPower[E_NMB_GEN_REGULATOR_POWER - 1]->text().toInt())) + " ");
 
         emit SaveRegulatorPower(SaveData);
-        emit SendV200specific(strCmd);
+        emit SendV200specific(strCmd, false);
     });
 
     connect(buttSendGenRegulatorCooling,&QPushButton::clicked,[=](bool clicked){
@@ -208,6 +212,7 @@ widgetConfig::widgetConfig(QWidget *parent) : QWidget(parent)
 
         QString SaveData;
         QString strCmd = QString("%1").arg(QString::number(PID_SET_REGULATOR_COOLING, 16));
+        strCmd += QString::number(CONFIG_WRITE, 16).rightJustified(2, '0');
 
         for(int iChannel = 0; iChannel < E_NMB_GEN_REGULATOR_COOLING - 4; iChannel++)
         {
@@ -228,7 +233,7 @@ widgetConfig::widgetConfig(QWidget *parent) : QWidget(parent)
         SaveData.append(QString("%1").arg(QString::number(lineInputGenRegulatorCooling[E_NMB_GEN_REGULATOR_COOLING - 1]->text().toInt())) + " ");
 
         emit SaveRegulatorCooling(SaveData);
-        emit SendV200specific(strCmd);
+        emit SendV200specific(strCmd, false);
     });
 
     connect(buttSendGenTestTherapy,&QPushButton::clicked,[=](bool clicked){
@@ -237,6 +242,7 @@ widgetConfig::widgetConfig(QWidget *parent) : QWidget(parent)
 
         QString SaveData;
         QString strCmd = QString("%1").arg(QString::number(PID_SET_THERAPY_TEST, 16));
+        strCmd += QString::number(CONFIG_WRITE, 16).rightJustified(2, '0');
 
         for(int iChannel = 0; iChannel < E_NMB_GEN_TESTTHERAPY; iChannel++)
         {
@@ -245,7 +251,7 @@ widgetConfig::widgetConfig(QWidget *parent) : QWidget(parent)
         }
 
         emit SaveTestTherapy(SaveData);
-        emit SendV200specific(strCmd);
+        emit SendV200specific(strCmd, false);
     });
 
     connect(buttSendGenPwmCqm,&QPushButton::clicked,[=](bool clicked){
@@ -254,6 +260,7 @@ widgetConfig::widgetConfig(QWidget *parent) : QWidget(parent)
 
         QString SaveData;
         QString strCmd = QString("%1").arg(QString::number(PID_SET_PWM_CQMS_FREQ, 16));
+        strCmd += QString::number(CONFIG_WRITE, 16).rightJustified(2, '0');
 
         for(int iChannel = 0; iChannel < E_NMB_GEN_PWM_CQM; iChannel++)
         {
@@ -262,7 +269,7 @@ widgetConfig::widgetConfig(QWidget *parent) : QWidget(parent)
         }
 
         emit SaveTestCqmFreq(SaveData);
-        emit SendV200specific(strCmd);
+        emit SendV200specific(strCmd, false);
     });
 }
 
