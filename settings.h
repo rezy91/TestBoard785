@@ -82,9 +82,6 @@ public:
     void StoreRcvMsgAplUsn(const QString strValue);
     QString RestoreRcvMsgAplUsn(void) const;
 
-    void StoreConfigTipMemory(const QString strValue, const int nIndex);
-    QString RestoreConfigTipMemory(const int nIndex) const;
-
 private:
     QSettings* m_pAppSettings = new QSettings("settingsV1.ini", QSettings::IniFormat);
 

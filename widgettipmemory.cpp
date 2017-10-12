@@ -2,6 +2,9 @@
 #include <QDebug>
 #include <QStandardItemModel>
 #include <QMessageBox>
+#include <QFileDialog>
+#include <QTextStream>
+#include <QCoreApplication>
 
 widgetTipMemory::widgetTipMemory(QWidget *parent) : QWidget(parent)
 {
@@ -44,6 +47,7 @@ widgetTipMemory::widgetTipMemory(QWidget *parent) : QWidget(parent)
     vBox->addLayout(hBox);
     vBox->addLayout(gridParams);
 
+
     connect(listOfChannels,static_cast<void (QComboBox::*)(int)>(&QComboBox::currentIndexChanged),[=](int nValue){
 
         dwCurrentChannel = nValue - 1;
@@ -78,13 +82,64 @@ widgetTipMemory::widgetTipMemory(QWidget *parent) : QWidget(parent)
 
     for(int iLoop = 0; iLoop < E_NMB_BUTTONS; iLoop++)
     {
-        connect(buttConfig[iLoop],&QPushButton::clicked,[=](bool clicked){
+        connect(buttConfig[iLoop], &QPushButton::clicked, [=](bool clicked){
 
             Q_UNUSED(clicked);
 
-            if(dwCurrentChannel >= 0)
+            if(iLoop == E_BUTTON_LOAD_MCU)
             {
-                if(iLoop == E_BUTTON_SAVE_MCU)
+                if(dwCurrentChannel >= 0)
+                {
+                    decodeTipMemory(uint8_t(dwCurrentChannel));
+                }
+                else
+                {
+                    QString strMsg = QString("Select channel");
+                    QMessageBox::information(this, "Invalid channel", strMsg);
+                }
+            }
+            else if(iLoop == E_BUTTON_LOAD_FILE)
+            {
+                QString logPath = QFileDialog::getOpenFileName(this, "Open config file", QString("%1/").arg(QCoreApplication::applicationDirPath()), c_nameTypeFile);
+                QFile m_logFile(logPath);
+
+                if(!m_logFile.open(QFile::ReadOnly))
+                {
+                    qDebug() << "error: cannot open file";
+                }
+                else
+                {
+                    QTextStream fileStream(&m_logFile);
+                    QStringList stringsSplittedTotal;
+
+                    while (!fileStream.atEnd())
+                    {
+                        QString newLinereaded = fileStream.readLine();
+                        stringsSplittedTotal.append(newLinereaded);
+                    }
+
+                    m_logFile.close();
+
+                    if((stringsSplittedTotal.count()) <= E_NMB_PARAMETERS_IN_MEMORY)
+                    {
+                        for(int jLoop = 0; jLoop < E_NMB_PARAMETERS_IN_MEMORY; jLoop++)
+                        {
+                            lineInputParameter[jLoop]->setText(stringsSplittedTotal.at(jLoop));
+                        }
+                    }
+                    else
+                    {
+                        for(int jLoop = 0; jLoop < E_NMB_PARAMETERS_IN_MEMORY; jLoop++)
+                        {
+                            lineInputParameter[jLoop]->setText(QString("x"));
+                        }
+                    }
+
+                }
+            }
+            else if(iLoop == E_BUTTON_SAVE_MCU)
+            {
+                if(dwCurrentChannel >= 0)
                 {
                     QString strCmd = QString("%1").arg(QString::number(PID_WRITE_TO_MEMORY, 16));
                     strCmd += QString::number(dwCurrentChannel).rightJustified(1 * 2, '0');
@@ -104,47 +159,32 @@ widgetTipMemory::widgetTipMemory(QWidget *parent) : QWidget(parent)
                     qDebug() << strCmd;
                     emit SendV200specific(strCmd);
                 }
-                else if(iLoop == E_BUTTON_SAVE_FILE)
+                else
                 {
-                    QString strSaveToFile;
+                    QString strMsg = QString("Select channel");
+                    QMessageBox::information(this, "Invalid channel", strMsg);
+                }
+            }
+            else if(iLoop == E_BUTTON_SAVE_FILE)
+            {
+                QString logPath = QFileDialog::getSaveFileName(this, "Save config file", QString("%1/").arg(QCoreApplication::applicationDirPath()), c_nameTypeFile);
+                QFile fileSaveConfig(logPath);
+
+                if(!fileSaveConfig.open(QFile::ReadWrite))
+                {
+                    qDebug() << "error: cannot open file";
+                }
+                else
+                {
+                    QTextStream fileStream(&fileSaveConfig);
 
                     for(int jLoop = 0; jLoop < E_NMB_PARAMETERS_IN_MEMORY; jLoop++)
                     {
-                        strSaveToFile.append(lineInputParameter[jLoop]->text() + " ");
+                        fileStream << lineInputParameter[jLoop]->text() << endl;
                     }
 
-                    qDebug() << strSaveToFile;
-                    emit SaveConfig(strSaveToFile, dwCurrentChannel);
+                    fileSaveConfig.close();
                 }
-                else if(iLoop == E_BUTTON_LOAD_MCU)
-                {
-                    decodeTipMemory(uint8_t(dwCurrentChannel));
-                }
-                else if(iLoop == E_BUTTON_LOAD_FILE)
-                {
-                    QString sSavedValue = emit ReadConfig(dwCurrentChannel);
-                    QStringList arrListSaved = sSavedValue.split(QRegExp("\\s+"));
-
-                    if((arrListSaved.count() - 1) == E_NMB_PARAMETERS_IN_MEMORY)
-                    {
-                        for(int jLoop = 0; jLoop < E_NMB_PARAMETERS_IN_MEMORY; jLoop++)
-                        {
-                            lineInputParameter[jLoop]->setText(arrListSaved.at(jLoop));
-                        }
-                    }
-                    else
-                    {
-                        for(int jLoop = 0; jLoop < E_NMB_PARAMETERS_IN_MEMORY; jLoop++)
-                        {
-                            lineInputParameter[jLoop]->setText(QString("x"));
-                        }
-                    }
-                }
-            }
-            else
-            {
-                QString strMsg = QString("Select channel");
-                QMessageBox::information(this, "Invalid channel", strMsg);
             }
 
         });

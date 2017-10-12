@@ -245,16 +245,6 @@ QString settings::RestoreRcvMsgAplUsn() const
     return RestoreValue(QString("rcvMsgAplUsn")).toString();
 }
 
-void settings::StoreConfigTipMemory(const QString strValue, const int nIndex)
-{
-    StoreValue(QString("configTipMem%1").arg(nIndex), strValue);
-}
-
-QString settings::RestoreConfigTipMemory(const int nIndex) const
-{
-    return RestoreValue(QString("configTipMem%1").arg(nIndex)).toString();
-}
-
 void settings::StorePortName(const QString &strPortName)
 {
     StoreValue(QString("portname"), strPortName);
