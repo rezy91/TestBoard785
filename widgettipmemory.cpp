@@ -32,7 +32,7 @@ widgetTipMemory::widgetTipMemory(QWidget *parent) : QWidget(parent)
         gridParams->addWidget(createNewLabel(QString("%1 (%2) [%3]").arg(c_nameParametersInMemory[iLoop]).arg(c_VolumeParameters[iLoop]).arg(c_nameUnitInMemory[iLoop])), iLoop, 0, Qt::AlignRight);
         lineInputParameter[iLoop] = new QLineEdit();
         gridParams->addWidget(lineInputParameter[iLoop], iLoop, 1, Qt::AlignCenter);
-        buttSend[iLoop] = new QPushButton("Send");
+        buttSend[iLoop] = new QPushButton("Write to Tip");
         gridParams->addWidget(buttSend[iLoop], iLoop, 2, Qt::AlignLeft);
     }
 

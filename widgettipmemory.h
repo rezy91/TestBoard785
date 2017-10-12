@@ -59,7 +59,7 @@ private:
      "USN_VALUE_AIR", "USN_VALUE_WATER", "USN_CONTROL_TYPE", "RF_POWER_MAX", "REFER_IMPEDANCE_MODUL", "REFER_IMPEDANCE_PHASE", "REFER_IMPEDANCE_REFL", "CURRENT_IMPEDANCE_REFL"};
     const QString c_nameUnitInMemory[E_NMB_PARAMETERS_IN_MEMORY] =
     {"-", "-", "-", "-", "-", "-", "Hz", "mA|mV", "mV", "mV", "mV", "-", "W", "||", "°", "%", "%"};
-    const QString c_nameButtonConfig[E_NMB_BUTTONS] = {"Load from MCU", "Load from file", "Write to MCU", "Write to file"};
+    const QString c_nameButtonConfig[E_NMB_BUTTONS] = {"Load from Tip", "Load from file", "Write to Tip", "Write to file"};
     const int c_VolumeParameters[E_NMB_PARAMETERS_IN_MEMORY] = {1, 30, 4, 8, 14, 1, 2, 2, 2, 2, 2, 1, 2, 1, 1, 1, 1};
     const int dwChannelDefault = -1;
 
