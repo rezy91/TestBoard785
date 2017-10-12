@@ -198,6 +198,7 @@ signals:
     void SendRegulatorCooling(QString values);
     void SendTestTherapy(QString values);
     void SendTestCqmFreq(QString values);
+    void SendConfigGener(QByteArray values);
     void SendAmpFreq(QString values);
     void SendAmpPwm(QString values);
     void SendGenPwm(QString values);

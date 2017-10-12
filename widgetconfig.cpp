@@ -545,6 +545,140 @@ void widgetConfig::ReadTestCqmFreq(QString data)
     }
 }
 
+void widgetConfig::ReadConfigGener(QByteArray data)
+{
+    uint8_t byPid = uint8_t(data.at(0));
+
+
+    if(byPid == PID_SET_PWM_CQMS_FREQ)
+    {
+        uint32_t dwFirstValue = uint32_t(data.at(1 + 1) << 16) & 0x00FF0000;
+        dwFirstValue |= uint32_t(data.at(2 + 1) << 8) & 0x0000FF00;
+        dwFirstValue |= uint32_t(data.at(3 + 1)) & 0x000000FF;
+
+        uint32_t dwSecondValue = uint32_t(data.at(4 + 1) << 16) & 0x00FF0000;
+        dwSecondValue |= uint32_t(data.at(5 + 1) << 8) & 0x0000FF00;
+        dwSecondValue |= uint32_t(data.at(6 + 1)) & 0x000000FF;
+
+        lineInputGenPwmCqm[0]->setText(QString::number(dwFirstValue));
+        lineInputGenPwmCqm[1]->setText(QString::number(dwSecondValue));
+    }
+    else if(byPid == PID_SET_ADC3_COEFFICIENTS_MULTIPLE || byPid == PID_SET_ADC2_COEFFICIENTS_MULTIPLE || byPid == PID_SET_ADC1_COEFFICIENTS_MULTIPLE)
+    {
+        int dwIndexChannel = int(data.at(1 + 1));
+        int dwNmbChannels;
+
+        if(dwIndexChannel == E_GEN_ADC_3)
+        {
+            dwNmbChannels = E_NMB_GEN_ADC3;
+        }
+        else if(dwIndexChannel == E_GEN_ADC_2)
+        {
+            dwNmbChannels = E_NMB_GEN_ADC2;
+        }
+        else if(dwIndexChannel == E_GEN_ADC_1)
+        {
+            dwNmbChannels = E_NMB_GEN_ADC1;
+        }
+
+        for(int iLoop = 0; iLoop < dwNmbChannels; iLoop++)
+        {
+            uint32_t dwValue = uint32_t(data.at(iLoop * 4 + 1 + 2) << 24) & 0xFF000000;
+            dwValue |= uint32_t(data.at(iLoop * 4 + 2 + 2) << 16) & 0x00FF0000;
+            dwValue |= uint32_t(data.at(iLoop * 4 + 3 + 2) << 8) & 0x0000FF00;
+            dwValue |= uint32_t(data.at(iLoop * 4 + 4 + 2)) & 0x000000FF;
+            float fValue = *(float*)&dwValue;
+            lineInputGenMulAdcx[dwIndexChannel][iLoop]->setText(QString::number(fValue));
+        }
+    }
+    else if(byPid == PID_SET_ADC3_COEFFICIENTS_ADDITIVE || byPid == PID_SET_ADC2_COEFFICIENTS_ADDITIVE || byPid == PID_SET_ADC1_COEFFICIENTS_ADDITIVE)
+    {
+        int dwIndexChannel = int(data.at(1 + 1));
+        int dwNmbChannels;
+
+        if(dwIndexChannel == E_GEN_ADC_3)
+        {
+            dwNmbChannels = E_NMB_GEN_ADC3;
+        }
+        else if(dwIndexChannel == E_GEN_ADC_2)
+        {
+            dwNmbChannels = E_NMB_GEN_ADC2;
+        }
+        else if(dwIndexChannel == E_GEN_ADC_1)
+        {
+            dwNmbChannels = E_NMB_GEN_ADC1;
+        }
+
+        for(int iLoop = 0; iLoop < dwNmbChannels; iLoop++)
+        {
+            uint32_t dwValue = uint32_t(data.at(iLoop * 4 + 1 + 2) << 24) & 0xFF000000;
+            dwValue |= uint32_t(data.at(iLoop * 4 + 2 + 2) << 16) & 0x00FF0000;
+            dwValue |= uint32_t(data.at(iLoop * 4 + 3 + 2) << 8) & 0x0000FF00;
+            dwValue |= uint32_t(data.at(iLoop * 4 + 4 + 2)) & 0x000000FF;
+            float fValue = *(float*)&dwValue;
+            lineInputGenAddAdcx[dwIndexChannel][iLoop]->setText(QString::number(fValue));
+        }
+    }
+    else if(byPid == PID_SET_OTHERS)
+    {
+        for(int iLoop = 0; iLoop < E_NMB_GEN_OTHERS; iLoop++)
+        {
+            uint32_t dwValue = uint32_t(data.at(iLoop * 4 + 1 + 1) << 24) & 0xFF000000;
+            dwValue |= uint32_t(data.at(iLoop * 4 + 2 + 1) << 16) & 0x00FF0000;
+            dwValue |= uint32_t(data.at(iLoop * 4 + 3 + 1) << 8) & 0x0000FF00;
+            dwValue |= uint32_t(data.at(iLoop * 4 + 4 + 1)) & 0x000000FF;
+            float fValue = *(float*)&dwValue;
+            lineInputGenOthers[iLoop]->setText(QString::number(fValue));
+        }
+
+    }
+    else if(byPid == PID_SET_REGULATOR_COOLING)
+    {
+        for(int iLoop = 0; iLoop < E_NMB_GEN_REGULATOR_COOLING; iLoop++)
+        {
+            uint32_t dwValue = uint32_t(data.at(iLoop * 4 + 1 + 1) << 24) & 0xFF000000;
+            dwValue |= uint32_t(data.at(iLoop * 4 + 2 + 1) << 16) & 0x00FF0000;
+            dwValue |= uint32_t(data.at(iLoop * 4 + 3 + 1) << 8) & 0x0000FF00;
+            dwValue |= uint32_t(data.at(iLoop * 4 + 4 + 1)) & 0x000000FF;
+            float fValue = (float)dwValue;
+
+            if(iLoop < 3)
+            {
+                fValue = *(float*)&dwValue;
+            }
+
+            lineInputGenRegulatorCooling[iLoop]->setText(QString::number(fValue));
+        }
+    }
+    else if(byPid == PID_SET_REGULATOR_POWER)
+    {
+        for(int iLoop = 0; iLoop < E_NMB_GEN_REGULATOR_POWER; iLoop++)
+        {
+            uint32_t dwValue = uint32_t(data.at(iLoop * 4 + 1 + 1) << 24) & 0xFF000000;
+            dwValue |= uint32_t(data.at(iLoop * 4 + 2 + 1) << 16) & 0x00FF0000;
+            dwValue |= uint32_t(data.at(iLoop * 4 + 3 + 1) << 8) & 0x0000FF00;
+            dwValue |= uint32_t(data.at(iLoop * 4 + 4 + 1)) & 0x000000FF;
+            float fValue = (float)dwValue;
+
+            if(iLoop < 3)
+            {
+                fValue = *(float*)&dwValue;
+            }
+
+            lineInputGenRegulatorPower[iLoop]->setText(QString::number(fValue));
+        }
+
+    }
+    else if(byPid == PID_SET_THERAPY_TEST)
+    {
+        uint8_t byFirstValue = uint8_t(data.at(1 + 1));
+        uint8_t bySecondValue = uint8_t(data.at(1 + 2));
+
+        lineInputGenTestTherapy[0]->setText(QString::number(byFirstValue));
+        lineInputGenTestTherapy[1]->setText(QString::number(bySecondValue));
+    }
+}
+
 QLabel *widgetConfig::createNewLabel(const QString &text)
 {
     QLabel* newLabel = new QLabel(text);

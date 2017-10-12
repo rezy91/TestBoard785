@@ -69,6 +69,8 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
     connect(p_WidgetConfig, &widgetConfig::SaveTestCqmFreq, appSettings, &settings::StoreCqmFreq);
     connect(this, &MainWindow::SendTestCqmFreq, p_WidgetConfig, &widgetConfig::ReadTestCqmFreq);
 
+    connect(this, &MainWindow::SendConfigGener, p_WidgetConfig, &widgetConfig::ReadConfigGener);
+
 
     connect(p_widgetSettings, &widgetSettings::SaveAmpFreq, appSettings, &settings::StoreAmpFreq);
     connect(this, &MainWindow::SendAmpFreq, p_widgetSettings, &widgetSettings::ReadAmpFreq);
@@ -718,12 +720,8 @@ void MainWindow::newDataV200(QByteArray aData)
     case PID_SET_REGULATOR_COOLING:
     case PID_SET_REGULATOR_POWER:
     case PID_SET_THERAPY_TEST:
-
-        qDebug() << "read config data" << QString::number(aData.at(1));
-
+        SendConfigGener(aData);
         break;
-
-
     case PID_REPLY_TOUCH_MEMORY_OK:
         emit SendTipMemory(uint8_t(aData.at(1)), uint8_t(aData.at(4)), aData.mid(5));
 

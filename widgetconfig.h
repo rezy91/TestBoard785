@@ -32,6 +32,7 @@ public slots:
     void ReadRegulatorCooling(QString data);
     void ReadTestTherapy(QString data);
     void ReadTestCqmFreq(QString data);
+    void ReadConfigGener(QByteArray data);
 
 private:
     enum
