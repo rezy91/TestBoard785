@@ -716,12 +716,10 @@ void MainWindow::newDataV200(QByteArray aData)
     case PID_SET_ADC1_COEFFICIENTS_ADDITIVE:
     case PID_SET_OTHERS:
     case PID_SET_REGULATOR_COOLING:
-    case PID_SET_OUTPUTS:
-    case PID_SET_APLS:
     case PID_SET_REGULATOR_POWER:
     case PID_SET_THERAPY_TEST:
 
-        qDebug() << "read config data" << aData;
+        qDebug() << "read config data" << QString::number(aData.at(1));
 
         break;
 

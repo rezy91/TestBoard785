@@ -34,6 +34,14 @@ public slots:
     void ReadTestCqmFreq(QString data);
 
 private:
+    enum
+    {
+        E_BUTTON_LOAD_MCU,
+        E_BUTTON_LOAD_FILE,
+        E_BUTTON_SAVE_MCU,
+        E_BUTTON_SAVE_FILE,
+        E_NMB_BUTTONS,
+    };
     typedef enum
     {
       CONFIG_WRITE,
@@ -57,7 +65,8 @@ private:
     const QString c_nameGenTestTherapy[E_NMB_GEN_TESTTHERAPY] = {"Duty factor (20 - 100 %)", "Frequency (25 - 200 Hz)"};
     const QString c_nameGenCQM[E_NMB_GEN_PWM_CQM] = {"ch_1 (1000 - 100000 Hz)", "ch_2 (1000 - 100000 Hz)"};
     const QString c_nameOthers[E_NMB_GEN_OTHERS] = {"power max", "power min", "for phase (0 - pi/2) [rad]", "max refl ratio (0.0 - 1.0)", "max PWM to amp (0.1 - 0.9)", "max diff power regulator (0 - 100) [%]", "refer. imp. magnitude", "refer. imp. phase (0 - pi/2) [rad]", "max refl ratio (0.0 - 1.0)", "R_cqm min [ohm]", "R_cqm less [ohm]", "R_cqm more [ohm]", "R_cqm max [ohm]", "Cqm_r_ser [ohm]", "Cqm_r_par [ohm]", "Cqm_u [V]", "Cqm_r_off [ohm]"};
-
+    const QString c_nameButtonConfigGener[E_NMB_BUTTONS] = {"Load from Gener", "Load from file", "Write to Gener", "Write to file"};
+    const QString c_nameButtonConfigAmplf[E_NMB_BUTTONS] = {"Load from Amplf", "Load from file", "Write to Amplf", "Write to file"};
 
     const QStringList c_defaultValueGenAdcMul[E_GEN_ADC_NMB] = { \
         {"1.0", "1.0", "1.0", "1.0", "1.0", "1.0", "1.0", "1.0", "1.0"}, \
@@ -90,6 +99,8 @@ private:
     QLineEdit *lineInputGenRegulatorCooling[E_NMB_GEN_REGULATOR_COOLING];
     QLineEdit *lineInputGenTestTherapy[E_NMB_GEN_TESTTHERAPY];
 
+    QPushButton* buttConfigGener[E_NMB_BUTTONS];
+    QPushButton* buttConfigAmplf[E_NMB_BUTTONS];
     QPushButton* buttSendGenMulAdcx[E_GEN_ADC_NMB];
     QPushButton* buttSendGenAddAdcx[E_GEN_ADC_NMB];
     QPushButton* buttSendGenOther;

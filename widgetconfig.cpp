@@ -6,6 +6,77 @@ widgetConfig::widgetConfig(QWidget *parent) : QWidget(parent)
     MainLayout->addWidget(createConfigGenGroup());
 
 
+    for(int iLoop = 0; iLoop < E_NMB_BUTTONS; iLoop++)
+    {
+        connect(buttConfigGener[iLoop], &QPushButton::clicked, [=](bool clicked){
+
+            Q_UNUSED(clicked);
+
+            if(iLoop == E_BUTTON_LOAD_MCU)
+            {
+                QString strCmd;
+
+                strCmd = QString("%1").arg(QString::number(PID_SET_PWM_CQMS_FREQ, 16));
+                strCmd += QString::number(CONFIG_READ, 16).rightJustified(2, '0');
+                emit SendV200specific(strCmd, true);
+
+                strCmd = QString("%1").arg(QString::number(PID_SET_ADC3_COEFFICIENTS_MULTIPLE, 16));
+                strCmd += QString::number(CONFIG_READ, 16).rightJustified(2, '0');
+                emit SendV200specific(strCmd, true);
+
+                strCmd = QString("%1").arg(QString::number(PID_SET_ADC3_COEFFICIENTS_ADDITIVE, 16));
+                strCmd += QString::number(CONFIG_READ, 16).rightJustified(2, '0');
+                emit SendV200specific(strCmd, true);
+
+                strCmd = QString("%1").arg(QString::number(PID_SET_ADC2_COEFFICIENTS_MULTIPLE, 16));
+                strCmd += QString::number(CONFIG_READ, 16).rightJustified(2, '0');
+                emit SendV200specific(strCmd, true);
+
+                strCmd = QString("%1").arg(QString::number(PID_SET_ADC2_COEFFICIENTS_ADDITIVE, 16));
+                strCmd += QString::number(CONFIG_READ, 16).rightJustified(2, '0');
+                emit SendV200specific(strCmd, true);
+
+                strCmd = QString("%1").arg(QString::number(PID_SET_ADC1_COEFFICIENTS_MULTIPLE, 16));
+                strCmd += QString::number(CONFIG_READ, 16).rightJustified(2, '0');
+                emit SendV200specific(strCmd, true);
+
+                strCmd = QString("%1").arg(QString::number(PID_SET_ADC1_COEFFICIENTS_ADDITIVE, 16));
+                strCmd += QString::number(CONFIG_READ, 16).rightJustified(2, '0');
+                emit SendV200specific(strCmd, true);
+
+                strCmd = QString("%1").arg(QString::number(PID_SET_OTHERS, 16));
+                strCmd += QString::number(CONFIG_READ, 16).rightJustified(2, '0');
+                emit SendV200specific(strCmd, true);
+
+                strCmd = QString("%1").arg(QString::number(PID_SET_REGULATOR_COOLING, 16));
+                strCmd += QString::number(CONFIG_READ, 16).rightJustified(2, '0');
+                emit SendV200specific(strCmd, true);
+
+                strCmd = QString("%1").arg(QString::number(PID_SET_REGULATOR_POWER, 16));
+                strCmd += QString::number(CONFIG_READ, 16).rightJustified(2, '0');
+                emit SendV200specific(strCmd, true);
+
+                strCmd = QString("%1").arg(QString::number(PID_SET_THERAPY_TEST, 16));
+                strCmd += QString::number(CONFIG_READ, 16).rightJustified(2, '0');
+                emit SendV200specific(strCmd, true);
+
+            }
+            else if(iLoop == E_BUTTON_LOAD_FILE)
+            {
+
+            }
+            else if(iLoop == E_BUTTON_SAVE_MCU)
+            {
+
+            }
+            else if(iLoop == E_BUTTON_SAVE_FILE)
+            {
+
+            }
+
+            });
+    }
+
     for(int iDevice = 0; iDevice < E_GEN_ADC_NMB; iDevice++)
     {
         connect(buttSendGenMulAdcx[iDevice],&QPushButton::clicked,[=](bool clicked){
@@ -485,11 +556,17 @@ QLabel *widgetConfig::createNewLabel(const QString &text)
 
 QGroupBox *widgetConfig::createConfigAmpGroup()
 {
+    QVBoxLayout* vBox = new QVBoxLayout();
+    QHBoxLayout* hBox = new QHBoxLayout();
     QGroupBox *groupBox = new QGroupBox(tr("Amplifier"));
     QGridLayout* childLayout = new QGridLayout();
     int dw_LengthLineEdit = 50;
 
-
+    for(int iLoop = 0; iLoop < E_NMB_BUTTONS; iLoop++)
+    {
+        buttConfigAmplf[iLoop] = new QPushButton(QString("%1").arg(c_nameButtonConfigAmplf[iLoop]));
+        hBox->addWidget(buttConfigAmplf[iLoop]);
+    }
 
     for(int iDevice = 0; iDevice < E_AMP_ADC_NMB; iDevice++)
     {
@@ -541,17 +618,27 @@ QGroupBox *widgetConfig::createConfigAmpGroup()
         childLayout->addWidget(buttSendAmpAddAdcx[iDevice], 3 * iDevice + 2, nmbChannels + 1, Qt::AlignCenter);
     }
 
-    groupBox->setLayout(childLayout);
+    vBox->addLayout(hBox);
+    vBox->addLayout(childLayout);
+    groupBox->setLayout(vBox);
 
     return groupBox;
 }
 
 QGroupBox *widgetConfig::createConfigGenGroup()
 {
+    QVBoxLayout* vBox = new QVBoxLayout();
+    QHBoxLayout* hBox = new QHBoxLayout();
     QGroupBox *groupBox = new QGroupBox(tr("Generator"));
     QGridLayout* childLayout = new QGridLayout();
     int dw_GridOffsetColumn;
     int dw_LengthLineEdit = 50;
+
+    for(int iLoop = 0; iLoop < E_NMB_BUTTONS; iLoop++)
+    {
+        buttConfigGener[iLoop] = new QPushButton(QString("%1").arg(c_nameButtonConfigGener[iLoop]));
+        hBox->addWidget(buttConfigGener[iLoop]);
+    }
 
     for(int iDevice = 0; iDevice < E_GEN_ADC_NMB; iDevice++)
     {
@@ -684,7 +771,10 @@ QGroupBox *widgetConfig::createConfigGenGroup()
     dw_GridOffsetColumn += 2;
 
 
-    groupBox->setLayout(childLayout);
+    vBox->addLayout(hBox);
+    vBox->addLayout(childLayout);
+    groupBox->setLayout(vBox);
+
 
     return groupBox;
 }
