@@ -73,7 +73,6 @@ private:
     QComboBox* listOfChannels = new QComboBox(this);
 
     uint8_t arr_byTipContent[nmbChannelsAppls][MAX_TIP_MEMORY_STRUCT_SIZE];
-
     int dwCurrentChannel;
 
 
@@ -95,6 +94,8 @@ signals:
     void SendDefaultReferenceImpedance(void);
     void SendMaximalPower(uint16_t sMaxP);
     void SendDefaultMaximalPower();
+    void SaveConfig(QString sData, int iIndex);
+    QString ReadConfig(const int iIndex);
 
 public slots:
     void ReceiveStatusReg(STATUS_REGISTER eStatusReg);

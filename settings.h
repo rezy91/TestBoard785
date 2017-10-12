@@ -67,9 +67,6 @@ public:
     void StoreGenPwm(const QString strValue);
     QString RestoreGenPwm(void) const;
 
-    void StoreGenDac(const QString strValue);
-    QString RestoreGenDac(void) const;
-
     void StoreGenPwr(const QString strValue);
     QString RestoreGenPwr(void) const;
 
@@ -84,6 +81,9 @@ public:
 
     void StoreRcvMsgAplUsn(const QString strValue);
     QString RestoreRcvMsgAplUsn(void) const;
+
+    void StoreConfigTipMemory(const QString strValue, const int nIndex);
+    QString RestoreConfigTipMemory(const int nIndex) const;
 
 private:
     QSettings* m_pAppSettings = new QSettings("settingsV1.ini", QSettings::IniFormat);

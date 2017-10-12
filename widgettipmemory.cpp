@@ -104,9 +104,41 @@ widgetTipMemory::widgetTipMemory(QWidget *parent) : QWidget(parent)
                     qDebug() << strCmd;
                     emit SendV200specific(strCmd);
                 }
+                else if(iLoop == E_BUTTON_SAVE_FILE)
+                {
+                    QString strSaveToFile;
+
+                    for(int jLoop = 0; jLoop < E_NMB_PARAMETERS_IN_MEMORY; jLoop++)
+                    {
+                        strSaveToFile.append(lineInputParameter[jLoop]->text() + " ");
+                    }
+
+                    qDebug() << strSaveToFile;
+                    emit SaveConfig(strSaveToFile, dwCurrentChannel);
+                }
                 else if(iLoop == E_BUTTON_LOAD_MCU)
                 {
                     decodeTipMemory(uint8_t(dwCurrentChannel));
+                }
+                else if(iLoop == E_BUTTON_LOAD_FILE)
+                {
+                    QString sSavedValue = emit ReadConfig(dwCurrentChannel);
+                    QStringList arrListSaved = sSavedValue.split(QRegExp("\\s+"));
+
+                    if((arrListSaved.count() - 1) == E_NMB_PARAMETERS_IN_MEMORY)
+                    {
+                        for(int jLoop = 0; jLoop < E_NMB_PARAMETERS_IN_MEMORY; jLoop++)
+                        {
+                            lineInputParameter[jLoop]->setText(arrListSaved.at(jLoop));
+                        }
+                    }
+                    else
+                    {
+                        for(int jLoop = 0; jLoop < E_NMB_PARAMETERS_IN_MEMORY; jLoop++)
+                        {
+                            lineInputParameter[jLoop]->setText(QString("x"));
+                        }
+                    }
                 }
             }
             else

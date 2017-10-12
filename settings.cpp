@@ -195,16 +195,6 @@ QString settings::RestoreGenPwm() const
     return RestoreValue(QString("genPwm")).toString();
 }
 
-void settings::StoreGenDac(const QString strValue)
-{
-    StoreValue(QString("genAdc"), strValue);
-}
-
-QString settings::RestoreGenDac() const
-{
-    return RestoreValue(QString("genAdc")).toString();
-}
-
 void settings::StoreGenPwr(const QString strValue)
 {
     StoreValue(QString("genPwr"), strValue);
@@ -253,6 +243,16 @@ void settings::StoreRcvMsgAplUsn(const QString strValue)
 QString settings::RestoreRcvMsgAplUsn() const
 {
     return RestoreValue(QString("rcvMsgAplUsn")).toString();
+}
+
+void settings::StoreConfigTipMemory(const QString strValue, const int nIndex)
+{
+    StoreValue(QString("configTipMem%1").arg(nIndex), strValue);
+}
+
+QString settings::RestoreConfigTipMemory(const int nIndex) const
+{
+    return RestoreValue(QString("configTipMem%1").arg(nIndex)).toString();
 }
 
 void settings::StorePortName(const QString &strPortName)

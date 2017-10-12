@@ -78,6 +78,8 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
     connect(this, &MainWindow::SendGenPwm, p_widgetSettings, &widgetSettings::ReadGenPwm);
     connect(p_widgetSettings, &widgetSettings::SaveGenPwr, appSettings, &settings::StoreGenPwr);
     connect(this, &MainWindow::SendGenPwr, p_widgetSettings, &widgetSettings::ReadGenPwr);
+    connect(p_WidgetTipMemory, &widgetTipMemory::SaveConfig, appSettings, &settings::StoreConfigTipMemory);
+    connect(p_WidgetTipMemory, &widgetTipMemory::ReadConfig, appSettings, &settings::RestoreConfigTipMemory);
 
     connect(this, &MainWindow::SendStatusReg, p_WidgetTherapy, &widgetTherapy::ReceiveStatusReg);
     connect(this, &MainWindow::SendStatusReg, p_WidgetReading, &widgetReading::ReceiveStatusReg);
