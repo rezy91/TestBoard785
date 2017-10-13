@@ -53,7 +53,7 @@ private:
     enum {MAX_TIP_MEMORY_STRUCT_SIZE = 128};
     enum {TIP_MEMORY_VERSION = 100};
 
-    const QString c_nameTypeFile = "Config Exilis II (*.tip)";
+    const QString c_nameTypeFile = "Tip memory 285 (*.tip)";
     const QString c_nameParametersInMemory[E_NMB_PARAMETERS_IN_MEMORY] =
     {"VERSION", "SERIAL", "EXPIRATION", "DATE_MANUFACT", "DATE_ACTIVE", "TIP_TYPE", "USN_FREQ_CRYSTAL", "USN_CONTROL_VARIABLE", "USN_VOLTAGEV100",
      "USN_VALUE_AIR", "USN_VALUE_WATER", "USN_CONTROL_TYPE", "RF_POWER_MAX", "REFER_IMPEDANCE_MODUL", "REFER_IMPEDANCE_PHASE", "REFER_IMPEDANCE_REFL", "CURRENT_IMPEDANCE_REFL"};

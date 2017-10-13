@@ -23,15 +23,12 @@ class widgetConfig : public QWidget
 public:
     explicit widgetConfig(QWidget *parent = 0);
 
+    void clearLineEdits(void);
+
 signals:
 
 public slots:
     void ReadAdcData(QString type, QString device, int index, QString data);
-    void ReadOthers(QString data);
-    void ReadRegulatorPower(QString data);
-    void ReadRegulatorCooling(QString data);
-    void ReadTestTherapy(QString data);
-    void ReadTestCqmFreq(QString data);
     void ReadConfigGener(QByteArray data);
 
 private:
@@ -61,6 +58,7 @@ private:
     enum {E_NMB_AMP_ADC1 = 8};
     enum {E_NMB_AMP_ADC3 = 8};
 
+    const QString c_nameTypeFile = "RF generator 785 (*.gcf)";
     const QString c_nameGenRegulatorPower[E_NMB_GEN_REGULATOR_POWER] = {"PROPORCIAL", "INTEGRAL", "DERIVATIVE", "Period (10 - 1000 ms)"};
     const QString c_nameGenRegulatorCooling[E_NMB_GEN_REGULATOR_COOLING] = {"PROPORCIAL", "INTEGRAL", "DERIVATIVE", "Period (10 - 10000 ms)", "min PWM [%]", "t_cold [°C]", "t_hot [°C]"};
     const QString c_nameGenTestTherapy[E_NMB_GEN_TESTTHERAPY] = {"Duty factor (20 - 100 %)", "Frequency (25 - 200 Hz)"};
@@ -119,6 +117,9 @@ private:
     QLabel *createNewLabel(const QString &text);
     QGroupBox *createConfigAmpGroup();
     QGroupBox *createConfigGenGroup();
+
+    void loadFile(void);
+    void saveFile(void);
 
 signals:
     void SendV200specific(QString msg, bool bExp);

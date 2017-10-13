@@ -193,11 +193,6 @@ signals:
     void SendAxisHigh(int index, double value);
     void SendAxisLow(int index, double value);
     void SendAdcData(QString type, QString device, int index, QString values);
-    void SendOthers(QString values);
-    void SendRegulatorPower(QString values);
-    void SendRegulatorCooling(QString values);
-    void SendTestTherapy(QString values);
-    void SendTestCqmFreq(QString values);
     void SendConfigGener(QByteArray values);
     void SendAmpFreq(QString values);
     void SendAmpPwm(QString values);

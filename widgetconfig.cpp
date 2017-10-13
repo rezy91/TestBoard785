@@ -1,5 +1,9 @@
 #include "widgetconfig.h"
 
+#include <QFileDialog>
+#include <QTextStream>
+#include <QCoreApplication>
+
 widgetConfig::widgetConfig(QWidget *parent) : QWidget(parent)
 {
     MainLayout->addWidget(createConfigAmpGroup());
@@ -63,18 +67,28 @@ widgetConfig::widgetConfig(QWidget *parent) : QWidget(parent)
             }
             else if(iLoop == E_BUTTON_LOAD_FILE)
             {
-
+                loadFile();
             }
             else if(iLoop == E_BUTTON_SAVE_MCU)
             {
+                /*for(int iDevice = 0; iDevice < E_GEN_ADC_NMB; iDevice++)
+                {
+                    buttSendGenMulAdcx[iDevice]->clicked(true);
+                    buttSendGenAddAdcx[iDevice]->clicked(true);
+                }
 
+                buttSendGenOther->clicked(true);
+                buttSendGenRegulatorPower->clicked(true);
+                buttSendGenRegulatorCooling->clicked(true);
+                buttSendGenTestTherapy->clicked(true);
+                buttSendGenPwmCqm->clicked(true);*/
             }
             else if(iLoop == E_BUTTON_SAVE_FILE)
             {
-
+                saveFile();
             }
 
-            });
+        });
     }
 
     for(int iDevice = 0; iDevice < E_GEN_ADC_NMB; iDevice++)
@@ -102,7 +116,6 @@ widgetConfig::widgetConfig(QWidget *parent) : QWidget(parent)
                 dw_PidMsg = PID_SET_ADC3_COEFFICIENTS_MULTIPLE;
             }
 
-            QString AdcData;
             QString strCmd = QString("%1").arg(QString::number(dw_PidMsg, 16));
             strCmd += QString::number(CONFIG_WRITE, 16).rightJustified(2, '0');
 
@@ -112,10 +125,8 @@ widgetConfig::widgetConfig(QWidget *parent) : QWidget(parent)
                 QByteArray arrFloatInArraysDec(reinterpret_cast<const char *>(&flNmb), sizeof (flNmb));
                 QByteArray arrFloatInArraysHexa = arrFloatInArraysDec.toHex();
                 strCmd += QString(arrFloatInArraysHexa);
-                AdcData.append(QString("%1").arg(QString::number(flNmb)) + " ");
             }
 
-            emit SaveAdcData(QString(c_nameMul), QString(c_nameGen), iDevice + 1, AdcData);
             emit SendV200specific(strCmd, false);
         });
 
@@ -142,7 +153,6 @@ widgetConfig::widgetConfig(QWidget *parent) : QWidget(parent)
                 dw_PidMsg = PID_SET_ADC3_COEFFICIENTS_ADDITIVE;
             }
 
-            QString AdcData;
             QString strCmd = QString("%1").arg(QString::number(dw_PidMsg, 16));
             strCmd += QString::number(CONFIG_WRITE, 16).rightJustified(2, '0');
 
@@ -152,10 +162,8 @@ widgetConfig::widgetConfig(QWidget *parent) : QWidget(parent)
                 QByteArray arrFloatInArraysDec(reinterpret_cast<const char *>(&flNmb), sizeof (flNmb));
                 QByteArray arrFloatInArraysHexa = arrFloatInArraysDec.toHex();
                 strCmd += QString(arrFloatInArraysHexa);
-                AdcData.append(QString("%1").arg(QString::number(flNmb)) + " ");
             }
 
-            emit SaveAdcData(QString(c_nameAdd), QString(c_nameGen), iDevice + 1, AdcData);
             emit SendV200specific(strCmd, false);
         });
     }
@@ -235,7 +243,6 @@ widgetConfig::widgetConfig(QWidget *parent) : QWidget(parent)
 
         Q_UNUSED(clicked);
 
-        QString SaveData;
         QString strCmd = QString("%1").arg(QString::number(PID_SET_OTHERS, 16));
         strCmd += QString::number(CONFIG_WRITE, 16).rightJustified(2, '0');
 
@@ -245,10 +252,8 @@ widgetConfig::widgetConfig(QWidget *parent) : QWidget(parent)
             QByteArray arrFloatInArraysDec(reinterpret_cast<const char *>(&flNmb), sizeof (flNmb));
             QByteArray arrFloatInArraysHexa = arrFloatInArraysDec.toHex();
             strCmd += QString(arrFloatInArraysHexa);
-            SaveData.append(QString("%1").arg(QString::number(flNmb)) + " ");
         }
 
-        emit SaveOthers(SaveData);
         emit SendV200specific(strCmd, false);
         emit SendReferenceImpedance(lineInputGenOthers[6]->text().toFloat(), lineInputGenOthers[7]->text().toFloat(), lineInputGenOthers[8]->text().toFloat(), lineInputGenOthers[3]->text().toFloat());
     });
@@ -257,7 +262,6 @@ widgetConfig::widgetConfig(QWidget *parent) : QWidget(parent)
 
         Q_UNUSED(clicked);
 
-        QString SaveData;
         QString strCmd = QString("%1").arg(QString::number(PID_SET_REGULATOR_POWER, 16));
         strCmd += QString::number(CONFIG_WRITE, 16).rightJustified(2, '0');
 
@@ -267,13 +271,10 @@ widgetConfig::widgetConfig(QWidget *parent) : QWidget(parent)
             QByteArray arrFloatInArraysDec(reinterpret_cast<const char *>(&flNmb), sizeof (flNmb));
             QByteArray arrFloatInArraysHexa = arrFloatInArraysDec.toHex();
             strCmd += QString(arrFloatInArraysHexa);
-            SaveData.append(QString("%1").arg(QString::number(flNmb)) + " ");
         }
 
         strCmd += QString::number(lineInputGenRegulatorPower[E_NMB_GEN_REGULATOR_POWER - 1]->text().toInt(), 16).rightJustified(2 * 2, '0');
-        SaveData.append(QString("%1").arg(QString::number(lineInputGenRegulatorPower[E_NMB_GEN_REGULATOR_POWER - 1]->text().toInt())) + " ");
 
-        emit SaveRegulatorPower(SaveData);
         emit SendV200specific(strCmd, false);
     });
 
@@ -281,7 +282,6 @@ widgetConfig::widgetConfig(QWidget *parent) : QWidget(parent)
 
         Q_UNUSED(clicked);
 
-        QString SaveData;
         QString strCmd = QString("%1").arg(QString::number(PID_SET_REGULATOR_COOLING, 16));
         strCmd += QString::number(CONFIG_WRITE, 16).rightJustified(2, '0');
 
@@ -291,19 +291,13 @@ widgetConfig::widgetConfig(QWidget *parent) : QWidget(parent)
             QByteArray arrFloatInArraysDec(reinterpret_cast<const char *>(&flNmb), sizeof (flNmb));
             QByteArray arrFloatInArraysHexa = arrFloatInArraysDec.toHex();
             strCmd += QString(arrFloatInArraysHexa);
-            SaveData.append(QString("%1").arg(QString::number(flNmb)) + " ");
         }
 
         strCmd += QString::number(lineInputGenRegulatorCooling[E_NMB_GEN_REGULATOR_COOLING - 4]->text().toInt(), 16).rightJustified(2 * 2, '0');
-        SaveData.append(QString("%1").arg(QString::number(lineInputGenRegulatorCooling[E_NMB_GEN_REGULATOR_COOLING - 4]->text().toInt())) + " ");
         strCmd += QString::number(lineInputGenRegulatorCooling[E_NMB_GEN_REGULATOR_COOLING - 3]->text().toInt(), 16).rightJustified(1 * 2, '0');
-        SaveData.append(QString("%1").arg(QString::number(lineInputGenRegulatorCooling[E_NMB_GEN_REGULATOR_COOLING - 3]->text().toInt())) + " ");
         strCmd += QString::number(lineInputGenRegulatorCooling[E_NMB_GEN_REGULATOR_COOLING - 2]->text().toInt(), 16).rightJustified(1 * 2, '0');
-        SaveData.append(QString("%1").arg(QString::number(lineInputGenRegulatorCooling[E_NMB_GEN_REGULATOR_COOLING - 2]->text().toInt())) + " ");
         strCmd += QString::number(lineInputGenRegulatorCooling[E_NMB_GEN_REGULATOR_COOLING - 1]->text().toInt(), 16).rightJustified(1 * 2, '0');
-        SaveData.append(QString("%1").arg(QString::number(lineInputGenRegulatorCooling[E_NMB_GEN_REGULATOR_COOLING - 1]->text().toInt())) + " ");
 
-        emit SaveRegulatorCooling(SaveData);
         emit SendV200specific(strCmd, false);
     });
 
@@ -311,17 +305,14 @@ widgetConfig::widgetConfig(QWidget *parent) : QWidget(parent)
 
         Q_UNUSED(clicked);
 
-        QString SaveData;
         QString strCmd = QString("%1").arg(QString::number(PID_SET_THERAPY_TEST, 16));
         strCmd += QString::number(CONFIG_WRITE, 16).rightJustified(2, '0');
 
         for(int iChannel = 0; iChannel < E_NMB_GEN_TESTTHERAPY; iChannel++)
         {
             strCmd += QString::number(lineInputGenTestTherapy[iChannel]->text().toInt(), 16).rightJustified(1 * 2, '0');
-            SaveData.append(QString("%1").arg(QString::number(lineInputGenTestTherapy[iChannel]->text().toInt())) + " ");
         }
 
-        emit SaveTestTherapy(SaveData);
         emit SendV200specific(strCmd, false);
     });
 
@@ -329,17 +320,14 @@ widgetConfig::widgetConfig(QWidget *parent) : QWidget(parent)
 
         Q_UNUSED(clicked);
 
-        QString SaveData;
         QString strCmd = QString("%1").arg(QString::number(PID_SET_PWM_CQMS_FREQ, 16));
         strCmd += QString::number(CONFIG_WRITE, 16).rightJustified(2, '0');
 
         for(int iChannel = 0; iChannel < E_NMB_GEN_PWM_CQM; iChannel++)
         {
             strCmd += QString::number(lineInputGenPwmCqm[iChannel]->text().toInt(), 16).rightJustified(3 * 2, '0');
-            SaveData.append(QString("%1").arg(QString::number(lineInputGenPwmCqm[iChannel]->text().toInt())) + " ");
         }
 
-        emit SaveTestCqmFreq(SaveData);
         emit SendV200specific(strCmd, false);
     });
 }
@@ -432,115 +420,6 @@ void widgetConfig::ReadAdcData(QString type, QString device, int index, QString 
                     lineInputAmpMulAdcx[index][iChannel]->setText(c_defaultValueAmpAdcMul[index][iChannel]);
                 }
             }
-        }
-    }
-}
-
-void widgetConfig::ReadOthers(QString data)
-{
-    QStringList arrListSaved;
-    arrListSaved = data.split(QRegExp("\\s+"));
-
-    if((arrListSaved.count() - 1) == E_NMB_GEN_OTHERS)
-    {
-        for(int iLoop = 0; iLoop < E_NMB_GEN_OTHERS - 1; iLoop++)
-        {
-            lineInputGenOthers[iLoop]->setText(arrListSaved.at(iLoop));
-        }
-
-        lineInputGenOthers[E_NMB_GEN_OTHERS - 1]->setText(arrListSaved.at(E_NMB_GEN_OTHERS - 1));
-    }
-    else
-    {
-        for(int iLoop = 0; iLoop < E_NMB_GEN_OTHERS; iLoop++)
-        {
-            lineInputGenOthers[iLoop]->setText(c_defaultOthers[iLoop]);
-        }
-    }
-
-    emit SendReferenceImpedance(lineInputGenOthers[6]->text().toFloat(), lineInputGenOthers[7]->text().toFloat(), lineInputGenOthers[8]->text().toFloat(), lineInputGenOthers[3]->text().toFloat());
-}
-
-void widgetConfig::ReadRegulatorPower(QString data)
-{
-    QStringList arrListSaved;
-    arrListSaved = data.split(QRegExp("\\s+"));
-
-    if((arrListSaved.count() - 1) == E_NMB_GEN_REGULATOR_POWER)
-    {
-        for(int iLoop = 0; iLoop < E_NMB_GEN_REGULATOR_POWER; iLoop++)
-        {
-            lineInputGenRegulatorPower[iLoop]->setText(arrListSaved.at(iLoop));
-        }
-    }
-    else
-    {
-        for(int iLoop = 0; iLoop < E_NMB_GEN_REGULATOR_POWER; iLoop++)
-        {
-            lineInputGenRegulatorPower[iLoop]->setText(c_defaultRegulatorPower[iLoop]);
-        }
-    }
-}
-
-void widgetConfig::ReadRegulatorCooling(QString data)
-{
-    QStringList arrListSaved;
-    arrListSaved = data.split(QRegExp("\\s+"));
-
-    if((arrListSaved.count() - 1) == E_NMB_GEN_REGULATOR_COOLING)
-    {
-        for(int iLoop = 0; iLoop < E_NMB_GEN_REGULATOR_COOLING; iLoop++)
-        {
-            lineInputGenRegulatorCooling[iLoop]->setText(arrListSaved.at(iLoop));
-        }
-    }
-    else
-    {
-        for(int iLoop = 0; iLoop < E_NMB_GEN_REGULATOR_COOLING; iLoop++)
-        {
-            lineInputGenRegulatorCooling[iLoop]->setText(c_defaultRegulatorCooling[iLoop]);
-        }
-    }
-}
-
-void widgetConfig::ReadTestTherapy(QString data)
-{
-    QStringList arrListSaved;
-    arrListSaved = data.split(QRegExp("\\s+"));
-
-    if((arrListSaved.count() - 1) == E_NMB_GEN_TESTTHERAPY)
-    {
-        for(int iLoop = 0; iLoop < E_NMB_GEN_TESTTHERAPY; iLoop++)
-        {
-            lineInputGenTestTherapy[iLoop]->setText(arrListSaved.at(iLoop));
-        }
-    }
-    else
-    {
-        for(int iLoop = 0; iLoop < E_NMB_GEN_TESTTHERAPY; iLoop++)
-        {
-            lineInputGenTestTherapy[iLoop]->setText(c_defaultTestTherapy[iLoop]);
-        }
-    }
-}
-
-void widgetConfig::ReadTestCqmFreq(QString data)
-{
-    QStringList arrListSaved;
-    arrListSaved = data.split(QRegExp("\\s+"));
-
-    if((arrListSaved.count() - 1) == E_NMB_GEN_PWM_CQM)
-    {
-        for(int iLoop = 0; iLoop < E_NMB_GEN_PWM_CQM; iLoop++)
-        {
-            lineInputGenPwmCqm[iLoop]->setText(arrListSaved.at(iLoop));
-        }
-    }
-    else
-    {
-        for(int iLoop = 0; iLoop < E_NMB_GEN_PWM_CQM; iLoop++)
-        {
-            lineInputGenPwmCqm[iLoop]->setText(c_defaultValuePwmCqm[iLoop]);
         }
     }
 }
@@ -911,6 +790,242 @@ QGroupBox *widgetConfig::createConfigGenGroup()
 
 
     return groupBox;
+}
+
+void widgetConfig::loadFile()
+{
+    QString logPath = QFileDialog::getOpenFileName(this, "Open config file", QString("%1/").arg(QCoreApplication::applicationDirPath()), c_nameTypeFile);
+    QFile m_logFile(logPath);
+
+    if(!m_logFile.open(QFile::ReadOnly))
+    {
+        qDebug() << "error: cannot open file";
+    }
+    else
+    {
+        QTextStream fileStream(&m_logFile);
+
+        uint8_t byIndexRow = 0;
+        clearLineEdits();
+
+        while (!fileStream.atEnd())
+        {
+            uint8_t byVolumeParameters;
+            QLineEdit **pQline;
+
+            if(byIndexRow == 0)
+            {
+                byVolumeParameters = E_NMB_GEN_ADC1;
+                pQline = lineInputGenMulAdcx[E_GEN_ADC_1];
+            }
+            else if(byIndexRow == 1)
+            {
+                byVolumeParameters = E_NMB_GEN_ADC1;
+                pQline = lineInputGenAddAdcx[E_GEN_ADC_1];
+            }
+            else if(byIndexRow == 2)
+            {
+                byVolumeParameters = E_NMB_GEN_ADC2;
+                pQline = lineInputGenMulAdcx[E_GEN_ADC_2];
+            }
+            else if(byIndexRow == 3)
+            {
+                byVolumeParameters = E_NMB_GEN_ADC2;
+                pQline = lineInputGenAddAdcx[E_GEN_ADC_2];
+            }
+            else if(byIndexRow == 4)
+            {
+                byVolumeParameters = E_NMB_GEN_ADC3;
+                pQline = lineInputGenMulAdcx[E_GEN_ADC_3];
+            }
+            else if(byIndexRow == 5)
+            {
+                byVolumeParameters = E_NMB_GEN_ADC3;
+                pQline = lineInputGenAddAdcx[E_GEN_ADC_3];
+            }
+            else if(byIndexRow == 6)
+            {
+                byVolumeParameters = E_NMB_GEN_OTHERS;
+                pQline = lineInputGenOthers;
+            }
+            else if(byIndexRow == 7)
+            {
+                byVolumeParameters = E_NMB_GEN_REGULATOR_POWER;
+                pQline = lineInputGenRegulatorPower;
+            }
+            else if(byIndexRow == 8)
+            {
+                byVolumeParameters = E_NMB_GEN_REGULATOR_COOLING;
+                pQline = lineInputGenRegulatorCooling;
+            }
+            else if(byIndexRow == 9)
+            {
+                byVolumeParameters = E_NMB_GEN_TESTTHERAPY;
+                pQline = lineInputGenTestTherapy;
+            }
+            else if(byIndexRow == 10)
+            {
+                byVolumeParameters = E_NMB_GEN_PWM_CQM;
+                pQline = lineInputGenPwmCqm;
+            }
+
+
+            QString newLinereaded = fileStream.readLine();
+            QStringList arrListSaved = newLinereaded.split(QRegExp("\\s+"));
+
+            if((arrListSaved.count() - 1) == byVolumeParameters)
+            {
+                for(int iLoop = 0; iLoop < byVolumeParameters; iLoop++)
+                {
+                   pQline[iLoop]->setText(arrListSaved.at(iLoop));
+                }
+            }
+
+            byIndexRow++;
+        }
+    }
+
+    m_logFile.close();
+}
+
+void widgetConfig::saveFile()
+{
+    QString logPath = QFileDialog::getSaveFileName(this, "Save config file", QString("%1/").arg(QCoreApplication::applicationDirPath()), c_nameTypeFile);
+    QFile fileSaveConfig(logPath);
+
+    if(!fileSaveConfig.open(QFile::ReadWrite))
+    {
+        qDebug() << "error: cannot open file";
+    }
+    else
+    {
+        QTextStream fileStream(&fileSaveConfig);
+
+        QString SaveDataMul[E_GEN_ADC_NMB], saveDataAdd[E_GEN_ADC_NMB];
+        QString SaveDataOther, SaveDataRegPower, SaveDataRegCooling, SaveDataTestThr, SaveDataPwmCqm;
+
+        for(int iDevice = 0; iDevice < E_GEN_ADC_NMB; iDevice++)
+        {
+            int dw_nmbChannels;
+
+            if(iDevice == E_GEN_ADC_1)
+            {
+                dw_nmbChannels = E_NMB_GEN_ADC1;
+            }
+            else if(iDevice == E_GEN_ADC_2)
+            {
+                dw_nmbChannels = E_NMB_GEN_ADC2;
+            }
+            else if(iDevice == E_GEN_ADC_3)
+            {
+                dw_nmbChannels = E_NMB_GEN_ADC3;
+            }
+
+            for(int iChannel = 0; iChannel < dw_nmbChannels; iChannel++)
+            {
+                float flNmb;
+
+                flNmb = lineInputGenMulAdcx[iDevice][iChannel]->text().toFloat();
+                SaveDataMul[iDevice].append(QString("%1").arg(QString::number(flNmb)) + " ");
+                flNmb = lineInputGenAddAdcx[iDevice][iChannel]->text().toFloat();
+                saveDataAdd[iDevice].append(QString("%1").arg(QString::number(flNmb)) + " ");
+            }
+
+            fileStream << SaveDataMul[iDevice] << endl;
+            fileStream << saveDataAdd[iDevice] << endl;
+        }
+
+        for(int jLoop = 0; jLoop < E_NMB_GEN_OTHERS; jLoop++)
+        {
+            float flNmb = lineInputGenOthers[jLoop]->text().toFloat();
+            SaveDataOther.append(QString("%1").arg(QString::number(flNmb)) + " ");
+        }
+
+        for(int jLoop = 0; jLoop < E_NMB_GEN_REGULATOR_POWER; jLoop++)
+        {
+            float flNmb = lineInputGenRegulatorPower[jLoop]->text().toFloat();
+            SaveDataRegPower.append(QString("%1").arg(QString::number(flNmb)) + " ");
+        }
+
+        for(int jLoop = 0; jLoop < E_NMB_GEN_REGULATOR_COOLING; jLoop++)
+        {
+            float flNmb = lineInputGenRegulatorCooling[jLoop]->text().toFloat();
+            SaveDataRegCooling.append(QString("%1").arg(QString::number(flNmb)) + " ");
+        }
+
+        for(int jLoop = 0; jLoop < E_NMB_GEN_TESTTHERAPY; jLoop++)
+        {
+            float flNmb = lineInputGenTestTherapy[jLoop]->text().toFloat();
+            SaveDataTestThr.append(QString("%1").arg(QString::number(flNmb)) + " ");
+        }
+
+        for(int jLoop = 0; jLoop < E_NMB_GEN_PWM_CQM; jLoop++)
+        {
+            float flNmb = lineInputGenPwmCqm[jLoop]->text().toFloat();
+            SaveDataPwmCqm.append(QString("%1").arg(QString::number(flNmb)) + " ");
+        }
+
+        fileStream << SaveDataOther << endl;
+        fileStream << SaveDataRegPower << endl;
+        fileStream << SaveDataRegCooling << endl;
+        fileStream << SaveDataTestThr << endl;
+        fileStream << SaveDataPwmCqm << endl;
+    }
+
+    fileSaveConfig.close();
+}
+
+void widgetConfig::clearLineEdits()
+{
+    int byVolumeParameters;
+
+
+    for(int iDevice = 0; iDevice < E_GEN_ADC_NMB; iDevice++)
+    {
+        if(iDevice == E_GEN_ADC_1)
+        {
+            byVolumeParameters = E_NMB_GEN_ADC1;
+        }
+        else if(iDevice == E_GEN_ADC_2)
+        {
+            byVolumeParameters = E_NMB_GEN_ADC2;
+        }
+        else if(iDevice == E_GEN_ADC_3)
+        {
+            byVolumeParameters = E_NMB_GEN_ADC3;
+        }
+
+        for(int iChannel = 0; iChannel < byVolumeParameters; iChannel++)
+        {
+            lineInputGenMulAdcx[iDevice][iChannel]->clear();
+            lineInputGenAddAdcx[iDevice][iChannel]->clear();
+        }
+    }
+
+    for(int jLoop = 0; jLoop < E_NMB_GEN_OTHERS; jLoop++)
+    {
+        lineInputGenOthers[jLoop]->clear();
+    }
+
+    for(int jLoop = 0; jLoop < E_NMB_GEN_REGULATOR_POWER; jLoop++)
+    {
+        lineInputGenRegulatorPower[jLoop]->clear();
+    }
+
+    for(int jLoop = 0; jLoop < E_NMB_GEN_REGULATOR_COOLING; jLoop++)
+    {
+        lineInputGenRegulatorCooling[jLoop]->clear();
+    }
+
+    for(int jLoop = 0; jLoop < E_NMB_GEN_TESTTHERAPY; jLoop++)
+    {
+        lineInputGenTestTherapy[jLoop]->clear();
+    }
+
+    for(int jLoop = 0; jLoop < E_NMB_GEN_PWM_CQM; jLoop++)
+    {
+        lineInputGenPwmCqm[jLoop]->clear();
+    }
 }
 
 void widgetConfig::paintEvent(QPaintEvent* e)

@@ -43,21 +43,6 @@ public:
     void StoreAdcData(const QString type, const QString device, const int nIndexAdc, const QString strValue);
     QString RestoreAdcData(const QString type, const QString device, const int nIndexAdc) const;
 
-    void StoreOthers(const QString strValue);
-    QString RestoreOthers(void) const;
-
-    void StoreRegulatorPower(const QString strValue);
-    QString RestoreRegulatorPower(void) const;
-
-    void StoreRegulatorCooling(const QString strValue);
-    QString RestoreRegulatorCooling(void) const;
-
-    void StoreTestTherapy(const QString strValue);
-    QString RestoreTestTherapy(void) const;
-
-    void StoreCqmFreq(const QString strValue);
-    QString RestoreCqmFreq(void) const;
-
     void StoreAmpFreq(const QString strValue);
     QString RestoreAmpFreq(void) const;
 

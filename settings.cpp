@@ -115,56 +115,6 @@ QString settings::RestoreAdcData(const QString type, const QString device, const
     return RestoreValue(QString("adc%1%2%3").arg(type).arg(device).arg(nIndexAdc)).toString();
 }
 
-void settings::StoreOthers(const QString strValue)
-{
-      StoreValue(QString("Others"), strValue);
-}
-
-QString settings::RestoreOthers() const
-{
-     return RestoreValue(QString("Others")).toString();
-}
-
-void settings::StoreRegulatorPower(const QString strValue)
-{
-    StoreValue(QString("RegulatorPower"), strValue);
-}
-
-QString settings::RestoreRegulatorPower() const
-{
-    return RestoreValue(QString("RegulatorPower")).toString();
-}
-
-void settings::StoreRegulatorCooling(const QString strValue)
-{
-        StoreValue(QString("RegulatorCooling"), strValue);
-}
-
-QString settings::RestoreRegulatorCooling() const
-{
-      return RestoreValue(QString("RegulatorCooling")).toString();
-}
-
-void settings::StoreTestTherapy(const QString strValue)
-{
-    StoreValue(QString("testTherapy"), strValue);
-}
-
-QString settings::RestoreTestTherapy() const
-{
-    return RestoreValue(QString("testTherapy")).toString();
-}
-
-void settings::StoreCqmFreq(const QString strValue)
-{
-    StoreValue(QString("cqmFreq"), strValue);
-}
-
-QString settings::RestoreCqmFreq() const
-{
-    return RestoreValue(QString("cqmFreq")).toString();
-}
-
 void settings::StoreAmpFreq(const QString strValue)
 {
     StoreValue(QString("ampFreq"), strValue);

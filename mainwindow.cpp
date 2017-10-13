@@ -58,16 +58,6 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
 
     connect(p_WidgetConfig, &widgetConfig::SaveAdcData, appSettings, &settings::StoreAdcData);
     connect(this, &MainWindow::SendAdcData, p_WidgetConfig, &widgetConfig::ReadAdcData);
-    connect(p_WidgetConfig, &widgetConfig::SaveOthers, appSettings, &settings::StoreOthers);
-    connect(this, &MainWindow::SendOthers, p_WidgetConfig, &widgetConfig::ReadOthers);
-    connect(p_WidgetConfig, &widgetConfig::SaveRegulatorPower, appSettings, &settings::StoreRegulatorPower);
-    connect(this, &MainWindow::SendRegulatorPower, p_WidgetConfig, &widgetConfig::ReadRegulatorPower);
-    connect(p_WidgetConfig, &widgetConfig::SaveRegulatorCooling, appSettings, &settings::StoreRegulatorCooling);
-    connect(this, &MainWindow::SendRegulatorCooling, p_WidgetConfig, &widgetConfig::ReadRegulatorCooling);
-    connect(p_WidgetConfig, &widgetConfig::SaveTestTherapy, appSettings, &settings::StoreTestTherapy);
-    connect(this, &MainWindow::SendTestTherapy, p_WidgetConfig, &widgetConfig::ReadTestTherapy);
-    connect(p_WidgetConfig, &widgetConfig::SaveTestCqmFreq, appSettings, &settings::StoreCqmFreq);
-    connect(this, &MainWindow::SendTestCqmFreq, p_WidgetConfig, &widgetConfig::ReadTestCqmFreq);
 
     connect(this, &MainWindow::SendConfigGener, p_WidgetConfig, &widgetConfig::ReadConfigGener);
 
@@ -119,13 +109,6 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
     ui->checkBox->setChecked(m_bSaveData);
     ui->comboBox_1->setCurrentIndex(appSettings->RestoreSelectedDevice());
     emit SendSmithPoints(appSettings->RestoreSmithPoints());
-
-
-    emit SendOthers(appSettings->RestoreOthers());
-    emit SendRegulatorPower(appSettings->RestoreRegulatorPower());
-    emit SendRegulatorCooling(appSettings->RestoreRegulatorCooling());
-    emit SendTestTherapy(appSettings->RestoreTestTherapy());
-    emit SendTestCqmFreq(appSettings->RestoreCqmFreq());
     emit SendAmpFreq(appSettings->RestoreAmpFreq());
     emit SendAmpPwm(appSettings->RestoreAmpPwm());
     emit SendGenPwm(appSettings->RestoreGenPwm());
@@ -133,12 +116,6 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
     emit SendRcvMsgAmp(appSettings->RestoreRcvMsgAmp());
     emit SendRcvMsgGen(appSettings->RestoreRcvMsgGen());
     emit SendRcvMsgAplUsn(appSettings->RestoreRcvMsgAplUsn());
-
-    for(int iLoop = 0; iLoop < E_GEN_ADC_NMB; iLoop++)
-    {
-        emit SendAdcData(QString(c_nameAdd), QString(c_nameGen), iLoop, appSettings->RestoreAdcData(QString(c_nameAdd), QString(c_nameGen), iLoop + 1));
-        emit SendAdcData(QString(c_nameMul), QString(c_nameGen), iLoop, appSettings->RestoreAdcData(QString(c_nameMul), QString(c_nameGen), iLoop + 1));
-    }
 
     for(int iLoop = 0; iLoop < E_AMP_ADC_NMB; iLoop++)
     {
@@ -1420,6 +1397,7 @@ void MainWindow::on_disconnectButton_clicked()
     p_WidgetTherapy->resetValues();
     p_WidgetReading->disableAll();
     p_WidgetTipMemory->clearAll();
+    p_WidgetConfig->clearLineEdits();
 
     sourceDataStream = NO_STREAM;
 }
