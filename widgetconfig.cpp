@@ -64,6 +64,50 @@ widgetConfig::widgetConfig(QWidget *parent) : QWidget(parent)
                 strCmd += QString::number(CONFIG_READ, 16).rightJustified(2, '0');
                 emit SendV200specific(strCmd, true);
 
+
+
+                strCmd = QString("%1").arg(QString::number(PID_CONFIGURATION_DEVICE, 16));
+                strCmd += QString::number(255, 16).rightJustified(2, '0');
+                strCmd += QString::number(CONFIG_READ, 16).rightJustified(2, '0');
+                strCmd += QString::number(E_CFG_TYPE_RF_ADC1_MUL, 16).rightJustified(2, '0');
+                emit SendV200specific(strCmd, true);
+
+                strCmd = QString("%1").arg(QString::number(PID_CONFIGURATION_DEVICE, 16));
+                strCmd += QString::number(255, 16).rightJustified(2, '0');
+                strCmd += QString::number(CONFIG_READ, 16).rightJustified(2, '0');
+                strCmd += QString::number(E_CFG_TYPE_RF_ADC1_ADD, 16).rightJustified(2, '0');
+                emit SendV200specific(strCmd, true);
+
+                strCmd = QString("%1").arg(QString::number(PID_CONFIGURATION_DEVICE, 16));
+                strCmd += QString::number(255, 16).rightJustified(2, '0');
+                strCmd += QString::number(CONFIG_READ, 16).rightJustified(2, '0');
+                strCmd += QString::number(E_CFG_TYPE_RF_ADC2_MUL, 16).rightJustified(2, '0');
+                emit SendV200specific(strCmd, true);
+
+                strCmd = QString("%1").arg(QString::number(PID_CONFIGURATION_DEVICE, 16));
+                strCmd += QString::number(255, 16).rightJustified(2, '0');
+                strCmd += QString::number(CONFIG_READ, 16).rightJustified(2, '0');
+                strCmd += QString::number(E_CFG_TYPE_RF_ADC2_ADD, 16).rightJustified(2, '0');
+                emit SendV200specific(strCmd, true);
+
+                strCmd = QString("%1").arg(QString::number(PID_CONFIGURATION_DEVICE, 16));
+                strCmd += QString::number(255, 16).rightJustified(2, '0');
+                strCmd += QString::number(CONFIG_READ, 16).rightJustified(2, '0');
+                strCmd += QString::number(E_CFG_TYPE_RF_ADC3_MUL, 16).rightJustified(2, '0');
+                emit SendV200specific(strCmd, true);
+
+                strCmd = QString("%1").arg(QString::number(PID_CONFIGURATION_DEVICE, 16));
+                strCmd += QString::number(255, 16).rightJustified(2, '0');
+                strCmd += QString::number(CONFIG_READ, 16).rightJustified(2, '0');
+                strCmd += QString::number(E_CFG_TYPE_RF_ADC3_ADD, 16).rightJustified(2, '0');
+                emit SendV200specific(strCmd, true);
+
+                strCmd = QString("%1").arg(QString::number(PID_CONFIGURATION_DEVICE, 16));
+                strCmd += QString::number(255, 16).rightJustified(2, '0');
+                strCmd += QString::number(CONFIG_READ, 16).rightJustified(2, '0');
+                strCmd += QString::number(E_CFG_TYPE_RF_OTHERS, 16).rightJustified(2, '0');
+                emit SendV200specific(strCmd, true);
+
             }
             else if(iLoop == E_BUTTON_LOAD_FILE)
             {
@@ -418,6 +462,76 @@ void widgetConfig::ReadAdcData(QString type, QString device, int index, QString 
                 else if(type == c_nameMul)
                 {
                     lineInputAmpMulAdcx[index][iChannel]->setText(c_defaultValueAmpAdcMul[index][iChannel]);
+                }
+            }
+        }
+    }
+}
+
+void widgetConfig::ReadConfigGenerNew(QByteArray data)
+{
+    uint8_t byDevice = uint8_t(data.at(1));
+    uint8_t byDirection = uint8_t(data.at(2));
+    uint8_t byType = uint8_t(data.at(3));
+
+    if(byDevice == 255)
+    {
+        if(byDirection == CONFIG_READ)
+        {
+            if(byType == E_CFG_TYPE_RF_ADC1_MUL)
+            {
+                for(int iLoop = 0; iLoop < E_NMB_GEN_ADC1; iLoop++)
+                {
+                    float fValue =  DecodeInt32ToFloat(data.mid(iLoop * 4 + 1 + 4));
+                    qDebug() << fValue;
+                }
+            }
+            if(byType == E_CFG_TYPE_RF_ADC1_ADD)
+            {
+                for(int iLoop = 0; iLoop < E_NMB_GEN_ADC1; iLoop++)
+                {
+                    float fValue =  DecodeInt32ToFloat(data.mid(iLoop * 4 + 1 + 4));
+                    qDebug() << fValue;
+                }
+            }
+            if(byType == E_CFG_TYPE_RF_ADC2_MUL)
+            {
+                for(int iLoop = 0; iLoop < E_NMB_GEN_ADC2; iLoop++)
+                {
+                    float fValue =  DecodeInt32ToFloat(data.mid(iLoop * 4 + 1 + 4));
+                    qDebug() << fValue;
+                }
+            }
+            if(byType == E_CFG_TYPE_RF_ADC2_ADD)
+            {
+                for(int iLoop = 0; iLoop < E_NMB_GEN_ADC2; iLoop++)
+                {
+                    float fValue =  DecodeInt32ToFloat(data.mid(iLoop * 4 + 1 + 4));
+                    qDebug() << fValue;
+                }
+            }
+            if(byType == E_CFG_TYPE_RF_ADC3_MUL)
+            {
+                for(int iLoop = 0; iLoop < E_NMB_GEN_ADC3; iLoop++)
+                {
+                    float fValue =  DecodeInt32ToFloat(data.mid(iLoop * 4 + 1 + 4));
+                    qDebug() << fValue;
+                }
+            }
+            if(byType == E_CFG_TYPE_RF_ADC3_ADD)
+            {
+                for(int iLoop = 0; iLoop < E_NMB_GEN_ADC3; iLoop++)
+                {
+                    float fValue =  DecodeInt32ToFloat(data.mid(iLoop * 4 + 1 + 4));
+                    qDebug() << fValue;
+                }
+            }
+            if(byType == E_CFG_TYPE_RF_OTHERS)
+            {
+                for(int iLoop = 0; iLoop < E_NMB_GEN_OTHERS; iLoop++)
+                {
+                    float fValue =  DecodeInt32ToFloat(data.mid(iLoop * 4 + 1 + 4));
+                    qDebug() << fValue;
                 }
             }
         }
@@ -973,6 +1087,17 @@ void widgetConfig::saveFile()
     }
 
     fileSaveConfig.close();
+}
+
+float widgetConfig::DecodeInt32ToFloat(QByteArray qByArry)
+{
+    uint32_t dwValue = uint32_t(qByArry.at(0) << 24) & 0xFF000000;
+    dwValue |= uint32_t(qByArry.at(1) << 16) & 0x00FF0000;
+    dwValue |= uint32_t(qByArry.at(2) << 8) & 0x0000FF00;
+    dwValue |= uint32_t(qByArry.at(3)) & 0x000000FF;
+
+    float fValue = *(float*)&dwValue;
+    return fValue;
 }
 
 void widgetConfig::clearLineEdits()

@@ -30,6 +30,7 @@ signals:
 public slots:
     void ReadAdcData(QString type, QString device, int index, QString data);
     void ReadConfigGener(QByteArray data);
+    void ReadConfigGenerNew(QByteArray data);
 
 private:
     enum
@@ -57,6 +58,23 @@ private:
 
     enum {E_NMB_AMP_ADC1 = 8};
     enum {E_NMB_AMP_ADC3 = 8};
+
+    typedef enum
+    {
+      E_CFG_TYPE_RF_ADC1_MUL,
+      E_CFG_TYPE_RF_ADC1_ADD,
+      E_CFG_TYPE_RF_ADC2_MUL,
+      E_CFG_TYPE_RF_ADC2_ADD,
+      E_CFG_TYPE_RF_ADC3_MUL,
+      E_CFG_TYPE_RF_ADC3_ADD,
+      E_CFG_TYPE_RF_OTHERS,
+      E_CFG_TYPE_RF_REG_PWR,
+      E_CFG_TYPE_RF_REG_COOL,
+      E_CFG_TYPE_RF_TEST_THERAPY,
+      E_CFG_TYPE_RF_CQM_PWM,
+      E_CFG_TYPE_RF_COUNT,
+      E_CFG_TYPE_RF_ALL = 255,
+    } CONFIG_TYPES_RF;
 
     const QString c_nameTypeFile = "RF generator 785 (*.gcf)";
     const QString c_nameGenRegulatorPower[E_NMB_GEN_REGULATOR_POWER] = {"PROPORCIAL", "INTEGRAL", "DERIVATIVE", "Period (10 - 1000 ms)"};
@@ -120,6 +138,8 @@ private:
 
     void loadFile(void);
     void saveFile(void);
+
+    float DecodeInt32ToFloat(QByteArray qByArry);
 
 signals:
     void SendV200specific(QString msg, bool bExp);
