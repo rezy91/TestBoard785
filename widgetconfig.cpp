@@ -20,52 +20,6 @@ widgetConfig::widgetConfig(QWidget *parent) : QWidget(parent)
             {
                 QString strCmd;
 
-                strCmd = QString("%1").arg(QString::number(PID_SET_PWM_CQMS_FREQ, 16));
-                strCmd += QString::number(CONFIG_READ, 16).rightJustified(2, '0');
-                emit SendV200specific(strCmd, true);
-
-                strCmd = QString("%1").arg(QString::number(PID_SET_ADC3_COEFFICIENTS_MULTIPLE, 16));
-                strCmd += QString::number(CONFIG_READ, 16).rightJustified(2, '0');
-                emit SendV200specific(strCmd, true);
-
-                strCmd = QString("%1").arg(QString::number(PID_SET_ADC3_COEFFICIENTS_ADDITIVE, 16));
-                strCmd += QString::number(CONFIG_READ, 16).rightJustified(2, '0');
-                emit SendV200specific(strCmd, true);
-
-                strCmd = QString("%1").arg(QString::number(PID_SET_ADC2_COEFFICIENTS_MULTIPLE, 16));
-                strCmd += QString::number(CONFIG_READ, 16).rightJustified(2, '0');
-                emit SendV200specific(strCmd, true);
-
-                strCmd = QString("%1").arg(QString::number(PID_SET_ADC2_COEFFICIENTS_ADDITIVE, 16));
-                strCmd += QString::number(CONFIG_READ, 16).rightJustified(2, '0');
-                emit SendV200specific(strCmd, true);
-
-                strCmd = QString("%1").arg(QString::number(PID_SET_ADC1_COEFFICIENTS_MULTIPLE, 16));
-                strCmd += QString::number(CONFIG_READ, 16).rightJustified(2, '0');
-                emit SendV200specific(strCmd, true);
-
-                strCmd = QString("%1").arg(QString::number(PID_SET_ADC1_COEFFICIENTS_ADDITIVE, 16));
-                strCmd += QString::number(CONFIG_READ, 16).rightJustified(2, '0');
-                emit SendV200specific(strCmd, true);
-
-                strCmd = QString("%1").arg(QString::number(PID_SET_OTHERS, 16));
-                strCmd += QString::number(CONFIG_READ, 16).rightJustified(2, '0');
-                emit SendV200specific(strCmd, true);
-
-                strCmd = QString("%1").arg(QString::number(PID_SET_REGULATOR_COOLING, 16));
-                strCmd += QString::number(CONFIG_READ, 16).rightJustified(2, '0');
-                emit SendV200specific(strCmd, true);
-
-                strCmd = QString("%1").arg(QString::number(PID_SET_REGULATOR_POWER, 16));
-                strCmd += QString::number(CONFIG_READ, 16).rightJustified(2, '0');
-                emit SendV200specific(strCmd, true);
-
-                strCmd = QString("%1").arg(QString::number(PID_SET_THERAPY_TEST, 16));
-                strCmd += QString::number(CONFIG_READ, 16).rightJustified(2, '0');
-                emit SendV200specific(strCmd, true);
-
-
-
                 strCmd = QString("%1").arg(QString::number(PID_CONFIGURATION_DEVICE, 16));
                 strCmd += QString::number(255, 16).rightJustified(2, '0');
                 strCmd += QString::number(CONFIG_READ, 16).rightJustified(2, '0');
@@ -164,28 +118,27 @@ widgetConfig::widgetConfig(QWidget *parent) : QWidget(parent)
         connect(buttSendGenMulAdcx[iDevice],&QPushButton::clicked,[=](bool clicked){
 
             Q_UNUSED(clicked);
-
             int dw_nmbChannels = 0;
-            int dw_PidMsg = 0xFF;
+
+            QString strCmd = QString("%1").arg(QString::number(PID_CONFIGURATION_DEVICE, 16));
+            strCmd += QString::number(255, 16).rightJustified(2, '0');
+            strCmd += QString::number(CONFIG_WRITE, 16).rightJustified(2, '0');
 
             if(iDevice == E_GEN_ADC_1)
             {
                 dw_nmbChannels = E_NMB_GEN_ADC1;
-                dw_PidMsg = PID_SET_ADC1_COEFFICIENTS_MULTIPLE;
+                strCmd += QString::number(E_CFG_TYPE_RF_ADC1_MUL, 16).rightJustified(2, '0');
             }
             else if(iDevice == E_GEN_ADC_2)
             {
                 dw_nmbChannels = E_NMB_GEN_ADC2;
-                dw_PidMsg = PID_SET_ADC2_COEFFICIENTS_MULTIPLE;
+                strCmd += QString::number(E_CFG_TYPE_RF_ADC2_MUL, 16).rightJustified(2, '0');
             }
             else if(iDevice == E_GEN_ADC_3)
             {
                 dw_nmbChannels = E_NMB_GEN_ADC3;
-                dw_PidMsg = PID_SET_ADC3_COEFFICIENTS_MULTIPLE;
+                strCmd += QString::number(E_CFG_TYPE_RF_ADC3_MUL, 16).rightJustified(2, '0');
             }
-
-            QString strCmd = QString("%1").arg(QString::number(dw_PidMsg, 16));
-            strCmd += QString::number(CONFIG_WRITE, 16).rightJustified(2, '0');
 
             for(int iChannel = 0; iChannel < dw_nmbChannels; iChannel++)
             {
@@ -201,28 +154,27 @@ widgetConfig::widgetConfig(QWidget *parent) : QWidget(parent)
         connect(buttSendGenAddAdcx[iDevice],&QPushButton::clicked,[=](bool clicked){
 
             Q_UNUSED(clicked);
-
             int dw_nmbChannels = 0;
-            int dw_PidMsg = 0xFF;
+
+            QString strCmd = QString("%1").arg(QString::number(PID_CONFIGURATION_DEVICE, 16));
+            strCmd += QString::number(255, 16).rightJustified(2, '0');
+            strCmd += QString::number(CONFIG_WRITE, 16).rightJustified(2, '0');
 
             if(iDevice == E_GEN_ADC_1)
             {
                 dw_nmbChannels = E_NMB_GEN_ADC1;
-                dw_PidMsg = PID_SET_ADC1_COEFFICIENTS_ADDITIVE;
+                strCmd += QString::number(E_CFG_TYPE_RF_ADC1_ADD, 16).rightJustified(2, '0');
             }
             else if(iDevice == E_GEN_ADC_2)
             {
                 dw_nmbChannels = E_NMB_GEN_ADC2;
-                dw_PidMsg = PID_SET_ADC2_COEFFICIENTS_ADDITIVE;
+                strCmd += QString::number(E_CFG_TYPE_RF_ADC2_ADD, 16).rightJustified(2, '0');
             }
             else if(iDevice == E_GEN_ADC_3)
             {
                 dw_nmbChannels = E_NMB_GEN_ADC3;
-                dw_PidMsg = PID_SET_ADC3_COEFFICIENTS_ADDITIVE;
+                strCmd += QString::number(E_CFG_TYPE_RF_ADC3_ADD, 16).rightJustified(2, '0');
             }
-
-            QString strCmd = QString("%1").arg(QString::number(dw_PidMsg, 16));
-            strCmd += QString::number(CONFIG_WRITE, 16).rightJustified(2, '0');
 
             for(int iChannel = 0; iChannel < dw_nmbChannels; iChannel++)
             {
@@ -311,8 +263,10 @@ widgetConfig::widgetConfig(QWidget *parent) : QWidget(parent)
 
         Q_UNUSED(clicked);
 
-        QString strCmd = QString("%1").arg(QString::number(PID_SET_OTHERS, 16));
+        QString strCmd = QString("%1").arg(QString::number(PID_CONFIGURATION_DEVICE, 16));
+        strCmd += QString::number(255, 16).rightJustified(2, '0');
         strCmd += QString::number(CONFIG_WRITE, 16).rightJustified(2, '0');
+        strCmd += QString::number(E_CFG_TYPE_RF_OTHERS, 16).rightJustified(2, '0');
 
         for(int iChannel = 0; iChannel < E_NMB_GEN_OTHERS; iChannel++)
         {
@@ -330,8 +284,10 @@ widgetConfig::widgetConfig(QWidget *parent) : QWidget(parent)
 
         Q_UNUSED(clicked);
 
-        QString strCmd = QString("%1").arg(QString::number(PID_SET_REGULATOR_POWER, 16));
+        QString strCmd = QString("%1").arg(QString::number(PID_CONFIGURATION_DEVICE, 16));
+        strCmd += QString::number(255, 16).rightJustified(2, '0');
         strCmd += QString::number(CONFIG_WRITE, 16).rightJustified(2, '0');
+        strCmd += QString::number(E_CFG_TYPE_RF_REG_PWR, 16).rightJustified(2, '0');
 
         for(int iChannel = 0; iChannel < E_NMB_GEN_REGULATOR_POWER - 1; iChannel++)
         {
@@ -350,8 +306,10 @@ widgetConfig::widgetConfig(QWidget *parent) : QWidget(parent)
 
         Q_UNUSED(clicked);
 
-        QString strCmd = QString("%1").arg(QString::number(PID_SET_REGULATOR_COOLING, 16));
+        QString strCmd = QString("%1").arg(QString::number(PID_CONFIGURATION_DEVICE, 16));
+        strCmd += QString::number(255, 16).rightJustified(2, '0');
         strCmd += QString::number(CONFIG_WRITE, 16).rightJustified(2, '0');
+        strCmd += QString::number(E_CFG_TYPE_RF_REG_COOL, 16).rightJustified(2, '0');
 
         for(int iChannel = 0; iChannel < E_NMB_GEN_REGULATOR_COOLING - 4; iChannel++)
         {
@@ -373,8 +331,10 @@ widgetConfig::widgetConfig(QWidget *parent) : QWidget(parent)
 
         Q_UNUSED(clicked);
 
-        QString strCmd = QString("%1").arg(QString::number(PID_SET_THERAPY_TEST, 16));
+        QString strCmd = QString("%1").arg(QString::number(PID_CONFIGURATION_DEVICE, 16));
+        strCmd += QString::number(255, 16).rightJustified(2, '0');
         strCmd += QString::number(CONFIG_WRITE, 16).rightJustified(2, '0');
+        strCmd += QString::number(E_CFG_TYPE_RF_TEST_THERAPY, 16).rightJustified(2, '0');
 
         for(int iChannel = 0; iChannel < E_NMB_GEN_TESTTHERAPY; iChannel++)
         {
@@ -388,8 +348,10 @@ widgetConfig::widgetConfig(QWidget *parent) : QWidget(parent)
 
         Q_UNUSED(clicked);
 
-        QString strCmd = QString("%1").arg(QString::number(PID_SET_PWM_CQMS_FREQ, 16));
+        QString strCmd = QString("%1").arg(QString::number(PID_CONFIGURATION_DEVICE, 16));
+        strCmd += QString::number(255, 16).rightJustified(2, '0');
         strCmd += QString::number(CONFIG_WRITE, 16).rightJustified(2, '0');
+        strCmd += QString::number(E_CFG_TYPE_RF_CQM_PWM, 16).rightJustified(2, '0');
 
         for(int iChannel = 0; iChannel < E_NMB_GEN_PWM_CQM; iChannel++)
         {
