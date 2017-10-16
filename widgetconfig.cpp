@@ -93,16 +93,7 @@ widgetConfig::widgetConfig(QWidget *parent) : QWidget(parent)
             }
             else if(iLoop == E_BUTTON_SAVE_MCU)
             {
-                QString strCmd = QString("%1").arg(QString::number(PID_CONFIGURATION_DEVICE, 16));
-                strCmd += QString::number(255, 16).rightJustified(2, '0');
-                strCmd += QString::number(CONFIG_WRITE, 16).rightJustified(2, '0');
-                strCmd += QString::number(E_CFG_TYPE_RF_ALL, 16).rightJustified(2, '0');
-
-                ReadLineEditAndAddToMsg(strCmd, E_CFG_TYPE_RF_ADC1_MUL);
-                ReadLineEditAndAddToMsg(strCmd, E_CFG_TYPE_RF_ADC1_ADD);
-                //TODO: all messages added
-
-                emit SendV200specific(strCmd, false);
+                saveMcuRf();
             }
             else if(iLoop == E_BUTTON_SAVE_FILE)
             {
@@ -938,6 +929,28 @@ void widgetConfig::saveFile()
     }
 
     fileSaveConfig.close();
+}
+
+void widgetConfig::saveMcuRf()
+{
+    QString strCmd = QString("%1").arg(QString::number(PID_CONFIGURATION_DEVICE, 16));
+    strCmd += QString::number(255, 16).rightJustified(2, '0');
+    strCmd += QString::number(CONFIG_WRITE, 16).rightJustified(2, '0');
+    strCmd += QString::number(E_CFG_TYPE_RF_ALL, 16).rightJustified(2, '0');
+
+    ReadLineEditAndAddToMsg(strCmd, E_CFG_TYPE_RF_ADC1_MUL);
+    ReadLineEditAndAddToMsg(strCmd, E_CFG_TYPE_RF_ADC1_ADD);
+    ReadLineEditAndAddToMsg(strCmd, E_CFG_TYPE_RF_ADC2_MUL);
+    ReadLineEditAndAddToMsg(strCmd, E_CFG_TYPE_RF_ADC2_ADD);
+    ReadLineEditAndAddToMsg(strCmd, E_CFG_TYPE_RF_ADC3_MUL);
+    ReadLineEditAndAddToMsg(strCmd, E_CFG_TYPE_RF_ADC3_ADD);
+    ReadLineEditAndAddToMsg(strCmd, E_CFG_TYPE_RF_OTHERS);
+    ReadLineEditAndAddToMsg(strCmd, E_CFG_TYPE_RF_REG_PWR);
+    ReadLineEditAndAddToMsg(strCmd, E_CFG_TYPE_RF_REG_COOL);
+    ReadLineEditAndAddToMsg(strCmd, E_CFG_TYPE_RF_TEST_THERAPY);
+    ReadLineEditAndAddToMsg(strCmd, E_CFG_TYPE_RF_CQM_PWM);
+
+    emit SendV200specific(strCmd, false);
 }
 
 float widgetConfig::DecodeUint32ToFloat(QByteArray qByArry)

@@ -137,6 +137,7 @@ private:
 
     void loadFile(void);
     void saveFile(void);
+    void saveMcuRf(void);
 
     float DecodeUint32ToFloat(QByteArray qByArry);
     uint32_t DecodeBytesToUint32(QByteArray qByArry);
