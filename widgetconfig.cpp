@@ -1100,10 +1100,10 @@ void widgetConfig::ReadAndAddToMsgRegCool(QString &strPacketContent)
         strPacketContent += QString(arrFloatInArraysHexa);
     }
 
-    strPacketContent += QString::number(lineInputGenRegulatorCooling[E_NMB_GEN_REGULATOR_COOLING - 4]->text().toInt(), 16).rightJustified(2 * 2, '0');
-    strPacketContent += QString::number(lineInputGenRegulatorCooling[E_NMB_GEN_REGULATOR_COOLING - 3]->text().toInt(), 16).rightJustified(1 * 2, '0');
-    strPacketContent += QString::number(lineInputGenRegulatorCooling[E_NMB_GEN_REGULATOR_COOLING - 2]->text().toInt(), 16).rightJustified(1 * 2, '0');
-    strPacketContent += QString::number(lineInputGenRegulatorCooling[E_NMB_GEN_REGULATOR_COOLING - 1]->text().toInt(), 16).rightJustified(1 * 2, '0');
+    strPacketContent += QString::number(lineInputGenRegulatorCooling[E_NMB_GEN_REGULATOR_COOLING - 4]->text().toInt(), 16).rightJustified(4 * 2, '0');
+    strPacketContent += QString::number(lineInputGenRegulatorCooling[E_NMB_GEN_REGULATOR_COOLING - 3]->text().toInt(), 16).rightJustified(4 * 2, '0');
+    strPacketContent += QString::number(lineInputGenRegulatorCooling[E_NMB_GEN_REGULATOR_COOLING - 2]->text().toInt(), 16).rightJustified(4 * 2, '0');
+    strPacketContent += QString::number(lineInputGenRegulatorCooling[E_NMB_GEN_REGULATOR_COOLING - 1]->text().toInt(), 16).rightJustified(4 * 2, '0');
 }
 
 void widgetConfig::ReadAndAddToMsgRegPwr(QString &strPacketContent)
@@ -1116,7 +1116,7 @@ void widgetConfig::ReadAndAddToMsgRegPwr(QString &strPacketContent)
         strPacketContent += QString(arrFloatInArraysHexa);
     }
 
-    strPacketContent += QString::number(lineInputGenRegulatorPower[E_NMB_GEN_REGULATOR_POWER - 1]->text().toInt(), 16).rightJustified(2 * 2, '0');
+    strPacketContent += QString::number(lineInputGenRegulatorPower[E_NMB_GEN_REGULATOR_POWER - 1]->text().toInt(), 16).rightJustified(4 * 2, '0');
 }
 
 void widgetConfig::ReadAndAddToMsgTestTher(QString &strPacketContent)

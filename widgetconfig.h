@@ -46,6 +46,14 @@ private:
       CONFIG_READ,
     } CONFIG_ACTION;
 
+    enum GEN_ADC_X
+    {
+        E_GEN_ADC_1,
+        E_GEN_ADC_2,
+        E_GEN_ADC_3,
+        E_GEN_ADC_NMB
+    };
+
     enum {E_NMB_GEN_ADC1 = 9};
     enum {E_NMB_GEN_ADC2 = 7};
     enum {E_NMB_GEN_ADC3 = 6};
