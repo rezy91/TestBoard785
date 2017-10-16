@@ -108,6 +108,30 @@ widgetConfig::widgetConfig(QWidget *parent) : QWidget(parent)
                 strCmd += QString::number(E_CFG_TYPE_RF_OTHERS, 16).rightJustified(2, '0');
                 emit SendV200specific(strCmd, true);
 
+                strCmd = QString("%1").arg(QString::number(PID_CONFIGURATION_DEVICE, 16));
+                strCmd += QString::number(255, 16).rightJustified(2, '0');
+                strCmd += QString::number(CONFIG_READ, 16).rightJustified(2, '0');
+                strCmd += QString::number(E_CFG_TYPE_RF_REG_PWR, 16).rightJustified(2, '0');
+                emit SendV200specific(strCmd, true);
+
+                strCmd = QString("%1").arg(QString::number(PID_CONFIGURATION_DEVICE, 16));
+                strCmd += QString::number(255, 16).rightJustified(2, '0');
+                strCmd += QString::number(CONFIG_READ, 16).rightJustified(2, '0');
+                strCmd += QString::number(E_CFG_TYPE_RF_REG_COOL, 16).rightJustified(2, '0');
+                emit SendV200specific(strCmd, true);
+
+                strCmd = QString("%1").arg(QString::number(PID_CONFIGURATION_DEVICE, 16));
+                strCmd += QString::number(255, 16).rightJustified(2, '0');
+                strCmd += QString::number(CONFIG_READ, 16).rightJustified(2, '0');
+                strCmd += QString::number(E_CFG_TYPE_RF_TEST_THERAPY, 16).rightJustified(2, '0');
+                emit SendV200specific(strCmd, true);
+
+                strCmd = QString("%1").arg(QString::number(PID_CONFIGURATION_DEVICE, 16));
+                strCmd += QString::number(255, 16).rightJustified(2, '0');
+                strCmd += QString::number(CONFIG_READ, 16).rightJustified(2, '0');
+                strCmd += QString::number(E_CFG_TYPE_RF_CQM_PWM, 16).rightJustified(2, '0');
+                emit SendV200specific(strCmd, true);
+
             }
             else if(iLoop == E_BUTTON_LOAD_FILE)
             {
@@ -369,7 +393,7 @@ widgetConfig::widgetConfig(QWidget *parent) : QWidget(parent)
 
         for(int iChannel = 0; iChannel < E_NMB_GEN_PWM_CQM; iChannel++)
         {
-            strCmd += QString::number(lineInputGenPwmCqm[iChannel]->text().toInt(), 16).rightJustified(3 * 2, '0');
+            strCmd += QString::number(lineInputGenPwmCqm[iChannel]->text().toInt(), 16).rightJustified(4 * 2, '0');
         }
 
         emit SendV200specific(strCmd, false);
@@ -482,193 +506,108 @@ void widgetConfig::ReadConfigGenerNew(QByteArray data)
             {
                 for(int iLoop = 0; iLoop < E_NMB_GEN_ADC1; iLoop++)
                 {
-                    float fValue =  DecodeInt32ToFloat(data.mid(iLoop * 4 + 1 + 4));
-                    qDebug() << fValue;
+                    float fValue =  DecodeUint32ToFloat(data.mid(iLoop * 4 + 1 + 4));
+                    lineInputGenMulAdcx[E_GEN_ADC_1][iLoop]->setText(QString::number(fValue));
                 }
             }
-            if(byType == E_CFG_TYPE_RF_ADC1_ADD)
+            else if(byType == E_CFG_TYPE_RF_ADC1_ADD)
             {
                 for(int iLoop = 0; iLoop < E_NMB_GEN_ADC1; iLoop++)
                 {
-                    float fValue =  DecodeInt32ToFloat(data.mid(iLoop * 4 + 1 + 4));
-                    qDebug() << fValue;
+                    float fValue =  DecodeUint32ToFloat(data.mid(iLoop * 4 + 1 + 4));
+                    lineInputGenAddAdcx[E_GEN_ADC_1][iLoop]->setText(QString::number(fValue));
                 }
             }
-            if(byType == E_CFG_TYPE_RF_ADC2_MUL)
+            else if(byType == E_CFG_TYPE_RF_ADC2_MUL)
             {
                 for(int iLoop = 0; iLoop < E_NMB_GEN_ADC2; iLoop++)
                 {
-                    float fValue =  DecodeInt32ToFloat(data.mid(iLoop * 4 + 1 + 4));
-                    qDebug() << fValue;
+                    float fValue =  DecodeUint32ToFloat(data.mid(iLoop * 4 + 1 + 4));
+                    lineInputGenMulAdcx[E_GEN_ADC_2][iLoop]->setText(QString::number(fValue));
                 }
             }
-            if(byType == E_CFG_TYPE_RF_ADC2_ADD)
+            else if(byType == E_CFG_TYPE_RF_ADC2_ADD)
             {
                 for(int iLoop = 0; iLoop < E_NMB_GEN_ADC2; iLoop++)
                 {
-                    float fValue =  DecodeInt32ToFloat(data.mid(iLoop * 4 + 1 + 4));
-                    qDebug() << fValue;
+                    float fValue =  DecodeUint32ToFloat(data.mid(iLoop * 4 + 1 + 4));
+                    lineInputGenAddAdcx[E_GEN_ADC_2][iLoop]->setText(QString::number(fValue));
                 }
             }
-            if(byType == E_CFG_TYPE_RF_ADC3_MUL)
+            else if(byType == E_CFG_TYPE_RF_ADC3_MUL)
             {
                 for(int iLoop = 0; iLoop < E_NMB_GEN_ADC3; iLoop++)
                 {
-                    float fValue =  DecodeInt32ToFloat(data.mid(iLoop * 4 + 1 + 4));
-                    qDebug() << fValue;
+                    float fValue =  DecodeUint32ToFloat(data.mid(iLoop * 4 + 1 + 4));
+                    lineInputGenMulAdcx[E_GEN_ADC_3][iLoop]->setText(QString::number(fValue));
                 }
             }
-            if(byType == E_CFG_TYPE_RF_ADC3_ADD)
+            else if(byType == E_CFG_TYPE_RF_ADC3_ADD)
             {
                 for(int iLoop = 0; iLoop < E_NMB_GEN_ADC3; iLoop++)
                 {
-                    float fValue =  DecodeInt32ToFloat(data.mid(iLoop * 4 + 1 + 4));
-                    qDebug() << fValue;
+                    float fValue =  DecodeUint32ToFloat(data.mid(iLoop * 4 + 1 + 4));
+                    lineInputGenAddAdcx[E_GEN_ADC_3][iLoop]->setText(QString::number(fValue));
                 }
             }
-            if(byType == E_CFG_TYPE_RF_OTHERS)
+            else if(byType == E_CFG_TYPE_RF_OTHERS)
             {
                 for(int iLoop = 0; iLoop < E_NMB_GEN_OTHERS; iLoop++)
                 {
-                    float fValue =  DecodeInt32ToFloat(data.mid(iLoop * 4 + 1 + 4));
-                    qDebug() << fValue;
+                    float fValue =  DecodeUint32ToFloat(data.mid(iLoop * 4 + 1 + 4));
+                    lineInputGenOthers[iLoop]->setText(QString::number(fValue));
+                }
+            }
+            else if(byType == E_CFG_TYPE_RF_REG_PWR)
+            {
+                for(int iLoop = 0; iLoop < E_NMB_GEN_REGULATOR_POWER; iLoop++)
+                {
+                    if(iLoop < 3)
+                    {
+                        float fValue =  DecodeUint32ToFloat(data.mid(iLoop * 4 + 1 + 4));
+                        lineInputGenRegulatorPower[iLoop]->setText(QString::number(fValue));
+                    }
+                    else
+                    {
+                       uint32_t dwDecodedArray = DecodeBytesToUint32(data.mid(iLoop * 4 + 1 + 4));
+                       lineInputGenRegulatorPower[iLoop]->setText(QString::number(dwDecodedArray));
+                    }
+                }
+            }
+            else if(byType == E_CFG_TYPE_RF_REG_COOL)
+            {
+                for(int iLoop = 0; iLoop < E_NMB_GEN_REGULATOR_COOLING; iLoop++)
+                {
+                    if(iLoop < 3)
+                    {
+                        float fValue =  DecodeUint32ToFloat(data.mid(iLoop * 4 + 1 + 4));
+                        lineInputGenRegulatorCooling[iLoop]->setText(QString::number(fValue));
+                    }
+                    else
+                    {
+                       uint32_t dwDecodedArray = DecodeBytesToUint32(data.mid(iLoop * 4 + 1 + 4));
+                       lineInputGenRegulatorCooling[iLoop]->setText(QString::number(dwDecodedArray));
+                    }
+                }
+            }
+            else if(byType == E_CFG_TYPE_RF_TEST_THERAPY)
+            {
+                for(int iLoop = 0; iLoop < E_NMB_GEN_TESTTHERAPY; iLoop++)
+                {
+                    uint8_t byValue = uint8_t(data.at(5 + iLoop));
+                    lineInputGenTestTherapy[iLoop]->setText(QString::number(byValue));
+                }
+
+            }
+            else if(byType == E_CFG_TYPE_RF_CQM_PWM)
+            {
+                for(int iLoop = 0; iLoop < E_NMB_GEN_PWM_CQM; iLoop++)
+                {
+                    uint32_t dwDecodedArray = DecodeBytesToUint32(data.mid(iLoop * 4 + 1 + 4));
+                    lineInputGenPwmCqm[iLoop]->setText(QString::number(dwDecodedArray));
                 }
             }
         }
-    }
-}
-
-void widgetConfig::ReadConfigGener(QByteArray data)
-{
-    uint8_t byPid = uint8_t(data.at(0));
-
-
-    if(byPid == PID_SET_PWM_CQMS_FREQ)
-    {
-        uint32_t dwFirstValue = uint32_t(data.at(1 + 1) << 16) & 0x00FF0000;
-        dwFirstValue |= uint32_t(data.at(2 + 1) << 8) & 0x0000FF00;
-        dwFirstValue |= uint32_t(data.at(3 + 1)) & 0x000000FF;
-
-        uint32_t dwSecondValue = uint32_t(data.at(4 + 1) << 16) & 0x00FF0000;
-        dwSecondValue |= uint32_t(data.at(5 + 1) << 8) & 0x0000FF00;
-        dwSecondValue |= uint32_t(data.at(6 + 1)) & 0x000000FF;
-
-        lineInputGenPwmCqm[0]->setText(QString::number(dwFirstValue));
-        lineInputGenPwmCqm[1]->setText(QString::number(dwSecondValue));
-    }
-    else if(byPid == PID_SET_ADC3_COEFFICIENTS_MULTIPLE || byPid == PID_SET_ADC2_COEFFICIENTS_MULTIPLE || byPid == PID_SET_ADC1_COEFFICIENTS_MULTIPLE)
-    {
-        int dwIndexChannel = int(data.at(1 + 1));
-        int dwNmbChannels;
-
-        if(dwIndexChannel == E_GEN_ADC_3)
-        {
-            dwNmbChannels = E_NMB_GEN_ADC3;
-        }
-        else if(dwIndexChannel == E_GEN_ADC_2)
-        {
-            dwNmbChannels = E_NMB_GEN_ADC2;
-        }
-        else if(dwIndexChannel == E_GEN_ADC_1)
-        {
-            dwNmbChannels = E_NMB_GEN_ADC1;
-        }
-
-        for(int iLoop = 0; iLoop < dwNmbChannels; iLoop++)
-        {
-            uint32_t dwValue = uint32_t(data.at(iLoop * 4 + 1 + 2) << 24) & 0xFF000000;
-            dwValue |= uint32_t(data.at(iLoop * 4 + 2 + 2) << 16) & 0x00FF0000;
-            dwValue |= uint32_t(data.at(iLoop * 4 + 3 + 2) << 8) & 0x0000FF00;
-            dwValue |= uint32_t(data.at(iLoop * 4 + 4 + 2)) & 0x000000FF;
-            float fValue = *(float*)&dwValue;
-            lineInputGenMulAdcx[dwIndexChannel][iLoop]->setText(QString::number(fValue));
-        }
-    }
-    else if(byPid == PID_SET_ADC3_COEFFICIENTS_ADDITIVE || byPid == PID_SET_ADC2_COEFFICIENTS_ADDITIVE || byPid == PID_SET_ADC1_COEFFICIENTS_ADDITIVE)
-    {
-        int dwIndexChannel = int(data.at(1 + 1));
-        int dwNmbChannels;
-
-        if(dwIndexChannel == E_GEN_ADC_3)
-        {
-            dwNmbChannels = E_NMB_GEN_ADC3;
-        }
-        else if(dwIndexChannel == E_GEN_ADC_2)
-        {
-            dwNmbChannels = E_NMB_GEN_ADC2;
-        }
-        else if(dwIndexChannel == E_GEN_ADC_1)
-        {
-            dwNmbChannels = E_NMB_GEN_ADC1;
-        }
-
-        for(int iLoop = 0; iLoop < dwNmbChannels; iLoop++)
-        {
-            uint32_t dwValue = uint32_t(data.at(iLoop * 4 + 1 + 2) << 24) & 0xFF000000;
-            dwValue |= uint32_t(data.at(iLoop * 4 + 2 + 2) << 16) & 0x00FF0000;
-            dwValue |= uint32_t(data.at(iLoop * 4 + 3 + 2) << 8) & 0x0000FF00;
-            dwValue |= uint32_t(data.at(iLoop * 4 + 4 + 2)) & 0x000000FF;
-            float fValue = *(float*)&dwValue;
-            lineInputGenAddAdcx[dwIndexChannel][iLoop]->setText(QString::number(fValue));
-        }
-    }
-    else if(byPid == PID_SET_OTHERS)
-    {
-        for(int iLoop = 0; iLoop < E_NMB_GEN_OTHERS; iLoop++)
-        {
-            uint32_t dwValue = uint32_t(data.at(iLoop * 4 + 1 + 1) << 24) & 0xFF000000;
-            dwValue |= uint32_t(data.at(iLoop * 4 + 2 + 1) << 16) & 0x00FF0000;
-            dwValue |= uint32_t(data.at(iLoop * 4 + 3 + 1) << 8) & 0x0000FF00;
-            dwValue |= uint32_t(data.at(iLoop * 4 + 4 + 1)) & 0x000000FF;
-            float fValue = *(float*)&dwValue;
-            lineInputGenOthers[iLoop]->setText(QString::number(fValue));
-        }
-
-    }
-    else if(byPid == PID_SET_REGULATOR_COOLING)
-    {
-        for(int iLoop = 0; iLoop < E_NMB_GEN_REGULATOR_COOLING; iLoop++)
-        {
-            uint32_t dwValue = uint32_t(data.at(iLoop * 4 + 1 + 1) << 24) & 0xFF000000;
-            dwValue |= uint32_t(data.at(iLoop * 4 + 2 + 1) << 16) & 0x00FF0000;
-            dwValue |= uint32_t(data.at(iLoop * 4 + 3 + 1) << 8) & 0x0000FF00;
-            dwValue |= uint32_t(data.at(iLoop * 4 + 4 + 1)) & 0x000000FF;
-            float fValue = (float)dwValue;
-
-            if(iLoop < 3)
-            {
-                fValue = *(float*)&dwValue;
-            }
-
-            lineInputGenRegulatorCooling[iLoop]->setText(QString::number(fValue));
-        }
-    }
-    else if(byPid == PID_SET_REGULATOR_POWER)
-    {
-        for(int iLoop = 0; iLoop < E_NMB_GEN_REGULATOR_POWER; iLoop++)
-        {
-            uint32_t dwValue = uint32_t(data.at(iLoop * 4 + 1 + 1) << 24) & 0xFF000000;
-            dwValue |= uint32_t(data.at(iLoop * 4 + 2 + 1) << 16) & 0x00FF0000;
-            dwValue |= uint32_t(data.at(iLoop * 4 + 3 + 1) << 8) & 0x0000FF00;
-            dwValue |= uint32_t(data.at(iLoop * 4 + 4 + 1)) & 0x000000FF;
-            float fValue = (float)dwValue;
-
-            if(iLoop < 3)
-            {
-                fValue = *(float*)&dwValue;
-            }
-
-            lineInputGenRegulatorPower[iLoop]->setText(QString::number(fValue));
-        }
-
-    }
-    else if(byPid == PID_SET_THERAPY_TEST)
-    {
-        uint8_t byFirstValue = uint8_t(data.at(1 + 1));
-        uint8_t bySecondValue = uint8_t(data.at(1 + 2));
-
-        lineInputGenTestTherapy[0]->setText(QString::number(byFirstValue));
-        lineInputGenTestTherapy[1]->setText(QString::number(bySecondValue));
     }
 }
 
@@ -1089,15 +1028,22 @@ void widgetConfig::saveFile()
     fileSaveConfig.close();
 }
 
-float widgetConfig::DecodeInt32ToFloat(QByteArray qByArry)
+float widgetConfig::DecodeUint32ToFloat(QByteArray qByArry)
+{
+    uint32_t dwValue = DecodeBytesToUint32(qByArry);
+    float fValue = *(float*)&dwValue;
+
+    return fValue;
+}
+
+uint32_t widgetConfig::DecodeBytesToUint32(QByteArray qByArry)
 {
     uint32_t dwValue = uint32_t(qByArry.at(0) << 24) & 0xFF000000;
     dwValue |= uint32_t(qByArry.at(1) << 16) & 0x00FF0000;
     dwValue |= uint32_t(qByArry.at(2) << 8) & 0x0000FF00;
     dwValue |= uint32_t(qByArry.at(3)) & 0x000000FF;
 
-    float fValue = *(float*)&dwValue;
-    return fValue;
+    return dwValue;
 }
 
 void widgetConfig::clearLineEdits()

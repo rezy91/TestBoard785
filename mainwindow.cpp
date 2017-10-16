@@ -59,9 +59,7 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
     connect(p_WidgetConfig, &widgetConfig::SaveAdcData, appSettings, &settings::StoreAdcData);
     connect(this, &MainWindow::SendAdcData, p_WidgetConfig, &widgetConfig::ReadAdcData);
 
-    connect(this, &MainWindow::SendConfigGener, p_WidgetConfig, &widgetConfig::ReadConfigGener);
     connect(this, &MainWindow::SendConfigGenerNew, p_WidgetConfig, &widgetConfig::ReadConfigGenerNew);
-
 
     connect(p_widgetSettings, &widgetSettings::SaveAmpFreq, appSettings, &settings::StoreAmpFreq);
     connect(this, &MainWindow::SendAmpFreq, p_widgetSettings, &widgetSettings::ReadAmpFreq);
@@ -687,19 +685,6 @@ void MainWindow::newDataV200(QByteArray aData)
         break;
 
     //generator config data
-    case PID_SET_PWM_CQMS_FREQ:
-    case PID_SET_ADC3_COEFFICIENTS_MULTIPLE:
-    case PID_SET_ADC3_COEFFICIENTS_ADDITIVE:
-    case PID_SET_ADC2_COEFFICIENTS_MULTIPLE:
-    case PID_SET_ADC2_COEFFICIENTS_ADDITIVE:
-    case PID_SET_ADC1_COEFFICIENTS_MULTIPLE:
-    case PID_SET_ADC1_COEFFICIENTS_ADDITIVE:
-    case PID_SET_OTHERS:
-    case PID_SET_REGULATOR_COOLING:
-    case PID_SET_REGULATOR_POWER:
-    case PID_SET_THERAPY_TEST:
-        SendConfigGener(aData);
-        break;
     case PID_CONFIGURATION_DEVICE:
         SendConfigGenerNew(aData);
         break;

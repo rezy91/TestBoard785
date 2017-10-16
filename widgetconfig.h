@@ -29,7 +29,6 @@ signals:
 
 public slots:
     void ReadAdcData(QString type, QString device, int index, QString data);
-    void ReadConfigGener(QByteArray data);
     void ReadConfigGenerNew(QByteArray data);
 
 private:
@@ -139,7 +138,8 @@ private:
     void loadFile(void);
     void saveFile(void);
 
-    float DecodeInt32ToFloat(QByteArray qByArry);
+    float DecodeUint32ToFloat(QByteArray qByArry);
+    uint32_t DecodeBytesToUint32(QByteArray qByArry);
 
 signals:
     void SendV200specific(QString msg, bool bExp);
