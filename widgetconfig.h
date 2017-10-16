@@ -141,6 +141,19 @@ private:
     float DecodeUint32ToFloat(QByteArray qByArry);
     uint32_t DecodeBytesToUint32(QByteArray qByArry);
 
+    void ReadLineEditAndAddToMsg(QString& strPacketContent, CONFIG_TYPES_RF eType);
+    void ReadAndAddToMsgAdc1Mul(QString& strPacketContent);
+    void ReadAndAddToMsgAdc1Add(QString& strPacketContent);
+    void ReadAndAddToMsgAdc2Mul(QString& strPacketContent);
+    void ReadAndAddToMsgAdc2Add(QString& strPacketContent);
+    void ReadAndAddToMsgAdc3Mul(QString& strPacketContent);
+    void ReadAndAddToMsgAdc3Add(QString& strPacketContent);
+    void ReadAndAddToMsgOthrers(QString& strPacketContent);
+    void ReadAndAddToMsgRegCool(QString& strPacketContent);
+    void ReadAndAddToMsgRegPwr(QString& strPacketContent);
+    void ReadAndAddToMsgTestTher(QString& strPacketContent);
+    void ReadAndAddToMsgCqmPwm(QString& strPacketContent);
+
 signals:
     void SendV200specific(QString msg, bool bExp);
     void SaveAdcData(QString type, QString device, int index, QString data);

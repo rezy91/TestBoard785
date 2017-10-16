@@ -93,17 +93,16 @@ widgetConfig::widgetConfig(QWidget *parent) : QWidget(parent)
             }
             else if(iLoop == E_BUTTON_SAVE_MCU)
             {
-                /*for(int iDevice = 0; iDevice < E_GEN_ADC_NMB; iDevice++)
-                {
-                    buttSendGenMulAdcx[iDevice]->clicked(true);
-                    buttSendGenAddAdcx[iDevice]->clicked(true);
-                }
+                QString strCmd = QString("%1").arg(QString::number(PID_CONFIGURATION_DEVICE, 16));
+                strCmd += QString::number(255, 16).rightJustified(2, '0');
+                strCmd += QString::number(CONFIG_WRITE, 16).rightJustified(2, '0');
+                strCmd += QString::number(E_CFG_TYPE_RF_ALL, 16).rightJustified(2, '0');
 
-                buttSendGenOther->clicked(true);
-                buttSendGenRegulatorPower->clicked(true);
-                buttSendGenRegulatorCooling->clicked(true);
-                buttSendGenTestTherapy->clicked(true);
-                buttSendGenPwmCqm->clicked(true);*/
+                ReadLineEditAndAddToMsg(strCmd, E_CFG_TYPE_RF_ADC1_MUL);
+                ReadLineEditAndAddToMsg(strCmd, E_CFG_TYPE_RF_ADC1_ADD);
+                //TODO: all messages added
+
+                emit SendV200specific(strCmd, false);
             }
             else if(iLoop == E_BUTTON_SAVE_FILE)
             {
@@ -118,7 +117,6 @@ widgetConfig::widgetConfig(QWidget *parent) : QWidget(parent)
         connect(buttSendGenMulAdcx[iDevice],&QPushButton::clicked,[=](bool clicked){
 
             Q_UNUSED(clicked);
-            int dw_nmbChannels = 0;
 
             QString strCmd = QString("%1").arg(QString::number(PID_CONFIGURATION_DEVICE, 16));
             strCmd += QString::number(255, 16).rightJustified(2, '0');
@@ -126,26 +124,18 @@ widgetConfig::widgetConfig(QWidget *parent) : QWidget(parent)
 
             if(iDevice == E_GEN_ADC_1)
             {
-                dw_nmbChannels = E_NMB_GEN_ADC1;
                 strCmd += QString::number(E_CFG_TYPE_RF_ADC1_MUL, 16).rightJustified(2, '0');
+                ReadLineEditAndAddToMsg(strCmd, E_CFG_TYPE_RF_ADC1_MUL);
             }
             else if(iDevice == E_GEN_ADC_2)
             {
-                dw_nmbChannels = E_NMB_GEN_ADC2;
                 strCmd += QString::number(E_CFG_TYPE_RF_ADC2_MUL, 16).rightJustified(2, '0');
+                ReadLineEditAndAddToMsg(strCmd, E_CFG_TYPE_RF_ADC2_MUL);
             }
             else if(iDevice == E_GEN_ADC_3)
             {
-                dw_nmbChannels = E_NMB_GEN_ADC3;
                 strCmd += QString::number(E_CFG_TYPE_RF_ADC3_MUL, 16).rightJustified(2, '0');
-            }
-
-            for(int iChannel = 0; iChannel < dw_nmbChannels; iChannel++)
-            {
-                float flNmb = lineInputGenMulAdcx[iDevice][iChannel]->text().toFloat();
-                QByteArray arrFloatInArraysDec(reinterpret_cast<const char *>(&flNmb), sizeof (flNmb));
-                QByteArray arrFloatInArraysHexa = arrFloatInArraysDec.toHex();
-                strCmd += QString(arrFloatInArraysHexa);
+                ReadLineEditAndAddToMsg(strCmd, E_CFG_TYPE_RF_ADC3_MUL);
             }
 
             emit SendV200specific(strCmd, false);
@@ -154,7 +144,6 @@ widgetConfig::widgetConfig(QWidget *parent) : QWidget(parent)
         connect(buttSendGenAddAdcx[iDevice],&QPushButton::clicked,[=](bool clicked){
 
             Q_UNUSED(clicked);
-            int dw_nmbChannels = 0;
 
             QString strCmd = QString("%1").arg(QString::number(PID_CONFIGURATION_DEVICE, 16));
             strCmd += QString::number(255, 16).rightJustified(2, '0');
@@ -162,26 +151,18 @@ widgetConfig::widgetConfig(QWidget *parent) : QWidget(parent)
 
             if(iDevice == E_GEN_ADC_1)
             {
-                dw_nmbChannels = E_NMB_GEN_ADC1;
                 strCmd += QString::number(E_CFG_TYPE_RF_ADC1_ADD, 16).rightJustified(2, '0');
+                ReadLineEditAndAddToMsg(strCmd, E_CFG_TYPE_RF_ADC1_ADD);
             }
             else if(iDevice == E_GEN_ADC_2)
             {
-                dw_nmbChannels = E_NMB_GEN_ADC2;
                 strCmd += QString::number(E_CFG_TYPE_RF_ADC2_ADD, 16).rightJustified(2, '0');
+                ReadLineEditAndAddToMsg(strCmd, E_CFG_TYPE_RF_ADC2_ADD);
             }
             else if(iDevice == E_GEN_ADC_3)
             {
-                dw_nmbChannels = E_NMB_GEN_ADC3;
                 strCmd += QString::number(E_CFG_TYPE_RF_ADC3_ADD, 16).rightJustified(2, '0');
-            }
-
-            for(int iChannel = 0; iChannel < dw_nmbChannels; iChannel++)
-            {
-                float flNmb = lineInputGenAddAdcx[iDevice][iChannel]->text().toFloat();
-                QByteArray arrFloatInArraysDec(reinterpret_cast<const char *>(&flNmb), sizeof (flNmb));
-                QByteArray arrFloatInArraysHexa = arrFloatInArraysDec.toHex();
-                strCmd += QString(arrFloatInArraysHexa);
+                ReadLineEditAndAddToMsg(strCmd, E_CFG_TYPE_RF_ADC3_ADD);
             }
 
             emit SendV200specific(strCmd, false);
@@ -268,13 +249,7 @@ widgetConfig::widgetConfig(QWidget *parent) : QWidget(parent)
         strCmd += QString::number(CONFIG_WRITE, 16).rightJustified(2, '0');
         strCmd += QString::number(E_CFG_TYPE_RF_OTHERS, 16).rightJustified(2, '0');
 
-        for(int iChannel = 0; iChannel < E_NMB_GEN_OTHERS; iChannel++)
-        {
-            float flNmb = lineInputGenOthers[iChannel]->text().toFloat();
-            QByteArray arrFloatInArraysDec(reinterpret_cast<const char *>(&flNmb), sizeof (flNmb));
-            QByteArray arrFloatInArraysHexa = arrFloatInArraysDec.toHex();
-            strCmd += QString(arrFloatInArraysHexa);
-        }
+        ReadLineEditAndAddToMsg(strCmd, E_CFG_TYPE_RF_OTHERS);
 
         emit SendV200specific(strCmd, false);
         emit SendReferenceImpedance(lineInputGenOthers[6]->text().toFloat(), lineInputGenOthers[7]->text().toFloat(), lineInputGenOthers[8]->text().toFloat(), lineInputGenOthers[3]->text().toFloat());
@@ -289,15 +264,7 @@ widgetConfig::widgetConfig(QWidget *parent) : QWidget(parent)
         strCmd += QString::number(CONFIG_WRITE, 16).rightJustified(2, '0');
         strCmd += QString::number(E_CFG_TYPE_RF_REG_PWR, 16).rightJustified(2, '0');
 
-        for(int iChannel = 0; iChannel < E_NMB_GEN_REGULATOR_POWER - 1; iChannel++)
-        {
-            float flNmb = lineInputGenRegulatorPower[iChannel]->text().toFloat();
-            QByteArray arrFloatInArraysDec(reinterpret_cast<const char *>(&flNmb), sizeof (flNmb));
-            QByteArray arrFloatInArraysHexa = arrFloatInArraysDec.toHex();
-            strCmd += QString(arrFloatInArraysHexa);
-        }
-
-        strCmd += QString::number(lineInputGenRegulatorPower[E_NMB_GEN_REGULATOR_POWER - 1]->text().toInt(), 16).rightJustified(2 * 2, '0');
+        ReadLineEditAndAddToMsg(strCmd, E_CFG_TYPE_RF_REG_PWR);
 
         emit SendV200specific(strCmd, false);
     });
@@ -311,18 +278,7 @@ widgetConfig::widgetConfig(QWidget *parent) : QWidget(parent)
         strCmd += QString::number(CONFIG_WRITE, 16).rightJustified(2, '0');
         strCmd += QString::number(E_CFG_TYPE_RF_REG_COOL, 16).rightJustified(2, '0');
 
-        for(int iChannel = 0; iChannel < E_NMB_GEN_REGULATOR_COOLING - 4; iChannel++)
-        {
-            float flNmb = lineInputGenRegulatorCooling[iChannel]->text().toFloat();
-            QByteArray arrFloatInArraysDec(reinterpret_cast<const char *>(&flNmb), sizeof (flNmb));
-            QByteArray arrFloatInArraysHexa = arrFloatInArraysDec.toHex();
-            strCmd += QString(arrFloatInArraysHexa);
-        }
-
-        strCmd += QString::number(lineInputGenRegulatorCooling[E_NMB_GEN_REGULATOR_COOLING - 4]->text().toInt(), 16).rightJustified(2 * 2, '0');
-        strCmd += QString::number(lineInputGenRegulatorCooling[E_NMB_GEN_REGULATOR_COOLING - 3]->text().toInt(), 16).rightJustified(1 * 2, '0');
-        strCmd += QString::number(lineInputGenRegulatorCooling[E_NMB_GEN_REGULATOR_COOLING - 2]->text().toInt(), 16).rightJustified(1 * 2, '0');
-        strCmd += QString::number(lineInputGenRegulatorCooling[E_NMB_GEN_REGULATOR_COOLING - 1]->text().toInt(), 16).rightJustified(1 * 2, '0');
+        ReadLineEditAndAddToMsg(strCmd, E_CFG_TYPE_RF_REG_COOL);
 
         emit SendV200specific(strCmd, false);
     });
@@ -336,10 +292,7 @@ widgetConfig::widgetConfig(QWidget *parent) : QWidget(parent)
         strCmd += QString::number(CONFIG_WRITE, 16).rightJustified(2, '0');
         strCmd += QString::number(E_CFG_TYPE_RF_TEST_THERAPY, 16).rightJustified(2, '0');
 
-        for(int iChannel = 0; iChannel < E_NMB_GEN_TESTTHERAPY; iChannel++)
-        {
-            strCmd += QString::number(lineInputGenTestTherapy[iChannel]->text().toInt(), 16).rightJustified(1 * 2, '0');
-        }
+        ReadLineEditAndAddToMsg(strCmd, E_CFG_TYPE_RF_TEST_THERAPY);
 
         emit SendV200specific(strCmd, false);
     });
@@ -353,10 +306,7 @@ widgetConfig::widgetConfig(QWidget *parent) : QWidget(parent)
         strCmd += QString::number(CONFIG_WRITE, 16).rightJustified(2, '0');
         strCmd += QString::number(E_CFG_TYPE_RF_CQM_PWM, 16).rightJustified(2, '0');
 
-        for(int iChannel = 0; iChannel < E_NMB_GEN_PWM_CQM; iChannel++)
-        {
-            strCmd += QString::number(lineInputGenPwmCqm[iChannel]->text().toInt(), 16).rightJustified(4 * 2, '0');
-        }
+        ReadLineEditAndAddToMsg(strCmd, E_CFG_TYPE_RF_CQM_PWM);
 
         emit SendV200specific(strCmd, false);
     });
@@ -556,8 +506,8 @@ void widgetConfig::ReadConfigGenerNew(QByteArray data)
             {
                 for(int iLoop = 0; iLoop < E_NMB_GEN_TESTTHERAPY; iLoop++)
                 {
-                    uint8_t byValue = uint8_t(data.at(5 + iLoop));
-                    lineInputGenTestTherapy[iLoop]->setText(QString::number(byValue));
+                    uint32_t dwDecodedArray = DecodeBytesToUint32(data.mid(iLoop * 4 + 1 + 4));
+                    lineInputGenTestTherapy[iLoop]->setText(QString::number(dwDecodedArray));
                 }
 
             }
@@ -1006,6 +956,170 @@ uint32_t widgetConfig::DecodeBytesToUint32(QByteArray qByArry)
     dwValue |= uint32_t(qByArry.at(3)) & 0x000000FF;
 
     return dwValue;
+}
+
+void widgetConfig::ReadLineEditAndAddToMsg(QString &strPacketContent, widgetConfig::CONFIG_TYPES_RF eType)
+{
+    switch(eType)
+    {
+    case E_CFG_TYPE_RF_ADC1_MUL:
+        ReadAndAddToMsgAdc1Mul(strPacketContent);
+        break;
+    case E_CFG_TYPE_RF_ADC1_ADD:
+        ReadAndAddToMsgAdc1Add(strPacketContent);
+        break;
+    case E_CFG_TYPE_RF_ADC2_MUL:
+        ReadAndAddToMsgAdc2Mul(strPacketContent);
+        break;
+    case E_CFG_TYPE_RF_ADC2_ADD:
+        ReadAndAddToMsgAdc2Add(strPacketContent);
+        break;
+    case E_CFG_TYPE_RF_ADC3_MUL:
+        ReadAndAddToMsgAdc3Mul(strPacketContent);
+        break;
+    case E_CFG_TYPE_RF_ADC3_ADD:
+        ReadAndAddToMsgAdc3Add(strPacketContent);
+        break;
+    case E_CFG_TYPE_RF_OTHERS:
+        ReadAndAddToMsgOthrers(strPacketContent);
+        break;
+    case E_CFG_TYPE_RF_REG_PWR:
+        ReadAndAddToMsgRegPwr(strPacketContent);
+        break;
+    case E_CFG_TYPE_RF_REG_COOL:
+        ReadAndAddToMsgRegCool(strPacketContent);
+        break;
+    case E_CFG_TYPE_RF_TEST_THERAPY:
+        ReadAndAddToMsgTestTher(strPacketContent);
+        break;
+    case E_CFG_TYPE_RF_CQM_PWM:
+        ReadAndAddToMsgCqmPwm(strPacketContent);
+        break;
+    default:
+        break;
+    }
+}
+
+void widgetConfig::ReadAndAddToMsgAdc1Mul(QString &strPacketContent)
+{
+    for(int iChannel = 0; iChannel < E_NMB_GEN_ADC1; iChannel++)
+    {
+        float flNmb = lineInputGenMulAdcx[E_GEN_ADC_1][iChannel]->text().toFloat();
+        QByteArray arrFloatInArraysDec(reinterpret_cast<const char *>(&flNmb), sizeof (flNmb));
+        QByteArray arrFloatInArraysHexa = arrFloatInArraysDec.toHex();
+        strPacketContent += QString(arrFloatInArraysHexa);
+    }
+}
+
+void widgetConfig::ReadAndAddToMsgAdc1Add(QString &strPacketContent)
+{
+    for(int iChannel = 0; iChannel < E_NMB_GEN_ADC1; iChannel++)
+    {
+        float flNmb = lineInputGenAddAdcx[E_GEN_ADC_1][iChannel]->text().toFloat();
+        QByteArray arrFloatInArraysDec(reinterpret_cast<const char *>(&flNmb), sizeof (flNmb));
+        QByteArray arrFloatInArraysHexa = arrFloatInArraysDec.toHex();
+        strPacketContent += QString(arrFloatInArraysHexa);
+    }
+}
+
+void widgetConfig::ReadAndAddToMsgAdc2Mul(QString &strPacketContent)
+{
+    for(int iChannel = 0; iChannel < E_NMB_GEN_ADC2; iChannel++)
+    {
+        float flNmb = lineInputGenMulAdcx[E_GEN_ADC_2][iChannel]->text().toFloat();
+        QByteArray arrFloatInArraysDec(reinterpret_cast<const char *>(&flNmb), sizeof (flNmb));
+        QByteArray arrFloatInArraysHexa = arrFloatInArraysDec.toHex();
+        strPacketContent += QString(arrFloatInArraysHexa);
+    }
+}
+
+void widgetConfig::ReadAndAddToMsgAdc2Add(QString &strPacketContent)
+{
+    for(int iChannel = 0; iChannel < E_NMB_GEN_ADC2; iChannel++)
+    {
+        float flNmb = lineInputGenAddAdcx[E_GEN_ADC_2][iChannel]->text().toFloat();
+        QByteArray arrFloatInArraysDec(reinterpret_cast<const char *>(&flNmb), sizeof (flNmb));
+        QByteArray arrFloatInArraysHexa = arrFloatInArraysDec.toHex();
+        strPacketContent += QString(arrFloatInArraysHexa);
+    }
+}
+
+void widgetConfig::ReadAndAddToMsgAdc3Mul(QString &strPacketContent)
+{
+    for(int iChannel = 0; iChannel < E_NMB_GEN_ADC3; iChannel++)
+    {
+        float flNmb = lineInputGenMulAdcx[E_GEN_ADC_3][iChannel]->text().toFloat();
+        QByteArray arrFloatInArraysDec(reinterpret_cast<const char *>(&flNmb), sizeof (flNmb));
+        QByteArray arrFloatInArraysHexa = arrFloatInArraysDec.toHex();
+        strPacketContent += QString(arrFloatInArraysHexa);
+    }
+}
+
+void widgetConfig::ReadAndAddToMsgAdc3Add(QString &strPacketContent)
+{
+    for(int iChannel = 0; iChannel < E_NMB_GEN_ADC3; iChannel++)
+    {
+        float flNmb = lineInputGenAddAdcx[E_GEN_ADC_3][iChannel]->text().toFloat();
+        QByteArray arrFloatInArraysDec(reinterpret_cast<const char *>(&flNmb), sizeof (flNmb));
+        QByteArray arrFloatInArraysHexa = arrFloatInArraysDec.toHex();
+        strPacketContent += QString(arrFloatInArraysHexa);
+    }
+}
+
+void widgetConfig::ReadAndAddToMsgOthrers(QString &strPacketContent)
+{
+    for(int iChannel = 0; iChannel < E_NMB_GEN_OTHERS; iChannel++)
+    {
+        float flNmb = lineInputGenOthers[iChannel]->text().toFloat();
+        QByteArray arrFloatInArraysDec(reinterpret_cast<const char *>(&flNmb), sizeof (flNmb));
+        QByteArray arrFloatInArraysHexa = arrFloatInArraysDec.toHex();
+        strPacketContent += QString(arrFloatInArraysHexa);
+    }
+}
+
+void widgetConfig::ReadAndAddToMsgRegCool(QString &strPacketContent)
+{
+    for(int iChannel = 0; iChannel < E_NMB_GEN_REGULATOR_COOLING - 4; iChannel++)
+    {
+        float flNmb = lineInputGenRegulatorCooling[iChannel]->text().toFloat();
+        QByteArray arrFloatInArraysDec(reinterpret_cast<const char *>(&flNmb), sizeof (flNmb));
+        QByteArray arrFloatInArraysHexa = arrFloatInArraysDec.toHex();
+        strPacketContent += QString(arrFloatInArraysHexa);
+    }
+
+    strPacketContent += QString::number(lineInputGenRegulatorCooling[E_NMB_GEN_REGULATOR_COOLING - 4]->text().toInt(), 16).rightJustified(2 * 2, '0');
+    strPacketContent += QString::number(lineInputGenRegulatorCooling[E_NMB_GEN_REGULATOR_COOLING - 3]->text().toInt(), 16).rightJustified(1 * 2, '0');
+    strPacketContent += QString::number(lineInputGenRegulatorCooling[E_NMB_GEN_REGULATOR_COOLING - 2]->text().toInt(), 16).rightJustified(1 * 2, '0');
+    strPacketContent += QString::number(lineInputGenRegulatorCooling[E_NMB_GEN_REGULATOR_COOLING - 1]->text().toInt(), 16).rightJustified(1 * 2, '0');
+}
+
+void widgetConfig::ReadAndAddToMsgRegPwr(QString &strPacketContent)
+{
+    for(int iChannel = 0; iChannel < E_NMB_GEN_REGULATOR_POWER - 1; iChannel++)
+    {
+        float flNmb = lineInputGenRegulatorPower[iChannel]->text().toFloat();
+        QByteArray arrFloatInArraysDec(reinterpret_cast<const char *>(&flNmb), sizeof (flNmb));
+        QByteArray arrFloatInArraysHexa = arrFloatInArraysDec.toHex();
+        strPacketContent += QString(arrFloatInArraysHexa);
+    }
+
+    strPacketContent += QString::number(lineInputGenRegulatorPower[E_NMB_GEN_REGULATOR_POWER - 1]->text().toInt(), 16).rightJustified(2 * 2, '0');
+}
+
+void widgetConfig::ReadAndAddToMsgTestTher(QString &strPacketContent)
+{
+    for(int iChannel = 0; iChannel < E_NMB_GEN_TESTTHERAPY; iChannel++)
+    {
+        strPacketContent += QString::number(lineInputGenTestTherapy[iChannel]->text().toInt(), 16).rightJustified(4 * 2, '0');
+    }
+}
+
+void widgetConfig::ReadAndAddToMsgCqmPwm(QString &strPacketContent)
+{
+    for(int iChannel = 0; iChannel < E_NMB_GEN_PWM_CQM; iChannel++)
+    {
+        strPacketContent += QString::number(lineInputGenPwmCqm[iChannel]->text().toInt(), 16).rightJustified(4 * 2, '0');
+    }
 }
 
 void widgetConfig::clearLineEdits()
