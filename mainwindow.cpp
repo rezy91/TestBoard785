@@ -59,7 +59,7 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
     connect(p_WidgetConfig, &widgetConfig::SaveAdcData, appSettings, &settings::StoreAdcData);
     connect(this, &MainWindow::SendAdcData, p_WidgetConfig, &widgetConfig::ReadAdcData);
 
-    connect(this, &MainWindow::SendConfigGenerNew, p_WidgetConfig, &widgetConfig::ReadConfigGenerNew);
+    connect(this, &MainWindow::SendConfigGenerNew, p_WidgetConfig, &widgetConfig::ReadConfigGener);
 
     connect(p_widgetSettings, &widgetSettings::SaveAmpFreq, appSettings, &settings::StoreAmpFreq);
     connect(this, &MainWindow::SendAmpFreq, p_widgetSettings, &widgetSettings::ReadAmpFreq);
