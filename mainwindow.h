@@ -193,7 +193,7 @@ signals:
     void SendAxisHigh(int index, double value);
     void SendAxisLow(int index, double value);
     void SendAdcData(QString type, QString device, int index, QString values);
-    void SendConfigGenerNew(QByteArray values);
+    void SendConfigGener(QByteArray values);
     void SendAmpFreq(QString values);
     void SendAmpPwm(QString values);
     void SendGenPwm(QString values);

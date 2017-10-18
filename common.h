@@ -35,6 +35,7 @@ typedef enum packet_id
   PID_SET_THERAPY_TIME                 = 0x24,
   PID_SET_CONFIGURATION_OF_ACCESSORY   = 0x26,
   PID_SET_SEND_LAST_ERROR              = 0x28,
+  PID_CONFIGURATION_DEVICE             = 0x29,
 
   // Common packet reply
   PID_REPLY_SEND_LAST_OPERATION_RESULT = 0x00,
@@ -56,6 +57,7 @@ typedef enum packet_id
 
   PID_REPLY_SET_THERAPY_SETTINGS       = 0x43,
   PID_REPLY_SEND_LAST_ERROR            = 0x48,
+  PID_REPLY_CONFIGURATION_DEVICE       = 0x49,
 
 
   // test(service) packets
@@ -83,7 +85,7 @@ typedef enum packet_id
   PID_READ_INPUT                      = 0x46,
   PID_SEND_ADCS_RAW_DATA              = 0x47,
   PID_SET_PWM_COOLS_DUTY              = 0x48,
-  PID_CONFIGURATION_DEVICE            = 0x49,
+
   PID_SET_RESERVE_14                  = 0x4A,
   PID_SET_RESERVE_13                  = 0x50,
   PID_SET_RESERVE_12                  = 0x51,

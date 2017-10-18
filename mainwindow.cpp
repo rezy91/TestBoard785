@@ -59,7 +59,7 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
     connect(p_WidgetConfig, &widgetConfig::SaveAdcData, appSettings, &settings::StoreAdcData);
     connect(this, &MainWindow::SendAdcData, p_WidgetConfig, &widgetConfig::ReadAdcData);
 
-    connect(this, &MainWindow::SendConfigGenerNew, p_WidgetConfig, &widgetConfig::ReadConfigGener);
+    connect(this, &MainWindow::SendConfigGener, p_WidgetConfig, &widgetConfig::ReadConfigGener);
 
     connect(p_widgetSettings, &widgetSettings::SaveAmpFreq, appSettings, &settings::StoreAmpFreq);
     connect(this, &MainWindow::SendAmpFreq, p_widgetSettings, &widgetSettings::ReadAmpFreq);
@@ -685,8 +685,8 @@ void MainWindow::newDataV200(QByteArray aData)
         break;
 
     //generator config data
-    case PID_CONFIGURATION_DEVICE:
-        SendConfigGenerNew(aData);
+    case PID_REPLY_CONFIGURATION_DEVICE:
+        SendConfigGener(aData);
         break;
     case PID_REPLY_TOUCH_MEMORY_OK:
         emit SendTipMemory(uint8_t(aData.at(1)), uint8_t(aData.at(4)), aData.mid(5));
