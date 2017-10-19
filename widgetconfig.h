@@ -40,11 +40,6 @@ private:
         E_BUTTON_SAVE_FILE,
         E_NMB_BUTTONS,
     };
-    typedef enum
-    {
-      CONFIG_WRITE,
-      CONFIG_READ,
-    } CONFIG_ACTION;
 
     enum {E_NMB_AMP_ADC1 = 8};
     enum {E_NMB_AMP_ADC3 = 8};
@@ -65,7 +60,6 @@ private:
       E_CFG_TYPE_RF_COUNT,
       E_CFG_TYPE_RF_ALL = 255,
     } CONFIG_TYPES_RF;
-
 
     enum {E_NMB_MAX_VALUE = 17};
 

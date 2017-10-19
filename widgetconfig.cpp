@@ -24,7 +24,7 @@ widgetConfig::widgetConfig(QWidget *parent) : QWidget(parent)
 
                     strCmd = QString("%1").arg(QString::number(PID_CONFIGURATION_DEVICE, 16));
                     strCmd += QString::number(255, 16).rightJustified(2, '0');
-                    strCmd += QString::number(CONFIG_READ, 16).rightJustified(2, '0');
+                    strCmd += QString::number(ACTION_READ, 16).rightJustified(2, '0');
                     strCmd += QString::number(iLoop, 16).rightJustified(2, '0');
                     emit SendV200specific(strCmd, true);
                 }
@@ -54,7 +54,7 @@ widgetConfig::widgetConfig(QWidget *parent) : QWidget(parent)
 
             QString strCmd = QString("%1").arg(QString::number(PID_CONFIGURATION_DEVICE, 16));
             strCmd += QString::number(255, 16).rightJustified(2, '0');
-            strCmd += QString::number(CONFIG_WRITE, 16).rightJustified(2, '0');
+            strCmd += QString::number(ACTION_WRITE, 16).rightJustified(2, '0');
             strCmd += QString::number(iLoop, 16).rightJustified(2, '0');
 
             ReadLineEditAndAddToMsg(strCmd, CONFIG_TYPES_RF(iLoop));
@@ -200,7 +200,7 @@ void widgetConfig::ReadConfigGener(QByteArray data)
 
     if(byDevice == 255)
     {
-        if(byDirection == CONFIG_READ)
+        if(byDirection == ACTION_READ)
         {
             if(byType == E_CFG_TYPE_RF_ADC1_MUL)
             {
@@ -508,7 +508,7 @@ void widgetConfig::saveMcuRf()
 {
     QString strCmd = QString("%1").arg(QString::number(PID_CONFIGURATION_DEVICE, 16));
     strCmd += QString::number(255, 16).rightJustified(2, '0');
-    strCmd += QString::number(CONFIG_WRITE, 16).rightJustified(2, '0');
+    strCmd += QString::number(ACTION_WRITE, 16).rightJustified(2, '0');
     strCmd += QString::number(E_CFG_TYPE_RF_ALL, 16).rightJustified(2, '0');
 
     for(int iLoop = 0; iLoop < E_CFG_TYPE_RF_COUNT; iLoop++)

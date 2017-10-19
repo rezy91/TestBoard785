@@ -39,7 +39,10 @@ widgetSettings::widgetSettings(QWidget *parent) : QWidget(parent)
         Q_UNUSED(clicked);
 
         QString SaveData;
-        QString strCmd = QString("%1").arg(QString::number(PID_SET_PWM_COOLS_DUTY, 16));
+        QString strCmd = QString("%1").arg(QString::number(PID_SETTINGS_DEVICE, 16));
+        strCmd += QString::number(255, 16).rightJustified(2, '0');
+        strCmd += QString::number(ACTION_WRITE, 16).rightJustified(2, '0');
+        strCmd += QString::number(E_SET_TYPE_RF_COOL_PWM, 16).rightJustified(2, '0');
 
         strCmd += QString::number(lineInputGenPwmCool->text().toInt(), 16).rightJustified(1 * 2, '0');
         SaveData.append(QString("%1").arg(QString::number(lineInputGenPwmCool->text().toInt())) + " ");
@@ -51,7 +54,16 @@ widgetSettings::widgetSettings(QWidget *parent) : QWidget(parent)
     connect(buttSendGenPwrReset,&QPushButton::clicked,[=](bool clicked){
 
         Q_UNUSED(clicked);
-        AssemblyAplxAndPwrResetPacket(true);
+        QString strCmd = QString("%1").arg(QString::number(PID_SETTINGS_DEVICE, 16));
+        strCmd += QString::number(255, 16).rightJustified(2, '0');
+        strCmd += QString::number(ACTION_WRITE, 16).rightJustified(2, '0');
+        strCmd += QString::number(E_SET_TYPE_RF_DO_PEAK, 16).rightJustified(2, '0');
+
+        QString strHexNumber = QString::number(lineInputGenPwrReset->text().toInt(), 16);
+        strCmd += strHexNumber.rightJustified(1 * 2, '0');
+
+
+        emit SendV200specific(strCmd, false);
     });
 
     for(int iDevice = 0; iDevice < E_NMB_AMP_OUTPUTS; iDevice++)
@@ -75,7 +87,12 @@ widgetSettings::widgetSettings(QWidget *parent) : QWidget(parent)
         connect(checkGenOutputs[iDevice], &QCheckBox::stateChanged, [=](int checked){
 
             Q_UNUSED(checked);
-            QString strCmd = QString("%1").arg(QString::number(PID_SET_OUTPUTS, 16));
+            qDebug() << "changed output";
+
+            QString strCmd = QString("%1").arg(QString::number(PID_SETTINGS_DEVICE, 16));
+            strCmd += QString::number(255, 16).rightJustified(2, '0');
+            strCmd += QString::number(ACTION_WRITE, 16).rightJustified(2, '0');
+            strCmd += QString::number(E_SET_TYPE_RF_OUTPUTS, 16).rightJustified(2, '0');
 
             for(int jDevice = 0; jDevice < E_NMB_GEN_OUTPUTS; jDevice++)
             {
@@ -91,7 +108,18 @@ widgetSettings::widgetSettings(QWidget *parent) : QWidget(parent)
         connect(checkGenAplX[iDevice], &QCheckBox::stateChanged, [=](int checked){
 
             Q_UNUSED(checked);
-            AssemblyAplxAndPwrResetPacket(false);
+            QString strCmd = QString("%1").arg(QString::number(PID_SETTINGS_DEVICE, 16));
+            strCmd += QString::number(255, 16).rightJustified(2, '0');
+            strCmd += QString::number(ACTION_WRITE, 16).rightJustified(2, '0');
+            strCmd += QString::number(E_SET_TYPE_RF_APLS, 16).rightJustified(2, '0');
+
+            for(int jDevice = 0; jDevice < E_NMB_GEN_APLx; jDevice++)
+            {
+                strCmd += (checkGenAplX[jDevice]->checkState() == Qt::Checked ? "01" : "00");
+            }
+
+            emit SendV200specific(strCmd, false);
+
         });
     }
 
@@ -161,7 +189,10 @@ widgetSettings::widgetSettings(QWidget *parent) : QWidget(parent)
 
     connect(checkGenTestTherapy, &QPushButton::clicked, [=](){
 
-        QString strCmd = QString("%1").arg(QString::number(PID_START_STOP_TEST_THERAPY, 16));
+        QString strCmd = QString("%1").arg(QString::number(PID_SETTINGS_DEVICE, 16));
+        strCmd += QString::number(255, 16).rightJustified(2, '0');
+        strCmd += QString::number(ACTION_WRITE, 16).rightJustified(2, '0');
+        strCmd += QString::number(E_SET_TYPE_RF_TEST_THERAPY, 16).rightJustified(2, '0');
         strCmd += (checkGenTestTherapy->checkState() == Qt::Checked ? "01" : "00");
 
         emit SendV200specific(strCmd, false);
@@ -198,34 +229,86 @@ void widgetSettings::ReadAmpPwm(QString data)
     }
 }
 
-void widgetSettings::ReadGenPwm(QString data)
+void widgetSettings::ReadSettingsGener(QByteArray data)
 {
-    QStringList arrListSaved;
-    arrListSaved = data.split(QRegExp("\\s+"));
+    uint8_t byDevice = uint8_t(data.at(1));
+    uint8_t byDirection = uint8_t(data.at(2));
+    uint8_t byType = uint8_t(data.at(3));
 
-    if((arrListSaved.count() - 1) == 1)
+    if(byDevice == 255)
     {
-        lineInputGenPwmCool->setText(arrListSaved.at(0));
-    }
-    else
-    {
-        lineInputGenPwmCool->setText(c_defaultValueGenPwm);
+        if(byDirection == ACTION_READ)
+        {
+            if(byType == E_SET_TYPE_RF_OUTPUTS)
+            {
+                for(int iLoop = 0; iLoop < E_NMB_GEN_OUTPUTS; iLoop++)
+                {
+                    checkGenOutputs[iLoop]->blockSignals(true);
+                    checkGenOutputs[iLoop]->setChecked(uint8_t(data.at(5 + iLoop)) == 1 ? true : false);
+                    checkGenOutputs[iLoop]->blockSignals(false);
+                }
+            }
+            else if(byType == E_SET_TYPE_RF_APLS)
+            {
+                for(int iLoop = 0; iLoop < E_NMB_GEN_APLx; iLoop++)
+                {
+                    checkGenAplX[iLoop]->blockSignals(true);
+                    checkGenAplX[iLoop]->setChecked(uint8_t(data.at(5 + iLoop)) == 1 ? true : false);
+                    checkGenAplX[iLoop]->blockSignals(false);
+                }
+            }
+            else if(byType == E_SET_TYPE_RF_COOL_PWM)
+            {
+                lineInputGenPwmCool->setText(QString::number(uint8_t(data.at(5))));
+            }
+            else if(byType == E_SET_TYPE_RF_TEST_THERAPY)
+            {
+
+            }
+            else if(byType == E_SET_TYPE_RF_DO_PEAK)
+            {
+                lineInputGenPwrReset->setText(QString::number(uint8_t(data.at(5))));
+            }
+        }
     }
 }
 
-void widgetSettings::ReadGenPwr(QString data)
+void widgetSettings::RefreshPage()
 {
-    QStringList arrListSaved;
-    arrListSaved = data.split(QRegExp("\\s+"));
 
-    if((arrListSaved.count() - 1) == 1)
-    {
-        lineInputGenPwrReset->setText(arrListSaved.at(0));
-    }
-    else
-    {
-        lineInputGenPwrReset->setText(c_defaultValueGenPwr);
-    }
+    qDebug() << "refresh page";
+
+    QString strCmd;
+
+    strCmd = QString("%1").arg(QString::number(PID_SETTINGS_DEVICE, 16));
+    strCmd += QString::number(255, 16).rightJustified(2, '0');
+    strCmd += QString::number(ACTION_READ, 16).rightJustified(2, '0');
+    strCmd += QString::number(E_SET_TYPE_RF_OUTPUTS, 16).rightJustified(2, '0');
+    emit SendV200specific(strCmd, true);
+
+    strCmd = QString("%1").arg(QString::number(PID_SETTINGS_DEVICE, 16));
+    strCmd += QString::number(255, 16).rightJustified(2, '0');
+    strCmd += QString::number(ACTION_READ, 16).rightJustified(2, '0');
+    strCmd += QString::number(E_SET_TYPE_RF_APLS, 16).rightJustified(2, '0');
+    emit SendV200specific(strCmd, true);
+
+    strCmd = QString("%1").arg(QString::number(PID_SETTINGS_DEVICE, 16));
+    strCmd += QString::number(255, 16).rightJustified(2, '0');
+    strCmd += QString::number(ACTION_READ, 16).rightJustified(2, '0');
+    strCmd += QString::number(E_SET_TYPE_RF_COOL_PWM, 16).rightJustified(2, '0');
+    emit SendV200specific(strCmd, true);
+
+    strCmd = QString("%1").arg(QString::number(PID_SETTINGS_DEVICE, 16));
+    strCmd += QString::number(255, 16).rightJustified(2, '0');
+    strCmd += QString::number(ACTION_READ, 16).rightJustified(2, '0');
+    strCmd += QString::number(E_SET_TYPE_RF_TEST_THERAPY, 16).rightJustified(2, '0');
+    emit SendV200specific(strCmd, true);
+
+    strCmd = QString("%1").arg(QString::number(PID_SETTINGS_DEVICE, 16));
+    strCmd += QString::number(255, 16).rightJustified(2, '0');
+    strCmd += QString::number(ACTION_READ, 16).rightJustified(2, '0');
+    strCmd += QString::number(E_SET_TYPE_RF_DO_PEAK, 16).rightJustified(2, '0');
+    emit SendV200specific(strCmd, true);
 }
 
 QLabel *widgetSettings::createNewLabel(const QString &text)
@@ -351,37 +434,3 @@ QGroupBox *widgetSettings::createSettingsGenGroup()
 
     return groupBox;
 }
-
-
-void widgetSettings::AssemblyAplxAndPwrResetPacket(bool source)
-{
-    QString SaveData;
-    QString strCmd = QString("%1").arg(QString::number(PID_SET_APLS, 16));
-
-    SaveData.append(QString("%1").arg(QString::number(lineInputGenPwrReset->text().toInt())) + " ");
-
-    for(int jDevice = 0; jDevice < E_NMB_GEN_APLx; jDevice++)
-    {
-        strCmd += (checkGenAplX[jDevice]->checkState() == Qt::Checked ? "01" : "00");
-
-        if(jDevice == 0)
-        {
-            QString strHexNumber;
-
-            if(source)
-            {
-                strHexNumber = QString::number(lineInputGenPwrReset->text().toInt(), 16);
-            }
-            else
-            {
-                strHexNumber = QString::number(0);
-            }
-            strCmd += strHexNumber.rightJustified(1 * 2, '0');
-
-        }
-    }
-
-    emit SaveGenPwr(SaveData);
-    emit SendV200specific(strCmd, false);
-}
-

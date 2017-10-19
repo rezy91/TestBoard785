@@ -20,11 +20,12 @@ class widgetSettings : public QWidget
 public:
     explicit widgetSettings(QWidget *parent = 0);
 
+    void RefreshPage(void);
+
 public slots:
     void ReadAmpFreq(QString data);
     void ReadAmpPwm(QString data);
-    void ReadGenPwm(QString data);
-    void ReadGenPwr(QString data);
+    void ReadSettingsGener(QByteArray data);
 
 private:
     enum {E_NMB_GEN_RAW_RECEIVING = 3};
@@ -32,6 +33,16 @@ private:
     enum {E_NMB_GEN_APLx = 9};
 
     enum {E_NMB_AMP_OUTPUTS = 6};
+
+    typedef enum
+    {
+      E_SET_TYPE_RF_OUTPUTS,
+      E_SET_TYPE_RF_APLS,
+      E_SET_TYPE_RF_COOL_PWM,
+      E_SET_TYPE_RF_TEST_THERAPY,
+      E_SET_TYPE_RF_DO_PEAK,
+      E_SET_TYPE_RF_COUNT,
+    } SETTINGS_TYPES_RF;
 
 
     const int c_dw_SizeCheckBox = 30;
@@ -42,8 +53,6 @@ private:
 
     const QString c_defaultValueAmpFreq = "32000";
     const QString c_defaultValueAmpPwm = "10.0";
-    const QString c_defaultValueGenPwm = "15";
-    const QString c_defaultValueGenPwr = "10";
 
 
     QVBoxLayout* MainLayout = new QVBoxLayout(this);
@@ -62,19 +71,14 @@ private:
     QPushButton* buttSendGenPwrReset;
 
     QCheckBox* checkGenRawData[E_NMB_GEN_RAW_RECEIVING];
-
     QCheckBox* checkGenOutputs[E_NMB_GEN_OUTPUTS];
-
     QCheckBox* checkGenAplX[E_NMB_GEN_APLx];
-
     QCheckBox* checkGenTestTherapy;
 
 
     QLabel *createNewLabel(const QString &text);
     QGroupBox *createSettingsAmpGroup();
     QGroupBox *createSettingsGenGroup();
-
-    void AssemblyAplxAndPwrResetPacket(bool source);
 
 signals:
     void SendV200specific(QString msg, bool bExp);

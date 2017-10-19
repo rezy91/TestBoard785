@@ -60,15 +60,12 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
     connect(this, &MainWindow::SendAdcData, p_WidgetConfig, &widgetConfig::ReadAdcData);
 
     connect(this, &MainWindow::SendConfigGener, p_WidgetConfig, &widgetConfig::ReadConfigGener);
+    connect(this, &MainWindow::SendSettingsGener, p_widgetSettings, &widgetSettings::ReadSettingsGener);
 
     connect(p_widgetSettings, &widgetSettings::SaveAmpFreq, appSettings, &settings::StoreAmpFreq);
     connect(this, &MainWindow::SendAmpFreq, p_widgetSettings, &widgetSettings::ReadAmpFreq);
     connect(p_widgetSettings, &widgetSettings::SaveAmpPwm, appSettings, &settings::StoreAmpPwm);
     connect(this, &MainWindow::SendAmpPwm, p_widgetSettings, &widgetSettings::ReadAmpPwm);
-    connect(p_widgetSettings, &widgetSettings::SaveGenPwm, appSettings, &settings::StoreGenPwm);
-    connect(this, &MainWindow::SendGenPwm, p_widgetSettings, &widgetSettings::ReadGenPwm);
-    connect(p_widgetSettings, &widgetSettings::SaveGenPwr, appSettings, &settings::StoreGenPwr);
-    connect(this, &MainWindow::SendGenPwr, p_widgetSettings, &widgetSettings::ReadGenPwr);
 
     connect(this, &MainWindow::SendStatusReg, p_WidgetTherapy, &widgetTherapy::ReceiveStatusReg);
     connect(this, &MainWindow::SendStatusReg, p_WidgetReading, &widgetReading::ReceiveStatusReg);
@@ -84,7 +81,7 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
     connect(p_WidgetAdmin, &widgetAdmin::SetLimitSlider, p_WidgetTherapy, &widgetTherapy::ReceiveLimitSlider);
 
     connect(p_WidgetReading, &widgetReading::SaveReadMsgsAmplf, appSettings, &settings::StoreRcvMsgAmp);
-    connect(this, &MainWindow::SendRcvMsgAmp, p_WidgetReading, &widgetReading::ReceiveRcvMsgAmp);
+    connect(p_WidgetConfig, &widgetConfig::SendReferenceImpedance, p_WidgetSmith, &widgetSmith::ReadDefaultReferenceImpedance);
     connect(p_WidgetReading, &widgetReading::SaveReadMsgsGener, appSettings, &settings::StoreRcvMsgGen);
     connect(this, &MainWindow::SendRcvMsgGen, p_WidgetReading, &widgetReading::ReceiveRcvMsgGen);
     connect(p_WidgetReading, &widgetReading::SaveReadMsgsAplUsn, appSettings, &settings::StoreRcvMsgAplUsn);
@@ -96,7 +93,6 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
     connect(p_WidgetTipMemory, &widgetTipMemory::SendDefaultReferenceImpedance, p_WidgetSmith, &widgetSmith::SetDefaultReferenceImpedance);
     connect(p_WidgetTipMemory, &widgetTipMemory::SendMaximalPower, p_WidgetTherapy, &widgetTherapy::ReceiveMaxPower);
     connect(p_WidgetTipMemory, &widgetTipMemory::SendDefaultMaximalPower, p_WidgetTherapy, &widgetTherapy::ReceiveDefaultMaxPower);
-
 
     ui->comboBox_1->addItem(QString("Generator (ID = %1d)").arg(constGenerID));
     ui->comboBox_1->addItem(QString("Amplifier (ID = %1d)").arg(constAmpID));
@@ -110,8 +106,6 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
     emit SendSmithPoints(appSettings->RestoreSmithPoints());
     emit SendAmpFreq(appSettings->RestoreAmpFreq());
     emit SendAmpPwm(appSettings->RestoreAmpPwm());
-    emit SendGenPwm(appSettings->RestoreGenPwm());
-    emit SendGenPwr(appSettings->RestoreGenPwr());
     emit SendRcvMsgAmp(appSettings->RestoreRcvMsgAmp());
     emit SendRcvMsgGen(appSettings->RestoreRcvMsgGen());
     emit SendRcvMsgAplUsn(appSettings->RestoreRcvMsgAplUsn());
@@ -357,6 +351,11 @@ MainWindow::~MainWindow()
 void MainWindow::changed_table(int index)
 {
     Q_UNUSED(index);
+
+    if(index == 2)
+    {
+        p_widgetSettings->RefreshPage();
+    }
 
     refreshPlot();
 }
@@ -687,6 +686,9 @@ void MainWindow::newDataV200(QByteArray aData)
     //generator config data
     case PID_REPLY_CONFIGURATION_DEVICE:
         SendConfigGener(aData);
+        break;
+    case PID_REPLY_SETTINGS_DEVICE:
+        SendSettingsGener(aData);
         break;
     case PID_REPLY_TOUCH_MEMORY_OK:
         emit SendTipMemory(uint8_t(aData.at(1)), uint8_t(aData.at(4)), aData.mid(5));

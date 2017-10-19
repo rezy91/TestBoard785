@@ -36,6 +36,7 @@ typedef enum packet_id
   PID_SET_CONFIGURATION_OF_ACCESSORY   = 0x26,
   PID_SET_SEND_LAST_ERROR              = 0x28,
   PID_CONFIGURATION_DEVICE             = 0x29,
+  PID_SETTINGS_DEVICE                  = 0x2A,
 
   // Common packet reply
   PID_REPLY_SEND_LAST_OPERATION_RESULT = 0x00,
@@ -58,7 +59,7 @@ typedef enum packet_id
   PID_REPLY_SET_THERAPY_SETTINGS       = 0x43,
   PID_REPLY_SEND_LAST_ERROR            = 0x48,
   PID_REPLY_CONFIGURATION_DEVICE       = 0x49,
-
+  PID_REPLY_SETTINGS_DEVICE            = 0x4A,
 
   // test(service) packets
   PID_SEND_AMP_TIMERS_RESULTS         = 0x30,
@@ -84,25 +85,6 @@ typedef enum packet_id
   PID_SEND_ADC1_AVERAGE_DATA_GENER    = 0x45,
   PID_READ_INPUT                      = 0x46,
   PID_SEND_ADCS_RAW_DATA              = 0x47,
-  PID_SET_PWM_COOLS_DUTY              = 0x48,
-
-  PID_SET_RESERVE_14                  = 0x4A,
-  PID_SET_RESERVE_13                  = 0x50,
-  PID_SET_RESERVE_12                  = 0x51,
-  PID_SET_RESERVE_11                  = 0x52,
-  PID_SET_RESERVE_10                  = 0x53,
-  PID_SET_RESERVE_9                   = 0x54,
-  PID_SET_RESERVE_8                   = 0x55,
-  PID_SET_RESERVE_7                   = 0x56,
-  PID_SET_RESERVE_6                   = 0x57,
-  PID_SET_OUTPUTS                     = 0x58,
-  PID_SET_APLS                        = 0x59,
-  PID_SET_RESERVE_5                   = 0x5A,
-  PID_SET_RESERVE_4                   = 0x5B,
-  PID_START_STOP_TEST_THERAPY         = 0x5C,
-  PID_SET_RESERVE_3                   = 0x5D,
-  PID_SET_RESERVE_2                   = 0x5E,
-  PID_SET_RESERVE_1                   = 0x5F,
 
   PID_READ_MEASURE_DATA_USN           = 0x2F,
   PID_READ_MEASURE_DATA_APL_L         = 0x3E,
@@ -119,6 +101,12 @@ typedef enum
   RECEIVE_STREAM,
   LOG_STREAM
 } SOURCE_STREAM;
+
+typedef enum
+{
+  ACTION_WRITE,
+  ACTION_READ,
+} CONFIG_ACTION;
 
 enum AMP_ADC_X
 {

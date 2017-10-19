@@ -135,26 +135,6 @@ QString settings::RestoreAmpPwm() const
     return RestoreValue(QString("ampPwm")).toString();
 }
 
-void settings::StoreGenPwm(const QString strValue)
-{
-    StoreValue(QString("genPwm"), strValue);
-}
-
-QString settings::RestoreGenPwm() const
-{
-    return RestoreValue(QString("genPwm")).toString();
-}
-
-void settings::StoreGenPwr(const QString strValue)
-{
-    StoreValue(QString("genPwr"), strValue);
-}
-
-QString settings::RestoreGenPwr() const
-{
-    return RestoreValue(QString("genPwr")).toString();
-}
-
 void settings::StoreAdmin(const int nIndex, const QString strValue)
 {
     StoreValue(QString("admin%1").arg(nIndex), strValue);

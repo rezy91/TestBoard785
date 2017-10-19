@@ -49,12 +49,6 @@ public:
     void StoreAmpPwm(const QString strValue);
     QString RestoreAmpPwm(void) const;
 
-    void StoreGenPwm(const QString strValue);
-    QString RestoreGenPwm(void) const;
-
-    void StoreGenPwr(const QString strValue);
-    QString RestoreGenPwr(void) const;
-
     void StoreAdmin(const int nIndex, const QString strValue);
     QString RestoreAdmin(const int nIndex) const;
 
