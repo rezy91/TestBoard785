@@ -705,6 +705,7 @@ void MainWindow::newDataV200(QByteArray aData)
             else
             {
                 emit SendFirmwareVersion(6, 0);
+                universalRequestMessageProtocol(Qt::CheckState::Unchecked, PID_READ_MEASURE_DATA_USN);
             }
         }
 
@@ -720,6 +721,10 @@ void MainWindow::newDataV200(QByteArray aData)
             else
             {
                 emit SendFirmwareVersion(4, 0);
+                universalRequestMessageProtocol(Qt::CheckState::Unchecked, PID_SEND_AMP_TIMERS_RESULTS);
+                universalRequestMessageProtocol(Qt::CheckState::Unchecked, PID_SEND_AMP_ADC3_AVERAGE_DATA);
+                universalRequestMessageProtocol(Qt::CheckState::Unchecked, PID_SEND_AMP_ADC1_ADJUSTED_DATA);
+                universalRequestMessageProtocol(Qt::CheckState::Unchecked, PID_SEND_AMP_ADC1_AVERAGE_DATA);
             }
         }
 
@@ -738,6 +743,7 @@ void MainWindow::newDataV200(QByteArray aData)
             else
             {
                 emit SendFirmwareVersion(0, 0);
+                universalRequestMessageProtocol(Qt::CheckState::Unchecked, PID_READ_MEASURE_DATA_APL_L);
             }
         }
 
@@ -757,6 +763,7 @@ void MainWindow::newDataV200(QByteArray aData)
             else
             {
                 emit SendFirmwareVersion(1, 0);
+                universalRequestMessageProtocol(Qt::CheckState::Unchecked, PID_READ_MEAS_APL_S_1_DEVEL);
             }
         }
 
@@ -775,6 +782,7 @@ void MainWindow::newDataV200(QByteArray aData)
             else
             {
                 emit SendFirmwareVersion(2, 0);
+                universalRequestMessageProtocol(Qt::CheckState::Unchecked, PID_READ_MEAS_APL_S_2_DEVEL);
             }
         }
 
@@ -793,6 +801,7 @@ void MainWindow::newDataV200(QByteArray aData)
             else
             {
                 emit SendFirmwareVersion(3, 0);
+                universalRequestMessageProtocol(Qt::CheckState::Unchecked, PID_READ_MEAS_APL_S_3_DEVEL);
             }
         }
 
