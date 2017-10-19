@@ -94,15 +94,12 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
     connect(p_WidgetTipMemory, &widgetTipMemory::SendMaximalPower, p_WidgetTherapy, &widgetTherapy::ReceiveMaxPower);
     connect(p_WidgetTipMemory, &widgetTipMemory::SendDefaultMaximalPower, p_WidgetTherapy, &widgetTherapy::ReceiveDefaultMaxPower);
 
-    ui->comboBox_1->addItem(QString("Generator (ID = %1d)").arg(constGenerID));
-    ui->comboBox_1->addItem(QString("Amplifier (ID = %1d)").arg(constAmpID));
 
-
+    ui->QLabelDevice->setText(QString("Generator (ID = %1d)").arg(m_nDeviceAddress));
     restoreGeometry(appSettings->RestoreGeometryMain());
     SetAvaiblePorts();
     m_bSaveData = appSettings->RestoreSaveDataBox();
     ui->checkBox->setChecked(m_bSaveData);
-    ui->comboBox_1->setCurrentIndex(appSettings->RestoreSelectedDevice());
     emit SendSmithPoints(appSettings->RestoreSmithPoints());
     emit SendAmpFreq(appSettings->RestoreAmpFreq());
     emit SendAmpPwm(appSettings->RestoreAmpPwm());
@@ -215,15 +212,6 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
         }
         CheckedIfIndexInQlist(signalIndex, value);
     });
-
-    connect(ui->comboBox_1,static_cast<void (QComboBox::*)(int)>(&QComboBox::currentIndexChanged),[=](int nValue){
-        selectedDeviceSetAccordingSaved(nValue);
-
-        appSettings->StoreSelectedDevice(ui->comboBox_1->currentIndex());
-        //-FillTableContent();
-
-    });
-
 
     m_CommProt.reset(CommProtV200_Create(this));
     Q_ASSERT(!m_CommProt.isNull());
@@ -419,18 +407,6 @@ void MainWindow::onNewTimeRequest(int valueTime, int m_device, int m_indexMsg)
     }
 }
 
-void MainWindow::selectedDeviceSetAccordingSaved(quint32 value)
-{
-    if(value == GENERATOR_SOURCE)
-    {
-        m_nDeviceAddress = constGenerID;
-    }
-    else if(value == AMPLIFIER_SOURCE)
-    {
-        m_nDeviceAddress = constAmpID;
-    }
-}
-
 void MainWindow::AppendText(QTime timestamp, QString strText, TEXT_BROWSERS eIndex)
 {
     emit SendTextIntoLog(myTimeStamp(timestamp) + "\t" + strText, eIndex);
@@ -440,7 +416,6 @@ void MainWindow::on_connectButton_clicked()
 {
     ui->checkBox->setEnabled(false);
     ui->comboBox->setEnabled(false);
-    ui->comboBox_1->setEnabled(false);
 
     sourceDataStream = RECEIVE_STREAM;
 
@@ -1344,7 +1319,6 @@ void MainWindow::on_disconnectButton_clicked()
 {
     ui->checkBox->setEnabled(true);
     ui->comboBox->setEnabled(true);
-    ui->comboBox_1->setEnabled(true);
 
     m_CommProt.data()->SetTargetMedium("");
 

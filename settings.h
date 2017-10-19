@@ -19,9 +19,6 @@ public:
     void StoreSaveDataBox(const bool& bSaveDataBox);
     bool RestoreSaveDataBox() const;
 
-    void StoreSelectedDevice(const quint32& nDevice);
-    quint32 RestoreSelectedDevice() const;
-
     void StoreSmithPoints(const quint32& nPoints);
     quint32 RestoreSmithPoints() const;
 

@@ -31,7 +31,11 @@
        </widget>
       </item>
       <item>
-       <widget class="QComboBox" name="comboBox_1"/>
+       <widget class="QLabel" name="QLabelDevice">
+        <property name="text">
+         <string>TextLabel</string>
+        </property>
+       </widget>
       </item>
       <item>
        <widget class="QComboBox" name="comboBox"/>

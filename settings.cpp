@@ -35,16 +35,6 @@ bool settings::RestoreSaveDataBox() const
     return RestoreValue("savedatabox").toBool();
 }
 
-void settings::StoreSelectedDevice(const quint32 &nDevice)
-{
-    StoreValue(QString("selectedDevice"), nDevice);
-}
-
-quint32 settings::RestoreSelectedDevice() const
-{
-    return RestoreValue(QString("selectedDevice")).toUInt();
-}
-
 void settings::StoreSmithPoints(const quint32 &nPoints)
 {
     StoreValue(QString("smithPoints"), nPoints);

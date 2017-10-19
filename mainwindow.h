@@ -99,9 +99,8 @@ public slots:
 private:
     const QColor c_BackgrColorGenerRf = QColor(0,128,255);
     const QColor c_BackgrColorAmplif = QColor(128,64,64);
-    const QColor c_BackgrColorGreen[NMB_ITEMS_TIMERS_APLS_AND_USN] = {QColor(255,128,0), QColor(150,255,150), QColor(50,255,50), QColor(0,200,0), QColor(0,150,0)};
-    const quint32 constGenerID = 21;
-    const quint32 constAmpID = 1;
+    const QColor c_BackgrColorGreen[NMB_ITEMS_TIMERS_APLS_AND_USN] = {QColor(255,128,0), QColor(100,255,100), QColor(0,255,0), QColor(0,200,0), QColor(0,150,0)};
+    const quint32 m_nDeviceAddress = 21;
 
     const QString allSignalsBaseOnlyGener[NMB_ITEMS_TIMERS_GENER] = {"g3c", "g3s", "g2c", "g2s", "g1c", "g1s"};
     const QString allSignalsBaseOnlyAmplf[NMB_ITEMS_TIMERS_AMPLF] = {"at", "a3s", "ax", "a1s"};
@@ -110,7 +109,6 @@ private:
 
     Ui::MainWindow *ui;
     QSharedPointer<CommProtV200> m_CommProt;
-    quint32 m_nDeviceAddress = constGenerID;
     QTimer TmrMstr;
 
 
@@ -157,7 +155,6 @@ private:
     QString myTimeStamp(QTime time);
     QStringList adjustRowDataIntoOnlyNumber(QString rowData);
     void prepareComboBoxesWithSignals();
-    void selectedDeviceSetAccordingSaved(quint32 value);
 
     bool GetIndexFromQlistGenAmp(SOURCE_DEVICE eSourceStream, int &dwAbsIndex, int dwNumberCmbBx, int dwIndexCmbBx);
     bool GetIndexFromQlistAplUsn(int &dwAbsIndex, int dwNumberCmbBx, int dwIndexCmbBx);
