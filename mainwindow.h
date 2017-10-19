@@ -38,10 +38,6 @@
 #include "widgettipmemory.h"
 
 
-#define COLOR_BLUE_DARK         QColor(0,128,255)
-#define COLOR_BROWN_DARK        QColor(124,78,52)
-#define COLOR_GREEN_DARK        QColor(0,128,0)
-
 namespace Ui {
 class MainWindow;
 }
@@ -101,6 +97,9 @@ public slots:
     void specificMessageProtocol(QString message, bool bExpectedResponse);
 
 private:
+    const QColor c_BackgrColorGenerRf = QColor(0,128,255);
+    const QColor c_BackgrColorAmplif = QColor(128,64,64);
+    const QColor c_BackgrColorGreen[NMB_ITEMS_TIMERS_APLS_AND_USN] = {QColor(255,128,0), QColor(150,255,150), QColor(50,255,50), QColor(0,200,0), QColor(0,150,0)};
     const quint32 constGenerID = 21;
     const quint32 constAmpID = 1;
 
@@ -164,7 +163,7 @@ private:
     bool GetIndexFromQlistAplUsn(int &dwAbsIndex, int dwNumberCmbBx, int dwIndexCmbBx);
     void ShowSignalsIntoComboBox(SOURCE_STREAM eSourceStream);
     void ShowSignalsGenAmplIfShould(SOURCE_STREAM eSourceStream, SOURCE_DEVICE eSourceDevice, qint32 &dwStartIndex, QColor eBackgrColor);
-    void ShowSignalsAplUsnIfShould(SOURCE_STREAM eSourceStream, qint32 &dwStartIndex, QColor eBackgrColor);
+    void ShowSignalsAplUsnIfShould(SOURCE_STREAM eSourceStream, qint32 &dwStartIndex);
     void SetTimerRequestsGenAmp(int wIndex, bool bOnOff, QString sCommand, SOURCE_DEVICE eSourceStream);
     void SetTimerRequestsAplUsn(bool bOnOff, QString sCommand, SOURCE_DEVICE eSourceStream);
     void SetTimerinput(bool bOnOff, QString sCommand, SOURCE_DEVICE eSourceStream);

@@ -1120,9 +1120,9 @@ void MainWindow::ShowSignalsIntoComboBox(SOURCE_STREAM eSourceStream)
 
     qint32 dwIndexStart = 1;
 
-    ShowSignalsGenAmplIfShould(eSourceStream, GENERATOR_SOURCE, dwIndexStart, COLOR_BLUE_DARK);
-    ShowSignalsGenAmplIfShould(eSourceStream, AMPLIFIER_SOURCE, dwIndexStart, COLOR_BROWN_DARK);
-    ShowSignalsAplUsnIfShould(eSourceStream, dwIndexStart, COLOR_GREEN_DARK);
+    ShowSignalsGenAmplIfShould(eSourceStream, GENERATOR_SOURCE, dwIndexStart, c_BackgrColorGenerRf);
+    ShowSignalsGenAmplIfShould(eSourceStream, AMPLIFIER_SOURCE, dwIndexStart, c_BackgrColorAmplif);
+    ShowSignalsAplUsnIfShould(eSourceStream, dwIndexStart);
 }
 
 void MainWindow::ShowSignalsGenAmplIfShould(SOURCE_STREAM eSourceStream, MainWindow::SOURCE_DEVICE eSourceDevice, qint32 &dwStartIndex, QColor eBackgrColor)
@@ -1150,7 +1150,7 @@ void MainWindow::ShowSignalsGenAmplIfShould(SOURCE_STREAM eSourceStream, MainWin
     }
 }
 
-void MainWindow::ShowSignalsAplUsnIfShould(SOURCE_STREAM eSourceStream, qint32 &dwStartIndex, QColor eBackgrColor)
+void MainWindow::ShowSignalsAplUsnIfShould(SOURCE_STREAM eSourceStream, qint32 &dwStartIndex)
 {
     for(qint32 row = 0; row < NMB_ITEMS_TIMERS_APLS_AND_USN; row++)
     {
@@ -1160,7 +1160,7 @@ void MainWindow::ShowSignalsAplUsnIfShould(SOURCE_STREAM eSourceStream, qint32 &
 
             for(qint32 iLoop = 0; iLoop <= allAdxSignalsAplUsn[row].count(); iLoop++)
             {
-                p_WidgetGraph->setItemData(dwStartIndex + iLoop, QBrush(eBackgrColor), Qt::BackgroundRole);
+                p_WidgetGraph->setItemData(dwStartIndex + iLoop, QBrush(c_BackgrColorGreen[row]), Qt::BackgroundRole);
                 p_WidgetGraph->setItemData(dwStartIndex + iLoop, QBrush(Qt::white), Qt::TextColorRole);
             }
 
