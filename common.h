@@ -37,6 +37,7 @@ typedef enum packet_id
   PID_SET_SEND_LAST_ERROR              = 0x28,
   PID_CONFIGURATION_DEVICE             = 0x29,
   PID_SETTINGS_DEVICE                  = 0x2A,
+  PID_READING_VALUES_FROM_DEVICE       = 0x2B,
 
   // Common packet reply
   PID_REPLY_SEND_LAST_OPERATION_RESULT = 0x00,
@@ -60,6 +61,7 @@ typedef enum packet_id
   PID_REPLY_SEND_LAST_ERROR            = 0x48,
   PID_REPLY_CONFIGURATION_DEVICE       = 0x49,
   PID_REPLY_SETTINGS_DEVICE            = 0x4A,
+  PID_REPLY_READING_VALUES_FROM_DEVICE = 0x4B,
 
   // test(service) packets
   PID_SEND_AMP_TIMERS_RESULTS         = 0x30,
@@ -77,13 +79,6 @@ typedef enum packet_id
   PID_SET_AMP_THERAPY                 = 0x3C,
   PID_SEND_AMP_ISSUE                  = 0x3D,
 
-  PID_SEND_ADC3_ADJUSTED_DATA_GENER   = 0x40,
-  PID_SEND_ADC3_AVERAGE_DATA_GENER    = 0x41,
-  PID_SEND_ADC2_ADJUSTED_DATA_GENER   = 0x42,
-  PID_SEND_ADC2_AVERAGE_DATA_GENER    = 0x43,
-  PID_SEND_ADC1_ADJUSTED_DATA_GENER   = 0x44,
-  PID_SEND_ADC1_AVERAGE_DATA_GENER    = 0x45,
-  PID_READ_INPUT                      = 0x46,
   PID_SEND_ADCS_RAW_DATA              = 0x47,
 
   PID_READ_MEASURE_DATA_USN           = 0x2F,
