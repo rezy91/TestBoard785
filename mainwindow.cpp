@@ -459,11 +459,13 @@ void MainWindow::newDataV200(QByteArray aData)
     {
     case PID_REPLY_READING_VALUES_FROM_DEVICE:
 
-        AppendText(timeCurrent, QString(aData), E_BROWSER_FOR_OSCILLOSCOPE);
+        AppendText(timeCurrent, QString(aData.mid(4)), E_BROWSER_FOR_OSCILLOSCOPE);
+
+        myStringOnlyNumbers = adjustRowDataIntoOnlyNumber(aData.mid(4));
 
         if(m_bSaveData)
         {
-            m_oFile[E_BROWSER_FOR_OSCILLOSCOPE].write(myTimeStamp(timeCurrent).toUtf8() + "\t" + QString(aData).simplified().toUtf8() + "\r\n");
+            m_oFile[E_BROWSER_FOR_OSCILLOSCOPE].write(myTimeStamp(timeCurrent).toUtf8() + "\t" + QString(aData.mid(4)).simplified().toUtf8() + "\r\n");
             m_oFile[E_BROWSER_FOR_OSCILLOSCOPE].flush();
         }
 
@@ -475,68 +477,6 @@ void MainWindow::newDataV200(QByteArray aData)
             }
 
             recognizeIfDisplayNewDataAllSignals(timeCurrent, &myStringOnlyNumbers, byType);
-        }
-        break;
-    case 'g'://Gener´s data
-        AppendText(timeCurrent, QString(aData), E_BROWSER_FOR_OSCILLOSCOPE);
-
-        if(m_bSaveData)
-        {
-            m_oFile[E_BROWSER_FOR_OSCILLOSCOPE].write(myTimeStamp(timeCurrent).toUtf8() + "\t" + QString(aData).simplified().toUtf8() + "\r\n");
-            m_oFile[E_BROWSER_FOR_OSCILLOSCOPE].flush();
-        }
-
-        if(aData.at(1) == '3' && aData.at(2) == 'c')//ADC3 adjusted data
-        {
-            recognizeIfDisplayNewDataAllSignals(timeCurrent, &myStringOnlyNumbers, 0);
-            if(eRequestsGenerAdcx[0].isInProgress == true)
-            {
-                eRequestsGenerAdcx[0].isInProgress = false;
-            }
-        }
-        else if(aData.at(1) == '3' && aData.at(2) == 's')//ADC3 average data
-        {
-            recognizeIfDisplayNewDataAllSignals(timeCurrent, &myStringOnlyNumbers, 1);
-            if(eRequestsGenerAdcx[1].isInProgress == true)
-            {
-                eRequestsGenerAdcx[1].isInProgress = false;
-            }
-        }
-        else if(aData.at(1) == '2' && aData.at(2) == 'c')//ADC2 adjusted data
-        {
-            recognizeIfDisplayNewDataAllSignals(timeCurrent, &myStringOnlyNumbers, 2);
-            if(eRequestsGenerAdcx[2].isInProgress == true)
-            {
-                eRequestsGenerAdcx[2].isInProgress = false;
-            }
-
-            recognizeIfDisplayNewDataAllSignals(timeCurrent, &myStringOnlyNumbers, 2);
-
-            emit SendNewImpedanceData(qreal(myStringOnlyNumbers.at(1).toFloat()), qreal(myStringOnlyNumbers.at(2).toFloat()),qreal(myStringOnlyNumbers.at(3).toFloat()), qreal(myStringOnlyNumbers.at(4).toFloat()));
-        }
-        else if(aData.at(1) == '2' && aData.at(2) == 's')//ADC2 average data
-        {
-            recognizeIfDisplayNewDataAllSignals(timeCurrent, &myStringOnlyNumbers, 3);
-            if(eRequestsGenerAdcx[3].isInProgress == true)
-            {
-                eRequestsGenerAdcx[3].isInProgress = false;
-            }
-        }
-        else if(aData.at(1) == '1' && aData.at(2) == 'c')//ADC1 adjusted data
-        {
-            recognizeIfDisplayNewDataAllSignals(timeCurrent, &myStringOnlyNumbers, 4);
-            if(eRequestsGenerAdcx[4].isInProgress == true)
-            {
-                eRequestsGenerAdcx[4].isInProgress = false;
-            }
-        }
-        else if(aData.at(1) == '1' && aData.at(2) == 's')//ADC1 average data
-        {
-            recognizeIfDisplayNewDataAllSignals(timeCurrent, &myStringOnlyNumbers, 5);
-            if(eRequestsGenerAdcx[5].isInProgress == true)
-            {
-                eRequestsGenerAdcx[5].isInProgress = false;
-            }
         }
         break;
     case 'u'://usn´s data
@@ -1060,16 +1000,9 @@ void MainWindow::SetTimerRequestsAmpTemporary(int wIndex, bool bOnOff, QString s
 
 void MainWindow::SetTimerRequestsGenReadValues(bool bOnOff, MainWindow::CONVERTED_CALCULATED_TYPES_RF eType)
 {
-    /*int wIndexHex = QString::number(eType, 16).toInt();
-    wIndexHex += PID_SEND_ADC3_ADJUSTED_DATA_GENER;
-    QString strCmd = QString("%1").arg(QString::number(wIndexHex, 16));*/
-
-
     QString strCmd = QString("%1").arg(QString::number(PID_READING_VALUES_FROM_DEVICE, 16));
     strCmd += QString::number(255, 16).rightJustified(2, '0');
     strCmd += QString::number(eType, 16).rightJustified(2, '0');
-
-    qDebug() << strCmd;
 
 
     for(qint32 row = 0; row < E_READ_TYPE_RF_COUNT; row++)
