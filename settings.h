@@ -37,9 +37,6 @@ public:
     void StoreLowValueSignal(const int nIndexTimer, const double value);
     double RestoreLowValueSignal(const int nIndexTimer) const;
 
-    void StoreAdcData(const QString type, const QString device, const int nIndexAdc, const QString strValue);
-    QString RestoreAdcData(const QString type, const QString device, const int nIndexAdc) const;
-
     void StoreAmpFreq(const QString strValue);
     QString RestoreAmpFreq(void) const;
 

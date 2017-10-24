@@ -95,16 +95,6 @@ double settings::RestoreLowValueSignal(const int nIndexTimer) const
     return RestoreValue(QString("LowLevel1%1").arg(nIndexTimer)).toDouble();
 }
 
-void settings::StoreAdcData(const QString type, const QString device, const int nIndexAdc, const QString strValue)
-{
-    StoreValue(QString("adc%1%2%3").arg(type).arg(device).arg(nIndexAdc), strValue);
-}
-
-QString settings::RestoreAdcData(const QString type, const QString device, const int nIndexAdc) const
-{
-    return RestoreValue(QString("adc%1%2%3").arg(type).arg(device).arg(nIndexAdc)).toString();
-}
-
 void settings::StoreAmpFreq(const QString strValue)
 {
     StoreValue(QString("ampFreq"), strValue);

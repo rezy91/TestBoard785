@@ -56,9 +56,6 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
     connect(this, &MainWindow::SendAxisHigh, p_WidgetGraph, &widgetGraph::readAxisHigh);
     connect(this, &MainWindow::SendAxisLow, p_WidgetGraph, &widgetGraph::readAxisLow);
 
-    connect(p_WidgetConfig, &widgetConfig::SaveAdcData, appSettings, &settings::StoreAdcData);
-    connect(this, &MainWindow::SendAdcData, p_WidgetConfig, &widgetConfig::ReadAdcData);
-
     connect(this, &MainWindow::SendConfigGener, p_WidgetConfig, &widgetConfig::ReadConfigGener);
     connect(this, &MainWindow::SendSettingsGener, p_widgetSettings, &widgetSettings::ReadSettingsGener);
 
@@ -79,9 +76,10 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
     connect(this, &MainWindow::SendAdmin, p_WidgetAdmin, &widgetAdmin::ReadAdmin);
 
     connect(p_WidgetAdmin, &widgetAdmin::SetLimitSlider, p_WidgetTherapy, &widgetTherapy::ReceiveLimitSlider);
+    connect(p_WidgetConfig, &widgetConfig::SendReferenceImpedance, p_WidgetSmith, &widgetSmith::ReadDefaultReferenceImpedance);
 
     connect(p_WidgetReading, &widgetReading::SaveReadMsgsAmplf, appSettings, &settings::StoreRcvMsgAmp);
-    connect(p_WidgetConfig, &widgetConfig::SendReferenceImpedance, p_WidgetSmith, &widgetSmith::ReadDefaultReferenceImpedance);
+    connect(this, &MainWindow::SendRcvMsgAmp, p_WidgetReading, &widgetReading::ReceiveRcvMsgAmp);
     connect(p_WidgetReading, &widgetReading::SaveReadMsgsGener, appSettings, &settings::StoreRcvMsgGen);
     connect(this, &MainWindow::SendRcvMsgGen, p_WidgetReading, &widgetReading::ReceiveRcvMsgGen);
     connect(p_WidgetReading, &widgetReading::SaveReadMsgsAplUsn, appSettings, &settings::StoreRcvMsgAplUsn);
@@ -106,12 +104,6 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
     emit SendRcvMsgAmp(appSettings->RestoreRcvMsgAmp());
     emit SendRcvMsgGen(appSettings->RestoreRcvMsgGen());
     emit SendRcvMsgAplUsn(appSettings->RestoreRcvMsgAplUsn());
-
-    for(int iLoop = 0; iLoop < E_AMP_ADC_NMB; iLoop++)
-    {
-        emit SendAdcData(QString(c_nameAdd), QString(c_nameAmp), iLoop, appSettings->RestoreAdcData(QString(c_nameAdd), QString(c_nameAmp), iLoop + 1));
-        emit SendAdcData(QString(c_nameMul), QString(c_nameAmp), iLoop, appSettings->RestoreAdcData(QString(c_nameMul), QString(c_nameAmp), iLoop + 1));
-    }
 
     for(int iLoop = 0; iLoop < E_NMB_ITEMS_ADMIN; iLoop++)
     {

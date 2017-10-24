@@ -69,10 +69,7 @@ typedef enum packet_id
   PID_SEND_AMP_ADC1_ADJUSTED_DATA     = 0x32,
   PID_SEND_AMP_ADC1_AVERAGE_DATA      = 0x33,
   PID_READ_AMP_INPUT                  = 0x34,
-  PID_SET_AMP_ADC3_COEFF_MULTIPLE     = 0x35,
-  PID_SET_AMP_ADC3_COEFF_ADDITIVE     = 0x36,
-  PID_SET_AMP_ADC1_COEFF_MULTIPLE     = 0x37,
-  PID_SET_AMP_ADC1_COEFF_ADDITIVE     = 0x38,
+
   PID_SET_AMP_OUTPUTS                 = 0x39,
   PID_SEND_AMP_SET_FREQUENCY          = 0x3A,
   PID_SEND_AMP_SET_PWM                = 0x3B,
@@ -126,6 +123,18 @@ enum TEXT_BROWSERS
     E_BROWSER_LOG_ASCII,
     E_BROWSER_NMB
 };
+
+typedef enum
+{
+    ACC_APPL_BIG = 0,
+    ACC_APPL_SMALL_1,
+    ACC_APPL_SMALL_2,
+    ACC_APPL_SMALL_3,
+    ACC_AMPLIFIER,
+    ACC_GENER_USN,
+    ACC_CHANNEL_COUNT
+} ACC_CHANNEL;
+
 
 enum {nmbCurvesInGraph = 4};
 enum {nmbChannelsAppls = 4};

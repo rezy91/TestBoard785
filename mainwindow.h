@@ -202,7 +202,6 @@ signals:
     void SendTimeRequests(int device, int index, int value);
     void SendAxisHigh(int index, double value);
     void SendAxisLow(int index, double value);
-    void SendAdcData(QString type, QString device, int index, QString values);
     void SendConfigGener(QByteArray values);
     void SendSettingsGener(QByteArray values);
     void SendAmpFreq(QString values);
