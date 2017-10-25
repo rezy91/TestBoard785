@@ -83,14 +83,14 @@ public:
 
     typedef enum
     {
-      E_READ_TYPE_ADC1_CONVERTED,
-      E_READ_TYPE_ADC1_ADJUSTED,
-      E_READ_TYPE_ADC2_CONVERTED,
-      E_READ_TYPE_ADC2_ADJUSTED,
-      E_READ_TYPE_ADC3_CONVERTED,
-      E_READ_TYPE_ADC3_ADJUSTED,
-      E_READ_TYPE_DIGITAL_INPUTS,
-      E_READ_TYPE_RF_COUNT,
+        E_READ_TYPE_ADC3_ADJUSTED,
+        E_READ_TYPE_ADC3_CONVERTED,
+        E_READ_TYPE_ADC2_ADJUSTED,
+        E_READ_TYPE_ADC2_CONVERTED,
+        E_READ_TYPE_ADC1_ADJUSTED,
+        E_READ_TYPE_ADC1_CONVERTED,
+        E_READ_TYPE_DIGITAL_INPUTS,
+        E_READ_TYPE_RF_COUNT,
     } CONVERTED_CALCULATED_TYPES_RF;
 
     explicit MainWindow(QWidget *parent = 0);
@@ -204,8 +204,6 @@ signals:
     void SendAxisLow(int index, double value);
     void SendConfigGener(QByteArray values);
     void SendSettingsGener(QByteArray values);
-    void SendAmpFreq(QString values);
-    void SendAmpPwm(QString values);
     void SendStatusReg(STATUS_REGISTER eStatusReg);
     void SendFirmwareVersion(int nIndex, uint nValue);
     void SendAdmin(int index, QString values);

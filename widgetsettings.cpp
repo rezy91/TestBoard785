@@ -10,12 +10,13 @@ widgetSettings::widgetSettings(QWidget *parent) : QWidget(parent)
 
         Q_UNUSED(clicked);
 
-        QString SaveData;
-        QString strCmd = QString("%1").arg(QString::number(PID_SEND_AMP_SET_FREQUENCY, 16));
+        QString strCmd = QString("%1").arg(QString::number(PID_SETTINGS_DEVICE, 16));
+        strCmd += QString::number(ACC_AMPLIFIER, 16).rightJustified(2, '0');
+        strCmd += QString::number(ACTION_WRITE, 16).rightJustified(2, '0');
+        strCmd += QString::number(E_SET_TYPE_AMPLF_FREQ, 16).rightJustified(2, '0');
+        strCmd += QString::number(c_dwVolumeOfPartAmplifier[E_SET_TYPE_AMPLF_FREQ], 16).rightJustified(2, '0');
         strCmd += QString::number(lineInputAmpFreq->text().toInt(), 16).rightJustified(3 * 2, '0');
-        SaveData.append(QString("%1").arg(QString::number(lineInputAmpFreq->text().toInt())) + " ");
 
-        emit SaveAmpFreq(SaveData);
         emit SendV200specific(strCmd, false);
     });
 
@@ -23,13 +24,14 @@ widgetSettings::widgetSettings(QWidget *parent) : QWidget(parent)
 
         Q_UNUSED(clicked);
 
-        QString SaveData;
-        QString strCmd = QString("%1").arg(QString::number(PID_SEND_AMP_SET_PWM, 16));
+        QString strCmd = QString("%1").arg(QString::number(PID_SETTINGS_DEVICE, 16));
+        strCmd += QString::number(ACC_AMPLIFIER, 16).rightJustified(2, '0');
+        strCmd += QString::number(ACTION_WRITE, 16).rightJustified(2, '0');
+        strCmd += QString::number(E_SET_TYPE_AMPLF_PWM, 16).rightJustified(2, '0');
+        strCmd += QString::number(c_dwVolumeOfPartAmplifier[E_SET_TYPE_AMPLF_PWM], 16).rightJustified(2, '0');
         uint16_t w_ModifiedParameter = uint16_t((std::numeric_limits<uint16_t>::max() * lineInputAmpPwm->text().toDouble()) / 100);
         strCmd += QString::number(w_ModifiedParameter, 16).rightJustified(2 * 2, '0');
-        SaveData.append(QString("%1").arg(QString::number(lineInputAmpPwm->text().toDouble())) + " ");
 
-        emit SaveAmpPwm(SaveData);
         emit SendV200specific(strCmd, false);
     });
 
@@ -38,16 +40,12 @@ widgetSettings::widgetSettings(QWidget *parent) : QWidget(parent)
 
         Q_UNUSED(clicked);
 
-        QString SaveData;
         QString strCmd = QString("%1").arg(QString::number(PID_SETTINGS_DEVICE, 16));
         strCmd += QString::number(255, 16).rightJustified(2, '0');
         strCmd += QString::number(ACTION_WRITE, 16).rightJustified(2, '0');
         strCmd += QString::number(E_SET_TYPE_RF_COOL_PWM, 16).rightJustified(2, '0');
-
         strCmd += QString::number(lineInputGenPwmCool->text().toInt(), 16).rightJustified(1 * 2, '0');
-        SaveData.append(QString("%1").arg(QString::number(lineInputGenPwmCool->text().toInt())) + " ");
 
-        emit SaveGenPwm(SaveData);
         emit SendV200specific(strCmd, false);
     });
 
@@ -62,7 +60,6 @@ widgetSettings::widgetSettings(QWidget *parent) : QWidget(parent)
         QString strHexNumber = QString::number(lineInputGenPwrReset->text().toInt(), 16);
         strCmd += strHexNumber.rightJustified(1 * 2, '0');
 
-
         emit SendV200specific(strCmd, false);
     });
 
@@ -71,7 +68,12 @@ widgetSettings::widgetSettings(QWidget *parent) : QWidget(parent)
         connect(checkAmpOutput[iDevice], &QCheckBox::stateChanged, [=](int checked){
 
             Q_UNUSED(checked);
-            QString strCmd = QString("%1").arg(QString::number(PID_SET_AMP_OUTPUTS, 16));
+
+            QString strCmd = QString("%1").arg(QString::number(PID_SETTINGS_DEVICE, 16));
+            strCmd += QString::number(ACC_AMPLIFIER, 16).rightJustified(2, '0');
+            strCmd += QString::number(ACTION_WRITE, 16).rightJustified(2, '0');
+            strCmd += QString::number(E_SET_TYPE_AMPLF_OUTPUTS, 16).rightJustified(2, '0');
+            strCmd += QString::number(c_dwVolumeOfPartAmplifier[E_SET_TYPE_AMPLF_OUTPUTS], 16).rightJustified(2, '0');
 
             for(int jDevice = 0; jDevice < E_NMB_AMP_OUTPUTS; jDevice++)
             {
@@ -87,7 +89,6 @@ widgetSettings::widgetSettings(QWidget *parent) : QWidget(parent)
         connect(checkGenOutputs[iDevice], &QCheckBox::stateChanged, [=](int checked){
 
             Q_UNUSED(checked);
-            qDebug() << "changed output";
 
             QString strCmd = QString("%1").arg(QString::number(PID_SETTINGS_DEVICE, 16));
             strCmd += QString::number(255, 16).rightJustified(2, '0');
@@ -199,36 +200,6 @@ widgetSettings::widgetSettings(QWidget *parent) : QWidget(parent)
     });
 }
 
-void widgetSettings::ReadAmpFreq(QString data)
-{
-    QStringList arrListSaved;
-    arrListSaved = data.split(QRegExp("\\s+"));
-
-    if((arrListSaved.count() - 1) == 1)
-    {
-        lineInputAmpFreq->setText(arrListSaved.at(0));
-    }
-    else
-    {
-        lineInputAmpFreq->setText(c_defaultValueAmpFreq);
-    }
-}
-
-void widgetSettings::ReadAmpPwm(QString data)
-{
-    QStringList arrListSaved;
-    arrListSaved = data.split(QRegExp("\\s+"));
-
-    if((arrListSaved.count() - 1) == 1)
-    {
-        lineInputAmpPwm->setText(arrListSaved.at(0));
-    }
-    else
-    {
-        lineInputAmpPwm->setText(c_defaultValueAmpPwm);
-    }
-}
-
 void widgetSettings::ReadSettingsGener(QByteArray data)
 {
     uint8_t byDevice = uint8_t(data.at(1));
@@ -271,44 +242,37 @@ void widgetSettings::ReadSettingsGener(QByteArray data)
             }
         }
     }
+    else if(byDevice == ACC_AMPLIFIER)
+    {
+        if(byDirection == ACTION_READ)
+        {
+            qDebug() << data;
+        }
+    }
 }
 
 void widgetSettings::RefreshPage()
 {
+    for(int iLoop = 0; iLoop < E_SET_TYPE_RF_COUNT; iLoop++)
+    {
+        QString strCmd;
+        strCmd = QString("%1").arg(QString::number(PID_SETTINGS_DEVICE, 16));
+        strCmd += QString::number(255, 16).rightJustified(2, '0');
+        strCmd += QString::number(ACTION_READ, 16).rightJustified(2, '0');
+        strCmd += QString::number(iLoop, 16).rightJustified(2, '0');
+        emit SendV200specific(strCmd, true);
+    }
 
-    qDebug() << "refresh page";
-
-    QString strCmd;
-
-    strCmd = QString("%1").arg(QString::number(PID_SETTINGS_DEVICE, 16));
-    strCmd += QString::number(255, 16).rightJustified(2, '0');
-    strCmd += QString::number(ACTION_READ, 16).rightJustified(2, '0');
-    strCmd += QString::number(E_SET_TYPE_RF_OUTPUTS, 16).rightJustified(2, '0');
-    emit SendV200specific(strCmd, true);
-
-    strCmd = QString("%1").arg(QString::number(PID_SETTINGS_DEVICE, 16));
-    strCmd += QString::number(255, 16).rightJustified(2, '0');
-    strCmd += QString::number(ACTION_READ, 16).rightJustified(2, '0');
-    strCmd += QString::number(E_SET_TYPE_RF_APLS, 16).rightJustified(2, '0');
-    emit SendV200specific(strCmd, true);
-
-    strCmd = QString("%1").arg(QString::number(PID_SETTINGS_DEVICE, 16));
-    strCmd += QString::number(255, 16).rightJustified(2, '0');
-    strCmd += QString::number(ACTION_READ, 16).rightJustified(2, '0');
-    strCmd += QString::number(E_SET_TYPE_RF_COOL_PWM, 16).rightJustified(2, '0');
-    emit SendV200specific(strCmd, true);
-
-    strCmd = QString("%1").arg(QString::number(PID_SETTINGS_DEVICE, 16));
-    strCmd += QString::number(255, 16).rightJustified(2, '0');
-    strCmd += QString::number(ACTION_READ, 16).rightJustified(2, '0');
-    strCmd += QString::number(E_SET_TYPE_RF_TEST_THERAPY, 16).rightJustified(2, '0');
-    emit SendV200specific(strCmd, true);
-
-    strCmd = QString("%1").arg(QString::number(PID_SETTINGS_DEVICE, 16));
-    strCmd += QString::number(255, 16).rightJustified(2, '0');
-    strCmd += QString::number(ACTION_READ, 16).rightJustified(2, '0');
-    strCmd += QString::number(E_SET_TYPE_RF_DO_PEAK, 16).rightJustified(2, '0');
-    emit SendV200specific(strCmd, true);
+    for(int iLoop = 0; iLoop < E_SET_TYPE_AMPLF_COUNT; iLoop++)
+    {
+        QString strCmd;
+        strCmd = QString("%1").arg(QString::number(PID_SETTINGS_DEVICE, 16));
+        strCmd += QString::number(ACC_AMPLIFIER, 16).rightJustified(2, '0');
+        strCmd += QString::number(ACTION_READ, 16).rightJustified(2, '0');
+        strCmd += QString::number(iLoop, 16).rightJustified(2, '0');
+        strCmd += QString::number(c_dwVolumeOfPartAmplifier[iLoop], 16).rightJustified(2, '0');
+        emit SendV200specific(strCmd, true);
+    }
 }
 
 QLabel *widgetSettings::createNewLabel(const QString &text)

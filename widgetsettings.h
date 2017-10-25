@@ -23,8 +23,6 @@ public:
     void RefreshPage(void);
 
 public slots:
-    void ReadAmpFreq(QString data);
-    void ReadAmpPwm(QString data);
     void ReadSettingsGener(QByteArray data);
 
 private:
@@ -32,7 +30,7 @@ private:
     enum {E_NMB_GEN_OUTPUTS = 8};
     enum {E_NMB_GEN_APLx = 9};
 
-    enum {E_NMB_AMP_OUTPUTS = 6};
+    enum {E_NMB_AMP_OUTPUTS = 3};
 
     typedef enum
     {
@@ -44,16 +42,20 @@ private:
       E_SET_TYPE_RF_COUNT,
     } SETTINGS_TYPES_RF;
 
+    typedef enum
+    {
+      E_SET_TYPE_AMPLF_OUTPUTS,
+      E_SET_TYPE_AMPLF_FREQ,
+      E_SET_TYPE_AMPLF_PWM,
+      E_SET_TYPE_AMPLF_COUNT,
+    } SETTINGS_TYPES_AMPLF;
 
+    const int c_dwVolumeOfPartAmplifier[E_SET_TYPE_AMPLF_COUNT] = {3, 3, 2};
     const int c_dw_SizeCheckBox = 30;
 
-    const QString c_nameAmpOutputs[E_NMB_AMP_OUTPUTS] = {"PWR_Source_ON", "PWR_Source_Decharge", "ResetErr", "RESERVE_1", "RESERVE_2", "RESERVE_3"};
+    const QString c_nameAmpOutputs[E_NMB_AMP_OUTPUTS] = {"PWR_Source_ON", "PWR_Source_Decharge", "ResetErr"};
     const QString c_nameGenOutputs[E_NMB_GEN_OUTPUTS] = {"REL_OUT_1", "REL_OUT_2", "REL_OUT_3", "REL_OUT_4", "nAMP_RESET", "Amp_PWR_ON", "nGenErr_uP", "Fraction/Exilis"};
     const QString c_nameGenAplX[E_NMB_GEN_APLx] = {"apl_1", "apl_1_PWR_ON", "apl_2", "apl_3", "apl_4", "cool_pump_hot", "cool_pump_cold", "cool_fan", "cool_pelt"};
-
-    const QString c_defaultValueAmpFreq = "32000";
-    const QString c_defaultValueAmpPwm = "10.0";
-
 
     QVBoxLayout* MainLayout = new QVBoxLayout(this);
 
@@ -82,10 +84,6 @@ private:
 
 signals:
     void SendV200specific(QString msg, bool bExp);
-    void SaveAmpFreq(QString data);
-    void SaveAmpPwm(QString data);
-    void SaveGenPwm(QString data);
-    void SaveGenPwr(QString data);
 
 public slots:
 };

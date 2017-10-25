@@ -59,11 +59,6 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
     connect(this, &MainWindow::SendConfigGener, p_WidgetConfig, &widgetConfig::ReadConfigGener);
     connect(this, &MainWindow::SendSettingsGener, p_widgetSettings, &widgetSettings::ReadSettingsGener);
 
-    connect(p_widgetSettings, &widgetSettings::SaveAmpFreq, appSettings, &settings::StoreAmpFreq);
-    connect(this, &MainWindow::SendAmpFreq, p_widgetSettings, &widgetSettings::ReadAmpFreq);
-    connect(p_widgetSettings, &widgetSettings::SaveAmpPwm, appSettings, &settings::StoreAmpPwm);
-    connect(this, &MainWindow::SendAmpPwm, p_widgetSettings, &widgetSettings::ReadAmpPwm);
-
     connect(this, &MainWindow::SendStatusReg, p_WidgetTherapy, &widgetTherapy::ReceiveStatusReg);
     connect(this, &MainWindow::SendStatusReg, p_WidgetReading, &widgetReading::ReceiveStatusReg);
     connect(this, &MainWindow::SendStatusReg, p_WidgetTipMemory, &widgetTipMemory::ReceiveStatusReg);
@@ -99,8 +94,6 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
     m_bSaveData = appSettings->RestoreSaveDataBox();
     ui->checkBox->setChecked(m_bSaveData);
     emit SendSmithPoints(appSettings->RestoreSmithPoints());
-    emit SendAmpFreq(appSettings->RestoreAmpFreq());
-    emit SendAmpPwm(appSettings->RestoreAmpPwm());
     emit SendRcvMsgAmp(appSettings->RestoreRcvMsgAmp());
     emit SendRcvMsgGen(appSettings->RestoreRcvMsgGen());
     emit SendRcvMsgAplUsn(appSettings->RestoreRcvMsgAplUsn());
@@ -466,6 +459,11 @@ void MainWindow::newDataV200(QByteArray aData)
             if(eRequestsGenerAdcx[byType].isInProgress == true)
             {
                 eRequestsGenerAdcx[byType].isInProgress = false;
+            }
+
+            if(byType == E_READ_TYPE_ADC2_ADJUSTED)
+            {
+                emit SendNewImpedanceData(qreal(myStringOnlyNumbers.at(1).toFloat()), qreal(myStringOnlyNumbers.at(2).toFloat()),qreal(myStringOnlyNumbers.at(3).toFloat()), qreal(myStringOnlyNumbers.at(4).toFloat()));
             }
 
             recognizeIfDisplayNewDataAllSignals(timeCurrent, &myStringOnlyNumbers, byType);

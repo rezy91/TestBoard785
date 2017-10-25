@@ -95,26 +95,6 @@ double settings::RestoreLowValueSignal(const int nIndexTimer) const
     return RestoreValue(QString("LowLevel1%1").arg(nIndexTimer)).toDouble();
 }
 
-void settings::StoreAmpFreq(const QString strValue)
-{
-    StoreValue(QString("ampFreq"), strValue);
-}
-
-QString settings::RestoreAmpFreq() const
-{
-    return RestoreValue(QString("ampFreq")).toString();
-}
-
-void settings::StoreAmpPwm(const QString strValue)
-{
-    StoreValue(QString("ampPwm"), strValue);
-}
-
-QString settings::RestoreAmpPwm() const
-{
-    return RestoreValue(QString("ampPwm")).toString();
-}
-
 void settings::StoreAdmin(const int nIndex, const QString strValue)
 {
     StoreValue(QString("admin%1").arg(nIndex), strValue);

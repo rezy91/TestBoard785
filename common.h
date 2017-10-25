@@ -69,10 +69,6 @@ typedef enum packet_id
   PID_SEND_AMP_ADC1_ADJUSTED_DATA     = 0x32,
   PID_SEND_AMP_ADC1_AVERAGE_DATA      = 0x33,
   PID_READ_AMP_INPUT                  = 0x34,
-
-  PID_SET_AMP_OUTPUTS                 = 0x39,
-  PID_SEND_AMP_SET_FREQUENCY          = 0x3A,
-  PID_SEND_AMP_SET_PWM                = 0x3B,
   PID_SET_AMP_THERAPY                 = 0x3C,
   PID_SEND_AMP_ISSUE                  = 0x3D,
 
