@@ -32,11 +32,6 @@ widgetTherapy::widgetTherapy(QWidget *parent) : QWidget(parent)
 
     stopButton->setEnabled(false);
     userButton->setEnabled(false);
-
-    startButton->setText("START");
-    stopButton->setText("STOP");
-    userButton->setText("USER");
-
     startButton->setStyleSheet("background-color:green;");
     stopButton->setStyleSheet("background-color:red;");
 
@@ -185,6 +180,8 @@ void widgetTherapy::ReceiveStatusReg(STATUS_REGISTER eStatusReg)
     qobject_cast<QStandardItemModel*>(listOfChannels->model())->item(4)->setEnabled(eStatusReg.m_Reg.m_Bit.StateAcc3 == 1 ? true : false);
 
     (eStatusReg.m_Reg.m_Bit.StateTherapy != E_STATE_OFF) ? TherapyRuns(eStatusReg.m_Reg.m_Bit.StateTherapy) : TherapyDoesnotRun();
+
+    userButton->setEnabled(eStatusReg.m_Reg.m_Bit.ContactNeutral == true ? true : false);
 
     /*therapyParams[E_POWER].slider->setValue(eStatusReg.m_wSetPower);
     therapyParams[E_COOLING].slider->setValue(eStatusReg.m_bySetTemperaturePatient);
