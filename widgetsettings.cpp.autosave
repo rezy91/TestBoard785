@@ -250,6 +250,8 @@ void widgetSettings::ReadSettingsGener(QByteArray data)
             {
                 for(int iLoop = 0; iLoop < c_dwVolumeOfPartAmplifier[E_SET_TYPE_AMPLF_OUTPUTS]; iLoop++)
                 {
+                  qDebug() << uint32_t(data.at(5 + iLoop));
+
                   checkAmpOutput[iLoop]->setCheckState(uint32_t(data.at(5 + iLoop)) == 1 ? Qt::CheckState::Checked : Qt::CheckState::Unchecked);
                 }
             }
