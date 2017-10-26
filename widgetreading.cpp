@@ -333,8 +333,6 @@ void widgetReading::ReceiveStatusReg(STATUS_REGISTER eStatusReg)
 
 void widgetReading::ReceiveFirmwareVersion(int nIndex, uint nValue)
 {
-    //qDebug() << nIndex;
-
     if(nValue)
     {
         labelFirmwareVersion[nIndex]->setText(QString("%1").arg(QString::number(nValue)));
@@ -363,11 +361,8 @@ void widgetReading::ReceiveFirmwareVersion(int nIndex, uint nValue)
         {
             for(int iLoop = 0; iLoop < NMB_ITEMS_TIMERS_AMPLF; iLoop++)
             {
-                if(iLoop != 2)
-                {
-                    chBoxAmp[iLoop]->setEnabled(true);
-                    SendV200Requirement(chBoxAmp[iLoop]->checkState(), 0, iLoop);
-                }
+                chBoxAmp[iLoop]->setEnabled(true);
+                SendV200Requirement(chBoxAmp[iLoop]->checkState(), 0, iLoop);
             }
         }
         else if(nIndex == 5)
@@ -411,10 +406,7 @@ void widgetReading::ReceiveFirmwareVersion(int nIndex, uint nValue)
         {
             for(int iLoop = 0; iLoop < NMB_ITEMS_TIMERS_AMPLF; iLoop++)
             {
-                if(iLoop != 2)
-                {
-                    chBoxAmp[iLoop]->setEnabled(false);
-                }
+                chBoxAmp[iLoop]->setEnabled(false);
             }
         }
         else if(nIndex == 5)
@@ -452,10 +444,7 @@ void widgetReading::ReceiveRcvMsgAmp(QString data)
     {
         for(int iLoop = 0; iLoop < NMB_ITEMS_TIMERS_AMPLF; iLoop++)
         {
-            if(iLoop != 2)
-            {
-                chBoxAmp[iLoop]->setCheckState(Qt::Checked);
-            }
+            chBoxAmp[iLoop]->setCheckState(Qt::Checked);
         }
     }
 }

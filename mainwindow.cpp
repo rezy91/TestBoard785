@@ -125,7 +125,7 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
         emit SendTimeRequests(1, iLoop, appSettings->RestoreRefreshGener(iLoop));
     }
 
-    for(int iLoop = 0; iLoop < NMB_ITEMS_TIMERS_AMPLF; iLoop++)
+    for(int iLoop = 0; iLoop < E_READ_TYPE_AMPLF_COUNT; iLoop++)
     {
         eRequestsAmplifAdcx[iLoop].timer.CurrentTime_ms = 0;
         eRequestsAmplifAdcx[iLoop].timer.bEnable = false;
@@ -144,11 +144,6 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
 
         emit SendTimeRequests(2, iLoop, appSettings->RestoreRefreshAplUsn(iLoop));
     }
-
-    eRequestAmplfInput.timer.CurrentTime_ms = 0;
-    eRequestAmplfInput.timer.bEnable = false;
-    eRequestAmplfInput.timer.RequirementTime_ms = 50;
-    eRequestAmplfInput.isInProgress = false;
 
     ui->verticalLayout->addWidget(p_WidgetReading);
     ui->verticalLayout_2->addWidget(p_WidgetConfig);
@@ -170,8 +165,6 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
         HasTimerRequestsExpiredGenAmpl(GENERATOR_SOURCE);
         HasTimerRequestsExpiredGenAmpl(AMPLIFIER_SOURCE);
         HasTimerRequestsExpiredAplUsn();
-
-        HasTimerInputExpired();
 
         if(++mMainTimer >= 100)//Read Status register each xxx ms
         {
@@ -225,7 +218,7 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
             }
         }
 
-        for(int iLoop = 0; iLoop < NMB_ITEMS_TIMERS_AMPLF; iLoop++)
+        for(int iLoop = 0; iLoop < E_READ_TYPE_AMPLF_COUNT; iLoop++)
         {
             if(eRequestsAmplifAdcx[iLoop].internalIdClass == vErrorData.toInt())
             {
@@ -241,12 +234,6 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
                eRequestsAplUsn[iLoop].isInProgress = false;
                return;
             }
-        }
-
-        if(eRequestAmplfInput.internalIdClass == vErrorData.toInt())
-        {
-           eRequestAmplfInput.isInProgress = false;
-           return;
         }
     });
 
@@ -324,11 +311,11 @@ void MainWindow::onNewMsgReqReceived(Qt::CheckState m_newState, int m_device, in
 {
     if(m_device == 0)
     {
-        universalRequestMessageProtocol(m_newState, PID_SEND_AMP_TIMERS_RESULTS + m_indexMsg);
+        universalRequestMessageProtocol(m_newState, m_indexMsg, ACC_AMPLIFIER);
     }
     else if(m_device == 1)
     {
-        universalRequestMessageProtocol(m_newState, m_indexMsg);
+        universalRequestMessageProtocol(m_newState, m_indexMsg, ACC_GENER_RF);
     }
     else if(m_device == 2)
     {
@@ -355,7 +342,7 @@ void MainWindow::onNewMsgReqReceived(Qt::CheckState m_newState, int m_device, in
             dwPidMsg = PID_READ_MEAS_APL_S_3_DEVEL;
         }
 
-        universalRequestMessageProtocol(m_newState, dwPidMsg);
+        universalRequestMessageProtocol(m_newState, dwPidMsg, ACC_CHANNEL(m_indexMsg));
     }
     //qDebug() << "slot occours" << m_indexMsg;
 }
@@ -467,6 +454,15 @@ void MainWindow::newDataV200(QByteArray aData)
             }
 
             recognizeIfDisplayNewDataAllSignals(timeCurrent, &myStringOnlyNumbers, byType);
+        }
+        else if(byDevice == ACC_AMPLIFIER)
+        {
+            if(eRequestsAmplifAdcx[byType].isInProgress == true)
+            {
+                eRequestsAmplifAdcx[byType].isInProgress = false;
+            }
+
+            recognizeIfDisplayNewDataAllSignals(timeCurrent, &myStringOnlyNumbers, NMB_ITEMS_TIMERS_GENER + byType);
         }
         break;
     case 'u'://usn´s data
@@ -582,13 +578,6 @@ void MainWindow::newDataV200(QByteArray aData)
                 eRequestsAmplifAdcx[3].isInProgress = false;
             }
         }
-        else if(aData.at(1) == 'i')//Digital input readed
-        {
-            if(eRequestAmplfInput.isInProgress == true)
-            {
-                eRequestAmplfInput.isInProgress = false;
-            }
-        }
         break;
 
     //generator config data
@@ -638,7 +627,7 @@ void MainWindow::newDataV200(QByteArray aData)
             else
             {
                 emit SendFirmwareVersion(6, 0);
-                universalRequestMessageProtocol(Qt::CheckState::Unchecked, PID_READ_MEASURE_DATA_USN);
+                universalRequestMessageProtocol(Qt::CheckState::Unchecked, PID_READ_MEASURE_DATA_USN, ACC_GENER_USN);
             }
         }
 
@@ -654,10 +643,11 @@ void MainWindow::newDataV200(QByteArray aData)
             else
             {
                 emit SendFirmwareVersion(4, 0);
-                universalRequestMessageProtocol(Qt::CheckState::Unchecked, PID_SEND_AMP_TIMERS_RESULTS);
-                universalRequestMessageProtocol(Qt::CheckState::Unchecked, PID_SEND_AMP_ADC3_AVERAGE_DATA);
-                universalRequestMessageProtocol(Qt::CheckState::Unchecked, PID_SEND_AMP_ADC1_ADJUSTED_DATA);
-                universalRequestMessageProtocol(Qt::CheckState::Unchecked, PID_SEND_AMP_ADC1_AVERAGE_DATA);
+
+                for(qint32 iLoop = 0; iLoop < E_READ_TYPE_AMPLF_COUNT; iLoop++)
+                {
+                    universalRequestMessageProtocol(Qt::CheckState::Unchecked, iLoop, ACC_AMPLIFIER);
+                }
             }
         }
 
@@ -676,7 +666,7 @@ void MainWindow::newDataV200(QByteArray aData)
             else
             {
                 emit SendFirmwareVersion(0, 0);
-                universalRequestMessageProtocol(Qt::CheckState::Unchecked, PID_READ_MEASURE_DATA_APL_L);
+                universalRequestMessageProtocol(Qt::CheckState::Unchecked, PID_READ_MEASURE_DATA_APL_L, ACC_APPL_BIG);
             }
         }
 
@@ -696,7 +686,7 @@ void MainWindow::newDataV200(QByteArray aData)
             else
             {
                 emit SendFirmwareVersion(1, 0);
-                universalRequestMessageProtocol(Qt::CheckState::Unchecked, PID_READ_MEAS_APL_S_1_DEVEL);
+                universalRequestMessageProtocol(Qt::CheckState::Unchecked, PID_READ_MEAS_APL_S_1_DEVEL, ACC_APPL_SMALL_1);
             }
         }
 
@@ -715,7 +705,7 @@ void MainWindow::newDataV200(QByteArray aData)
             else
             {
                 emit SendFirmwareVersion(2, 0);
-                universalRequestMessageProtocol(Qt::CheckState::Unchecked, PID_READ_MEAS_APL_S_2_DEVEL);
+                universalRequestMessageProtocol(Qt::CheckState::Unchecked, PID_READ_MEAS_APL_S_2_DEVEL, ACC_APPL_SMALL_2);
             }
         }
 
@@ -734,7 +724,7 @@ void MainWindow::newDataV200(QByteArray aData)
             else
             {
                 emit SendFirmwareVersion(3, 0);
-                universalRequestMessageProtocol(Qt::CheckState::Unchecked, PID_READ_MEAS_APL_S_3_DEVEL);
+                universalRequestMessageProtocol(Qt::CheckState::Unchecked, PID_READ_MEAS_APL_S_3_DEVEL, ACC_APPL_SMALL_3);
             }
         }
 
@@ -958,36 +948,6 @@ bool MainWindow::GetIndexFromQlistAplUsn(int &dwAbsIndex, int dwNumberCmbBx, int
     return false;
 }
 
-void MainWindow::SetTimerRequestsAmpTemporary(int wIndex, bool bOnOff, QString sCommand)
-{
-    qint32 dwPidItems = QString::number(PID_SEND_AMP_TIMERS_RESULTS, 16).toInt();
-    qint32 dwVolumeItems =  NMB_ITEMS_TIMERS_AMPLF;
-    PERIODIC_REQUEST* p_sRequests = eRequestsAmplifAdcx;
-
-
-    for(qint32 row = 0; row < dwVolumeItems; row++)
-    {
-        if(dwPidItems + row == wIndex)
-        {
-            if(bOnOff == true)
-            {
-                p_sRequests[row].timer.CurrentTime_ms = p_sRequests[row].timer.RequirementTime_ms;
-                p_sRequests[row].timer.bEnable = true;
-
-                p_sRequests[row].assemblyMsq = QByteArray::fromHex(sCommand.toStdString().c_str());
-                p_sRequests[row].respExp = true;
-            }
-            else
-            {
-                p_sRequests[row].timer.bEnable = false;
-                p_sRequests[row].respExp = false;
-            }
-
-            break;
-        }
-    }
-}
-
 void MainWindow::SetTimerRequestsGenReadValues(bool bOnOff, MainWindow::CONVERTED_CALCULATED_TYPES_RF eType)
 {
     QString strCmd = QString("%1").arg(QString::number(PID_READING_VALUES_FROM_DEVICE, 16));
@@ -1011,6 +971,36 @@ void MainWindow::SetTimerRequestsGenReadValues(bool bOnOff, MainWindow::CONVERTE
             {
                 eRequestsGenerAdcx[row].timer.bEnable = false;
                 eRequestsGenerAdcx[row].respExp = false;
+            }
+
+            break;
+        }
+    }
+}
+
+void MainWindow::SetTimerRequestsAmpReadValues(bool bOnOff, MainWindow::CONVERTED_CALCULATED_TYPES_AMPLIFIER eType)
+{
+    QString strCmd = QString("%1").arg(QString::number(PID_READING_VALUES_FROM_DEVICE, 16));
+    strCmd += QString::number(ACC_AMPLIFIER, 16).rightJustified(2, '0');
+    strCmd += QString::number(eType, 16).rightJustified(2, '0');
+
+
+    for(qint32 row = 0; row < E_READ_TYPE_AMPLF_COUNT; row++)
+    {
+        if(row == eType)
+        {
+            if(bOnOff == true)
+            {
+                eRequestsAmplifAdcx[row].timer.CurrentTime_ms = eRequestsAmplifAdcx[row].timer.RequirementTime_ms;
+                eRequestsAmplifAdcx[row].timer.bEnable = true;
+
+                eRequestsAmplifAdcx[row].assemblyMsq = QByteArray::fromHex(strCmd.toStdString().c_str());
+                eRequestsAmplifAdcx[row].respExp = true;
+            }
+            else
+            {
+                eRequestsAmplifAdcx[row].timer.bEnable = false;
+                eRequestsAmplifAdcx[row].respExp = false;
             }
 
             break;
@@ -1116,23 +1106,6 @@ void MainWindow::ShowSignalsAplUsnIfShould(SOURCE_STREAM eSourceStream, qint32 &
     }
 }
 
-void MainWindow::SetTimerinputAmplf(bool bOnOff, QString sCommand)
-{
-    if(bOnOff == true)
-    {
-        eRequestAmplfInput.timer.CurrentTime_ms = eRequestAmplfInput.timer.RequirementTime_ms;
-        eRequestAmplfInput.timer.bEnable = true;
-
-        eRequestAmplfInput.assemblyMsq = QByteArray::fromHex(sCommand.toStdString().c_str());
-        eRequestAmplfInput.respExp = true;
-    }
-    else
-    {
-        eRequestAmplfInput.timer.bEnable = false;
-        eRequestAmplfInput.respExp = false;
-    }
-}
-
 void MainWindow::HasTimerRequestsExpiredGenAmpl(MainWindow::SOURCE_DEVICE eSourceStream)
 {
     qint32 dwVolumeItems = (eSourceStream == GENERATOR_SOURCE) ? E_READ_TYPE_RF_COUNT : NMB_ITEMS_TIMERS_AMPLF;
@@ -1184,32 +1157,6 @@ void MainWindow::HasTimerRequestsExpiredAplUsn()
                     eRequestsAplUsn[loop].timer.CurrentTime_ms = 0;
                     eRequestsAplUsn[loop].internalIdClass = m_CommProt.data()->SendData(m_nDeviceAddress, eRequestsAplUsn[loop].assemblyMsq, eRequestsAplUsn[loop].respExp);
                 }
-            }
-        }
-    }
-}
-
-void MainWindow::HasTimerInputExpired(void)
-{
-    PERIODIC_REQUEST* p_sRequest = &eRequestAmplfInput;
-
-
-    if(p_sRequest->timer.bEnable == true)
-    {
-        p_sRequest->timer.CurrentTime_ms++;
-        if(p_sRequest->timer.CurrentTime_ms >= p_sRequest->timer.RequirementTime_ms)
-        {
-            //qDebug() << "Timer input" << eSourceStream << "tick";
-            if(p_sRequest->isInProgress == true)
-            {
-                //qDebug() << "Timer input" << eSourceStream << "busy";
-            }
-            else
-            {
-                //qDebug() << "Timer input" << eSourceStream << "again";
-                p_sRequest->isInProgress = true;
-                p_sRequest->timer.CurrentTime_ms = 0;
-                p_sRequest->internalIdClass = m_CommProt.data()->SendData(m_nDeviceAddress, p_sRequest->assemblyMsq, p_sRequest->respExp);
             }
         }
     }
@@ -1310,8 +1257,6 @@ void MainWindow::on_disconnectButton_clicked()
         eRequestsAplUsn[loop].timer.bEnable = false;
         eRequestsAplUsn[loop].isInProgress = false;
     }
-
-    eRequestAmplfInput.timer.bEnable = false;
 
     for(int iLoop = 0; iLoop < E_BROWSER_NMB; iLoop++)
     {
@@ -1459,17 +1404,11 @@ void MainWindow::refreshPlot()
     }
 }
 
-void MainWindow::universalRequestMessageProtocol(Qt::CheckState eState, int wIndex)
+void MainWindow::universalRequestMessageProtocol(Qt::CheckState eState, int wIndex, ACC_CHANNEL eChannel)
 {
-    int wIndexHex = QString::number(wIndex, 16).toInt();
     QString strCmd = QString("%1").arg(QString::number(wIndex, 16));
 
-
-    if(wIndex == QString::number(PID_READ_AMP_INPUT).toInt())
-    {
-        SetTimerinputAmplf(eState == Qt::Unchecked ? false : true, strCmd);
-    }
-    else if(wIndex == QString::number(PID_READ_MEASURE_DATA_USN).toInt())
+    if(wIndex == QString::number(PID_READ_MEASURE_DATA_USN).toInt())
     {
         SetTimerRequestsAplUsn(eState == Qt::Unchecked ? false : true, strCmd, USN_GENER_SOURCE);
     }
@@ -1491,13 +1430,13 @@ void MainWindow::universalRequestMessageProtocol(Qt::CheckState eState, int wInd
     }
     else
     {
-        if(wIndex <= E_READ_TYPE_RF_COUNT)
+        if(eChannel == ACC_GENER_RF)
         {
             SetTimerRequestsGenReadValues(eState == Qt::Unchecked ? false : true, MainWindow::CONVERTED_CALCULATED_TYPES_RF(wIndex));
         }
-        else
+        else if(ACC_AMPLIFIER)
         {
-            SetTimerRequestsAmpTemporary(wIndexHex, eState == Qt::Unchecked ? false : true, strCmd);
+            SetTimerRequestsAmpReadValues(eState == Qt::Unchecked ? false : true, MainWindow::CONVERTED_CALCULATED_TYPES_AMPLIFIER(wIndex));
         }
     }
 

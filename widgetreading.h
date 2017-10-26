@@ -52,7 +52,7 @@ private:
     enum{E_NMB_ITEMS_STATUS = 7};
     enum{E_NMB_SLAVE_DEVICES = 7};
 
-    const QString allNamesAmp[NMB_ITEMS_TIMERS_AMPLF] = {"AMP ADC3 adjusted [ms]", "AMP ADC3 raw [ms]", "AMP ADC1 adjusted [ms]", "AMP ADC1 raw [ms]"};
+    const QString allNamesAmp[NMB_ITEMS_TIMERS_AMPLF] = {"AMP ADC1 raw [ms]", "AMP ADC2 raw [ms]", "AMP ADC3 raw [ms]", "AMP timer results [ms]"};
     const QString allNamesGen[NMB_ITEMS_TIMERS_GENER] = {"GEN Cooling [ms]", "GEN ADC3 raw [ms]", "GEN Impedance [ms]", "GEN ADC2 raw [ms]", \
                                                          "GEN ADC1 adjusted [ms]", "GEN ADC1 raw [ms]"};
     const QString allNamesAplUsn[NMB_ITEMS_TIMERS_APLS_AND_USN] = {"USN [ms]", "APL_l [ms]", "APL_s1 [ms]", "APL_s2 [ms]", "APL_s3 [ms]"};

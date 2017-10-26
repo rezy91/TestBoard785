@@ -93,6 +93,16 @@ public:
         E_READ_TYPE_RF_COUNT,
     } CONVERTED_CALCULATED_TYPES_RF;
 
+    typedef enum
+    {
+        E_READ_TYPE_AMPLF_ADC1_CONVERTED,
+        E_READ_TYPE_AMPLF_ADC2_CONVERTED,
+        E_READ_TYPE_AMPLF_ADC3_CONVERTED,
+        E_READ_TYPE_AMPLF_TIMERS,
+        E_READ_TYPE_AMPLF_INPUTS,
+        E_READ_TYPE_AMPLF_COUNT,
+    } CONVERTED_CALCULATED_TYPES_AMPLIFIER;
+
     explicit MainWindow(QWidget *parent = 0);
     ~MainWindow();
 
@@ -124,10 +134,9 @@ private:
     QTimer TmrMstr;
 
 
-    PERIODIC_REQUEST eRequestsAmplifAdcx[NMB_ITEMS_TIMERS_AMPLF];
+    PERIODIC_REQUEST eRequestsAmplifAdcx[E_READ_TYPE_AMPLF_COUNT];
     PERIODIC_REQUEST eRequestsGenerAdcx[E_READ_TYPE_RF_COUNT];
     PERIODIC_REQUEST eRequestsAplUsn[NMB_ITEMS_TIMERS_APLS_AND_USN];
-    PERIODIC_REQUEST eRequestAmplfInput;
 
     bool flagIfSourceIsLoggedGener[NMB_ITEMS_TIMERS_GENER];
     bool flagIfSourceIsLoggedAmplf[NMB_ITEMS_TIMERS_AMPLF];
@@ -172,18 +181,16 @@ private:
     void ShowSignalsIntoComboBox(SOURCE_STREAM eSourceStream);
     void ShowSignalsGenAmplIfShould(SOURCE_STREAM eSourceStream, SOURCE_DEVICE eSourceDevice, qint32 &dwStartIndex, QColor eBackgrColor);
     void ShowSignalsAplUsnIfShould(SOURCE_STREAM eSourceStream, qint32 &dwStartIndex);
-    void SetTimerRequestsAmpTemporary(int wIndex, bool bOnOff, QString sCommand);
 
     void SetTimerRequestsGenReadValues(bool bOnOff, CONVERTED_CALCULATED_TYPES_RF eType);
+    void SetTimerRequestsAmpReadValues(bool bOnOff, CONVERTED_CALCULATED_TYPES_AMPLIFIER eType);
 
     void SetTimerRequestsAplUsn(bool bOnOff, QString sCommand, SOURCE_DEVICE eSourceStream);
-    void SetTimerinputAmplf(bool bOnOff, QString sCommand);
     void HasTimerRequestsExpiredGenAmpl(SOURCE_DEVICE eSourceStream);
     void HasTimerRequestsExpiredAplUsn();
-    void HasTimerInputExpired(void);
 
     void refreshPlot(void);
-    void universalRequestMessageProtocol(Qt::CheckState eState, int wIndex);
+    void universalRequestMessageProtocol(Qt::CheckState eState, int wIndex, ACC_CHANNEL eChannel);
 
 
     double recvItems[nmbCurvesInGraph];

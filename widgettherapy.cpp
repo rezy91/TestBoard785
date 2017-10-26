@@ -57,8 +57,6 @@ widgetTherapy::widgetTherapy(QWidget *parent) : QWidget(parent)
 
         dwCurrentChannel = nValue - 1;
 
-        qDebug() << "selected channel:" << dwCurrentChannel;
-
         EnableSliders(E_STATE_OFF);
 
         QString msgChannel = QString("%1").arg(QString::number(PID_SET_CHOOSE_CURRENT_CHANNEL, 16));

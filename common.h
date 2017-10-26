@@ -64,11 +64,6 @@ typedef enum packet_id
   PID_REPLY_READING_VALUES_FROM_DEVICE = 0x4B,
 
   // test(service) packets
-  PID_SEND_AMP_TIMERS_RESULTS         = 0x30,
-  PID_SEND_AMP_ADC3_AVERAGE_DATA      = 0x31,
-  PID_SEND_AMP_ADC1_ADJUSTED_DATA     = 0x32,
-  PID_SEND_AMP_ADC1_AVERAGE_DATA      = 0x33,
-  PID_READ_AMP_INPUT                  = 0x34,
   PID_SET_AMP_THERAPY                 = 0x3C,
   PID_SEND_AMP_ISSUE                  = 0x3D,
 
@@ -122,6 +117,7 @@ enum TEXT_BROWSERS
 
 typedef enum
 {
+    ACC_GENER_RF = -1,
     ACC_APPL_BIG = 0,
     ACC_APPL_SMALL_1,
     ACC_APPL_SMALL_2,
@@ -137,11 +133,6 @@ enum {nmbChannelsAppls = 4};
 enum {E_NMB_BIT_FLAGS_STATUS = 32};
 enum {E_NMB_ITEMS_ADMIN = 3};
 
-const QString c_nameGen = "Gen";
-const QString c_nameAmp = "Amp";
-const QString c_nameMul = "Mul";
-const QString c_nameAdd = "Add";
-
 const QStringList allAdxSignalsGener[NMB_ITEMS_TIMERS_GENER] = { \
     {"g3c_counter", "Temperature cold [°C]", "Temperature hot [°C]", "Temperature tip [°C]", "regulator_output [%]", "regulator_error_sum"}, \
     {"g3s_counter", "Cold_pump_adc", "Hot_pump_adc", "Temperature_cold_adc", "Temperature_hot_adc", "fan_adc", "pelt_adc"}, \
@@ -151,10 +142,11 @@ const QStringList allAdxSignalsGener[NMB_ITEMS_TIMERS_GENER] = { \
     {"g1c_counter", "g1c_exec", "g1c_conv"}, \
     {"g1s_counter", "Apl1_Vcc_Adc", "CQM1_adc", "CQM2_adc", "V reference [mV]", "Temperature board [°C]", "+24V_adc", "+5V_adc", "Temperature MCU [°C]", "vrefin_adc"}};
 const QStringList allAdxSignalsAmplf[NMB_ITEMS_TIMERS_AMPLF] = { \
-    {"at_counter", "Frequency", "/Frequency", "duty_factor_1", "duty_factor_2", "dead_time_1->2", "dead_time_2->1"}, \
+    {"a1s_counter", "Vfet1Out", "Vfet2Out", "Ifet1Out", "Ifet2Out", "Vgate1Out", "Vgate2Out", "inputVolatge_ADC", "inputCurrent_ADC"}, \
+    {"a2s_counter", "NOT_USED", "NOT_USED", "NOT_USED", "NOT_USED", "NOT_USED", "NOT_USED", "NOT_USED", "NOT_USED"}, \
     {"a3s_counter", "Temperature_1", "Temperature_2", "Temperature_3", "+24V_adc", "+10V_adc", "Vcheck", "ADC3_14", "ADC3_15"}, \
-    {"ax_counter", "ax_exec", "ax_conv"}, \
-    {"a1s_counter", "Vfet1Out", "Vfet2Out", "Ifet1Out", "Ifet2Out", "Vgate1Out", "Vgate2Out", "inputVolatge_ADC", "inputCurrent_ADC"}};
+    {"at_counter", "Frequency", "/Frequency", "duty_factor_1", "duty_factor_2", "dead_time_1->2", "dead_time_2->1"}, \
+};
 const QStringList allAdxSignalsAplUsn[NMB_ITEMS_TIMERS_APLS_AND_USN] = { \
     {"output frequency [Hz]", "current head [mA]", "output voltage [mV]", "power voltage [mV]", "generated voltage [mV]", "voltage at 10V [mV]", "voltage at 5V [mV]",  \
      "voltage at 3.3V [mV]", "temp. gener [K]", "temp head_A [0.1K]", "temp head_B [0.1K]", "contact [%]", "temp. board [K]"}, \
